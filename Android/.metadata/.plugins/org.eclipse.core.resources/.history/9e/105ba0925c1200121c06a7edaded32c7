@@ -1,0 +1,8 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="AppTheme" parent="android:Theme.Light" />
+	<style name="CodeFont">
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">#F5F5F5</item>
+    </style>
+</resources>

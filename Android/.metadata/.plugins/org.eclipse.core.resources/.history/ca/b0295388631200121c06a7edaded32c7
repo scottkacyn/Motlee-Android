@@ -1,0 +1,39 @@
+/**
+ * 
+ */
+package com.motlee.android.layouts;
+
+import java.util.List;
+
+import com.motlee.android.enums.EventDetailPageType;
+import com.motlee.android.object.EventDetailPageItem;
+import com.motlee.android.object.GlobalEventList;
+
+import android.content.Context;
+import android.widget.TableLayout;
+
+/**
+ * @author zackmartinsek
+ *
+ */
+public class GridListTableLayout extends TableLayout {
+
+	public GridListTableLayout(Context context) {
+		super(context);
+		// TODO Auto-generated constructor stub
+	}
+
+	public void addList(List<EventDetailPageItem> items)
+	{
+		this.removeAllViews();
+		
+		for (EventDetailPageItem item : items)
+		{
+			if (item.type == EventDetailPageType.PICTURE)
+			{
+				
+			}
+		}
+	}
+	
+}

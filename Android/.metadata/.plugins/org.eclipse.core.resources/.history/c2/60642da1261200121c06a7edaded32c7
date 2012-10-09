@@ -1,0 +1,27 @@
+package com.motlee.android.object;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class GlobalEventList extends HashMap<Integer, EventDetail> {
+
+	public GlobalEventList() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public GlobalEventList(int capacity) {
+		super(capacity);
+		// TODO Auto-generated constructor stub
+	}
+
+	public GlobalEventList(Map<? extends Integer, ? extends EventDetail> map) {
+		super(map);
+		// TODO Auto-generated constructor stub
+	}
+
+	public GlobalEventList(int capacity, float loadFactor) {
+		super(capacity, loadFactor);
+		// TODO Auto-generated constructor stub
+	}
+
+}

@@ -1,0 +1,22 @@
+package com.motlee.android.object;
+
+import com.motlee.android.enums.EventDetailPageType;
+
+public class EventDetailPageItem {
+	
+	public Integer contentID;
+	
+	public Integer eventID;
+	
+	public EventDetailPageType type;
+	
+	public Integer userID;
+	
+	public EventDetailPageItem(Integer eventID, String content, EventDetailPageType type, Integer userID)
+	{
+		this.eventID = eventID;
+		this.content = content;
+		this.type = type;
+		this.userID = userID;
+	}	
+}

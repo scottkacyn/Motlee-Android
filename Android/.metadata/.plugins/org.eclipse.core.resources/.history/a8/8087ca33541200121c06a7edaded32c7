@@ -1,0 +1,16 @@
+package com.motlee.android.object;
+
+public class EventDetailPageArray {
+	
+	public String content;
+	
+	public Integer id;
+	
+	public 
+	
+	public EventDetailPageArray()
+	{
+		
+	}
+	
+}

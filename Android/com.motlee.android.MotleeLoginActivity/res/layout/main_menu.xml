@@ -1,0 +1,47 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="100dp"
+	android:layout_height="fill_parent"
+	android:orientation="vertical"
+	android:background="@color/background">
+
+      <LinearLayout android:layout_width="match_parent"
+        android:layout_height="80dp"/>  
+     <Button 
+          android:id="@+id/search_button"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="Search" />
+
+     <Button 
+          android:id="@+id/all_events_button"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="All Events"
+          android:onClick="onClickShowAllEvents" />
+		
+     <Button 
+          android:id="@+id/my_events_button"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="My Events"
+          android:onClick="onClickShowMyEvents" />
+     
+     <Button 
+          android:id="@+id/nearby_events_button"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="Nearby"
+          android:onClick="onClickShowNearbyEvents" />
+     
+     <Button 
+          android:id="@+id/notifications_button"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="Notifications" />
+     
+     <Button 
+          android:id="@+id/settings_button"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="Settings" />
+</LinearLayout>

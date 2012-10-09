@@ -1,0 +1,27 @@
+/**
+ * 
+ */
+package com.motlee.android.layouts;
+
+import java.util.List;
+
+import android.content.Context;
+import android.widget.TableLayout;
+
+/**
+ * @author zackmartinsek
+ *
+ */
+public class GridListTableLayout extends TableLayout {
+
+	public GridListTableLayout(Context context) {
+		super(context);
+		// TODO Auto-generated constructor stub
+	}
+
+	public void addList(List<String> imageUrls)
+	{
+		this.removeAllViews();
+	}
+	
+}

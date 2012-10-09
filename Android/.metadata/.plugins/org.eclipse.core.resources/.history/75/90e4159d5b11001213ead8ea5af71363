@@ -1,0 +1,19 @@
+package com.motlee.android.object;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class EventDetailList
+{
+	private Set<EventDetail> event = new HashSet<EventDetail>();
+	
+	public EventDetailList()
+	{
+		
+	}
+	
+	public Set<EventDetail> getEventList()
+	{
+		return event;
+	}
+}

@@ -1,0 +1,68 @@
+package com.motlee.android.object;
+
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.util.Log;
+import android.widget.ImageView;
+
+import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
+
+public class RedrawBitmapDisplayer implements BitmapDisplayer {
+
+	public Bitmap display(Bitmap bitmap, ImageView imageView) {
+		//bitmap = cropBitmap(bitmap, imageView.getHeight(), imageView.getWidth());
+		//imageView.setImageResource(0);
+		imageView.setImageBitmap(bitmap);
+		return bitmap;
+	}
+
+	private Bitmap cropBitmap(Bitmap bitmap, int endHeight, int endWidth)
+	{
+		int width = bitmap.getWidth();
+		int height = bitmap.getHeight();
+		
+		int newWidth = endHeight;
+		int newHeight = endWidth;
+		
+		int xAxis = 0;
+		int yAxis = 0;
+		
+		if (height <= width)
+		{
+			newWidth = height;
+			xAxis = (width - height) / 2;
+		}
+		else
+		{
+			newHeight = width;
+			yAxis = (height - width) / 2;
+		}
+
+
+		// calculate the scale - in this case = 0.4f
+		float scaleWidth = ((float) endWidth) / width;
+		float scaleHeight = ((float) endHeight) / height;
+
+		// createa matrix for the manipulation
+		Matrix matrix = new Matrix();
+		// resize the bit map
+		matrix.postScale(scaleWidth, scaleHeight);
+
+
+				
+				
+		// recreate the new Bitmap
+		// The following line is the place where you can crop the image.
+		// If you do not want to resize image then in above line keep scaledWidth and 
+		//  scaledHeight to 1.
+		// Then in te following line, you can change following four parameters 0,0,width,height
+		// Thease four parameters mark the four axis readings of bounding box. Change it and 
+		// see how it works 
+
+		Log.w("RedrawBitmapDisplay", "xAxis: " + xAxis + ", yAxis: " + yAxis + ", width: " + width + ", height: " +  height + ", scaleWidth: " + scaleWidth + ", scaleHeight: " + scaleHeight + ", endWidth: " + endWidth + ", endHeight: " + endHeight);
+		
+		return Bitmap.createBitmap(bitmap, xAxis, yAxis, 
+		                  endWidth, endHeight); 
+	}
+	
+}

@@ -1,0 +1,10 @@
+package com.motlee.android.event;
+
+import java.util.EventObject;
+
+public class UserInfoEvent extends EventObject {
+	public UserInfoEvent(Object source)
+	{
+		super(source);
+	}
+}

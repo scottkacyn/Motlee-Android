@@ -1,0 +1,6 @@
+package com.motlee.android.object;
+
+public enum Gender {
+	Male,
+	Female
+}

@@ -1,0 +1,24 @@
+package com.motlee.android.object;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class GlobalEventList {
+
+	public HashMap<Integer, EventDetail> eventDetailMap = new HashMap<Integer, EventDetail>();
+	
+	private GlobalEventList instance;
+	
+	public GlobalEventList getInstance()
+	{
+		if (instance == null)
+		{
+			instance = new GlobalEventList();
+		}
+		return instance;
+	}
+	
+	private GlobalEventList() {
+		
+	}
+}

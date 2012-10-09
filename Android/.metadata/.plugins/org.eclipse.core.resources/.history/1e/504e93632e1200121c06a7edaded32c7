@@ -1,0 +1,6 @@
+2d2b29
+    <resources>
+        <color name="background">#2b333a</color>
+        <color name="background_header">#3a3836</color>
+        <color name="event_header">#2b2b29</color>
+    </resources>

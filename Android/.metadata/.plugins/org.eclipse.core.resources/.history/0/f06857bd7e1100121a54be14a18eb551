@@ -1,0 +1,52 @@
+package com.motlee.android.object;
+
+import java.util.ArrayList;
+import java.util.EventListener;
+import java.util.HashMap;
+
+import com.motlee.android.event.UserInfoEvent;
+import com.motlee.android.event.UserInfoListener;
+
+public class UserInfoList extends HashMap<Integer, UserInfo> {
+
+	private static final long serialVersionUID = 7210019458796369990L;
+	
+	private ArrayList<UserInfoListener> eventList;
+	
+	private static final UserInfoList instance = new UserInfoList();
+	
+	private UserInfoList()
+	{
+		
+	}
+	
+	
+	
+	public static UserInfoList getInstance()
+	{
+		return instance;
+	}
+	
+	public void addListener(UserInfoListener l) {
+		eventList.add(l);
+	  }
+
+	public void removeListener(UserInfoListener l) {
+		  eventList.remove(l);
+	  }
+	
+	public UserInfo put(Integer userID, UserInfo userInfo)
+	{
+		if (userInfo == null)
+		{
+			UserInfoEvent e = new UserInfoEvent(userID);
+			
+		    for (UserInfoListener l : eventList) 
+		    {
+			   l.raised(e);
+			}
+		}
+		
+	    return super.put(userID, userInfo);
+	}
+}

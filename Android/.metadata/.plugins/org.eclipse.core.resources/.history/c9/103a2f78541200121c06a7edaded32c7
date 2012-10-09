@@ -1,0 +1,17 @@
+package com.motlee.android.object;
+
+import com.motlee.android.enums.EventDetailPageType;
+
+public class EventDetailPageArray {
+	
+	public String content;
+	
+	public Integer eventID;
+	
+	public EventDetailPageType type;
+	
+	public EventDetailPageArray()
+	{
+		
+	}	
+}
