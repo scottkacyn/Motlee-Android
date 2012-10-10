@@ -3,3 +3,8 @@
 1349813778352	Move compilation unit
 1349816550364	Rename type 'EventDetailPageArray'
 1349818281478	Delete element
+1349829732717	Rename type 'EventDetailPageItem'
+1349830784609	Rename type 'EventDetailPageType'
+1349832867020	Encapsulate field 'stories'
+1349833039360	Encapsulate field 'images'
+1349835265792	Delete element

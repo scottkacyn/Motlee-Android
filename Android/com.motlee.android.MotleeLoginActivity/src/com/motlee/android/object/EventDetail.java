@@ -24,7 +24,9 @@ public class EventDetail {
 	@NoExpose
 	private final Collection<Integer> fomos;
 	@NoExpose
-	private final Collection<EventDetailPageItem> imageURLs;
+	private final Collection<String> imageURLs;
+	@NoExpose
+	private final Collection<PhotoItem> images;
 	@NoExpose
 	private final Collection<Integer> attendees;
 	@NoExpose
@@ -32,7 +34,7 @@ public class EventDetail {
 	@NoExpose
 	private ArrayList<UserInfoListener> eventList;
 	@NoExpose
-	private final Collection<EventDetailPageItem> stories;
+	private final Collection<EventItem> stories;
 	
 	
 	public void addListener(UserInfoListener l) 
@@ -49,26 +51,28 @@ public class EventDetail {
 	{
 		this.user_id = id;
 		this.fomos = new ArrayList<Integer>();
-		this.imageURLs = new ArrayList<EventDetailPageItem>();
+		this.imageURLs = new ArrayList<String>();
 		this.attendees = new ArrayList<Integer>();
-		this.stories = new ArrayList<EventDetailPageItem>();
+		this.stories = new ArrayList<EventItem>();
 		this.name = "";
 		this.start_time = new Date();
 		this.end_time = new Date();
 		this.location = new LocationInfo();
+		this.images = new ArrayList<PhotoItem>();
 	}
 	
 	public EventDetail()
 	{
 		this.user_id = -1;
 		this.fomos = new ArrayList<Integer>();
-		this.imageURLs = new ArrayList<EventDetailPageItem>();
+		this.imageURLs = new ArrayList<String>();
 		this.attendees = new ArrayList<Integer>();
-		this.stories = new ArrayList<EventDetailPageItem>();
+		this.stories = new ArrayList<EventItem>();
 		this.name = "";
 		this.start_time = new Date();
 		this.end_time = new Date();
 		this.location = new LocationInfo();
+		this.images = new ArrayList<PhotoItem>();
 	}
 	
 	public Integer getEventID()
@@ -182,6 +186,14 @@ public class EventDetail {
 	public Date getEndTime()
 	{
 		return this.end_time;
+	}
+
+	public Collection<EventItem> getStories() {
+		return stories;
+	}
+
+	public Collection<PhotoItem> getImages() {
+		return images;
 	}
 	
 	

@@ -1,0 +1,32 @@
+package com.motlee.android.object;
+
+import java.util.Date;
+
+import com.motlee.android.enums.EventDetailPageType;
+
+public class EventItem implements Comparable<EventItem> {
+	
+	public String body;
+	
+	public Integer eventID;
+	
+	public EventItemType type;
+	
+	public Integer userID;
+	
+	public Date timeCreated;
+	
+	public EventItem(Integer eventID, String body, EventDetailPageType type, Integer userID, Date timeCreated)
+	{
+		this.eventID = eventID;
+		this.body = body;
+		this.type = type;
+		this.userID = userID;
+		this.timeCreated = timeCreated;
+	}
+
+	public int compareTo(EventItem item) {
+		
+		return this.timeCreated.compareTo(item.timeCreated);
+	}
+}

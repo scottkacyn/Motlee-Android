@@ -3,12 +3,13 @@
  */
 package com.motlee.android.layouts;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.motlee.android.R;
 import com.motlee.android.adapter.ImageAdapter;
-import com.motlee.android.enums.EventDetailPageType;
-import com.motlee.android.object.EventDetailPageItem;
+import com.motlee.android.enums.EventItemType;
+import com.motlee.android.object.EventItem;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.UserInfoList;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -19,6 +20,7 @@ import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -36,8 +38,25 @@ public class GridListTableLayout extends TableLayout {
 	
 	private final ImageLoader imageDownloader;
 	
-	public GridListTableLayout(Context context) {
+	private Context context;
+	
+	public GridListTableLayout(Context context)
+	{
 		super(context);
+		
+		this.context = context;
+		
+		inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+		
+		imageDownloader = ImageLoader.getInstance();
+    	
+    	imageDownloader.init(ImageLoaderConfiguration.createDefault(context));
+	}
+	
+	public GridListTableLayout(Context context, AttributeSet set) {
+		super(context, set);
+		
+		this.context = context;
 		
 		inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
 		
@@ -46,17 +65,17 @@ public class GridListTableLayout extends TableLayout {
     	imageDownloader.init(ImageLoaderConfiguration.createDefault(context));
 	}
 
-	public void addList(List<EventDetailPageItem> items)
+	public void addList(Collection<EventItem> collection)
 	{
 		this.removeAllViews();
 		
-		for (EventDetailPageItem item : items)
+		for (EventItem item : collection)
 		{
-			View view = inflater.inflate(R.layout.event_detail_page_item, this);
+			View view = this.inflate(context, R.layout.event_detail_page_item, null);
 			
 			setUpStoryPictureHeader(view, item);
 			
-			if (item.type == EventDetailPageType.PICTURE)
+			if (item.type == EventItemType.PICTURE)
 			{
 				TextView textView = (TextView) view.findViewById(R.id.story_picture_story);
 				
@@ -75,16 +94,16 @@ public class GridListTableLayout extends TableLayout {
 				.displayer(new SimpleBitmapDisplayer())
 				.build();
 		    	
-		        imageDownloader.displayImage(item.content, imageView, options);
+		        imageDownloader.displayImage(item.body, imageView, options);
 		        
 		        imageView.setVisibility(View.VISIBLE);
 			}
 			
-			if (item.type == EventDetailPageType.STORY)
+			if (item.type == EventItemType.STORY)
 			{							
 				TextView textView = (TextView) view.findViewById(R.id.story_picture_story);
 				
-				textView.setText(item.content);
+				textView.setText(item.body);
 				
 				ImageView imageView = (ImageView) view.findViewById(R.id.story_picture_picture);
 				
@@ -92,7 +111,7 @@ public class GridListTableLayout extends TableLayout {
 			}
 			
 			TableRow tr = new TableRow(getContext());
-			LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+			LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 			tr.setLayoutParams(lp);
 			
 			tr.addView(view);
@@ -101,7 +120,7 @@ public class GridListTableLayout extends TableLayout {
 		}
 	}
 	
-	private void setUpStoryPictureHeader(View view, EventDetailPageItem item)
+	private void setUpStoryPictureHeader(View view, EventItem item)
 	{
 		ImageView imageView = (ImageView) view.findViewById(R.id.story_picture_profile_pic);
 		
@@ -109,11 +128,12 @@ public class GridListTableLayout extends TableLayout {
 		
 		TextView textView = (TextView) view.findViewById(R.id.story_picture_username);
 		
-		textView.setText(UserInfoList.getInstance().get(item.userID).name);
+		//textView.setText(UserInfoList.getInstance().get(item.user_id).name);
+		
+		textView.setText("");
 		
 		textView = (TextView) view.findViewById(R.id.story_picture_time);
 		
-		textView.setText(item.timeCreated.toString());
+		textView.setText(item.created_at.toString());
 	}
-	
 }

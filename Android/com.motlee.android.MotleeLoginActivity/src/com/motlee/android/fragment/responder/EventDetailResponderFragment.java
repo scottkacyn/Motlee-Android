@@ -20,11 +20,12 @@ import com.google.gson.reflect.TypeToken;
 
 import com.motlee.android.EventListActivity;
 import com.motlee.android.adapter.EventListAdapter;
+import com.motlee.android.enums.EventItemType;
 import com.motlee.android.enums.Gender;
 import com.motlee.android.event.UserInfoEvent;
 import com.motlee.android.event.UserInfoListener;
 import com.motlee.android.object.EventDetail;
-import com.motlee.android.object.EventDetailList;
+import com.motlee.android.object.EventItem;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.NoExposeExclusionStrategy;
@@ -51,6 +52,7 @@ public class EventDetailResponderFragment extends ResponderFragment {
     
     public static final int eventSuccessCode = 200 + RubyService.EVENT;
     public static final int userSuccessCode = 200 + RubyService.USER;
+    public static final int storySuccessCode = 200 + RubyService.STORY;
     
     private static UserInfoList userInfoList = UserInfoList.getInstance();
     
@@ -66,8 +68,6 @@ public class EventDetailResponderFragment extends ResponderFragment {
         
         // This gets called each time our Activity has finished creating itself.
         setEventList();
-        
-        
     }
 
     private void setEventList() {
@@ -87,7 +87,8 @@ public class EventDetailResponderFragment extends ResponderFragment {
             // we could have just used Uri.Builder and appendQueryParameter()
             // here, but I wanted to illustrate how to use the Bundle params.
             intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, getResultReceiver());
-            
+            intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
+            intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.EVENT);
             // Here we send our Intent to our RESTService.
             activity.startService(intent);
         }
@@ -103,6 +104,27 @@ public class EventDetailResponderFragment extends ResponderFragment {
                 adapter.add(eventID);
             }
         }
+    }
+    
+    private void setStoriesForEvent(int eventID)
+    {
+    	EventListActivity activity = (EventListActivity) getActivity();
+    	
+        Intent intent = new Intent(activity, RubyService.class);
+        
+        String uri = "http://dev.motleeapp.com/events/" + eventID + "/stories.json";
+        
+        intent.setData(Uri.parse(uri));
+        
+        // Here we are going to place our REST call parameters. Note that
+        // we could have just used Uri.Builder and appendQueryParameter()
+        // here, but I wanted to illustrate how to use the Bundle params.
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, getResultReceiver());
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.STORY);
+        
+        // Here we send our Intent to our RESTService.
+        activity.startService(intent);
     }
     
     @Override
@@ -124,6 +146,10 @@ public class EventDetailResponderFragment extends ResponderFragment {
         {
         	getUserInfoFromJson(result);
         }
+        else if (code == storySuccessCode && result != null)
+        {
+        	getStoryInfoFromJson(result);
+        }
         else {
             Activity activity = getActivity();
             if (activity != null) {
@@ -132,7 +158,49 @@ public class EventDetailResponderFragment extends ResponderFragment {
         }
     }
     
-    private static void getUserInfoFromJson(String json)
+    private void getStoryInfoFromJson(String json) {
+		Gson gson = new Gson();
+		
+    	JsonParser parser = new JsonParser();
+    	
+    	JsonArray array = new JsonArray();
+    	
+    	if (json.length() > 0)
+    	{
+    	
+    		array = parser.parse(json).getAsJsonArray();
+    		
+    		Log.d(TAG, array.toString());
+    	}
+		
+    	for (JsonElement element : array)
+    	{
+    		EventItem story = gson.fromJson(element, StoryHolder.class).story;
+    		
+    		story.type = EventItemType.STORY;
+    		
+    		for (EventItem comment : story.comments)
+    		{
+    			comment.type = EventItemType.COMMENT;
+    		}
+    		
+    		GlobalEventList.eventDetailMap.get(story.event_id).getStories().add(story);
+    	}
+
+		
+	}
+
+    private class StoryHolder
+    {
+    	public EventItem story;
+    	
+    	public StoryHolder()
+    	{
+    		
+    	}
+    }
+    
+	private static void getUserInfoFromJson(String json)
     {
     	Gson gson = new Gson();
     	
@@ -172,13 +240,15 @@ public class EventDetailResponderFragment extends ResponderFragment {
         	}
         	for (JsonElement element : array)
         	{
-       		    EventDetail eDetail = gson.fromJson(element, EventDetailList.class).getEventDetail();
+       		    EventDetail eDetail = gson.fromJson(element, EventDetailHolder.class).event;
         		
         		GlobalEventList.eventDetailMap.put(eDetail.getEventID(), eDetail);
         		
                 //eDetail.addListener(userListener);
         		
         		eventArrayList.add(eDetail.getEventID());
+        		
+        		setStoriesForEvent(eDetail.getEventID());
         	}
         	
         	/*eventArrayList = new ArrayList<EventDetail>();
@@ -197,6 +267,16 @@ public class EventDetailResponderFragment extends ResponderFragment {
         }
         
         return eventArrayList;
+    }
+    
+    private class EventDetailHolder
+    {
+    	public EventDetail event;
+    	
+    	public EventDetailHolder()
+    	{
+    		
+    	}
     }
     
     private static String getMockJson()

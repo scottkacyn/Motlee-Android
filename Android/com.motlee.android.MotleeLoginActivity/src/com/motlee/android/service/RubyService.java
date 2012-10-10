@@ -39,6 +39,7 @@ public class RubyService extends IntentService {
     
     public static final int EVENT = 1;
     public static final int USER = 2;
+    public static final int STORY = 3;
     
     public static final String EXTRA_HTTP_VERB       = "com.motlee.android.EXTRA_HTTP_VERB";
     public static final String EXTRA_PARAMS          = "com.motlee.android.EXTRA_PARAMS";

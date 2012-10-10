@@ -15,4 +15,8 @@
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="com.motlee.android.event.UserInfoEvent"/>
 <fullyQualifiedTypeName name="com.motlee.android.event.UserInfoListener"/>
+<fullyQualifiedTypeName name="com.motlee.android.enums.EventItemType"/>
+<fullyQualifiedTypeName name="com.motlee.android.R.id"/>
+<fullyQualifiedTypeName name="com.motlee.android.layouts.GridListTableLayout"/>
+<fullyQualifiedTypeName name="android.util.AttributeSet"/>
 </qualifiedTypeNameHistroy>

@@ -1,0 +1,67 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" 
+    android:background="@color/background"
+    android:orientation="vertical">
+    
+    <LinearLayout android:id="@+id/story_picture_header"
+        android:baselineAligned="false"
+        android:layout_width="fill_parent"
+        android:layout_height="65dp"
+        android:background="@color/background"
+        android:weightSum="1.0">
+        
+       <ImageView
+          	android:id="@+id/story_picture_profile_pic"
+  			android:layout_width="0dp"
+  			android:layout_weight=".20"
+  			android:layout_height="45dp"
+  			android:contentDescription="Profile Pic"
+  			android:background="#ddd" />
+        
+        <LinearLayout android:id="@+id/story_picture_title"
+            android:layout_width="0dp"
+            android:layout_weight=".80"
+            android:layout_height="45dp"
+            android:orientation="vertical">
+	        <TextView android:id="@+id/story_picture_username"
+	            android:layout_height="wrap_content"
+	            android:layout_width="wrap_content"
+	            style="@style/CodeFont.Small"
+	            android:padding="3dp"
+	            android:gravity="center" /> 
+	            
+	        <TextView android:id="@+id/story_picture_time"
+				android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            style="@style/CodeFont.Tiny"
+	            android:padding="3dp"/>     
+            
+        </LinearLayout>
+
+            
+    </LinearLayout>
+    
+    <LinearLayout android:id="@+id/event_footer"
+        android:layout_width="fill_parent"
+        android:layout_height="185dp"
+        android:background="@color/background"
+        >
+        
+        <ImageView android:id="@+id/story_picture_picture"
+			android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="3dp"
+            android:contentDescription="Event Detail Picture"/>
+        
+        
+        <TextView android:id="@+id/story_picture_story"
+			android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/CodeFont"
+            android:paddingRight="3dp"/>
+                    
+    </LinearLayout>
+
+</LinearLayout>
