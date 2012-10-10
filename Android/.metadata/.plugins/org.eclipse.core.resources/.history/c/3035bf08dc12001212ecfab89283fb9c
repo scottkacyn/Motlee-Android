@@ -1,0 +1,76 @@
+package com.motlee.android.fragment;
+
+import com.motlee.android.R;
+import com.motlee.android.adapter.EventListAdapter;
+import com.motlee.android.object.EventListParams;
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+public class EventDetailFragment extends Fragment {
+	private String tag = "EventListFragment";
+	
+	private EventListAdapter mEventListAdapter;
+	
+	private String pageTitle = "All Events";
+	
+	private Boolean onCreateViewHasBeenCalled = false;
+	
+	/*@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+	    String[] links = getResources().getStringArray(R.array.tut_links);
+	    String content = links[position];
+	    Intent showContent = new Intent(getActivity().getApplicationContext(),
+	            TutViewerActivity.class);
+	    showContent.setData(Uri.parse(content));
+	    startActivity(showContent);
+	}*/
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+	    super.onCreate(savedInstanceState);
+	    Log.w(tag, "onCreate");
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+		
+		Log.w(tag, "onCreateView");
+		View view = (View) getActivity().getLayoutInflater().inflate(R.layout.activity_event_list, null);
+		
+		setAdapter(mEventListAdapter);
+		
+		TextView tv = (TextView) view.findViewById(R.id.header_textView);
+		tv.setText(pageTitle);
+		
+		onCreateViewHasBeenCalled = true;
+		
+		return view;
+	}
+
+	public void addEventListAdapter(EventListAdapter eAdapter) {
+		Log.w(tag, "addEventListAdapter");
+		mEventListAdapter = eAdapter;
+	}
+	
+	public void setEventListParams(EventListParams params)
+	{
+		this.pageTitle = params.headerText;
+		
+		if (onCreateViewHasBeenCalled)
+		{
+			TextView view = (TextView) getActivity().findViewById(R.id.header_textView);
+			
+			if (view != null)
+			{
+				view.setText(pageTitle);
+			}
+		}
+	}
+}

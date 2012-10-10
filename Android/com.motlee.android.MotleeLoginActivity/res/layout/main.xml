@@ -5,21 +5,20 @@
 	android:id="@+id/main_frame_layout" >
 	   
     
-     <fragment 
-         class="com.motlee.android.fragment.EventListFragment"
+     <LinearLayout 
           android:id="@+id/fragment_content"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
           android:layout_gravity="center" />
 		
-     <fragment
-          class="com.motlee.android.fragment.MainMenuFragment"
+     <LinearLayout
           android:id="@+id/main_menu"
           android:layout_width="100dp"
           android:layout_height="fill_parent"
           android:layout_gravity="left"
-          android:background="@color/background">
-      </fragment>
+          android:background="@color/background"
+          android:visibility="gone">
+      </LinearLayout>
      
       <LinearLayout
           android:id="@+id/plus_menu"

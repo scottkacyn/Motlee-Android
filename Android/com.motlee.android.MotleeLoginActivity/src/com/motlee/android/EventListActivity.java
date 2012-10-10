@@ -54,7 +54,7 @@ public class EventListActivity extends FragmentActivity {
         FragmentManager     fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         
-        Fragment fragment = fm.findFragmentById(R.id.fragment_content);
+        //Fragment fragment = fm.findFragmentById(R.id.fragment_content);
         
         EventListFragment eventListFragment = new EventListFragment();
         
@@ -66,13 +66,13 @@ public class EventListActivity extends FragmentActivity {
         
         eventListFragment.setEventListParams(eventListParams);
         
-        ft.replace(R.id.fragment_content, eventListFragment);
+        ft.add(R.id.fragment_content, eventListFragment);
         
-        fragment = fm.findFragmentById(R.id.main_menu);
+        //fragment = fm.findFragmentById(R.id.main_menu);
         
-        MainMenuFragment mainMenuFragment = (MainMenuFragment) fragment;
+        //MainMenuFragment mainMenuFragment = (MainMenuFragment) fragment;
         
-        ft.hide(mainMenuFragment);
+        //ft.hide(mainMenuFragment);
         
         EventDetailResponderFragment responder = (EventDetailResponderFragment) fm.findFragmentByTag(EVENT_RESPONDER);
         if (responder == null) {
@@ -99,14 +99,21 @@ public class EventListActivity extends FragmentActivity {
         FragmentManager     fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         
-        MainMenuFragment mainMenuFragment = (MainMenuFragment) fm.findFragmentById(R.id.main_menu);
+        Fragment fragment = fm.findFragmentById(R.id.main_menu);
     	
-        if (mainMenuFragment == null)
+        if (fragment == null)
         {
-        	mainMenuFragment = new MainMenuFragment();
+        	fragment = new MainMenuFragment();
+        	
+        	ft.add(R.id.main_menu, fragment);
         }
+        else
+        {
+        	ft.show(fragment);
+        }
+        View menuView = findViewById(R.id.main_menu);
         
-        ft.show(mainMenuFragment);
+        menuView.setVisibility(View.VISIBLE);
         
         View contentPage = findViewById(R.id.main_frame_layout);
         
@@ -131,6 +138,8 @@ public class EventListActivity extends FragmentActivity {
 			        }
 			        
 			        ft.hide(mainMenuFragment);
+			        
+			        hideMenu();
 			        
 			        ft.commit();
 				}
@@ -163,6 +172,8 @@ public class EventListActivity extends FragmentActivity {
 		
 		showNewListView(newParams);
 		
+		hideMenu();
+		
 		showMenuButton();
 	}
 	
@@ -171,6 +182,8 @@ public class EventListActivity extends FragmentActivity {
 		EventListParams newParams = new EventListParams("My Events");
 		
 		showNewListView(newParams);
+		
+		hideMenu();
 		
 		showMenuButton();
 	}
@@ -181,7 +194,16 @@ public class EventListActivity extends FragmentActivity {
 		
 		showNewListView(newParams);
 		
+		hideMenu();
+		
 		showMenuButton();
+	}
+	
+	private void hideMenu()
+	{
+        View menuView = findViewById(R.id.main_menu);
+        
+        menuView.setVisibility(View.GONE);
 	}
 	
 	private void showMenuButton()

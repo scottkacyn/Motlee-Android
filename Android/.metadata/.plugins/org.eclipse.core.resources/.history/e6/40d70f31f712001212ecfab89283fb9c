@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    <include layout="@layout/header" />
+    <ScrollView
+        android:id="@+id/event_detail_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+        <LinearLayout 
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+            <Button
+                android:id="@+id/event_detail_time_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" 
+                android:background="@drawable/event_detail_button_mid"
+                style="@style/CodeFont.Label"
+                android:text=""/>
+            <Button
+                android:id="@+id/event_detail_location_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" 
+                android:background="@drawable/event_detail_button_mid"
+                style="@style/CodeFont.Label"/>
+            <Button
+                android:id="@+id/event_detail_people_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" 
+                android:background="@drawable/event_detail_button_mid"
+                style="@style/CodeFont.Label"/>
+            <Button
+                android:id="@+id/event_detail_fomos_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" 
+                android:background="@drawable/event_detail_button_mid"
+                style="@style/CodeFont.Label"/>
+		    <com.motlee.android.layouts.GridListTableLayout
+		        android:id="@+id/event_detail_grid_list"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:shrinkColumns="*">
+		        
+		    </com.motlee.android.layouts.GridListTableLayout>
+	    </LinearLayout>
+    </ScrollView>
+</LinearLayout>
