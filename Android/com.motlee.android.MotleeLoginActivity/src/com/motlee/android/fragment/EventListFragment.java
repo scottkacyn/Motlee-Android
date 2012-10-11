@@ -8,16 +8,23 @@ import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventListParams;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class EventListFragment extends ListFragment {
@@ -29,6 +36,8 @@ public class EventListFragment extends ListFragment {
 	private String pageTitle = "All Events";
 	
 	private Boolean onCreateViewHasBeenCalled = false;
+	
+	private Typeface gothamLightFont;
 	
 	/*@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
@@ -43,6 +52,8 @@ public class EventListFragment extends ListFragment {
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    Log.w(tag, "onCreate");
+	    
+	    gothamLightFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/gotham_light.ttf");
 	}
 	
 	@Override
@@ -56,6 +67,7 @@ public class EventListFragment extends ListFragment {
 		setListAdapter(mEventListAdapter);
 		
 		TextView tv = (TextView) view.findViewById(R.id.header_textView);
+		tv.setTypeface(gothamLightFont);
 		tv.setText(pageTitle);
 		
 		onCreateViewHasBeenCalled = true;

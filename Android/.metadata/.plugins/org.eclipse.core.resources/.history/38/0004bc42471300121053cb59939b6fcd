@@ -1,0 +1,72 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <merge 
+	  	<ImageView 
+			android:layout_width="fill_parent" 
+			android:layout_height="fill_parent"
+			android:src="@drawable/header_background" 
+			android:contentDescription="background"
+			android:scaleType="fitCenter"  />
+	    
+	    <RelativeLayout android:id="@+id/top_header"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        >
+	        
+	        <ImageButton android:id="@+id/header_left_button"
+	        	android:visibility="gone"
+	        	android:layout_height="wrap_content"
+	        	android:maxHeight="30dp"
+	        	android:layout_width="0dp"
+	        	android:src="@drawable/header_left_button"
+	        	android:layout_alignParentLeft="true"
+	        	android:contentDescription="header_left_button" />
+	        
+	        <ImageView android:id="@+id/logo"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:adjustViewBounds="true"
+	            android:src="@drawable/header_logo"
+	            android:layout_centerInParent="true"
+	            android:contentDescription="Logo"
+	            />
+	        
+	        <Button android:id="@+id/header_right_button"
+	        	android:visibility="gone"
+	        	android:layout_height="wrap_content"
+	        	android:padding="3dp"
+	        	android:height="30dp"
+	        	android:layout_width="0dp"
+	        	android:layout_alignParentRight="true"
+	        	android:background="@drawable/header_right_button"
+	        	 />
+	                    
+	    </RelativeLayout>
+    </merge>
+    <merge 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        
+        <ImageView 
+			android:layout_width="fill_parent" 
+			android:layout_height="fill_parent"
+			android:src="@drawable/header_bottom_background" 
+			android:contentDescription="background"
+			android:scaleType="fitCenter" />
+        
+	    <LinearLayout android:layout_width="fill_parent"
+	        android:layout_height="wrap_content" >
+	        <TextView android:id="@+id/header_textView" 
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            style="@style/CodeFont"
+	            android:paddingLeft="3dp"
+	            />
+	        
+	    </LinearLayout>
+    </merge>
+</LinearLayout>

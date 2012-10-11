@@ -11,6 +11,7 @@ import com.motlee.android.layouts.GridListTableLayout;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventListParams;
+import com.motlee.android.object.GlobalVariables;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -18,10 +19,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class EventDetailFragment extends Fragment {
 	private String tag = "EventDetailFragment";
+	
+	private static final String JOIN = "Join";
+	private static final String EDIT = "Edit";
+	private static final String LEAVE = "Leave";
 	
 	private EventDetail mEventDetail;
 	
@@ -70,6 +76,12 @@ public class EventDetailFragment extends Fragment {
 		
 		TextView tv = (TextView) view.findViewById(R.id.header_textView);
 		tv.setText(pageTitle);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		
+		Button button = (Button) view.findViewById(R.id.header_right_button);
+		button.setText(JOIN);
+		button.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		button.setVisibility(View.VISIBLE);
 		
 		onCreateViewHasBeenCalled = true;
 		
@@ -93,7 +105,7 @@ public class EventDetailFragment extends Fragment {
 	
 	private void setNavigationButtons()
 	{
-		TextView textView = (TextView) view.findViewById(R.id.event_detail_time_button);
+		/*TextView textView = (TextView) view.findViewById(R.id.event_detail_time_button);
 		
 		textView.setText(mEventDetail.getDateString());
 		textView.setPadding(15, 0, 0, 0);
@@ -116,10 +128,10 @@ public class EventDetailFragment extends Fragment {
 		textView = (TextView) view.findViewById(R.id.event_detail_picture_text);
 		
 		textView.setText(mEventDetail.getImages().size() + " Pics");
-		textView.setPadding(15, 0, 0, 0);
+		textView.setPadding(15, 0, 0, 0);*/
 	}
 	
-	private void addListToTableLayout()
+	public void addListToTableLayout()
 	{
 		List<EventItem> storyPhotoList = new ArrayList<EventItem>();
 		
@@ -130,6 +142,11 @@ public class EventDetailFragment extends Fragment {
 		Collections.sort(storyPhotoList);
 		
 		layout.addList(storyPhotoList);
+	}
+	
+	public void addGridToTableLayout()
+	{
+		layout.addGrid(mEventDetail.getImages());
 	}
 	
 	public void setEventDetailParams(EventListParams params)

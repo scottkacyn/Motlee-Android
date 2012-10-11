@@ -13,9 +13,12 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
+import android.widget.ImageButton;
 
 public class EventDetailActivity extends FragmentActivity {
 
+	private FragmentTransaction ft;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +30,7 @@ public class EventDetailActivity extends FragmentActivity {
         EventDetail eDetail = GlobalEventList.eventDetailMap.get(intent.getExtras().get("EventID"));
         
         FragmentManager     fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
+        ft = fm.beginTransaction();
         
         //Fragment fragment = fm.findFragmentById(R.id.fragment_content);
         
@@ -43,4 +46,33 @@ public class EventDetailActivity extends FragmentActivity {
         //eDetail.get
     }
 	
+    public void switchToGridView(View view)
+    {
+    	EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
+    	
+    	fragment.addGridToTableLayout();
+    	
+    	/*ImageButton button = (ImageButton) findViewById(R.id.event_detail_picture_gridview);
+    	
+    	button.setImageResource(R.drawable.event_detail_picture_gridview_on);
+    	
+    	button = (ImageButton) findViewById(R.id.event_detail_picture_listview);
+    	
+    	button.setImageResource(R.drawable.event_detail_picture_listview);*/
+    }
+    
+    public void switchToListView(View view)
+    {
+    	EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
+    	
+    	fragment.addListToTableLayout();
+    	
+    	/*ImageButton button = (ImageButton) findViewById(R.id.event_detail_picture_listview);
+    	
+    	button.setImageResource(R.drawable.event_detail_picture_listview_on);
+    	
+    	button = (ImageButton) findViewById(R.id.event_detail_picture_gridview);
+    	
+    	button.setImageResource(R.drawable.event_detail_picture_gridview);*/
+    }
 }

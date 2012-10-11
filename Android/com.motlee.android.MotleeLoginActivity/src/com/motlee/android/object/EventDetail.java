@@ -114,6 +114,12 @@ public class EventDetail {
 		}
 	}
 	
+	//TODO: Destroy this once UserInfoList is connected to web
+	public int getOwnerID()
+	{
+		return user_id;
+	}
+	
 	public int getLocationID()
 	{
 		return this.location_id;

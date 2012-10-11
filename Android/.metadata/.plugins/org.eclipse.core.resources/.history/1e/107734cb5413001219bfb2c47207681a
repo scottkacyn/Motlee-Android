@@ -1,0 +1,41 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:layout_weight="1"
+	android:id="@+id/main_frame_layout" >
+	   
+    
+     <LinearLayout 
+          android:id="@+id/fragment_content"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_gravity="center" />
+		
+     <LinearLayout
+          android:id="@+id/main_menu"
+          android:layout_width="100dp"
+          android:layout_height="fill_parent"
+          android:layout_gravity="left"
+          android:background="@color/background"
+          android:visibility="gone">
+      </LinearLayout>
+     
+      <LinearLayout
+          android:id="@+id/plus_menu"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:visibility="gone"
+          android:gravity="right"
+          android:background="@color/background">
+      </LinearLayout>
+     
+      <ImageButton
+          android:id="@+id/menu_button"
+          android:layout_gravity="bottom|left"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:width="60dp"
+          android:src="main_menu_button"
+          android:onClick="onClickOpenMainMenu" />
+     
+</FrameLayout>

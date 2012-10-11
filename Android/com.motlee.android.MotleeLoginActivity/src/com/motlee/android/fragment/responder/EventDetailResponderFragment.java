@@ -29,6 +29,7 @@ import com.motlee.android.object.EventItem;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.NoExposeExclusionStrategy;
+import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.UserInfoList;
 import com.motlee.android.service.RubyService;
@@ -242,6 +243,15 @@ public class EventDetailResponderFragment extends ResponderFragment {
         	{
        		    EventDetail eDetail = gson.fromJson(element, EventDetailHolder.class).event;
         		
+       		    eDetail.getImages().clear();
+       		    
+       		    for (int i = 0; i < URLS.length; i++)
+       		    {
+       		    	PhotoItem photo = new PhotoItem(eDetail.getEventID(), "Hot Tits!", EventItemType.PICTURE, eDetail.getOwnerID(), new Date(), URLS[i]);
+       		    	
+       		    	eDetail.getImages().add(photo);
+       		    }
+       		    
         		GlobalEventList.eventDetailMap.put(eDetail.getEventID(), eDetail);
         		
                 //eDetail.addListener(userListener);

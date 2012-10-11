@@ -1,0 +1,98 @@
+package com.motlee.android.layouts;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
+import android.view.Display;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.View.MeasureSpec;
+import android.widget.RelativeLayout;
+
+public class RatioBackgroundRelativeLayout extends RelativeLayout {
+
+	private Integer layout_height = -10000;
+	
+	public RatioBackgroundRelativeLayout(Context context) {
+		super(context);
+		// TODO Auto-generated constructor stub
+	}
+
+	public RatioBackgroundRelativeLayout(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		// TODO Auto-generated constructor stub
+	}
+
+	public RatioBackgroundRelativeLayout(Context context, AttributeSet attrs,
+			int defStyle) {
+		super(context, attrs, defStyle);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void setBackgroundDrawable(Drawable drawable)
+	{		
+		super.setBackgroundDrawable(scaleBackgroundImage(drawable));
+	}
+	
+	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec){
+
+	     //At this time we need to call setMeasuredDimensions(). Lets just
+	     //call the parent View's method
+	     //(see https://github.com/android/platform_frameworks_base/blob/master/core/java/android/view/View.java)
+	     //that does:
+	     //setMeasuredDimension(getDefaultSize(
+	     //                       getSuggestedMinimumWidth(), widthMeasureSpec),
+	     //                    getDefaultSize(
+	     //                       getSuggestedMinimumHeight(), heightMeasureSpec));
+	     //		
+
+	      super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+	      int wspec = MeasureSpec.makeMeasureSpec(
+	                  getMeasuredWidth()/getChildCount(), MeasureSpec.EXACTLY);
+	      int hspec = MeasureSpec.makeMeasureSpec(
+	                  getMeasuredHeight(), MeasureSpec.EXACTLY);
+	      for(int i=0; i<getChildCount(); i++){
+	         View v = getChildAt(i);
+	         v.measure(wspec, hspec);
+	      }
+	}
+	
+	@Override
+	public void setLayoutParams(ViewGroup.LayoutParams params)
+	{
+		if (layout_height != -10000)
+		{
+			params.height = layout_height;
+		}
+		super.setLayoutParams(params);
+	}
+	
+	// Scale image preserving Aspect Ratio to the screen's width
+	
+	private Drawable scaleBackgroundImage(Drawable drawable)
+	{
+		Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+		
+		WindowManager window = (WindowManager) getContext().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+		
+		Display display = window.getDefaultDisplay(); 
+		int width = display.getWidth(); 
+		
+		float scaleFactor = ((float) width) / bitmap.getWidth();
+
+		Matrix scale = new Matrix();
+		scale.postScale(scaleFactor, scaleFactor);
+		
+		layout_height = (int)((float) bitmap.getHeight()) * scaleFactor;
+		
+		Drawable d = new BitmapDrawable(getResources(), Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), scale, false));
+		
+		return d;
+	}
+}

@@ -6,10 +6,13 @@ import java.util.Collection;
 import com.motlee.android.R;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalEventList;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.view.HorizontalListView;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -135,30 +138,38 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
                 TextView tv = (TextView)viewElement;
                 // set the value
                 tv.setText(item.getEventName());
+                tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
                 
                 viewElement = view.findViewById(R.id.event_header_time);
                 tv = (TextView)viewElement;
                 tv.setText(item.getDateString());
-                
-                viewElement = view.findViewById(R.id.fomo_button);
-                tv = (TextView)viewElement;
-                tv.setText("FOMOs");
+                tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
                 
                 viewElement = view.findViewById(R.id.fomo_count);
                 tv = (TextView)viewElement;
                 tv.setText(Integer.toString(item.getFomos().size()));
+                tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
                 
                 viewElement = view.findViewById(R.id.event_footer_owner);
                 tv = (TextView)viewElement;
                 tv.setText(item.getEventOwnerSummaryString());
+                tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
                 
                 viewElement = view.findViewById(R.id.event_footer_location);
                 tv = (TextView)viewElement;
                 tv.setText(item.getLocationInfo().locationDescription);
+                tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
                 
                 viewElement = view.findViewById(R.id.listview);
                 HorizontalListView hlv = (HorizontalListView) viewElement;
-                imageAdapter.setURLs(item.getImageURLs());
+                
+                ArrayList<String> imageURLs = new ArrayList<String>();
+                for (PhotoItem photo : item.getImages())
+                {
+                	imageURLs.add(photo.url);
+                }
+                
+                imageAdapter.setURLs(imageURLs);
                 hlv.setAdapter(imageAdapter);
                 
                 // return the final view object

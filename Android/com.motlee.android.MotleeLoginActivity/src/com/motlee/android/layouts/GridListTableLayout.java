@@ -3,6 +3,7 @@
  */
 package com.motlee.android.layouts;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import com.motlee.android.adapter.ImageAdapter;
 import com.motlee.android.enums.EventItemType;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.GlobalEventList;
+import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.UserInfoList;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -94,7 +96,7 @@ public class GridListTableLayout extends TableLayout {
 				.displayer(new SimpleBitmapDisplayer())
 				.build();
 		    	
-		        imageDownloader.displayImage(item.body, imageView, options);
+		        imageDownloader.displayImage(((PhotoItem)item).url, imageView, options);
 		        
 		        imageView.setVisibility(View.VISIBLE);
 			}
@@ -108,6 +110,8 @@ public class GridListTableLayout extends TableLayout {
 				ImageView imageView = (ImageView) view.findViewById(R.id.story_picture_picture);
 				
 				imageView.setVisibility(View.GONE);
+				
+				textView.setVisibility(View.VISIBLE);
 			}
 			
 			TableRow tr = new TableRow(getContext());
@@ -135,5 +139,47 @@ public class GridListTableLayout extends TableLayout {
 		textView = (TextView) view.findViewById(R.id.story_picture_time);
 		
 		textView.setText(item.created_at.toString());
+	}
+
+	public void addGrid(Collection<PhotoItem> images) {
+		
+		this.removeAllViews();
+		
+		PhotoItem[] imageArray = (PhotoItem[])images.toArray(new PhotoItem[images.size()]);
+		
+		TableRow tr = new TableRow(context);
+		
+		for (int i = 0; i < imageArray.length; i++)
+		{
+			if (i%3 == 0)
+			{
+				tr = new TableRow(context);
+			}
+			
+			LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+			tr.setLayoutParams(lp);
+			
+			ImageView view = new ImageView(context);
+			
+      		ImageScaleType ist = ImageScaleType.EXACTLY;
+	    	
+			DisplayImageOptions options = new DisplayImageOptions.Builder()
+			.showStubImage(R.drawable.stubimage)
+			.resetViewBeforeLoading()
+			.cacheInMemory()
+			.imageScaleType(ist)
+			.cacheOnDisc()
+			.displayer(new SimpleBitmapDisplayer())
+			.build();
+	    	
+	        imageDownloader.displayImage(imageArray[i].url, view, options);		
+	        
+			tr.addView(view);
+			
+			if (i%3 == 2 || images.size() - 1 == i)
+			{
+				this.addView(tr);
+			}
+		}
 	}
 }

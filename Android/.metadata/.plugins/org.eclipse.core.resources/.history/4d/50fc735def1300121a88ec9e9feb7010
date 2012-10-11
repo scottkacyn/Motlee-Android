@@ -1,0 +1,196 @@
+package com.motlee.android.adapter;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
+import com.motlee.android.R;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.GlobalEventList;
+import com.motlee.android.object.UserInfo;
+import com.motlee.android.view.HorizontalListView;
+
+import android.content.Context;
+import android.graphics.Typeface;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ImageButton;
+import android.widget.TextView;
+
+public class EventListAdapter extends ArrayAdapter<Integer> {
+	
+	private String tag = "EventListAdapter";
+        // store the context (as an inflated layout)
+        private LayoutInflater inflater;
+        // store the resource (typically list_item.xml)
+        private int resource;
+        
+        private final ImageAdapter imageAdapter;
+        
+        // store (a reference to) the data
+        private ArrayList<Integer> data = new ArrayList<Integer>();
+        
+        private Typeface gothamLightFont;
+        
+        /**
+         * Default constructor. Creates the new Adaptor object to
+         * provide a ListView with data.
+         * @param context
+         * @param resource
+         * @param data
+         */
+        public EventListAdapter(Context context, int resource, ArrayList<Integer> data) {
+        	    super(context, resource, data);
+            	Log.w(tag, "constructor");
+                this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                this.resource = resource;
+                this.data.addAll(data);
+                imageAdapter = new ImageAdapter(context, R.layout.thumbnail);
+                gothamLightFont = Typeface.createFromAsset(context.getAssets(), "fonts/gotham_light.ttf");
+        }
+
+        
+        public Collection<Integer> getData()
+        {
+        	return this.data;
+        }
+        
+        /**
+         * Return the size of the data set.
+         */
+        public int getCount() {
+                return this.data.size();
+        }
+        
+        /**
+         * Return an object in the data set.
+         */
+        public Integer getItem(int position) {
+                return this.data.get(position);
+        }
+        
+        /**
+         * Return the position provided.
+         */
+        public long getItemId(int position) {
+                return position;
+        }
+
+        public void add(Integer eventID)
+        {
+        	Log.w(tag, "add");
+        	this.data.add(eventID);
+        	this.notifyDataSetChanged();
+        }
+        
+        public void clear()
+        {
+        	Log.w(tag, "clear");
+        	this.data.clear();
+        	this.notifyDataSetChanged();
+        }
+        
+        /**
+         * Return a generated view for a position.
+         */
+        public View getView(int position, View convertView, ViewGroup parent) {
+        	Log.w(tag, "getView: position, " + position + ", convertView, " + convertView + ", parent: " + parent);
+                // reuse a given view, or inflate a new one from the xml
+                View view;
+                 
+                if (convertView == null) {
+                	Log.w(tag, "inflating resource: " + resource);
+                        view = this.inflater.inflate(resource, parent, false);
+                } else {
+                        view = convertView;
+                }
+                
+                // bind the data to the view object
+                return this.bindData(view, position);
+        }
+        
+        /**
+         * Bind the provided data to the view.
+         * This is the only method not required by base adapter.
+         */
+        public View bindData(View view, int position) {
+        	
+        	Log.w(tag, "bindData");
+                // make sure it's worth drawing the view
+                if (this.data.get(position) == null) {
+                        return view;
+                }
+                
+                // pull out the object
+                EventDetail item = GlobalEventList.eventDetailMap.get(this.data.get(position));
+                
+                ImageButton button = (ImageButton) view.findViewById(R.id.get_event_detail);
+                
+                CharSequence charSequence = Integer.toString(item.getEventID());
+                
+                button.setContentDescription(charSequence);
+                
+                // extract the view object
+                View viewElement = view.findViewById(R.id.event_header_name);
+                // cast to the correct type
+                TextView tv = (TextView)viewElement;
+                // set the value
+                tv.setText(item.getEventName());
+                tv.setTypeface(gothamLightFont);
+                
+                viewElement = view.findViewById(R.id.event_header_time);
+                tv = (TextView)viewElement;
+                tv.setText(item.getDateString());
+                tv.setTypeface(gothamLightFont);
+                
+                viewElement = view.findViewById(R.id.fomo_count);
+                tv = (TextView)viewElement;
+                tv.setText(Integer.toString(item.getFomos().size()));
+                tv.setTypeface(gothamLightFont);
+                
+                viewElement = view.findViewById(R.id.event_footer_owner);
+                tv = (TextView)viewElement;
+                tv.setText(item.getEventOwnerSummaryString());
+                tv.setTypeface(gothamLightFont);
+                
+                viewElement = view.findViewById(R.id.event_footer_location);
+                tv = (TextView)viewElement;
+                tv.setText(item.getLocationInfo().locationDescription);
+                tv.setTypeface(gothamLightFont);
+                
+                viewElement = view.findViewById(R.id.listview);
+                HorizontalListView hlv = (HorizontalListView) viewElement;
+                imageAdapter.setURLs(item.getImageURLs());
+                hlv.setAdapter(imageAdapter);
+                
+                // return the final view object
+                return view;
+        }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

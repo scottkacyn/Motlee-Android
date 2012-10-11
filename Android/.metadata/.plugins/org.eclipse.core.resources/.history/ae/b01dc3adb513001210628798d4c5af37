@@ -1,0 +1,7 @@
+package com.motlee.android.layouts;
+
+import android.widget.LinearLayout;
+
+public class RatioBackgroundLinearLayout extends LinearLayout {
+
+}

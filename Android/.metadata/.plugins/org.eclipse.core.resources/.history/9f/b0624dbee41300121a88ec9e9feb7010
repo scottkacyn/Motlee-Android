@@ -1,0 +1,68 @@
+package com.motlee.android.view;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
+import android.view.Display;
+import android.view.WindowManager;
+import android.widget.ImageButton;
+
+public class HorizontalAspectImageButton extends ImageButton {
+
+	private Drawable drawable;
+	
+	public HorizontalAspectImageButton(Context context) {
+		super(context);
+		// TODO Auto-generated constructor stub
+	}
+
+	public HorizontalAspectImageButton(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		// TODO Auto-generated constructor stub
+	}
+
+	public HorizontalAspectImageButton(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+		// TODO Auto-generated constructor stub
+	}
+	
+	/* Overriding onMeasure() because the current work flow pulls in the image
+	 * uses that image size as a view size requirement. So if the width is constricted 
+	 * by the parent but the height is not, the imageButton will be squished. This way
+	 * we get the specific width requested from the parent and set the image then. 
+	 * onMeasure will return a width that is required and height that is calculated from
+	 * the scaled image.
+	 */
+	
+	@Override
+	public void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
+	{
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		
+		Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+		
+		int width = widthMeasureSpec;
+		
+		float scaleFactor = ((float) width) / bitmap.getWidth();
+
+		Matrix scale = new Matrix();
+		scale.postScale(scaleFactor, scaleFactor);
+		
+		heightMeasureSpec = (int)(((float) bitmap.getHeight()) * scaleFactor);
+		
+		Drawable d = new BitmapDrawable(getResources(), Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), scale, false));
+		
+		return d;
+	}
+	
+	@Override
+	public void setImageDrawable(Drawable drawable)
+	{
+		this.drawable = drawable;
+		return;
+	}
+	
+}

@@ -12,3 +12,10 @@
 1349889395647	Rename resource 'event_detail_picture_gridview.png'
 1349889417341	Delete element
 1349889491929	Rename resource 'event_detail_picture_listview.png'
+1349918830768	Delete element
+1349919090134	Delete element
+1349922729038	Delete element
+1349982998168	Delete element
+1349987819288	Rename type 'AspectImageButton'
+1349995198745	Encapsulate field 'helveticaNeueRegularFont'
+1349995204638	Encapsulate field 'helveticaNeueBoldFont'

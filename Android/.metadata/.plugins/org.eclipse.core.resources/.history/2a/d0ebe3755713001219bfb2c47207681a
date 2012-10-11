@@ -1,0 +1,63 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:layout_weight="1"
+	android:id="@+id/main_frame_layout" >
+	   
+    
+     <LinearLayout 
+          android:id="@+id/fragment_content"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_gravity="center" />
+		
+     <LinearLayout
+          android:id="@+id/main_menu"
+          android:layout_width="100dp"
+          android:layout_height="fill_parent"
+          android:layout_gravity="left"
+          android:background="@color/background"
+          android:visibility="gone">
+      </LinearLayout>
+     
+      <LinearLayout
+          android:id="@+id/plus_menu"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:visibility="gone"
+          android:gravity="right"
+          android:background="@color/background">
+      </LinearLayout>
+     
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="bottom"
+          android:weightSum="1">
+          
+	      <ImageButton
+	          android:id="@+id/menu_button"
+	          android:layout_width="0dp"
+	          android:layout_weight="0.25"
+	          android:layout_height="wrap_content"
+	          android:src="@drawable/main_menu_button"
+	          android:background="@android:color/transparent"
+	          android:scaleType="centerInside"
+	          android:onClick="onClickOpenMainMenu" />
+	      
+	      <LinearLayout
+	          android:layout_width="0dp"
+	          android:layout_height="match_parent"
+	          android:layout_weight="0.5"/>
+	      
+	      <ImageButton
+	          android:id="@+id/plus_menu_button"
+	          android:layout_width="0dp"
+	          android:layout_weight="0.25"
+	          android:layout_height="wrap_content"
+	          android:src="@drawable/main_menu_button"
+	          android:background="@android:color/transparent"
+	          android:scaleType="centerInside"
+	          android:onClick="onClickOpenMainMenu" />
+     </LinearLayout>
+</FrameLayout>
