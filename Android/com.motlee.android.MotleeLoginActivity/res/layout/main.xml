@@ -9,7 +9,8 @@
           android:id="@+id/fragment_content"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-          android:layout_gravity="center" />
+          android:layout_gravity="center" 
+          android:background="@android:color/transparent"/>
 		
      <LinearLayout
           android:id="@+id/main_menu"
@@ -29,37 +30,5 @@
           android:background="@color/background">
       </LinearLayout>
      
-      <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_gravity="bottom"
-          android:weightSum="1">
-          
-	      <com.motlee.android.view.HorizontalAspectImageButton
-	          android:id="@+id/menu_button"
-	          android:layout_width="0dp"
-	          android:layout_weight="0.25"
-	          android:layout_height="match_parent"
-	          android:src="@drawable/main_menu_button"
-	          android:background="@android:color/transparent"
-	          android:gravity="left"
-	          android:scaleType="fitCenter"
-	          android:onClick="onClickOpenMainMenu" />
-	      
-	      <LinearLayout
-	          android:layout_width="0dp"
-	          android:layout_height="match_parent"
-	          android:layout_weight="0.5"/>
-	      
-	      <com.motlee.android.view.HorizontalAspectImageButton
-	          android:id="@+id/plus_menu_button"
-	          android:layout_width="0dp"
-	          android:layout_weight="0.25"
-	          android:layout_height="match_parent"
-	          android:src="@drawable/plus_menu_button"
-	          android:background="@android:color/transparent"
-	          android:scaleType="fitCenter"
-	          android:onClick="onClickOpenMainMenu"
-	          android:gravity="right" />
-     </LinearLayout>
+      <include layout="@layout/menu_buttons" />
 </FrameLayout>

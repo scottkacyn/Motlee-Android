@@ -19,3 +19,10 @@
 1349987819288	Rename type 'AspectImageButton'
 1349995198745	Encapsulate field 'helveticaNeueRegularFont'
 1349995204638	Encapsulate field 'helveticaNeueBoldFont'
+1350009466296	Rename resource 'event_detail_item.xml'
+1350009512408	Rename resource 'main.xml'
+1350009588768	Rename resource 'event_detail_main.xml'
+1350009641667	Rename resource 'main.xml'
+1350009661507	Rename resource 'event_list_main.xml'
+1350009700543	Rename resource 'event_detail_main.xml'
+1350009710981	Delete element

@@ -40,8 +40,6 @@ public class EventDetailActivity extends FragmentActivity {
         
         ft.add(R.id.fragment_content, eventDetailFragment);
         
-        findViewById(R.id.menu_button).setVisibility(View.GONE);
-        
         ft.commit();
         //eDetail.get
     }

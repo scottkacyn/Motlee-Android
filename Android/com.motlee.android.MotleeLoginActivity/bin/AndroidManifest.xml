@@ -16,7 +16,7 @@
         <activity
             android:name=".MotleeLoginActivity"
             android:label="@string/title_login_page" 
-            android:theme="@android:style/Theme.NoTitleBar"
+            android:theme="@style/app_theme"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,7 +32,7 @@
         <activity
             android:name=".EventListActivity"
             android:label="@string/title_activity_event_list"
-            android:theme="@android:style/Theme.NoTitleBar"
+            android:theme="@style/app_theme"
             android:screenOrientation="portrait" >
             <meta-data
             	android:name="android.support.PARENT_ACTIVITY"
@@ -42,7 +42,7 @@
         <activity
             android:name=".EventDetailActivity"
             android:label="@string/title_event_detail_activity"
-            android:theme="@android:style/Theme.NoTitleBar"
+            android:theme="@style/app_theme"
             android:screenOrientation="portrait" >
             <meta-data
             	android:name="android.support.PARENT_ACTIVITY"

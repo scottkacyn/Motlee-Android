@@ -1,0 +1,19 @@
+package com.motlee.android.layouts;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.widget.TableLayout;
+
+public class RoundedBackgroundTableLayout extends TableLayout {
+
+	public RoundedBackgroundTableLayout(Context context) {
+		super(context);
+		// TODO Auto-generated constructor stub
+	}
+
+	public RoundedBackgroundTableLayout(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		// TODO Auto-generated constructor stub
+	}
+
+}
