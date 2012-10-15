@@ -1,0 +1,17 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:layout_weight="1"
+	android:id="@+id/main_frame_layout" >
+	   
+    
+     <LinearLayout 
+          android:id="@+id/fragment_content"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_gravity="center" 
+          android:background="@android:color/transparent"/>
+     
+     
+      <include layout="@layout/menu_buttons" />
+</FrameLayout>

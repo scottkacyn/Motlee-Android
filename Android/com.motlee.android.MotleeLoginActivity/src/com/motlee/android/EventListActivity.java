@@ -16,11 +16,13 @@ import com.motlee.android.fragment.MainMenuFragment;
 import com.motlee.android.fragment.responder.EventDetailResponderFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventListParams;
+import com.motlee.android.object.MenuFunctions;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -45,6 +47,8 @@ public class EventListActivity extends FragmentActivity {
 	private EventListAdapter eAdapter;
 	private EventListParams eventListParams = new EventListParams("All Events");
 
+	private Boolean mainMenuOpen = false;
+	
 	private Facebook facebook = new Facebook("283790891721595");
 	
     @Override
@@ -97,10 +101,11 @@ public class EventListActivity extends FragmentActivity {
     
     public void onClickOpenMainMenu(View view)
     {
-    	
-        View contentPage = findViewById(R.id.main_frame_layout);
+    	MenuFunctions.onClickOpenMainMenu(view, this);
         
-        contentPage.setOnTouchListener(new OnTouchListener() {
+    	mainMenuOpen = true;
+    	
+        /*contentPage.setOnTouchListener(new OnTouchListener() {
 			
         	public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN)
@@ -128,7 +133,7 @@ public class EventListActivity extends FragmentActivity {
 				}
 				return false;
 			}
-        });
+        });*/
     }
     
     public void onClickGetEventDetail(View view)
@@ -173,6 +178,38 @@ public class EventListActivity extends FragmentActivity {
 		hideMenu();
 		
 		showMenuButton();
+	}
+	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		if (mainMenuOpen)
+		{
+		    Rect menuBounds = new Rect();
+		    View view = findViewById(R.id.main_menu);
+		    
+		    view.getDrawingRect(menuBounds);
+	
+		    if (!menuBounds.contains((int) ev.getX(), (int) ev.getY()) && ev.getAction() == MotionEvent.ACTION_DOWN) {
+		        // Tapped outside so we finish the activity
+		    	FragmentManager fm = getSupportFragmentManager();
+		        FragmentTransaction ft = fm.beginTransaction();
+		        
+		        Fragment fragment = fm.findFragmentById(R.id.main_menu);
+		        
+		        if (fragment != null)
+		        {
+			        ft.hide(fragment);
+			        
+			        ft.commit();
+			        
+			        mainMenuOpen = false;
+			        
+			        View menuButton = findViewById(R.id.menu_button);
+			        menuButton.setEnabled(true);
+		        }
+		    }
+		}
+	    return super.dispatchTouchEvent(ev);
 	}
 	
 	private void hideMenu()

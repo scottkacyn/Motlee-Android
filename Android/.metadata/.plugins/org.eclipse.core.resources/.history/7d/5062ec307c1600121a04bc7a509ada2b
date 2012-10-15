@@ -1,0 +1,13 @@
+package com.motlee.android.object;
+
+import android.app.Activity;
+import android.view.View;
+
+public class MenuFunctions {
+
+	public static void goBack(View view, Activity activity)
+	{
+		activity.finish();
+	}
+	
+}

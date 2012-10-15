@@ -3,5 +3,7 @@
 
 	<item android:state_pressed="true"
        android:drawable="@drawable/main_menu_button_pressed" /> <!-- pressed -->
+    <item android:state_enabled="false"
+	   android:drawable="@drawable/label_button_no_arrow" />
  	<item android:drawable="@drawable/main_menu_button_normal" /> <!-- default -->
 </selector>

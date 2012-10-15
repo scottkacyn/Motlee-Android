@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.motlee.android.fragment.EventDetailFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalEventList;
+import com.motlee.android.object.MenuFunctions;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -57,7 +58,7 @@ public class EventDetailActivity extends FragmentActivity {
     
     public void goBack(View view)
     {
-    	finish();
+    	MenuFunctions.goBack(this);
     }
     
     public void seeMoreDetail(View view)

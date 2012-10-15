@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<workbench progressCount="17" version="2.0">
+<workbench progressCount="19" version="2.0">
 <workbenchAdvisor/>
 <window height="853" maximized="true" width="1052" x="1" y="24">
 <fastViewData fastViewLocation="1024"/>
@@ -22,6 +22,7 @@
 <coolItem id="group.nav" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.navigate" itemType="typeToolBarContribution" x="184" y="30"/>
 <coolItem id="group.editor" itemType="typeGroupMarker"/>
+<coolItem id="org.eclipse.ui.browser.editor" itemType="typePlaceholder" x="-1" y="-1"/>
 <coolItem id="org.eclipse.ui.DefaultTextEditor" itemType="typePlaceholder" x="-1" y="-1"/>
 <coolItem id="com.android.ide.eclipse.editors.CommonXmlEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="org.eclipse.jdt.ui.ClassFileEditor" itemType="typePlaceholder" x="-1" y="-1"/>
@@ -29,7 +30,7 @@
 <coolItem id="group.help" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.help" itemType="typeToolBarContribution" x="-1" y="-1"/>
 </coolbarLayout>
-<page aggregateWorkingSetId="Aggregate for window 1349476149941" focus="true" label="Workspace - Resource">
+<page aggregateWorkingSetId="Aggregate for window 1349476149941" focus="true" label="Workspace - Debug">
 <editors>
 <editorArea activeWorkbook="DefaultEditorWorkbook">
 <info part="DefaultEditorWorkbook">
@@ -41,29 +42,81 @@
 <part id="3"/>
 <part id="4"/>
 <part id="5"/>
+<part id="6"/>
+<part id="7"/>
+<part id="8"/>
+<part id="9"/>
+<part id="10"/>
+<part id="11"/>
+<part id="12"/>
+<part id="13"/>
+<part id="14"/>
+<part id="15"/>
+<part id="16"/>
+<part id="17"/>
 </presentation>
 </folder>
 </info>
 </editorArea>
 <editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EventDetailFragment.java" partName="EventDetailFragment.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/EventDetailFragment.java" title="EventDetailFragment.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/EventDetailFragment.java" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/EventDetailFragment.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="4586" selectionTopPixel="1846"/>
-</editor>
-<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="event_detail_info_button.xml" partName="event_detail_info_button.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/layout/event_detail_info_button.xml" title="event_detail_info_button.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/event_detail_info_button.xml" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/layout/event_detail_info_button.xml"/>
-</editor>
-<editor activePart="true" focus="true" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="LocationInfo.java" partName="LocationInfo.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/LocationInfo.java" title="LocationInfo.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/LocationInfo.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/LocationInfo.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="242" selectionTopPixel="0"/>
-</editor>
-<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="event_detail_info_button_pictures.xml" partName="event_detail_info_button_pictures.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/layout/event_detail_info_button_pictures.xml" title="event_detail_info_button_pictures.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/event_detail_info_button_pictures.xml" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/layout/event_detail_info_button_pictures.xml"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="5281" selectionTopPixel="1922"/>
 </editor>
 <editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="activity_event_detail.xml" partName="activity_event_detail.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/layout/activity_event_detail.xml" title="activity_event_detail.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/activity_event_detail.xml" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/layout/activity_event_detail.xml"/>
 </editor>
 <editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="header.xml" partName="header.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/layout/header.xml" title="header.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/header.xml" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/layout/header.xml"/>
+</editor>
+<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="label_split_button_left.xml" partName="label_split_button_left.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/drawable/label_split_button_left.xml" title="label_split_button_left.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/drawable/label_split_button_left.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/drawable/label_split_button_left.xml"/>
+</editor>
+<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="label_button.xml" partName="label_button.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/drawable/label_button.xml" title="label_button.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/drawable/label_button.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/drawable/label_button.xml"/>
+</editor>
+<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="event_detail_info_button_pictures.xml" partName="event_detail_info_button_pictures.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/layout/event_detail_info_button_pictures.xml" title="event_detail_info_button_pictures.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/event_detail_info_button_pictures.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/layout/event_detail_info_button_pictures.xml"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EventDetailActivity.java" partName="EventDetailActivity.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventDetailActivity.java" title="EventDetailActivity.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventDetailActivity.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventDetailActivity.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1785" selectionTopPixel="428"/>
+</editor>
+<editor activePart="true" focus="true" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EventListActivity.java" partName="EventListActivity.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventListActivity.java" title="EventListActivity.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventListActivity.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventListActivity.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="6129" selectionTopPixel="2792"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EventListFragment.java" partName="EventListFragment.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/EventListFragment.java" title="EventListFragment.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/EventListFragment.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/EventListFragment.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1560" selectionTopPixel="258"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="MoreEventDetailActivity.java" partName="MoreEventDetailActivity.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/MoreEventDetailActivity.java" title="MoreEventDetailActivity.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/MoreEventDetailActivity.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/MoreEventDetailActivity.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="767" selectionTopPixel="136"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="MenuFunctions.java" partName="MenuFunctions.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/MenuFunctions.java" title="MenuFunctions.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/MenuFunctions.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/MenuFunctions.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="689" selectionTopPixel="41"/>
+</editor>
+<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="colors.xml" partName="colors.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/values/colors.xml" title="colors.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/values/colors.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/values/colors.xml"/>
+</editor>
+<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="slide_in_left.xml" partName="slide_in_left.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/anim/slide_in_left.xml" title="slide_in_left.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/anim/slide_in_left.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/anim/slide_in_left.xml"/>
+</editor>
+<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="main.xml" partName="main.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/layout/main.xml" title="main.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/main.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/layout/main.xml"/>
+</editor>
+<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="main_menu.xml" partName="main_menu.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/layout/main_menu.xml" title="main_menu.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/main_menu.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/layout/main_menu.xml"/>
+</editor>
+<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="menu_buttons.xml" partName="menu_buttons.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/layout/menu_buttons.xml" title="menu_buttons.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/menu_buttons.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/layout/menu_buttons.xml"/>
+</editor>
+<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="main_menu_button.xml" partName="main_menu_button.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/drawable/main_menu_button.xml" title="main_menu_button.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/drawable/main_menu_button.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/drawable/main_menu_button.xml"/>
+</editor>
+<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="slide_out_left.xml" partName="slide_out_left.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/anim/slide_out_left.xml" title="slide_out_left.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/anim/slide_out_left.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/anim/slide_out_left.xml"/>
 </editor>
 </editors>
 <views>
@@ -151,7 +204,7 @@
 <viewState/>
 </view>
 </views>
-<perspectives activePart="org.eclipse.jdt.ui.CompilationUnitEditor" activePerspective="org.eclipse.ui.resourcePerspective">
+<perspectives activePart="org.eclipse.jdt.ui.CompilationUnitEditor" activePerspective="org.eclipse.debug.ui.DebugPerspective">
 <perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
 <descriptor class="org.eclipse.ui.internal.ide.application.ResourcePerspective" id="org.eclipse.ui.resourcePerspective" label="Resource"/>
 <alwaysOnActionSet id="org.eclipse.search.searchActionSet"/>
@@ -214,8 +267,8 @@
 </folder>
 </info>
 <info part="org.eclipse.ui.editorss" ratio="0.2152297" ratioLeft="342" ratioRight="1247" relationship="2" relative="topLeft"/>
-<info folder="true" part="bottomRight" ratio="0.8810512" ratioLeft="637" ratioRight="86" relationship="4" relative="org.eclipse.ui.editorss">
-<folder activePageID="org.eclipse.ui.console.ConsoleView" appearance="2" expanded="2">
+<info folder="true" part="bottomRight" ratio="0.75656986" ratioLeft="547" ratioRight="176" relationship="4" relative="org.eclipse.ui.editorss">
+<folder activePageID="com.android.ide.eclipse.ddms.views.LogCatView" appearance="2" expanded="2">
 <page content="org.eclipse.ui.views.TaskList" label="Tasks"/>
 <page content="org.eclipse.ui.console.ConsoleView" label="Console"/>
 <page content="org.eclipse.jdt.callhierarchy.view" label="Call Hierarchy"/>
@@ -415,7 +468,7 @@
 <page content="org.eclipse.ui.cheatsheets.views.CheatSheetView" label="LabelNotFound"/>
 </folder>
 </info>
-<info folder="true" part="org.eclipse.debug.internal.ui.ConsoleFolderView" ratio="0.92116183" ratioLeft="666" ratioRight="57" relationship="4" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">
+<info folder="true" part="org.eclipse.debug.internal.ui.ConsoleFolderView" ratio="0.68603045" ratioLeft="496" ratioRight="227" relationship="4" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">
 <folder activePageID="com.android.ide.eclipse.ddms.views.LogCatView" appearance="2" expanded="2">
 <page content="org.eclipse.ui.console.ConsoleView" label="Console"/>
 <page content="org.eclipse.ui.views.TaskList" label="Tasks"/>
@@ -431,7 +484,7 @@
 </presentation>
 </folder>
 </info>
-<info part="org.eclipse.ui.editorss" ratio="0.41434845" ratioLeft="283" ratioRight="400" relationship="4" relative="org.eclipse.debug.internal.ui.NavigatorFolderView"/>
+<info part="org.eclipse.ui.editorss" ratio="0.3201133" ratioLeft="113" ratioRight="240" relationship="4" relative="org.eclipse.debug.internal.ui.NavigatorFolderView"/>
 <info folder="true" part="org.eclipse.debug.internal.ui.OutlineFolderView" ratio="0.75" ratioLeft="1194" ratioRight="398" relationship="2" relative="org.eclipse.ui.editorss">
 <folder activePageID="org.eclipse.ui.views.ContentOutline" appearance="2" expanded="2">
 <page content="org.eclipse.ui.views.ContentOutline" label="Outline"/>
@@ -461,104 +514,136 @@
 <workingSets/>
 <navigationHistory>
 <editors>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/EventDetailFragment.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/layout/event_detail_info_button.xml"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/LocationInfo.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/layout/event_detail_info_button_pictures.xml"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="" path="/com.motlee.android.MotleeLoginActivity/res/layout/event_detail_info_button_pictures.xml"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/layout/activity_event_detail.xml"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/layout/header.xml"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="" path="/com.motlee.android.MotleeLoginActivity/res/layout/activity_event_detail.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/MenuFunctions.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventListActivity.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/anim/slide_in_left.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/layout/main.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/layout/main_menu.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/drawable/header_left_button.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/layout/menu_buttons.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/drawable/main_menu_button.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/anim/slide_out_left.xml"/>
+<editor factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" id="org.eclipse.jdt.ui.ClassFileEditor" org.eclipse.jdt.ui.ClassFileIdentifier="=com.motlee.android.MotleeLoginActivity/\/home\/zackmartinsek\/Motlee\/Android\/com.motlee.android.MotleeLoginActivity\/libs\/android-support-v4.jar&lt;android.support.v4.app(BackStackRecord.class"/>
 </editors>
-<item historyLabel="event_detail_info_button_pictures.xml" index="4">
-<position info="not_deleted" x="43" y="0"/>
+<item historyLabel="menu_buttons.xml" index="6"/>
+<item historyLabel="main_menu.xml" index="4"/>
+<item historyLabel="MenuFunctions.java" index="0">
+<position info="not_deleted" x="905" y="0"/>
 </item>
-<item historyLabel="EventDetailFragment.java" index="0">
-<position info="not_deleted" x="4586" y="0"/>
+<item historyLabel="menu_buttons.xml" index="6"/>
+<item historyLabel="MenuFunctions.java" index="0">
+<position info="not_deleted" x="980" y="0"/>
 </item>
-<item historyLabel="event_detail_info_button.xml" index="1"/>
-<item historyLabel="event_detail_info_button_pictures.xml" index="3"/>
-<item historyLabel="EventDetailFragment.java" index="0">
-<position info="not_deleted" x="6107" y="0"/>
+<item historyLabel="header_left_button.xml" index="5"/>
+<item historyLabel="main_menu_button.xml" index="7"/>
+<item historyLabel="MenuFunctions.java" index="0">
+<position info="not_deleted" x="474" y="0"/>
 </item>
-<item historyLabel="event_detail_info_button.xml" index="1"/>
-<item historyLabel="event_detail_info_button_pictures.xml" index="3"/>
-<item historyLabel="EventDetailFragment.java" index="0">
-<position info="not_deleted" x="3248" y="0"/>
+<item historyLabel="menu_buttons.xml" index="6"/>
+<item historyLabel="header_left_button.xml" index="5"/>
+<item historyLabel="menu_buttons.xml" index="6"/>
+<item historyLabel="main_menu_button.xml" index="7"/>
+<item historyLabel="MenuFunctions.java" index="0">
+<position info="not_deleted" x="409" y="0"/>
 </item>
-<item historyLabel="activity_event_detail.xml" index="5"/>
-<item historyLabel="EventDetailFragment.java" index="0">
-<position info="not_deleted" x="3022" y="0"/>
+<item historyLabel="main.xml" index="3"/>
+<item historyLabel="main_menu.xml" index="4"/>
+<item historyLabel="MenuFunctions.java" index="0">
+<position info="not_deleted" x="409" y="0"/>
 </item>
-<item historyLabel="activity_event_detail.xml" index="5"/>
-<item historyLabel="EventDetailFragment.java" index="0">
-<position info="not_deleted" x="3248" y="0"/>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="5450" y="0"/>
 </item>
-<item historyLabel="activity_event_detail.xml" index="5"/>
-<item historyLabel="EventDetailFragment.java" index="0">
-<position info="not_deleted" x="3012" y="1"/>
+<item historyLabel="MenuFunctions.java" index="0">
+<position info="not_deleted" x="409" y="0"/>
 </item>
-<item historyLabel="activity_event_detail.xml" index="5"/>
-<item historyLabel="event_detail_info_button_pictures.xml" index="3"/>
-<item historyLabel="activity_event_detail.xml" index="5"/>
-<item historyLabel="EventDetailFragment.java" index="0">
-<position info="not_deleted" x="3047" y="0"/>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="5450" y="0"/>
 </item>
-<item historyLabel="LocationInfo.java" index="2">
-<position info="not_deleted" x="356" y="0"/>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="5668" y="0"/>
 </item>
-<item historyLabel="event_detail_info_button_pictures.xml" index="3"/>
-<item historyLabel="event_detail_info_button.xml" index="1"/>
-<item historyLabel="event_detail_info_button_pictures.xml" index="3"/>
-<item historyLabel="activity_event_detail.xml" index="5"/>
-<item historyLabel="EventDetailFragment.java" index="0">
-<position info="not_deleted" x="3565" y="0"/>
-</item>
-<item historyLabel="event_detail_info_button.xml" index="1"/>
-<item historyLabel="activity_event_detail.xml" index="5"/>
-<item historyLabel="EventDetailFragment.java" index="0">
-<position info="not_deleted" x="3526" y="0"/>
-</item>
-<item historyLabel="event_detail_info_button.xml" index="1"/>
-<item historyLabel="activity_event_detail.xml" index="5"/>
-<item historyLabel="event_detail_info_button.xml" index="1"/>
-<item historyLabel="header.xml" index="6"/>
-<item historyLabel="event_detail_info_button.xml" index="1"/>
-<item historyLabel="event_detail_info_button_pictures.xml" index="3"/>
-<item historyLabel="activity_event_detail.xml" index="5"/>
-<item historyLabel="EventDetailFragment.java" index="0">
-<position info="not_deleted" x="4401" y="0"/>
-</item>
-<item historyLabel="activity_event_detail.xml" index="5">
+<item historyLabel="EventListActivity.java" index="1">
 <position/>
 </item>
-<item historyLabel="activity_event_detail.xml" index="7">
-<position info="not_deleted" x="1095" y="0"/>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="5894" y="0"/>
 </item>
-<item historyLabel="EventDetailFragment.java" index="0">
-<position info="not_deleted" x="4329" y="0"/>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="6323" y="0"/>
 </item>
-<item historyLabel="event_detail_info_button.xml" index="1"/>
-<item historyLabel="event_detail_info_button_pictures.xml" index="3"/>
-<item historyLabel="activity_event_detail.xml" index="5">
-<position info="not_deleted" x="3075" y="0"/>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="5536" y="0"/>
 </item>
-<item historyLabel="activity_event_detail.xml" index="7">
-<position info="not_deleted" x="1095" y="0"/>
+<item historyLabel="slide_in_left.xml" index="2"/>
+<item historyLabel="slide_out_left.xml" index="8"/>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="5536" y="0"/>
 </item>
-<item historyLabel="EventDetailFragment.java" index="0">
-<position info="not_deleted" x="4586" y="0"/>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="5540" y="0"/>
 </item>
-<item historyLabel="activity_event_detail.xml" index="5"/>
-<item historyLabel="event_detail_info_button.xml" index="1"/>
-<item historyLabel="LocationInfo.java" index="2">
-<position info="not_deleted" x="242" y="0"/>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="5541" y="0"/>
 </item>
-<item historyLabel="activity_event_detail.xml" index="5"/>
-<item historyLabel="event_detail_info_button_pictures.xml" index="3"/>
-<item historyLabel="activity_event_detail.xml" index="5"/>
-<item active="true" historyLabel="LocationInfo.java" index="2">
-<position info="not_deleted" x="242" y="0"/>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="5576" y="0"/>
+</item>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="5577" y="0"/>
+</item>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="5632" y="0"/>
+</item>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="5673" y="0"/>
+</item>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="5670" y="0"/>
+</item>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="5840" y="0"/>
+</item>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="5897" y="0"/>
+</item>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="6089" y="0"/>
+</item>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="6131" y="0"/>
+</item>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="6336" y="0"/>
+</item>
+<item historyLabel="MenuFunctions.java" index="0">
+<position info="not_deleted" x="825" y="0"/>
+</item>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="6377" y="0"/>
+</item>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="5541" y="0"/>
+</item>
+<item historyLabel="BackStackRecord.class" index="9">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="2700" y="0"/>
+</item>
+<item historyLabel="MenuFunctions.java" index="0">
+<position info="not_deleted" x="409" y="0"/>
+</item>
+<item historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="5180" y="0"/>
+</item>
+<item historyLabel="slide_in_left.xml" index="2"/>
+<item historyLabel="slide_out_left.xml" index="8"/>
+<item historyLabel="MenuFunctions.java" index="0">
+<position info="not_deleted" x="689" y="0"/>
+</item>
+<item active="true" historyLabel="EventListActivity.java" index="1">
+<position info="not_deleted" x="5180" y="0"/>
 </item>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
@@ -577,50 +662,38 @@
 </trimLayout>
 </window>
 <mruList>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="header.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/header.xml">
-<persistable path="/com.motlee.android.MotleeLoginActivity/res/layout/header.xml"/>
+<file factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" id="org.eclipse.jdt.ui.ClassFileEditor" name="BackStackRecord.class" tooltip="android.support.v4.app.BackStackRecord">
+<persistable org.eclipse.jdt.ui.ClassFileIdentifier="=com.motlee.android.MotleeLoginActivity/\/home\/zackmartinsek\/Motlee\/Android\/com.motlee.android.MotleeLoginActivity\/libs\/android-support-v4.jar&lt;android.support.v4.app(BackStackRecord.class"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="activity_event_detail.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/activity_event_detail.xml">
-<persistable path="/com.motlee.android.MotleeLoginActivity/res/layout/activity_event_detail.xml"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="slide_out_left.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/anim/slide_out_left.xml">
+<persistable path="/com.motlee.android.MotleeLoginActivity/res/anim/slide_out_left.xml"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="event_detail_info_button_pictures.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/event_detail_info_button_pictures.xml">
-<persistable path="/com.motlee.android.MotleeLoginActivity/res/layout/event_detail_info_button_pictures.xml"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="main_menu_button.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/drawable/main_menu_button.xml">
+<persistable path="/com.motlee.android.MotleeLoginActivity/res/drawable/main_menu_button.xml"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="LocationInfo.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/LocationInfo.java">
-<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/LocationInfo.java"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="menu_buttons.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/menu_buttons.xml">
+<persistable path="/com.motlee.android.MotleeLoginActivity/res/layout/menu_buttons.xml"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="event_detail_info_button.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/event_detail_info_button.xml">
-<persistable path="/com.motlee.android.MotleeLoginActivity/res/layout/event_detail_info_button.xml"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="header_left_button.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/drawable/header_left_button.xml">
+<persistable path="/com.motlee.android.MotleeLoginActivity/res/drawable/header_left_button.xml"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EventDetailFragment.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/EventDetailFragment.java">
-<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/EventDetailFragment.java"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="main_menu.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/main_menu.xml">
+<persistable path="/com.motlee.android.MotleeLoginActivity/res/layout/main_menu.xml"/>
 </file>
-<file factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" id="org.eclipse.jdt.ui.ClassFileEditor" name="Constructor.class" tooltip="java.lang.reflect.Constructor">
-<persistable org.eclipse.jdt.ui.ClassFileIdentifier="=com.motlee.android.MotleeLoginActivity/\/home\/zackmartinsek\/Downloads\/android-sdk-linux\/platforms\/android-10\/android.jar&lt;java.lang.reflect(Constructor.class"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="main.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/main.xml">
+<persistable path="/com.motlee.android.MotleeLoginActivity/res/layout/main.xml"/>
 </file>
-<file factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" id="org.eclipse.jdt.ui.ClassFileEditor" name="InvocationTargetException.class" tooltip="java.lang.reflect.InvocationTargetException">
-<persistable org.eclipse.jdt.ui.ClassFileIdentifier="=com.motlee.android.MotleeLoginActivity/\/home\/zackmartinsek\/Downloads\/android-sdk-linux\/platforms\/android-10\/android.jar&lt;java.lang.reflect(InvocationTargetException.class"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="slide_in_left.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/anim/slide_in_left.xml">
+<persistable path="/com.motlee.android.MotleeLoginActivity/res/anim/slide_in_left.xml"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="activity_event_list.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/activity_event_list.xml">
-<persistable path="/com.motlee.android.MotleeLoginActivity/res/layout/activity_event_list.xml"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="colors.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/values/colors.xml">
+<persistable path="/com.motlee.android.MotleeLoginActivity/res/values/colors.xml"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="HorizontalAspectImageButton.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/view/HorizontalAspectImageButton.java">
-<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/view/HorizontalAspectImageButton.java"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="MenuFunctions.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/MenuFunctions.java">
+<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/MenuFunctions.java"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="VerticalAspectImageButton.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/view/VerticalAspectImageButton.java">
-<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/view/VerticalAspectImageButton.java"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EventListActivity.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventListActivity.java">
-<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventListActivity.java"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="event_list_item.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/event_list_item.xml">
-<persistable path="/com.motlee.android.MotleeLoginActivity/res/layout/event_list_item.xml"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EventListAdapter.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/EventListAdapter.java">
-<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/EventListAdapter.java"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="attrs.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/values/attrs.xml">
-<persistable path="/com.motlee.android.MotleeLoginActivity/res/values/attrs.xml"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="MoreEventDetailActivity.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/MoreEventDetailActivity.java">
+<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/MoreEventDetailActivity.java"/>
 </file>
 </mruList>
 </workbench>

@@ -1,0 +1,28 @@
+package com.motlee.android.object;
+
+import com.motlee.android.R;
+import com.motlee.android.fragment.MainMenuFragment;
+
+import android.app.Activity;
+import android.support.v4.app.FragmentTransaction;
+import android.view.View;
+
+public class MenuFunctions {
+
+	public static void goBack(Activity activity)
+	{
+		activity.finish();
+	}
+	
+	public void onClickOpenMainMenu(View view, FragmentActivity activity)
+	{
+    	FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
+    	ft.setCustomAnimations(R.anim.slide_in_left, 0);
+        
+        MainMenuFragment mainMenuFragment = new MainMenuFragment();
+        
+        ft.add(R.id.main_menu, mainMenuFragment);
+        
+        ft.commit();
+	}
+}
