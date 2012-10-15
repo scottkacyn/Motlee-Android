@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.motlee.android.R;
+import com.motlee.android.layouts.RatioBackgroundLinearLayout;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class EventListAdapter extends ArrayAdapter<Integer> {
@@ -126,8 +128,7 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
                 // pull out the object
                 EventDetail item = GlobalEventList.eventDetailMap.get(this.data.get(position));
                 
-                ImageButton button = (ImageButton) view.findViewById(R.id.get_event_detail);
-                
+                RatioBackgroundLinearLayout button = (RatioBackgroundLinearLayout) view.findViewById(R.id.event_header);
                 CharSequence charSequence = Integer.toString(item.getEventID());
                 
                 button.setContentDescription(charSequence);

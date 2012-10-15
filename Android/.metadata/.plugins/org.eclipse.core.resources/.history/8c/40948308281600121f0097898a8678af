@@ -1,0 +1,77 @@
+package com.motlee.android.view;
+
+import com.motlee.android.R;
+
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
+import android.view.Gravity;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+
+public class ImageButtonWithText extends FrameLayout {
+
+	private TextView textView;
+	private VerticalAspectImageButton imageButton;
+	
+	public ImageButtonWithText(Context context) {
+		super(context);
+		// TODO Auto-generated constructor stub
+	}
+
+	public ImageButtonWithText(Context context, AttributeSet attrs) {
+		super(context, attrs);
+
+	}
+
+	public ImageButtonWithText(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+		// TODO Auto-generated constructor stub
+	}
+
+	private void init(AttributeSet attrs)
+	{
+		TypedArray a = getContext().obtainStyledAttributes(attrs,
+                R.styleable.ImageButtonWithText);
+        CharSequence stringText = a.getString(R.styleable.ImageButtonWithText_text);
+		
+        String myText = "";
+        if (stringText != null)
+        {
+        	myText = (String) stringText;
+        }
+        
+		textView = new TextView(getContext());
+		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		textView.setLayoutParams(params);
+		textView.setText(myText);
+		textView.setGravity(Gravity.CENTER);
+		
+		this.addView(textView);
+		
+		imageButton = new VerticalAspectImageButton(getContext());
+		
+		Drawable drawable = a.getDrawable(R.styleable.ImageButtonWithText_src);
+		if (drawable != null)
+		{
+			imageButton.setImageDrawable(drawable);
+		}
+		
+		params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		imageButton.setLayoutParams(params);
+		
+		this.addView(imageButton);
+	}
+	
+	public void setText(String text)
+	{
+		textView.setText(text);
+	}
+	
+	public void setImageDrawable(Drawable drawable)
+	{
+		imageButton.setImageDrawable(drawable);
+	}
+	
+}

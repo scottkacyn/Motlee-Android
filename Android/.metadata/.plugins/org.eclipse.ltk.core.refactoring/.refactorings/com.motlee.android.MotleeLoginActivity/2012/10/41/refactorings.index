@@ -26,3 +26,8 @@
 1350009661507	Rename resource 'event_list_main.xml'
 1350009700543	Rename resource 'event_detail_main.xml'
 1350009710981	Delete element
+1350049994613	Rename type 'RoundedBackgroundTableLayout'
+1350055507153	Rename field 'layout'
+1350059432222	Extract method 'setLabelButton'
+1350082106683	Rename resource 'event_detail_page_item_grid.xml'
+1350085225011	Delete element

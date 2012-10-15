@@ -8,19 +8,29 @@ import java.util.List;
 import com.motlee.android.R;
 import com.motlee.android.adapter.EventListAdapter;
 import com.motlee.android.layouts.GridListTableLayout;
+import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventItem;
+import com.motlee.android.object.EventItemWithBody;
 import com.motlee.android.object.EventListParams;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.view.HorizontalAspectImageButton;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.TableLayout.LayoutParams;
 
 public class EventDetailFragment extends Fragment {
 	private String tag = "EventDetailFragment";
@@ -33,11 +43,14 @@ public class EventDetailFragment extends Fragment {
 	
 	private String pageTitle = "All Events";
 	
-	private GridListTableLayout layout;
+	private GridListTableLayout girdListTableLayout;
+	private StretchedBackgroundTableLayout eventInfoLayout;
 	
 	private Boolean onCreateViewHasBeenCalled = false;
 	
 	private View view;
+	
+	private LayoutInflater inflater;
 	
 	/*@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
@@ -60,9 +73,14 @@ public class EventDetailFragment extends Fragment {
 	{
 		
 		Log.w(tag, "onCreateView");
-		view = (View) getActivity().getLayoutInflater().inflate(R.layout.activity_event_detail, null);
 		
-		layout = (GridListTableLayout) view.findViewById(R.id.event_detail_grid_list);
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.activity_event_detail, null);
+		
+		girdListTableLayout = (GridListTableLayout) view.findViewById(R.id.event_detail_grid_list);
+		eventInfoLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_detail_info);
+		
+		eventInfoLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
 		
 		if (mEventDetail != null)
 		{
@@ -78,21 +96,43 @@ public class EventDetailFragment extends Fragment {
 		tv.setText(pageTitle);
 		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 		
-		Button button = (Button) view.findViewById(R.id.header_right_button);
-		button.setText(JOIN);
-		button.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		button.setVisibility(View.VISIBLE);
+		View headerRightButton = view.findViewById(R.id.header_right_layout_button);
+		headerRightButton.setVisibility(View.VISIBLE);
+		
+		View headerLeftButton = view.findViewById(R.id.header_left_button);
+		headerLeftButton.setVisibility(View.VISIBLE);
+		
+		tv = (TextView) view.findViewById(R.id.header_right_text);
+		tv.setText(JOIN);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		
+		initializeOnPageButtons(view);
 		
 		onCreateViewHasBeenCalled = true;
 		
 		return view;
 	}
 
+	
+	
+	public void initializeOnPageButtons(View view)
+	{
+		TextView tv = (TextView) view.findViewById(R.id.label_split_button_left_text);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		tv.setText("Add Item");
+		
+		tv = (TextView) view.findViewById(R.id.label_split_button_right_text);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		tv.setText("Add Friends");
+	}
+	
+	
+	
 	public void addEventDetail(EventDetail eDetail) {
 		Log.w(tag, "addEventDetail");
 		mEventDetail = eDetail;
 		this.pageTitle = mEventDetail.getEventName();
-		if (layout != null)
+		if (girdListTableLayout != null)
 		{
 			addListToTableLayout();
 		}
@@ -105,48 +145,96 @@ public class EventDetailFragment extends Fragment {
 	
 	private void setNavigationButtons()
 	{
-		/*TextView textView = (TextView) view.findViewById(R.id.event_detail_time_button);
+		eventInfoLayout.removeAllViews();
 		
-		textView.setText(mEventDetail.getDateString());
-		textView.setPadding(15, 0, 0, 0);
+		setLabelButton(mEventDetail.getDateString(), getResources().getDrawable(R.drawable.icon_time_normal), GlobalVariables.DATE);
+		setLabelButton(mEventDetail.getLocationInfo().locationDescription, getResources().getDrawable(R.drawable.icon_map_background_normal), GlobalVariables.LOCATION);
+		setLabelButton(mEventDetail.getAttendees().size() + " People", getResources().getDrawable(R.drawable.icon_friend_normal), GlobalVariables.ATTENDEES);
+		setLabelButton(mEventDetail.getFomos().size() + " FOMOs", getResources().getDrawable(R.drawable.icon_fomo_normal), GlobalVariables.FOMOS);
+		setPictureLabel(mEventDetail.getImages().size() + " Pictures");
+	}
+
+	private void setLabelButton(String labelText, Drawable image, String description) {
 		
-		textView = (TextView) view.findViewById(R.id.event_detail_location_button);
+		View labelButton = this.inflater.inflate(R.layout.event_detail_info_button, null);
+		labelButton.setContentDescription(description);
 		
-		textView.setText(mEventDetail.getLocationInfo().locationDescription);
-		textView.setPadding(15, 0, 0, 0);
+		ImageView imageView = (ImageView) labelButton.findViewById(R.id.label_button_icon);
+		imageView.setImageDrawable(image);
 		
-		textView = (TextView) view.findViewById(R.id.event_detail_people_button);
+		TextView textView = (TextView) labelButton.findViewById(R.id.label_button_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(labelText);
 		
-		textView.setText(mEventDetail.getAttendees().size() + " People");
-		textView.setPadding(15, 0, 0, 0);
+		TableRow tr = new TableRow(getActivity());
+		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tr.setLayoutParams(lp);
+		tr.addView(labelButton);
+		eventInfoLayout.addView(tr);
+	}
+	
+	private void setPictureLabel(String labelText)
+	{
+		View labelButton = this.inflater.inflate(R.layout.event_detail_info_button_pictures, null);
 		
-		textView = (TextView) view.findViewById(R.id.event_detail_fomos_button);
+		TextView textView = (TextView) labelButton.findViewById(R.id.label_button_text_pictures);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(labelText);
 		
-		textView.setText(mEventDetail.getFomos().size() + " FOMOs");
-		textView.setPadding(15, 0, 0, 0);
+		disableImageButton((ImageButton) labelButton.findViewById(R.id.label_button_list_view));
 		
-		textView = (TextView) view.findViewById(R.id.event_detail_picture_text);
-		
-		textView.setText(mEventDetail.getImages().size() + " Pics");
-		textView.setPadding(15, 0, 0, 0);*/
+		TableRow tr = new TableRow(getActivity());
+		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tr.setLayoutParams(lp);
+		tr.addView(labelButton);
+		eventInfoLayout.addView(tr);
+	}
+	
+	private void disableImageButton(ImageButton imageButton)
+	{
+		if (imageButton != null)
+		{
+			imageButton.setClickable(false);
+			imageButton.setEnabled(false);
+		}
+	}
+	
+	private void enableImageButton(ImageButton imageButton)
+	{
+		if (imageButton != null)
+		{
+			imageButton.setClickable(true);
+			imageButton.setEnabled(true);
+		}
+	}
+	
+	public void switchToListView(View view)
+	{
+		addListToTableLayout();
+	}
+	
+	public void switchToGridView(View view)
+	{
+		addGridToTableLayout();
 	}
 	
 	public void addListToTableLayout()
 	{
-		List<EventItem> storyPhotoList = new ArrayList<EventItem>();
-		
+		List<EventItemWithBody> storyPhotoList = new ArrayList<EventItemWithBody>();
 		storyPhotoList.addAll(mEventDetail.getStories());
-		
 		storyPhotoList.addAll(mEventDetail.getImages());
-		
 		Collections.sort(storyPhotoList);
 		
-		layout.addList(storyPhotoList);
+		girdListTableLayout.addList(storyPhotoList);
+		enableImageButton((ImageButton) eventInfoLayout.findViewById(R.id.label_button_grid_view));
+		disableImageButton((ImageButton) eventInfoLayout.findViewById(R.id.label_button_list_view));
 	}
 	
 	public void addGridToTableLayout()
 	{
-		layout.addGrid(mEventDetail.getImages());
+		girdListTableLayout.addGrid(mEventDetail.getImages());
+		enableImageButton((ImageButton) eventInfoLayout.findViewById(R.id.label_button_list_view));
+		disableImageButton((ImageButton) eventInfoLayout.findViewById(R.id.label_button_grid_view));
 	}
 	
 	public void setEventDetailParams(EventListParams params)
@@ -156,7 +244,6 @@ public class EventDetailFragment extends Fragment {
 		if (onCreateViewHasBeenCalled)
 		{
 			TextView view = (TextView) getActivity().findViewById(R.id.header_textView);
-			
 			if (view != null)
 			{
 				view.setText(pageTitle);

@@ -3,6 +3,8 @@ package com.motlee.android;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+import shared.ui.actionscontentview.ActionsContentView;
+
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
@@ -42,8 +44,7 @@ public class EventListActivity extends FragmentActivity {
 	
 	private EventListAdapter eAdapter;
 	private EventListParams eventListParams = new EventListParams("All Events");
-	
-	
+
 	private Facebook facebook = new Facebook("283790891721595");
 	
     @Override
@@ -96,25 +97,7 @@ public class EventListActivity extends FragmentActivity {
     
     public void onClickOpenMainMenu(View view)
     {
-        FragmentManager     fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        
-        Fragment fragment = fm.findFragmentById(R.id.main_menu);
     	
-        if (fragment == null)
-        {
-        	fragment = new MainMenuFragment();
-        	
-        	ft.add(R.id.main_menu, fragment);
-        }
-        else
-        {
-        	ft.show(fragment);
-        }
-        View menuView = findViewById(R.id.main_menu);
-        
-        menuView.setVisibility(View.VISIBLE);
-        
         View contentPage = findViewById(R.id.main_frame_layout);
         
         contentPage.setOnTouchListener(new OnTouchListener() {
@@ -146,13 +129,6 @@ public class EventListActivity extends FragmentActivity {
 				return false;
 			}
         });
-
-        
-        View menuButton = findViewById(R.id.menu_button);
-        
-        menuButton.setVisibility(View.GONE);
-        
-        ft.commit();
     }
     
     public void onClickGetEventDetail(View view)

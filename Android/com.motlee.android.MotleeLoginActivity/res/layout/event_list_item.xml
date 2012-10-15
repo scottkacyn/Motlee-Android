@@ -20,6 +20,8 @@
 		        android:layout_height="wrap_content"
 		        android:background="@drawable/event_list_detail_header_background"
 		        android:weightSum="1"
+		        android:clickable="true"
+		        android:onClick="onClickGetEventDetail"
 		        >
 			        <TextView android:id="@+id/event_header_name"
 						android:layout_width="0dp"
@@ -38,12 +40,11 @@
 			            style="@style/CodeFont"
 			            android:paddingRight="3dp" />
 			        
-			        <ImageButton android:id="@+id/get_event_detail"
+			        <ImageView android:id="@+id/get_event_detail"
 			            android:layout_width="0dp"
 			            android:layout_weight="0.1"
 			            android:layout_height="match_parent"
 			            android:src="@drawable/navigation_arrow"
-			            android:onClick="onClickGetEventDetail"
 			            android:padding="6dp"
 			            android:scaleType="fitCenter"
 			            android:background="@android:color/transparent"

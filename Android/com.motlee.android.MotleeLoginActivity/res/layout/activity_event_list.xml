@@ -4,7 +4,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
-    <include layout="@layout/header" />
+    <include layout="@layout/header"
+        android:id="@+id/header_list" />
     <ListView android:id="@android:id/list"
         android:layout_height="fill_parent"
         android:layout_width="fill_parent"></ListView>

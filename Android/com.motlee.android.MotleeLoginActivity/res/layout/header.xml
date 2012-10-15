@@ -11,11 +11,14 @@
         android:background="@drawable/header_background"
         >
         
-        <Button android:id="@+id/header_left_button"
+        <com.motlee.android.view.VerticalAspectImageButton
+            android:id="@+id/header_left_button"
         	android:visibility="gone"
         	android:layout_height="match_parent"
-        	android:padding="3dp"
+        	android:padding="5dp"
         	android:layout_width="wrap_content"
+        	android:src="@drawable/header_left_button"
+        	android:onClick="goBack"
         	android:layout_alignParentLeft="true" />
         
         <ImageView android:id="@+id/logo"
@@ -26,13 +29,28 @@
             android:contentDescription="Logo"
             android:layout_centerInParent="true"
             />
-        
-        <Button android:id="@+id/header_right_button"
-        	android:visibility="gone"
-        	android:layout_height="match_parent"
-        	android:padding="3dp"
-        	android:layout_width="wrap_content"
-        	android:layout_alignParentRight="true" />
+    <FrameLayout
+        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_alignParentRight="true"
+        android:id="@+id/header_right_layout_button"
+        android:visibility="gone">
+	    <com.motlee.android.view.VerticalAspectImageButton 
+	        android:id="@+id/header_right_button"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:padding="5dp"
+	        android:src="@drawable/header_right_button"
+	        android:background="@android:color/transparent" />
+	    
+	    <TextView 
+	        android:id="@+id/header_right_text"
+    	    android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:gravity="center|center_vertical"
+	        android:padding="5dp"
+	        android:background="@android:color/transparent" />
+    </FrameLayout>
                     
     </com.motlee.android.layouts.RatioBackgroundRelativeLayout>
     <com.motlee.android.layouts.RatioBackgroundLinearLayout

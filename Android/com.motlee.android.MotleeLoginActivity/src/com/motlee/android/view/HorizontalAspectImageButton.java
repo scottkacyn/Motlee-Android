@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView.ScaleType;
 
 public class HorizontalAspectImageButton extends ImageButton {
 
@@ -18,17 +19,23 @@ public class HorizontalAspectImageButton extends ImageButton {
 	
 	public HorizontalAspectImageButton(Context context) {
 		super(context);
-		// TODO Auto-generated constructor stub
+		init();
 	}
 
 	public HorizontalAspectImageButton(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		// TODO Auto-generated constructor stub
+		init();
 	}
 
 	public HorizontalAspectImageButton(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		// TODO Auto-generated constructor stub
+		init();
+	}
+	
+	public void init()
+	{
+		this.setBackgroundColor(android.R.color.transparent);
+		this.setScaleType(ScaleType.FIT_CENTER);
 	}
 	
 	/* Overriding onMeasure() because the current work flow pulls in the image
@@ -49,8 +56,6 @@ public class HorizontalAspectImageButton extends ImageButton {
 		int width = MeasureSpec.getSize(widthMeasureSpec);
 		int height = MeasureSpec.getSize(heightMeasureSpec);
 		
-		Log.d("HorizonalAspectImageButton.onMeasure", "PreScaling: Width: " + width + ", Height: " + height);
-		
 		float scaleFactor = ((float) width) / bitmap.getWidth();
 
 		Matrix scale = new Matrix();
@@ -58,11 +63,9 @@ public class HorizontalAspectImageButton extends ImageButton {
 		
 		height = (int)(((float) bitmap.getHeight()) * scaleFactor);
 		
-		Log.d("HorizonalAspectImageButton.onMeasure", "PostScaling: Width: " + width + ", Height: " + height);
-		
 		this.setMeasuredDimension(width, height);
 	}
-	
+
 	@Override
 	public void setImageDrawable(Drawable drawable)
 	{

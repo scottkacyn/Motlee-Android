@@ -1,0 +1,71 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <com.motlee.android.layouts.RatioBackgroundRelativeLayout
+        android:id="@+id/top_header"
+        android:layout_width="fill_parent"
+        android:layout_alignParentTop="true"
+        android:layout_height="wrap_content"
+        android:background="@drawable/header_background"
+        >
+        
+        <com.motlee.android.view.VerticalAspectImageButton
+            android:id="@+id/header_left_button"
+        	android:visibility="gone"
+        	android:layout_height="match_parent"
+        	android:padding="5dp"
+        	android:layout_width="wrap_content"
+        	android:src="@drawable/header_left_button"
+        	android:layout_alignParentLeft="true" />
+        
+        <ImageView android:id="@+id/logo"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="3dp"
+            android:src="@drawable/header_logo"
+            android:contentDescription="Logo"
+            android:layout_centerInParent="true"
+            />
+    <FrameLayout
+        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_alignParentRight="true"
+        android:id="@+id/header_right_layout_button"
+        android:visibility="gone">
+	    <com.motlee.android.view.VerticalAspectImageButton 
+	        android:id="@+id/header_right_button"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:scaleType="fitCenter"
+	        android:padding="5dp"
+	        android:src="@drawable/header_right_button"
+	        android:background="@android:color/transparent" />
+	    
+	    <TextView 
+	        android:id="@+id/header_right_text"
+    	    android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:gravity="center|center_vertical"
+	        android:padding="5dp"
+	        android:background="@android:color/transparent" />
+    </FrameLayout>
+                    
+    </com.motlee.android.layouts.RatioBackgroundRelativeLayout>
+    <com.motlee.android.layouts.RatioBackgroundLinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/bottom_header"
+        android:background="@drawable/header_bottom_background"
+        android:layout_below="@id/top_header">
+        <TextView android:id="@+id/header_textView" 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            style="@style/CodeFont"
+            android:paddingLeft="3dp"
+            />
+        
+    </com.motlee.android.layouts.RatioBackgroundLinearLayout>
+</RelativeLayout>

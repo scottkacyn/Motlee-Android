@@ -1,0 +1,134 @@
+package com.motlee.android.layouts;
+
+import com.motlee.android.object.GlobalVariables;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.NinePatchDrawable;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.Display;
+import android.view.View;
+import android.widget.TableLayout;
+
+public class StretchedBackgroundTableLayout extends TableLayout {
+
+	private static Integer layoutHeight;
+	
+	private static String androidNamespace = "http://schemas.android.com/apk/res/android";
+	
+	private static int leftPadding;
+	private static int rightPadding;
+	private static int topPadding;
+	private static int bottomPadding;
+	
+	public StretchedBackgroundTableLayout(Context context) {
+		super(context);
+		
+		leftPadding = 0;
+		rightPadding = 0;
+		topPadding = 0;
+		bottomPadding = 0;
+	}
+
+	public StretchedBackgroundTableLayout(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		
+		String padding = attrs.getAttributeValue(androidNamespace, "padding");
+		if (padding != null)
+		{
+			this.topPadding = Integer.getInteger(padding);
+			this.bottomPadding = Integer.getInteger(padding);
+			this.rightPadding = Integer.getInteger(padding);
+			this.leftPadding = Integer.getInteger(padding);
+		}
+		
+		String paddingTop = attrs.getAttributeValue(androidNamespace, "paddingTop");
+		if (paddingTop != null)
+		{
+			this.topPadding = Integer.getInteger(paddingTop);
+		}
+		
+		String paddingBottom = attrs.getAttributeValue(androidNamespace, "paddingBottom");
+		if (paddingBottom != null)
+		{
+			this.bottomPadding = Integer.getInteger(paddingBottom);
+		}
+		
+		String paddingLeft = attrs.getAttributeValue(androidNamespace, "paddingLeft");
+		if (paddingLeft != null)
+		{
+			this.leftPadding = Integer.getInteger(paddingLeft);
+		}
+		
+		String paddingRight = attrs.getAttributeValue(androidNamespace, "paddingRight");
+		if (paddingRight != null)
+		{
+			this.rightPadding = Integer.getInteger(paddingRight);
+		}		
+	}
+	
+	private Drawable resizeBackgroundDrawable(Drawable drawable)
+	{
+		Display display = GlobalVariables.getInstance().getDisplay();
+		
+		drawable.setBounds(0, 0, display.getWidth(), 0);
+		
+		return drawable;
+	}
+	
+	@Override
+	public void setBackgroundDrawable(Drawable drawable)
+	{
+		super.setBackgroundDrawable(resizeBackgroundDrawable(drawable));
+		this.setPadding(0, 0, 0, 0);
+	}
+	
+	@Override
+	public void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
+	{
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		
+		int width = MeasureSpec.getSize(widthMeasureSpec);
+		int height = MeasureSpec.getSize(heightMeasureSpec);
+		
+		Log.d("StretchedBackgroundTableLayout", "Width: " + width + ", Height: " + height);
+	}
+	
+	@Override
+	public void onLayout(boolean changed, int left, int top, int right, int bottom)
+	{
+		super.onLayout(changed, left, top, right, bottom);
+		Drawable background = this.getBackground();
+		
+		if (background != null)
+		{
+			int imageWidth = right - left;
+			int imageHeight = bottom - top;
+			
+			Log.d("StretchedBackgroundTableLayout", "Changed: " + changed + ", Width: " + imageWidth + ", Height: " + imageHeight + ", left: " + left + ", right: " + right + ", top: " + top + ", bottom: " + bottom);
+			
+			if (background instanceof NinePatchDrawable)
+			{
+				NinePatchDrawable nineDrawable = (NinePatchDrawable) background;
+				
+				nineDrawable.setBounds(left, top, right, bottom);
+				
+				this.setBackgroundDrawable(nineDrawable);
+			}
+			else
+			{
+				Bitmap bitmap = ((BitmapDrawable) background).getBitmap();
+				
+				Drawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, imageWidth, imageHeight, false));
+				
+				this.setBackgroundDrawable(d);
+			}
+		}
+	}
+
+}

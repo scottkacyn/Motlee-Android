@@ -14,7 +14,7 @@ public class LocationInfo {
 	
 	public LocationInfo()
 	{
-		this.locationDescription = "";
+		this.locationDescription = "No Location";
 		this.longitude = -1;
 		this.latitude = -1;
 	}

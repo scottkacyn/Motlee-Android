@@ -1,0 +1,50 @@
+package com.motlee.android.view;
+
+import android.R;
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.util.AttributeSet;
+import android.view.Gravity;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+
+public class ImageButtonWithText extends FrameLayout {
+
+	private TextView textView;
+	private VerticalAspectImageButton imageButton;
+	
+	public ImageButtonWithText(Context context) {
+		super(context);
+		// TODO Auto-generated constructor stub
+	}
+
+	public ImageButtonWithText(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		TypedArray a = context.obtainStyledAttributes(attrs,
+                R.styleable.MyLayout);
+        CharSequence s = a.get
+	}
+
+	public ImageButtonWithText(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+		// TODO Auto-generated constructor stub
+	}
+
+	private void init()
+	{
+		textView = new TextView(getContext());
+		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		textView.setLayoutParams(params);
+		textView.setGravity(Gravity.CENTER);
+		
+		this.addView(textView);
+		
+		imageButton = new VerticalAspectImageButton(getContext());
+		params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		imageButton.setLayoutParams(params);
+		
+		this.addView(imageButton);
+		
+	}
+	
+}

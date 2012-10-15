@@ -21,8 +21,8 @@ public class EventDetail {
 	
 	@NoExpose
 	private LocationInfo location;
-	@NoExpose
-	private final Collection<Integer> fomos;
+	
+	private final Collection<EventItem> fomos;
 	@NoExpose
 	private final Collection<String> imageURLs;
 	@NoExpose
@@ -34,7 +34,7 @@ public class EventDetail {
 	@NoExpose
 	private ArrayList<UserInfoListener> eventList;
 	@NoExpose
-	private final Collection<EventItem> stories;
+	private final Collection<EventItemWithBody> stories;
 	
 	
 	public void addListener(UserInfoListener l) 
@@ -50,10 +50,10 @@ public class EventDetail {
 	public EventDetail(Integer id)
 	{
 		this.user_id = id;
-		this.fomos = new ArrayList<Integer>();
+		this.fomos = new ArrayList<EventItem>();
 		this.imageURLs = new ArrayList<String>();
 		this.attendees = new ArrayList<Integer>();
-		this.stories = new ArrayList<EventItem>();
+		this.stories = new ArrayList<EventItemWithBody>();
 		this.name = "";
 		this.start_time = new Date();
 		this.end_time = new Date();
@@ -64,10 +64,10 @@ public class EventDetail {
 	public EventDetail()
 	{
 		this.user_id = -1;
-		this.fomos = new ArrayList<Integer>();
+		this.fomos = new ArrayList<EventItem>();
 		this.imageURLs = new ArrayList<String>();
 		this.attendees = new ArrayList<Integer>();
-		this.stories = new ArrayList<EventItem>();
+		this.stories = new ArrayList<EventItemWithBody>();
 		this.name = "";
 		this.start_time = new Date();
 		this.end_time = new Date();
@@ -86,7 +86,15 @@ public class EventDetail {
 		
 		userInfoListCheck.add(this.user_id);
 		userInfoListCheck.addAll(this.attendees);
-		userInfoListCheck.addAll(this.fomos);
+		
+		ArrayList<Integer> fomoInts = new ArrayList<Integer>();
+		
+		for (EventItem item : this.fomos)
+		{
+			fomoInts.add(item.user_id);
+		}
+		
+		userInfoListCheck.addAll(fomoInts);
 		
 		for (Integer id : userInfoListCheck)
 		{
@@ -140,7 +148,7 @@ public class EventDetail {
 		return this.attendees;
 	}
 	
-	public Collection<Integer> getFomos()
+	public Collection<EventItem> getFomos()
 	{
 		return this.fomos;
 	}
@@ -194,7 +202,7 @@ public class EventDetail {
 		return this.end_time;
 	}
 
-	public Collection<EventItem> getStories() {
+	public Collection<EventItemWithBody> getStories() {
 		return stories;
 	}
 

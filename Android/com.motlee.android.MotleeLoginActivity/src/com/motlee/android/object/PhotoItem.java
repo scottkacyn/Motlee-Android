@@ -4,13 +4,13 @@ import java.util.Date;
 
 import com.motlee.android.enums.EventItemType;
 
-public class PhotoItem extends EventItem {
+public class PhotoItem extends EventItemWithBody {
 
 	public String url;
 	
-	public PhotoItem(Integer eventID, String body, EventItemType type,
-			Integer userID, Date timeCreated, String url) {
-		super(eventID, body, type, userID, timeCreated);
+	public PhotoItem(Integer eventID, EventItemType type,
+			Integer userID, Date timeCreated, String body, String url) {
+		super(eventID, type, userID, timeCreated, body);
 		
 		this.url = url;
 	}

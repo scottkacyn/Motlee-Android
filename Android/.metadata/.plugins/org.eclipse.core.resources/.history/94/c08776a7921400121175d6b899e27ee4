@@ -1,0 +1,83 @@
+package com.motlee.android.layouts;
+
+import com.motlee.android.object.GlobalVariables;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.NinePatchDrawable;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.Display;
+import android.widget.TableLayout;
+
+public class StretchedBackgroundTableLayout extends TableLayout {
+
+	public StretchedBackgroundTableLayout(Context context) {
+		super(context);
+		
+	}
+
+	public StretchedBackgroundTableLayout(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		
+	}
+	
+	@Override
+	public void setBackgroundDrawable(Drawable drawable)
+	{		
+		super.setBackgroundDrawable(resizeBackgroundDrawable(drawable));
+	}
+	
+	public Drawable resizeBackgroundDrawable(Drawable drawable)
+	{
+		return drawable;
+	}
+	
+	@Override
+	public void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
+	{
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		
+		int width = MeasureSpec.getSize(widthMeasureSpec);
+		int height = MeasureSpec.getSize(heightMeasureSpec);
+		
+		Log.d("StretchedBackgroundTableLayout", "Width: " + width + ", Height: " + height);
+	}
+	
+	@Override
+	public void onLayout(boolean changed, int left, int top, int right, int bottom)
+	{
+		super.onLayout(changed, left, top, right, bottom);
+		Drawable background = this.getBackground();
+		
+		if (background != null)
+		{
+			int imageWidth = right - left;
+			int imageHeight = bottom - top;
+			
+			Log.d("StretchedBackgroundTableLayout", "Width: " + imageWidth + ", Height: " + imageHeight + ", left: " + left + ", right: " + right + ", top: " + top + ", bottom: " + bottom);
+			
+			if (background instanceof NinePatchDrawable)
+			{
+				NinePatchDrawable nineDrawable = (NinePatchDrawable) background;
+				
+				nineDrawable.setBounds(left, top, right, bottom);
+				
+				this.setBackgroundDrawable(nineDrawable);
+			}
+			else
+			{
+				Bitmap bitmap = ((BitmapDrawable) background).getBitmap();
+				
+				Drawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, imageWidth, imageHeight, false));
+				
+				this.setBackgroundDrawable(d);
+			}
+		}
+	}
+
+}

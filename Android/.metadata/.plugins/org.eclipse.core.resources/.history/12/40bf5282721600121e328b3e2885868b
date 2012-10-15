@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="@android:color/transparent">
+    <include layout="@layout/header" 
+        android:id="@+id/header_detail"/>
+    <ScrollView
+        android:id="@+id/event_detail_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:background="@android:color/transparent">
+		<LinearLayout
+		    android:layout_height="wrap_content"
+		    android:layout_width="match_parent"
+		    android:orientation="vertical" >
+	        <com.motlee.android.layouts.StretchedBackgroundTableLayout
+	            android:id="@+id/event_detail_info"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:paddingTop="10dp"
+	            android:paddingBottom = "10dp"
+	            android:shrinkColumns="*"/>
+	
+	      <LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:weightSum="1"
+	            android:paddingTop="10dp"
+	            android:paddingBottom="10dp">
+	            
+	            <FrameLayout
+			        android:layout_height="match_parent"
+			        android:layout_width="0dp"
+			        android:layout_weight="0.5" >
+				    <com.motlee.android.view.HorizontalAspectImageButton 
+				        android:id="@+id/label_split_button_left"
+				        android:layout_width="match_parent"
+				        android:layout_height="wrap_content"
+				        android:src="@drawable/label_split_button_left"
+				        android:background="@android:color/transparent" >
+				        
+				        <ImageView 
+			                android:layout_height="match_parent"
+			                android:layout_width="wrap_content"
+			                android:scaleType="fitCenter"
+			                android:src="@drawable/label_split_button_divider"/>
+				        
+					</com.motlee.android.view.HorizontalAspectImageButton>				    
+				    <TextView 
+				        android:id="@+id/label_split_button_left_text"
+			    	    android:layout_width="match_parent"
+				        android:layout_height="match_parent"
+				        android:gravity="center|center_vertical"
+				        android:padding="5dp"
+				        android:background="@android:color/transparent" />
+			    </FrameLayout>
+	            
+	            <ImageView 
+	                android:layout_height="match_parent"
+	                android:layout_width="wrap_content"
+	                android:scaleType="fitXY"
+	                android:src="@drawable/label_split_button_divider"/>
+	            
+	            <FrameLayout
+			        android:layout_height="match_parent"
+			        android:layout_width="0dp"
+			        android:layout_weight="0.5" >
+				    <com.motlee.android.view.HorizontalAspectImageButton 
+				        android:id="@+id/label_split_button_right"
+				        android:layout_width="match_parent"
+				        android:layout_height="wrap_content"
+				        android:src="@drawable/label_split_button_right"
+				        android:background="@android:color/transparent" />
+				    
+				    <TextView 
+				        android:id="@+id/label_split_button_right_text"
+			    	    android:layout_width="match_parent"
+				        android:layout_height="match_parent"
+				        android:gravity="center|center_vertical"
+				        android:padding="5dp"
+				        android:background="@android:color/transparent" />
+			    </FrameLayout>
+
+	        </LinearLayout>
+	        
+		    <com.motlee.android.layouts.GridListTableLayout
+		        android:id="@+id/event_detail_grid_list"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:padding="20dp"
+		        android:background="@drawable/label_button_background"
+		        android:shrinkColumns="*" />
+	    </LinearLayout>
+    </ScrollView>
+</LinearLayout>

@@ -15,6 +15,11 @@ public class GlobalVariables {
     
     private Typeface helveticaNeueBoldFont;
     
+    public static String FOMOS = "fomos";
+    public static String ATTENDEES = "attendees";
+    public static String DATE = "date";
+    public static String LOCATION = "location";
+    
 	private static GlobalVariables instance;
 	
 	public static synchronized GlobalVariables getInstance()

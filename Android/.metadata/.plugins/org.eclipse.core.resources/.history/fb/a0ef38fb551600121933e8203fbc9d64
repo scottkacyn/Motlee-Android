@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <com.motlee.android.layouts.RatioBackgroundLinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:background="@drawable/label_button_no_arrow"
+        android:weightSum="1" >
+        
+	        <LinearLayout
+		        android:layout_width="0dp"
+		        android:layout_height="match_parent" 
+		        android:gravity="left|center_vertical"
+		        android:paddingLeft="11dp"
+		        android:layout_weight="0.50"
+		        android:weightSum="1">
+		        <ImageView
+		            android:id="@+id/label_button_icon_pictures"
+		            android:layout_width="0dp"
+		            android:layout_height="match_parent"
+		            android:src="@drawable/icon_photos_normal"
+		            android:layout_gravity="center_vertical"
+		            android:layout_weight=".4" />
+			    <TextView 
+			        android:id="@+id/label_button_text_pictures"
+		    	    android:layout_width="0dp"
+			        android:layout_height="wrap_content"
+			        android:gravity="left|center_vertical"
+			        android:layout_weight=".6"
+			        android:padding="5dp"
+			        android:paddingLeft="15dp"
+			        android:background="@android:color/transparent" />
+		    </LinearLayout>
+		    
+		    <com.motlee.android.view.VerticalAspectImageButton 
+		        android:id="@+id/label_button_grid_view"
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:scaleType="fitCenter"
+		        android:gravity="center_vertical"
+		        android:layout_weight="0.13"
+		        android:padding="10dp"
+		        android:src="@drawable/icon_grid_view"
+		        android:background="@android:color/transparent"
+		        android:onClick="switchToGridView" />
+		    	    
+		  	<com.motlee.android.view.VerticalAspectImageButton 
+		        android:id="@+id/label_button_list_view"
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:scaleType="fitCenter"
+		        android:gravity="center_vertical"
+		        android:layout_weight="0.13"
+     		    android:padding="10dp"
+		        android:src="@drawable/icon_list_view"
+		        android:background="@android:color/transparent"
+		        android:contentDescription="listView"
+		        android:onClick="switchToListView" />
+		  	
+		  	<com.motlee.android.view.VerticalAspectImageButton 
+		        android:id="@+id/label_button_comment"
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:scaleType="fitCenter"
+		        android:gravity="left|center_vertical"
+		        android:layout_weight="0.24"
+		        android:padding="10dp"
+		        android:src="@drawable/icon_comment"
+		        android:background="@android:color/transparent" />
+    </com.motlee.android.layouts.RatioBackgroundLinearLayout>

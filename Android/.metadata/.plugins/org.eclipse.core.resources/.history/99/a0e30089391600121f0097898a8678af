@@ -1,0 +1,248 @@
+package com.motlee.android.fragment;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import com.motlee.android.R;
+import com.motlee.android.adapter.EventListAdapter;
+import com.motlee.android.layouts.GridListTableLayout;
+import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.EventItem;
+import com.motlee.android.object.EventItemWithBody;
+import com.motlee.android.object.EventListParams;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.view.HorizontalAspectImageButton;
+
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.TableLayout.LayoutParams;
+
+public class EventDetailFragment extends Fragment {
+	private String tag = "EventDetailFragment";
+	
+	private static final String JOIN = "Join";
+	private static final String EDIT = "Edit";
+	private static final String LEAVE = "Leave";
+	
+	private EventDetail mEventDetail;
+	
+	private String pageTitle = "All Events";
+	
+	private GridListTableLayout girdListTableLayout;
+	private StretchedBackgroundTableLayout eventInfoLayout;
+	
+	private Boolean onCreateViewHasBeenCalled = false;
+	
+	private View view;
+	
+	private LayoutInflater inflater;
+	
+	/*@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+	    String[] links = getResources().getStringArray(R.array.tut_links);
+	    String content = links[position];
+	    Intent showContent = new Intent(getActivity().getApplicationContext(),
+	            TutViewerActivity.class);
+	    showContent.setData(Uri.parse(content));
+	    startActivity(showContent);
+	}*/
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+	    super.onCreate(savedInstanceState);
+	    Log.w(tag, "onCreate");
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+		
+		Log.w(tag, "onCreateView");
+		
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.activity_event_detail, null);
+		
+		girdListTableLayout = (GridListTableLayout) view.findViewById(R.id.event_detail_grid_list);
+		eventInfoLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_detail_info);
+		
+		eventInfoLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		
+		if (mEventDetail != null)
+		{
+			addListToTableLayout();
+		}
+		
+		if (mEventDetail != null)
+		{
+			setNavigationButtons();
+		}
+		
+		TextView tv = (TextView) view.findViewById(R.id.header_textView);
+		tv.setText(pageTitle);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		
+		View headerRightButton = view.findViewById(R.id.header_right_layout_button);
+		headerRightButton.setVisibility(View.VISIBLE);
+		
+		View headerLeftButton = view.findViewById(R.id.header_left_button);
+		headerLeftButton.setVisibility(View.VISIBLE);
+		
+		tv = (TextView) view.findViewById(R.id.header_right_text);
+		tv.setText(JOIN);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		
+		onCreateViewHasBeenCalled = true;
+		
+		return view;
+	}
+
+	public void addEventDetail(EventDetail eDetail) {
+		Log.w(tag, "addEventDetail");
+		mEventDetail = eDetail;
+		this.pageTitle = mEventDetail.getEventName();
+		if (girdListTableLayout != null)
+		{
+			addListToTableLayout();
+		}
+		
+		if (view != null)
+		{
+			setNavigationButtons();
+		}
+	}
+	
+	private void setNavigationButtons()
+	{
+		eventInfoLayout.removeAllViews();
+		
+		setLabelButton(mEventDetail.getDateString(), getResources().getDrawable(R.drawable.icon_time_normal));
+		
+		setLabelButton(mEventDetail.getLocationInfo().locationDescription, getResources().getDrawable(R.drawable.icon_time_normal));
+		
+		setLabelButton(mEventDetail.getAttendees().size() + " People", getResources().getDrawable(R.drawable.icon_time_normal));
+		
+		setLabelButton(mEventDetail.getFomos().size() + " FOMOs", getResources().getDrawable(R.drawable.icon_time_normal));
+		
+		setPictureButton(mEventDetail.getImages().size() + " Pictures");
+	}
+
+	private void setLabelButton(String labelText, Drawable image) {
+		View labelButton = this.inflater.inflate(R.layout.event_detail_info_button, null);
+		
+		ImageView imageView = (ImageView) labelButton.findViewById(R.id.label_button_icon);
+		imageView.setImageDrawable(image);
+		
+		TextView textView = (TextView) labelButton.findViewById(R.id.label_button_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(labelText);
+		
+		TableRow tr = new TableRow(getActivity());
+		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tr.setLayoutParams(lp);
+		tr.addView(labelButton);
+		eventInfoLayout.addView(tr);
+	}
+	
+	private void setPictureButton(String labelText, Drawable image)
+	{
+		View labelButton = this.inflater.inflate(R.layout.event_detail_info_button_pictures, null);
+		
+		TextView textView = (TextView) labelButton.findViewById(R.id.label_button_text_pictures);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(labelText);
+		
+		disableImageButton((ImageButton) labelButton.findViewById(R.id.label_button_list_view));
+		
+		TableRow tr = new TableRow(getActivity());
+		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tr.setLayoutParams(lp);
+		tr.addView(labelButton);
+		eventInfoLayout.addView(tr);
+	}
+	
+	private void disableImageButton(ImageButton imageButton)
+	{
+		if (imageButton != null)
+		{
+			imageButton.setClickable(false);
+			imageButton.setEnabled(false);
+			imageButton.setPadding(5, 5, 5, 5);
+		}
+	}
+	
+	private void enableImageButton(ImageButton imageButton)
+	{
+		if (imageButton != null)
+		{
+			imageButton.setClickable(true);
+			imageButton.setEnabled(true);
+			imageButton.setPadding(10, 10, 10, 10);
+		}
+	}
+	
+	public void switchToListView(View view)
+	{
+		addListToTableLayout();
+	}
+	
+	public void switchToGridView(View view)
+	{
+		addGridToTableLayout();
+	}
+	
+	public void addListToTableLayout()
+	{
+		List<EventItemWithBody> storyPhotoList = new ArrayList<EventItemWithBody>();
+		
+		storyPhotoList.addAll(mEventDetail.getStories());
+		
+		storyPhotoList.addAll(mEventDetail.getImages());
+		
+		Collections.sort(storyPhotoList);
+		
+		girdListTableLayout.addList(storyPhotoList);
+		
+		enableImageButton((ImageButton) eventInfoLayout.findViewById(R.id.label_button_grid_view));
+		
+		disableImageButton((ImageButton) eventInfoLayout.findViewById(R.id.label_button_list_view));
+	}
+	
+	public void addGridToTableLayout()
+	{
+		girdListTableLayout.addGrid(mEventDetail.getImages());
+		
+		enableImageButton((ImageButton) eventInfoLayout.findViewById(R.id.label_button_list_view));
+		
+		disableImageButton((ImageButton) eventInfoLayout.findViewById(R.id.label_button_grid_view));
+	}
+	
+	public void setEventDetailParams(EventListParams params)
+	{
+		this.pageTitle = params.headerText;
+		
+		if (onCreateViewHasBeenCalled)
+		{
+			TextView view = (TextView) getActivity().findViewById(R.id.header_textView);
+			
+			if (view != null)
+			{
+				view.setText(pageTitle);
+			}
+		}
+	}
+}

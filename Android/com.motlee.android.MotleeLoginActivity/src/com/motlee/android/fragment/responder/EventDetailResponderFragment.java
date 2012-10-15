@@ -26,6 +26,7 @@ import com.motlee.android.event.UserInfoEvent;
 import com.motlee.android.event.UserInfoListener;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventItem;
+import com.motlee.android.object.EventItemWithBody;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.NoExposeExclusionStrategy;
@@ -176,7 +177,7 @@ public class EventDetailResponderFragment extends ResponderFragment {
 		
     	for (JsonElement element : array)
     	{
-    		EventItem story = gson.fromJson(element, StoryHolder.class).story;
+    		EventItemWithBody story = gson.fromJson(element, StoryHolder.class).story;
     		
     		story.type = EventItemType.STORY;
     		
@@ -193,7 +194,7 @@ public class EventDetailResponderFragment extends ResponderFragment {
 
     private class StoryHolder
     {
-    	public EventItem story;
+    	public EventItemWithBody story;
     	
     	public StoryHolder()
     	{
@@ -247,7 +248,7 @@ public class EventDetailResponderFragment extends ResponderFragment {
        		    
        		    for (int i = 0; i < URLS.length; i++)
        		    {
-       		    	PhotoItem photo = new PhotoItem(eDetail.getEventID(), "Hot Tits!", EventItemType.PICTURE, eDetail.getOwnerID(), new Date(), URLS[i]);
+       		    	PhotoItem photo = new PhotoItem(eDetail.getEventID(), EventItemType.PICTURE, eDetail.getOwnerID(), new Date(), "Hot Tits!", URLS[i]);
        		    	
        		    	eDetail.getImages().add(photo);
        		    }
@@ -287,58 +288,6 @@ public class EventDetailResponderFragment extends ResponderFragment {
     	{
     		
     	}
-    }
-    
-    private static String getMockJson()
-    {
-    	String picURL = "http://lh3.ggpht.com/_loGyjar4MMI/S-InZA8YsZI/AAAAAAAADH8/csssVxalPcc/s144-c/Seahorse.jpg";
-    	Date startTime = new Date();
-    	startTime.setDate(3);
-    	startTime.setMonth(10);
-    	startTime.setYear(2012);
-    	
-    	Date endTime = new Date();
-    	endTime.setDate(4);
-    	endTime.setMonth(10);
-    	endTime.setYear(2012);
-    	
-    	LocationInfo locInfo = new LocationInfo("My House", 49, -87);
-    	
-    	UserInfo eventOwner = new UserInfo(26, 28765, "Zachary Martinsek", "zackmartinsek@gmail.com", Gender.Male, picURL, startTime);
-    	
-    	UserInfo fomo1 = new UserInfo(26, 28765, "Elin Rhodus", "zackmartinsek@gmail.com", Gender.Male, picURL, startTime);
-    	
-    	UserInfo fomo2 = new UserInfo(26, 28765, "Brett Adlard", "zackmartinsek@gmail.com", Gender.Male, picURL, startTime);
-    	
-    	UserInfo attendee1 = new UserInfo(26, 28765, "Emil Martinsek", "zackmartinsek@gmail.com", Gender.Male, picURL, startTime);
-    	
-    	UserInfo attendee2 = new UserInfo(26, 28765, "Matt Martinsek", "zackmartinsek@gmail.com", Gender.Male, picURL, startTime);
-    	
-    	Collection<Integer> fomos = new ArrayList<Integer>();
-    	
-    	fomos.add(fomo1.userID);
-    	fomos.add(fomo2.userID);
-    	
-    	Collection<Integer> attendees = new ArrayList<Integer>();
-    	
-    	attendees.add(attendee1.userID);
-    	attendees.add(attendee2.userID);
-    	
-    	EventDetail eDetail = new EventDetail();
-    	eDetail.setEventName("My Party");
-    	eDetail.setStartTime(startTime);
-    	eDetail.setEndTime(endTime);
-    	eDetail.setLocationInfo(locInfo);
-    	eDetail.getAttendees().addAll(attendees);
-    	eDetail.getFomos().addAll(fomos);
-    	
-    	Collection<String> imageURLs = Arrays.asList(URLS);
-    	
-    	eDetail.getImageURLs().addAll(imageURLs);
-    	
-    	Gson gson = new Gson();
-    	
-    	return gson.toJson(eDetail);
     }
     
     private static final String[] URLS = {

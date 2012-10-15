@@ -1,0 +1,40 @@
+package com.motlee.android.layouts;
+
+import com.motlee.android.object.GlobalVariables;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
+import android.view.Display;
+import android.widget.TableLayout;
+
+public class StretchedBackgroundTableLayout extends TableLayout {
+
+	public StretchedBackgroundTableLayout(Context context) {
+		super(context);
+		
+	}
+
+	public StretchedBackgroundTableLayout(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		
+	}
+	
+	@Override
+	public void onLayout(boolean changed, int left, int top, int right, int bottom)
+	{
+		Drawable background = this.getBackground();
+		
+		Bitmap bitmap = ((BitmapDrawable) background).getBitmap();
+		
+		int imageWidth = right - left;
+		int imageHeight = bottom - top;
+		
+		Drawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, imageWidth, imageHeight, false));
+	}
+
+}

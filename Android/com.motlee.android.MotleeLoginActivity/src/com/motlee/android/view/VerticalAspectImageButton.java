@@ -17,20 +17,25 @@ public class VerticalAspectImageButton extends ImageButton {
 	
 	public VerticalAspectImageButton(Context context) {
 		super(context);
-		// TODO Auto-generated constructor stub
+		init();
 	}
 
 	public VerticalAspectImageButton(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		// TODO Auto-generated constructor stub
+		init();
 	}
 
 	public VerticalAspectImageButton(Context context, AttributeSet attrs,
 			int defStyle) {
 		super(context, attrs, defStyle);
-		// TODO Auto-generated constructor stub
+		init();
 	}
 
+	public void init()
+	{
+		this.setBackgroundColor(android.R.color.transparent);
+		this.setScaleType(ScaleType.FIT_CENTER);
+	}
 	
 	/* Overriding onMeasure() because the current work flow pulls in the image
 	 * uses that image size as a view size requirement. So if the width is constricted 
@@ -52,16 +57,12 @@ public class VerticalAspectImageButton extends ImageButton {
 			int width = MeasureSpec.getSize(widthMeasureSpec);
 			int height = MeasureSpec.getSize(heightMeasureSpec);
 			
-			Log.d("HorizonalAspectImageButton.onMeasure", "PreScaling: Width: " + width + ", Height: " + height);
-			
 			float scaleFactor = ((float) height) / bitmap.getHeight();
 	
 			Matrix scale = new Matrix();
 			scale.postScale(scaleFactor, scaleFactor);
 			
 			width = (int)(((float) bitmap.getWidth()) * scaleFactor);
-			
-			Log.d("HorizonalAspectImageButton.onMeasure", "PostScaling: Width: " + width + ", Height: " + height);
 			
 			this.setMeasuredDimension(width, height);
 		}

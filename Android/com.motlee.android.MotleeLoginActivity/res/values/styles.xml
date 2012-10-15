@@ -4,6 +4,7 @@
         <item name="android:windowBackground">@drawable/app_background</item>
         <item name="android:listViewStyle">@style/TransparentListView</item>
         <item name="android:expandableListViewStyle">@style/TransparentExpandableListView</item>
+        <item name="android:windowAnimationStyle">@null</item>
     </style>
 
  	<style name="TransparentListView" parent="@android:style/Widget.ListView">

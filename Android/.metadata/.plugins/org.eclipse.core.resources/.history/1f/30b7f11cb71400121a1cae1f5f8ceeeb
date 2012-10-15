@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@android:color/transparent">
+    
+    
+    <FrameLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" >
+	    <ImageView
+	        android:id="@+id/label_button_pictures"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:scaleType="fitCenter"
+	        android:src="@drawable/label_button_normal"
+	        android:background="@android:color/transparent" />
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:weightSum="1" >
+		    <TextView 
+		        android:id="@+id/label_button_text_pictures"
+	    	    android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:gravity="left|center_vertical"
+		        android:padding="5dp"
+		        android:paddingLeft="15dp"
+		        android:layout_weight="0.64"
+		        android:background="@android:color/transparent" />
+		    
+		    <com.motlee.android.view.HorizontalAspectImageButton 
+		        android:id="@+id/label_button_grid_view"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:scaleType="fitCenter"
+		        android:gravity="center_vertical"
+		        android:layout_weight="0.12"
+		        android:src="@drawable/icon_list_view"
+		        android:background="@android:color/transparent" />
+		    	    
+		  	<com.motlee.android.view.HorizontalAspectImageButton 
+		        android:id="@+id/label_button_list_view"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:scaleType="fitCenter"
+		        android:gravity="center_vertical"
+		        android:layout_weight="0.12"
+		        android:src="@drawable/label_button"
+		        android:background="@android:color/transparent" />
+		  	
+		  	<com.motlee.android.view.HorizontalAspectImageButton 
+		        android:id="@+id/label_button_comment"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:scaleType="fitCenter"
+		        android:gravity="center_vertical"
+		        android:layout_weight="0.12"
+		        android:src="@drawable/label_button"
+		        android:background="@android:color/transparent" />
+	  	</LinearLayout>
+    </FrameLayout>
+
+</LinearLayout>

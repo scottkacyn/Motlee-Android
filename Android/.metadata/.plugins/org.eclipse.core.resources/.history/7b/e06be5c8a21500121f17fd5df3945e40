@@ -1,0 +1,9 @@
+     <shared.ui.actionscontentview.ActionsContentView
+         xmlns:android="http://schemas.android.com/apk/res/android"
+          android:id="@+id/main_menu"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:background="@android:color/transparent"
+          app:actions_layout="@layout/actions"
+          app:actions_spacing="@dimen/actions_spacing"
+          app:content_layout="@layout/content"/>

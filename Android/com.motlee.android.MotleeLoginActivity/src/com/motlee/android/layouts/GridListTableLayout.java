@@ -11,6 +11,7 @@ import com.motlee.android.R;
 import com.motlee.android.adapter.ImageAdapter;
 import com.motlee.android.enums.EventItemType;
 import com.motlee.android.object.EventItem;
+import com.motlee.android.object.EventItemWithBody;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.UserInfoList;
@@ -22,9 +23,13 @@ import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.MeasureSpec;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -34,11 +39,11 @@ import android.widget.TextView;
  * @author zackmartinsek
  *
  */
-public class GridListTableLayout extends TableLayout {
+public class GridListTableLayout extends StretchedBackgroundTableLayout {
 
 	private LayoutInflater inflater;
 	
-	private final ImageLoader imageDownloader;
+	private ImageLoader imageDownloader;
 	
 	private Context context;
 	
@@ -48,11 +53,7 @@ public class GridListTableLayout extends TableLayout {
 		
 		this.context = context;
 		
-		inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-		
-		imageDownloader = ImageLoader.getInstance();
-    	
-    	imageDownloader.init(ImageLoaderConfiguration.createDefault(context));
+		init();
 	}
 	
 	public GridListTableLayout(Context context, AttributeSet set) {
@@ -60,18 +61,23 @@ public class GridListTableLayout extends TableLayout {
 		
 		this.context = context;
 		
+		init();
+	}
+
+	private void init()
+	{
 		inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
 		
 		imageDownloader = ImageLoader.getInstance();
     	
     	imageDownloader.init(ImageLoaderConfiguration.createDefault(context));
 	}
-
-	public void addList(Collection<EventItem> collection)
+	
+	public void addList(Collection<EventItemWithBody> collection)
 	{
 		this.removeAllViews();
 		
-		for (EventItem item : collection)
+		for (EventItemWithBody item : collection)
 		{
 			View view = this.inflate(context, R.layout.event_detail_page_item, null);
 			
@@ -115,9 +121,8 @@ public class GridListTableLayout extends TableLayout {
 			}
 			
 			TableRow tr = new TableRow(getContext());
-			LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+			TableRow.LayoutParams lp = new TableRow.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 			tr.setLayoutParams(lp);
-			
 			tr.addView(view);
 			
 			this.addView(tr);
@@ -156,11 +161,10 @@ public class GridListTableLayout extends TableLayout {
 				tr = new TableRow(context);
 			}
 			
-			LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-			tr.setLayoutParams(lp);
+			View view = this.inflate(context, R.layout.thumbnail, null);
 			
-			ImageView view = new ImageView(context);
-			
+			ImageView imageView = (ImageView) view.findViewById(R.id.imageThumbnail);
+
       		ImageScaleType ist = ImageScaleType.EXACTLY;
 	    	
 			DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -172,7 +176,7 @@ public class GridListTableLayout extends TableLayout {
 			.displayer(new SimpleBitmapDisplayer())
 			.build();
 	    	
-	        imageDownloader.displayImage(imageArray[i].url, view, options);		
+	        imageDownloader.displayImage(imageArray[i].url, imageView, options);		
 	        
 			tr.addView(view);
 			

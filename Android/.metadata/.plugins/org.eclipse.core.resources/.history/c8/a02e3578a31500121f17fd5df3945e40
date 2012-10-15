@@ -1,0 +1,12 @@
+     <FrameLayout 
+         xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+     <shared.ui.actionscontentview.ActionsContentView
+          android:id="@+id/main_menu"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:background="@android:color/transparent"
+          app:actions_layout="@layout/main_menu"
+          app:content_layout="@layout/main"/>
+     </FrameLayout>

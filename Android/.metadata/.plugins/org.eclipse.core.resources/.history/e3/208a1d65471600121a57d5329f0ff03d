@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="@android:color/transparent">
+    <include layout="@layout/header" 
+        android:id="@+id/header_detail"/>
+    <ScrollView
+        android:id="@+id/event_detail_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:background="@android:color/transparent">
+		<LinearLayout
+		    android:layout_height="wrap_content"
+		    android:layout_width="match_parent"
+		    android:orientation="vertical" >
+	        <com.motlee.android.layouts.StretchedBackgroundTableLayout
+	            android:id="@+id/event_detail_info"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:stretchColumns="*"/>
+	
+		    <com.motlee.android.layouts.GridListTableLayout
+		        android:id="@+id/event_detail_grid_list"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:padding="10dp"
+		        android:background="@drawable/label_button_background"
+		        android:shrinkColumns="*" />
+	    </LinearLayout>
+    </ScrollView>
+</LinearLayout>

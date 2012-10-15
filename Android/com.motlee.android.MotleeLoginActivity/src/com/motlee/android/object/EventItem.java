@@ -7,8 +7,6 @@ import com.motlee.android.enums.EventItemType;
 
 public class EventItem implements Comparable<EventItem> {
 	
-	public String body;
-	
 	public Integer event_id;
 	
 	public EventItemType type;
@@ -19,10 +17,9 @@ public class EventItem implements Comparable<EventItem> {
 	
 	public ArrayList<EventItem> comments;
 	
-	public EventItem(Integer eventID, String body, EventItemType type, Integer userID, Date timeCreated)
+	public EventItem(Integer eventID, EventItemType type, Integer userID, Date timeCreated)
 	{
 		this.event_id = eventID;
-		this.body = body;
 		this.type = type;
 		this.user_id = userID;
 		this.created_at = timeCreated;

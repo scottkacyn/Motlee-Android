@@ -32,8 +32,6 @@ public class EventDetailActivity extends FragmentActivity {
         FragmentManager     fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
         
-        //Fragment fragment = fm.findFragmentById(R.id.fragment_content);
-        
         EventDetailFragment eventDetailFragment = new EventDetailFragment();
 
         eventDetailFragment.addEventDetail(eDetail);
@@ -41,7 +39,6 @@ public class EventDetailActivity extends FragmentActivity {
         ft.add(R.id.fragment_content, eventDetailFragment);
         
         ft.commit();
-        //eDetail.get
     }
 	
     public void switchToGridView(View view)
@@ -49,14 +46,6 @@ public class EventDetailActivity extends FragmentActivity {
     	EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
     	
     	fragment.addGridToTableLayout();
-    	
-    	/*ImageButton button = (ImageButton) findViewById(R.id.event_detail_picture_gridview);
-    	
-    	button.setImageResource(R.drawable.event_detail_picture_gridview_on);
-    	
-    	button = (ImageButton) findViewById(R.id.event_detail_picture_listview);
-    	
-    	button.setImageResource(R.drawable.event_detail_picture_listview);*/
     }
     
     public void switchToListView(View view)
@@ -64,13 +53,21 @@ public class EventDetailActivity extends FragmentActivity {
     	EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
     	
     	fragment.addListToTableLayout();
+    }
+    
+    public void goBack(View view)
+    {
+    	finish();
+    }
+    
+    public void seeMoreDetail(View view)
+    {
+    	String description = view.getContentDescription().toString();
     	
-    	/*ImageButton button = (ImageButton) findViewById(R.id.event_detail_picture_listview);
+    	Intent eventDetail = new Intent(EventDetailActivity.this, EventDetailActivity.class);
     	
-    	button.setImageResource(R.drawable.event_detail_picture_listview_on);
+    	eventDetail.putExtra("DetailDescription", description);
     	
-    	button = (ImageButton) findViewById(R.id.event_detail_picture_gridview);
-    	
-    	button.setImageResource(R.drawable.event_detail_picture_gridview);*/
+    	startActivity(eventDetail);
     }
 }
