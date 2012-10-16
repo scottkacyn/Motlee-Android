@@ -7,5 +7,6 @@
     <string name="title_login_page">Motlee</string>
     <string name="facebook_app_id">"283790891721595"</string>
     <string name="title_event_detail_activity">EventDetailActivity</string>
+    <string name="title_more_event_detail_activity">MoreEventDetailActivity</string>
     
 </resources>

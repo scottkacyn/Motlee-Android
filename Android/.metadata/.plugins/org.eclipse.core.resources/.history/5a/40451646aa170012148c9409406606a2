@@ -1,0 +1,125 @@
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@android:color/transparent">
+	<com.motlee.android.layouts.RatioBackgroundRelativeLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content" 
+	    android:background="@drawable/event_list_detail_background">
+	
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	    	android:layout_height="match_parent"
+	    	android:id="@+id/event_top"
+	    	android:layout_below="event_middle"
+	    	android:orientation="vertical" >
+		    <com.motlee.android.layouts.HorizontalRatioLinearLayout
+		        android:id="@+id/event_header"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:background="@drawable/event_list_detail_header_background"
+		        android:weightSum="1"
+		        android:clickable="true"
+		        android:onClick="onClickGetEventDetail"
+		        >
+			        <TextView android:id="@+id/event_header_name"
+						android:layout_width="0dp"
+						android:layout_weight="0.5"
+			            android:layout_height="match_parent"
+			            android:gravity="left|center_vertical"
+			            style="@style/CodeFont"
+			            android:paddingLeft="3dp" />
+			        
+			        
+			        <TextView android:id="@+id/event_header_time"
+						android:layout_width="0dp"
+						android:layout_weight="0.4"
+			            android:layout_height="match_parent"
+			            android:gravity="right|center_vertical"
+			            style="@style/CodeFont"
+			            android:paddingRight="3dp" />
+			        
+			        <ImageView android:id="@+id/get_event_detail"
+			            android:layout_width="0dp"
+			            android:layout_weight="0.1"
+			            android:layout_height="match_parent"
+			            android:src="@drawable/navigation_arrow"
+			            android:padding="6dp"
+			            android:scaleType="fitCenter"
+			            android:background="@android:color/transparent"
+			            android:contentDescription="Arrow"
+						/>
+		    </com.motlee.android.layouts.HorizontalRatioLinearLayout>
+	
+		    
+		    <LinearLayout android:id="@+id/event_middle"
+		        android:baselineAligned="false"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:weightSum="1.0">
+		        <LinearLayout android:id="@+id/fomos"
+		            android:layout_width="0dp"
+		            android:layout_weight=".20"
+		            android:layout_height="fill_parent"
+		            android:weightSum="1"
+		            android:orientation="vertical">
+			        <com.motlee.android.view.HorizontalAspectImageButton
+			            android:id="@+id/fomo_button"
+						android:layout_width="match_parent"
+			            android:layout_height="wrap_content"
+			            android:padding="15dp"
+			            android:src="@drawable/event_list_detail_button_fomo"
+			            android:scaleType="fitCenter"
+			            android:gravity="center"
+			            android:layout_weight="0.5"
+			            android:background="@android:color/transparent" /> 
+			            
+			        <TextView android:id="@+id/fomo_count"
+						android:layout_width="match_parent"
+			            android:layout_height="wrap_content"
+			            android:background="@android:color/transparent"
+			            android:padding="3dp"
+			            android:layout_weight="0.5"
+			            android:gravity="center"/>     
+		            
+		        </LinearLayout>
+		        <com.motlee.android.view.HorizontalListView
+		          	android:id="@+id/listview"
+		  			android:layout_width="0dp"
+		  			android:layout_weight=".80"
+		  			android:layout_height="100dp"
+		  			android:background="@android:color/transparent" />
+		            
+		    </LinearLayout>
+		    
+			   	    <com.motlee.android.layouts.HorizontalRatioLinearLayout android:id="@+id/event_footer"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:background="@drawable/event_list_detail_footer_background"
+		        >
+		        
+		        <TextView android:id="@+id/event_footer_owner"
+					android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            style="@style/CodeFont"
+		            android:paddingLeft="3dp"/>
+		        
+		        
+		        <TextView android:id="@+id/event_footer_location"
+					android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            style="@style/CodeFont"
+		            android:paddingRight="3dp"/>
+		                    
+		    </com.motlee.android.layouts.HorizontalRatioLinearLayout>
+		</LinearLayout>
+	</com.motlee.android.layouts.HorizontalRatioLinearLayout>
+	<View
+        android:layout_width="fill_parent"
+        android:layout_height="10dp"
+	    android:background="@android:color/transparent" >
+    </View>
+</LinearLayout>

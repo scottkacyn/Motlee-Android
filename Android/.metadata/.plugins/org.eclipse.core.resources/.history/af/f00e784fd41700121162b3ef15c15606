@@ -1,0 +1,8 @@
+package com.motlee.android.object;
+
+import com.google.android.maps.ItemizedOverlay;
+import com.google.android.maps.Overlay;
+
+public class MarkerItemizedOverlay extends ItemizedOverlay<OverlayItem> {
+
+}

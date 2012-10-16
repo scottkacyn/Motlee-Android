@@ -1,0 +1,13 @@
+package com.motlee.android.object;
+
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.OverlayItem;
+
+public class OverlayItemExtended extends OverlayItem {
+
+	public OverlayItemExtended(GeoPoint point, String title, String snippet) {
+		super(point, title, snippet);
+		// TODO Auto-generated constructor stub
+	}
+
+}

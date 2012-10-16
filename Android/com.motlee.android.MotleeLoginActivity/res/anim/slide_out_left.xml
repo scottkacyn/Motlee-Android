@@ -7,6 +7,6 @@ android:shareInterpolator="true">
     android:toXDelta="-100%"
     android:fromYDelta="0%"
     android:toYDelta="0%"
-    android:duration="700">
+    android:duration="400">
 </translate>
 </set>

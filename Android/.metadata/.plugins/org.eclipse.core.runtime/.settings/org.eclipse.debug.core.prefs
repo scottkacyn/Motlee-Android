@@ -1,2 +1,2 @@
 eclipse.preferences.version=1
-prefWatchExpressions=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?>\n<watchExpressions>\n<expression enabled\="true" text\="item.getDateString()"/>\n<expression enabled\="true" text\="Integer.toString(item.getFomos().size())"/>\n<expression enabled\="true" text\="item.getEventOwnerSummaryString()"/>\n<expression enabled\="true" text\="view"/>\n<expression enabled\="true" text\="((PhotoItem)item).url"/>\n</watchExpressions>\n
+prefWatchExpressions=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?>\n<watchExpressions>\n<expression enabled\="true" text\="tv.getTextSize()"/>\n</watchExpressions>\n

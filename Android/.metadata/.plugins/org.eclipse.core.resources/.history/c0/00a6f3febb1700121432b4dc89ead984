@@ -1,0 +1,65 @@
+package com.motlee.android.fragment;
+
+import com.google.android.maps.MapController;
+import com.google.android.maps.MapView;
+import com.motlee.android.R;
+import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.GlobalVariables;
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+public class LocationFragment extends Fragment {
+
+	private static final String JOIN = "Join";
+	private static final String EDIT = "Edit";
+	private static final String LEAVE = "Leave";
+	
+	private View view;
+	private LayoutInflater inflater;
+	private EventDetail mEventDetail;
+	private String pageTitle = "All Events";
+	
+	private MapController mMapController;
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+	
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.activity_event_detail_location, null);
+		
+		TextView tv = (TextView) view.findViewById(R.id.header_textView);
+		tv.setText(pageTitle);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		
+		View headerRightButton = view.findViewById(R.id.header_right_layout_button);
+		headerRightButton.setVisibility(View.VISIBLE);
+		
+		View headerLeftButton = view.findViewById(R.id.header_left_button);
+		headerLeftButton.setVisibility(View.VISIBLE);
+		
+		tv = (TextView) view.findViewById(R.id.header_right_text);
+		tv.setText(JOIN);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		
+		MapView map = (MapView) view.findViewById(R.id.map_view);
+		map.setBuiltInZoomControls(true);
+		
+		
+		
+		return view;
+	}
+	
+	public void addEventDetail(EventDetail eDetail) {
+		
+		mEventDetail = eDetail;
+		this.pageTitle = mEventDetail.getEventName();
+	}
+}

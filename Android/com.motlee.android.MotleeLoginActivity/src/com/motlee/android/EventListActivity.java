@@ -39,15 +39,10 @@ import android.widget.ListView;
 public class EventListActivity extends FragmentActivity {
 
 	// Fragment Tag Strings
-	private static String LOGIN_PAGE = "LoginPageFragment";
-	private static String MAIN_MENU = "MainMenuFragment";
-	private static String EVENT_LIST = "EventListFragment";
 	private static String EVENT_RESPONDER = "EventResponderFragment";
 	
 	private EventListAdapter eAdapter;
 	private EventListParams eventListParams = new EventListParams("All Events");
-
-	private Boolean mainMenuOpen = false;
 	
 	private Facebook facebook = new Facebook("283790891721595");
 	
@@ -56,10 +51,9 @@ public class EventListActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        
         FragmentManager     fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        
-        //Fragment fragment = fm.findFragmentById(R.id.fragment_content);
         
         EventListFragment eventListFragment = new EventListFragment();
         
@@ -67,17 +61,23 @@ public class EventListActivity extends FragmentActivity {
         
         eventListFragment.addEventListAdapter(eAdapter);
        
-        eventListParams.headerText = "All Events";
+        Intent intent = getIntent();
+        
+        Object listType = null;
+        if (intent.getExtras() != null)
+        {
+        	listType = intent.getExtras().get("ListType");
+        }
+        
+        if (listType != null)
+        {
+        	eventListParams.headerText = listType.toString();
+        }
         
         eventListFragment.setEventListParams(eventListParams);
         
         ft.add(R.id.fragment_content, eventListFragment);
         
-        //fragment = fm.findFragmentById(R.id.main_menu);
-        
-        //MainMenuFragment mainMenuFragment = (MainMenuFragment) fragment;
-        
-        //ft.hide(mainMenuFragment);
         
         EventDetailResponderFragment responder = (EventDetailResponderFragment) fm.findFragmentByTag(EVENT_RESPONDER);
         if (responder == null) {
@@ -96,46 +96,6 @@ public class EventListActivity extends FragmentActivity {
     	return eAdapter;
     }
     
-    
-    //onClickMainMenu: When user clicks on main menu button
-    
-    public void onClickOpenMainMenu(View view)
-    {
-    	MenuFunctions.onClickOpenMainMenu(view, this);
-        
-    	mainMenuOpen = true;
-    	
-        /*contentPage.setOnTouchListener(new OnTouchListener() {
-			
-        	public boolean onTouch(View v, MotionEvent event) {
-				if (event.getAction() == MotionEvent.ACTION_DOWN)
-				{
-					FragmentActivity activity = (FragmentActivity) v.getContext();
-					
-					
-					
-			        FragmentManager     fm = activity.getSupportFragmentManager();
-			        FragmentTransaction ft = fm.beginTransaction();
-			        
-			        MainMenuFragment mainMenuFragment = (MainMenuFragment) fm.findFragmentById(R.id.main_menu);
-			    	
-			        
-			        if (mainMenuFragment == null)
-			        {
-			        	mainMenuFragment = new MainMenuFragment();
-			        }
-			        
-			        ft.hide(mainMenuFragment);
-			        
-			        hideMenu();
-			        
-			        ft.commit();
-				}
-				return false;
-			}
-        });*/
-    }
-    
     public void onClickGetEventDetail(View view)
     {
     	Integer eventID = Integer.parseInt(view.getContentDescription().toString());
@@ -147,104 +107,40 @@ public class EventListActivity extends FragmentActivity {
     	startActivity(eventDetail);
     }
     
+    
+    //onClickMainMenu: When user clicks on main menu button
+    
+    public void onClickOpenMainMenu(View view)
+    {
+    	MenuFunctions.openMainMenu(view, this);
+    }
+    
 	public void onClickShowAllEvents(View view)
 	{
-		EventListParams newParams = new EventListParams("All Events");
-		
-		showNewListView(newParams);
-		
-		hideMenu();
-		
-		showMenuButton();
+		MenuFunctions.showAllEvents(view, this);
 	}
 	
 	public void onClickShowMyEvents(View view)
 	{
-		EventListParams newParams = new EventListParams("My Events");
-		
-		showNewListView(newParams);
-		
-		hideMenu();
-		
-		showMenuButton();
+		MenuFunctions.showMyEvents(view, this);
 	}
 	
 	public void onClickShowNearbyEvents(View view)
 	{
-		EventListParams newParams = new EventListParams("Nearby Events");
-		
-		showNewListView(newParams);
-		
-		hideMenu();
-		
-		showMenuButton();
+		MenuFunctions.showNearbyEvents(view, this);
 	}
 	
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
-		if (mainMenuOpen)
+		
+		if (MenuFunctions.onDispatchTouchOverride(ev, this))
 		{
-		    Rect menuBounds = new Rect();
-		    View view = findViewById(R.id.main_menu);
-		    
-		    view.getDrawingRect(menuBounds);
-	
-		    if (!menuBounds.contains((int) ev.getX(), (int) ev.getY()) && ev.getAction() == MotionEvent.ACTION_DOWN) {
-		        // Tapped outside so we finish the activity
-		    	FragmentManager fm = getSupportFragmentManager();
-		        FragmentTransaction ft = fm.beginTransaction();
-		        
-		        Fragment fragment = fm.findFragmentById(R.id.main_menu);
-		        
-		        if (fragment != null)
-		        {
-			        ft.hide(fragment);
-			        
-			        ft.commit();
-			        
-			        mainMenuOpen = false;
-			        
-			        View menuButton = findViewById(R.id.menu_button);
-			        menuButton.setEnabled(true);
-		        }
-		    }
+			return super.dispatchTouchEvent(ev);
 		}
-	    return super.dispatchTouchEvent(ev);
-	}
-	
-	private void hideMenu()
-	{
-        View menuView = findViewById(R.id.main_menu);
-        
-        menuView.setVisibility(View.GONE);
-	}
-	
-	private void showMenuButton()
-	{
-		View menuButton = findViewById(R.id.menu_button);
-		
-		menuButton.setVisibility(View.VISIBLE);
-	}
-	
-	private void showNewListView(EventListParams params)
-	{
-		FragmentManager fm = this.getSupportFragmentManager();	
-		
-		EventListFragment eventListFragment = new EventListFragment();
-		
-		eventListFragment.addEventListAdapter(eAdapter);
-		
-		eventListFragment.setEventListParams(params);
-		
-		MainMenuFragment mainMenuFragment = (MainMenuFragment) fm.findFragmentById(R.id.main_menu);
-		
-		FragmentTransaction ft = fm.beginTransaction();
-		
-		ft.replace(R.id.fragment_content, eventListFragment);
-		
-		ft.hide(mainMenuFragment);
-		
-		ft.commit();
+		else
+		{
+			return true;
+		}
 	}
 }
 

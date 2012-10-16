@@ -1,0 +1,58 @@
+package com.motlee.android.object;
+
+import java.util.ArrayList;
+
+import android.app.AlertDialog;
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+
+import com.google.android.maps.ItemizedOverlay;
+import com.google.android.maps.MapActivity;
+import com.google.android.maps.MapView;
+import com.google.android.maps.Overlay;
+import com.google.android.maps.OverlayItem;
+import com.motlee.android.R;
+import com.readystatesoftware.mapviewballoons.BalloonItemizedOverlay;
+
+public class MarkerItemizedOverlay extends BalloonItemizedOverlay<OverlayItem> {
+
+	private Context mContext;
+	private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
+	
+	public MarkerItemizedOverlay(Drawable defaultMarker, MapView mapView)
+	{
+		super(boundCenterBottom(defaultMarker), mapView);
+	}
+	
+	public void addOverlay(OverlayItem overlay) {
+	    mOverlays.add(overlay);
+	    populate();
+	}
+	
+	@Override
+	protected OverlayItem createItem(int i) {
+		return mOverlays.get(i);
+	}
+
+	@Override
+	public int size() {
+		
+		return mOverlays.size();
+	}
+
+	@Override
+	protected boolean onTap(int index) {
+		
+	  OverlayItem item = mOverlays.get(index);
+	  
+	  MapActivity mapActivity = (MapActivity) mContext;
+	  
+	  mapActivity.findViewById(R.id.map_view)
+	  
+	  AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
+	  dialog.setTitle(item.getTitle());
+	  dialog.setMessage(item.getSnippet());
+	  dialog.show();
+	  return true;
+	}
+}

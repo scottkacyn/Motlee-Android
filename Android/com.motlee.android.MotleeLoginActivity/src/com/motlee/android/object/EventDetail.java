@@ -192,6 +192,15 @@ public class EventDetail {
 		return reformattedStr;
 	}
 	
+	public String getEndDateString()
+	{
+		SimpleDateFormat myFormat = new SimpleDateFormat("EEE, d MMM");
+
+		String reformattedStr = myFormat.format(this.end_time);
+		
+		return reformattedStr;
+	}
+	
 	public void setEndTime(Date endTime)
 	{
 		this.end_time = endTime;
@@ -208,6 +217,11 @@ public class EventDetail {
 
 	public Collection<PhotoItem> getImages() {
 		return images;
+	}
+
+	public CharSequence getStartDateString() {
+		// TODO Auto-generated method stub
+		return getDateString();
 	}
 	
 	

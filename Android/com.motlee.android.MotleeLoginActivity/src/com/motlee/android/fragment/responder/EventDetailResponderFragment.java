@@ -19,11 +19,13 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import com.motlee.android.EventListActivity;
+import com.motlee.android.R;
 import com.motlee.android.adapter.EventListAdapter;
 import com.motlee.android.enums.EventItemType;
 import com.motlee.android.enums.Gender;
 import com.motlee.android.event.UserInfoEvent;
 import com.motlee.android.event.UserInfoListener;
+import com.motlee.android.fragment.EventListFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventItemWithBody;
@@ -105,6 +107,10 @@ public class EventDetailResponderFragment extends ResponderFragment {
             for (Integer eventID : mEventDetails) {
                 adapter.add(eventID);
             }
+            
+            EventListFragment fragment = (EventListFragment) activity.getSupportFragmentManager().findFragmentById(R.id.fragment_content);
+            
+            fragment.getPullToRefreshListView().setSelection(1);
         }
     }
     
@@ -244,14 +250,9 @@ public class EventDetailResponderFragment extends ResponderFragment {
         	{
        		    EventDetail eDetail = gson.fromJson(element, EventDetailHolder.class).event;
         		
-       		    eDetail.getImages().clear();
+       		    setMockPictures(eDetail);
        		    
-       		    for (int i = 0; i < URLS.length; i++)
-       		    {
-       		    	PhotoItem photo = new PhotoItem(eDetail.getEventID(), EventItemType.PICTURE, eDetail.getOwnerID(), new Date(), "Hot Tits!", URLS[i]);
-       		    	
-       		    	eDetail.getImages().add(photo);
-       		    }
+       		    setMockLocation(eDetail);
        		    
         		GlobalEventList.eventDetailMap.put(eDetail.getEventID(), eDetail);
         		
@@ -279,6 +280,22 @@ public class EventDetailResponderFragment extends ResponderFragment {
         
         return eventArrayList;
     }
+
+	private void setMockLocation(EventDetail eDetail) {
+		LocationInfo location = new LocationInfo("My House", 41.909435, -87.639489);
+		eDetail.setLocationInfo(location);
+	}
+
+	private void setMockPictures(EventDetail eDetail) {
+		eDetail.getImages().clear();
+		
+		for (int i = 0; i < URLS.length; i++)
+		{
+			PhotoItem photo = new PhotoItem(eDetail.getEventID(), EventItemType.PICTURE, eDetail.getOwnerID(), new Date(), "Hot Tits!", URLS[i]);
+			
+			eDetail.getImages().add(photo);
+		}
+	}
     
     private class EventDetailHolder
     {

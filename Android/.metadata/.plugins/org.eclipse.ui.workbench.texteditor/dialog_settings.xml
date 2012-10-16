@@ -3,22 +3,26 @@
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="312" key="DIALOG_WIDTH"/>
 		<item value="415" key="DIALOG_Y_ORIGIN"/>
-		<item value="1187" key="DIALOG_X_ORIGIN"/>
 		<item value="437" key="DIALOG_HEIGHT"/>
+		<item value="788" key="DIALOG_X_ORIGIN"/>
 		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
-		<item value="false" key="casesensitive"/>
 		<item value="false" key="isRegEx"/>
+		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="" key="selection"/>
+		<item value="setStoriesForEvent" key="selection"/>
 		<list key="findhistory">
+			<item value="setStoriesForEvent"/>
+			<item value="pull_to_refresh_tap_label"/>
+			<item value="OnScrollListener"/>
+			<item value="setSelection"/>
+			<item value="mRefreshOriginalTopPadding"/>
+			<item value="pull_to_refresh_tap_lab"/>
+			<item value="TAP_TO_REFRESH"/>
 			<item value="fomo_button"/>
-			<item value="layout_width"/>
-			<item value="receiver"/>
-			<item value="getTweetsFromJson"/>
 		</list>
 		<list key="replacehistory">
 		</list>

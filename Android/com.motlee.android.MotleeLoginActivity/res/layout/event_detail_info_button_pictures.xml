@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <com.motlee.android.layouts.RatioBackgroundLinearLayout
+    <com.motlee.android.layouts.HorizontalRatioLinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
@@ -67,4 +67,4 @@
 		        android:padding="0dp"
 		        android:src="@drawable/icon_comment"
 		        android:background="@android:color/transparent" />
-    </com.motlee.android.layouts.RatioBackgroundLinearLayout>
+    </com.motlee.android.layouts.HorizontalRatioLinearLayout>

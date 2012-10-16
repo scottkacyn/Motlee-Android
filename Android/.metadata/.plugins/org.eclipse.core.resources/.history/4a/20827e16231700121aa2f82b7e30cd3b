@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+	    <LinearLayout
+	        xmlns:android="http://schemas.android.com/apk/res/android" 
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent" 
+	        android:orientation="vertical">
+	        
+            <com.motlee.android.layouts.HorizontalRatioLinearLayout
+		        android:layout_height="wrap_content"
+		        android:layout_width="match_parent"
+		        android:background="@drawable/label_button_no_arrow"
+				android:weightSum="1">
+	        <ImageView
+	            android:id="@+id/label_date_image"
+	            android:layout_width="0dp"
+	            android:layout_height="match_parent"
+	            android:layout_gravity="center"
+	            android:layout_weight=".2" 
+	            android:padding="10dp"
+	            android:paddingLeft="15dp"/>
+		    <TextView 
+		        android:id="@+id/label_date_description"
+	    	    android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:layout_weight=".3"
+		        android:gravity="left|center_vertical"
+		        android:padding="5dp"
+		        android:paddingLeft="15dp"
+		        android:background="@android:color/transparent" />
+		    
+		    <TextView 
+		        android:id="@+id/label_date_text"
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:layout_weight=".45"
+		        android:gravity="right|center_vertical"
+		        android:padding="5dp"
+		        android:paddingRight="15dp"
+		        android:background="@android:color/transparent"/>
+	    </com.motlee.android.layouts.HorizontalRatioLinearLayout>
+    <ImageView
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+        android:src="@drawable/label_button_divider" />
+    </LinearLayout>

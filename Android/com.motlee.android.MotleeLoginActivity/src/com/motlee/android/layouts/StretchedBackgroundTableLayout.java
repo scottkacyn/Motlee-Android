@@ -17,6 +17,8 @@ import android.widget.TableLayout;
 
 public class StretchedBackgroundTableLayout extends TableLayout {
 	
+	private final String TAG = "StretchedBackgroundTableLayout";
+	
 	private final int leftPadding;
 	private final int rightPadding;
 	private final int topPadding;
@@ -58,44 +60,51 @@ public class StretchedBackgroundTableLayout extends TableLayout {
 	}
 	
 	@Override
+	public void onDraw(Canvas canvas)
+	{
+		super.onDraw(canvas);
+	}
+	
+	@Override
 	public void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
 	{
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 		
 		int width = MeasureSpec.getSize(widthMeasureSpec);
 		int height = MeasureSpec.getSize(heightMeasureSpec);
-		
-		Log.d("StretchedBackgroundTableLayout", "Width: " + width + ", Height: " + height);
 	}
 	
 	@Override
 	public void onLayout(boolean changed, int left, int top, int right, int bottom)
 	{
 		super.onLayout(changed, left, top, right, bottom);
-		Drawable background = this.getBackground();
 		
-		if (background != null)
+		if (changed)
 		{
-			int imageWidth = right - left;
-			int imageHeight = bottom - top;
+		
+			Drawable background = this.getBackground();
 			
-			Log.d("StretchedBackgroundTableLayout", "Changed: " + changed + ", Width: " + imageWidth + ", Height: " + imageHeight + ", left: " + left + ", right: " + right + ", top: " + top + ", bottom: " + bottom);
-			
-			if (background instanceof NinePatchDrawable)
+			if (background != null)
 			{
-				NinePatchDrawable nineDrawable = (NinePatchDrawable) background;
+				int imageWidth = right - left;
+				int imageHeight = bottom - top;
 				
-				nineDrawable.setBounds(left, top, right, bottom);
-				
-				this.setBackgroundDrawable(nineDrawable);
-			}
-			else
-			{
-				Bitmap bitmap = ((BitmapDrawable) background).getBitmap();
-				
-				Drawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, imageWidth, imageHeight, false));
-				
-				this.setBackgroundDrawable(d);
+				if (background instanceof NinePatchDrawable)
+				{
+					NinePatchDrawable nineDrawable = (NinePatchDrawable) background;
+					
+					nineDrawable.setBounds(left, top, right, bottom);
+					
+					this.setBackgroundDrawable(nineDrawable);
+				}
+				else
+				{
+					Bitmap bitmap = ((BitmapDrawable) background).getBitmap();
+					
+					Drawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, imageWidth, imageHeight, false));
+					
+					this.setBackgroundDrawable(d);
+				}
 			}
 		}
 	}

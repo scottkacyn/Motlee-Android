@@ -13,12 +13,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 
 public class EventDetailActivity extends FragmentActivity {
 
 	private FragmentTransaction ft;
+	private EventDetail eDetail;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,7 +30,7 @@ public class EventDetailActivity extends FragmentActivity {
         
         Intent intent = getIntent();
         
-        EventDetail eDetail = GlobalEventList.eventDetailMap.get(intent.getExtras().get("EventID"));
+        eDetail = GlobalEventList.eventDetailMap.get(intent.getExtras().get("EventID"));
         
         FragmentManager     fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
@@ -65,10 +67,45 @@ public class EventDetailActivity extends FragmentActivity {
     {
     	String description = view.getContentDescription().toString();
     	
-    	Intent eventDetail = new Intent(EventDetailActivity.this, EventDetailActivity.class);
+    	Intent eventDetail = new Intent(EventDetailActivity.this, MoreEventDetailActivity.class);
     	
     	eventDetail.putExtra("DetailDescription", description);
+    	eventDetail.putExtra("EventID", eDetail.getEventID());
     	
     	startActivity(eventDetail);
     }
+    
+    
+    public void onClickOpenMainMenu(View view)
+    {
+    	MenuFunctions.openMainMenu(view, this);
+    }
+    
+	public void onClickShowAllEvents(View view)
+	{
+		MenuFunctions.showAllEvents(view, this);
+	}
+	
+	public void onClickShowMyEvents(View view)
+	{
+		MenuFunctions.showMyEvents(view, this);
+	}
+	
+	public void onClickShowNearbyEvents(View view)
+	{
+		MenuFunctions.showNearbyEvents(view, this);
+	}
+	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		
+		if (MenuFunctions.onDispatchTouchOverride(ev, this))
+		{
+			return super.dispatchTouchEvent(ev);
+		}
+		else
+		{
+			return true;
+		}
+	}
 }

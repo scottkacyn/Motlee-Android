@@ -1,0 +1,11 @@
+package com.motlee.android.object;
+
+import com.google.android.maps.Overlay;
+
+public class MapOverlay extends Overlay {
+
+	public MapOverlay() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

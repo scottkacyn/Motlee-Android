@@ -11,25 +11,46 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 
 public class HorizontalAspectImageButton extends ImageButton {
 
 	private Bitmap bitmap;
 	
+	private final int leftPadding;
+	private final int rightPadding;
+	private final int topPadding;
+	private final int bottomPadding;
+	
 	public HorizontalAspectImageButton(Context context) {
 		super(context);
 		init();
+		
+		bottomPadding = this.getPaddingBottom();
+		topPadding = this.getPaddingTop();
+		leftPadding = this.getPaddingLeft();
+		rightPadding = this.getPaddingRight();
 	}
 
 	public HorizontalAspectImageButton(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init();
+		
+		bottomPadding = this.getPaddingBottom();
+		topPadding = this.getPaddingTop();
+		leftPadding = this.getPaddingLeft();
+		rightPadding = this.getPaddingRight();
 	}
 
 	public HorizontalAspectImageButton(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		init();
+		
+		bottomPadding = this.getPaddingBottom();
+		topPadding = this.getPaddingTop();
+		leftPadding = this.getPaddingLeft();
+		rightPadding = this.getPaddingRight();
 	}
 	
 	public void init()
@@ -74,12 +95,13 @@ public class HorizontalAspectImageButton extends ImageButton {
 		{
 			StateListDrawable stateListDrawable = (StateListDrawable) drawable;
 			this.bitmap = ((BitmapDrawable) stateListDrawable.getCurrent()).getBitmap();
+			this.setPadding(this.leftPadding, this.topPadding, this.rightPadding, this.bottomPadding);
 		}
 		else
 		{
 			this.bitmap = ((BitmapDrawable) drawable).getBitmap();
 		}
-		return;
+		
 	}
 	
 }
