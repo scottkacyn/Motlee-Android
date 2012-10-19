@@ -1,12 +1,17 @@
 package com.motlee.android;
 
+import java.util.ArrayList;
+
 import com.motlee.android.fragment.DateDetailFragment;
 import com.motlee.android.fragment.EventDetailFragment;
 import com.motlee.android.fragment.LocationFragment;
+import com.motlee.android.fragment.PeopleListFragment;
 import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.EventItem;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.MenuFunctions;
+import com.motlee.android.object.UserInfo;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -49,16 +54,80 @@ public class MoreEventDetailActivity extends FragmentActivity {
             
             ft.add(R.id.fragment_content, locationFragment);
         }
-
+        
+        if (detailDescription.equals(GlobalVariables.FOMOS))
+        {
+        	PeopleListFragment fragment = new PeopleListFragment();
+        	
+        	ArrayList<Integer> userIDs = new ArrayList<Integer>();
+        	
+        	for (EventItem item : eDetail.getFomos())
+        	{
+        		userIDs.add(item.user_id);
+        	}
+        	
+        	fragment.setPageTitle(eDetail.getEventName() + " - FOMOs");
+        	
+        	fragment.setUserIdList(userIDs);
+        	
+        	ft.add(R.id.fragment_content, fragment);
+        }
+        
+        if (detailDescription.equals(GlobalVariables.ATTENDEES))
+        {
+        	PeopleListFragment fragment = new PeopleListFragment();
+        	
+        	ArrayList<Integer> userIDs = new ArrayList<Integer>();
+        	
+        	userIDs.add(eDetail.getOwnerID());
+        	
+        	for (UserInfo item : eDetail.getAttendees())
+        	{
+        		userIDs.add(item.id);
+        	}
+        	
+        	fragment.setPageTitle(eDetail.getEventName() + " - Attendees");
+        	
+        	fragment.setUserIdList(userIDs);
+        	
+        	ft.add(R.id.fragment_content, fragment);
+        }
         ft.commit();
     }
     
     
+    /*
+     * Click on person in Attendee/FOMO people list
+     */
+    public void seeMoreDetail(View view)
+    {
+    	String userID = view.getContentDescription().toString();
+    	
+    	Intent eventDetail = new Intent(MoreEventDetailActivity.this, UserProfilePageActivity.class);
+    	
+    	eventDetail.putExtra("UserID", Integer.parseInt(userID));
+    	
+    	startActivity(eventDetail);
+    }
     
     
     public void goBack(View view)
     {
     	MenuFunctions.goBack(this);
+    }
+    
+    /*
+     * Left and Right Menu Functions
+     */
+    
+    public void onClickCreateEvent(View view)
+    {
+    	MenuFunctions.showCreateEventPage(view, this);
+    }
+    
+    public void onClickOpenPlusMenu(View view)
+    {
+    	MenuFunctions.openPlusMenu(view, this);
     }
     
     public void onClickOpenMainMenu(View view)

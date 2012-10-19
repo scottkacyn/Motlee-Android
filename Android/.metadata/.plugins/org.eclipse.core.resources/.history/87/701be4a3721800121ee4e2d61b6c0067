@@ -1,0 +1,236 @@
+<com.motlee.android.layouts.VerticalRatioLinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:paddingTop="10dp"
+	android:paddingRight="10dp"
+	android:paddingBottom="6dp"
+	android:background="@drawable/main_menu_background">
+
+ 	<FrameLayout
+ 	    android:layout_width="match_parent"
+ 	    android:layout_height="wrap_content">
+ 	    
+ 	    <com.motlee.android.view.HorizontalAspectImageButton
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="wrap_content"
+ 	        android:src="@drawable/main_menu_opened_button" />
+ 	   	<LinearLayout
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="match_parent"
+ 	        android:orientation="vertical"
+ 	        android:weightSum="1" >
+
+	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.5"
+	 	        android:paddingTop="10dp"
+	 	        android:paddingRight="50dp"
+	 	        android:paddingLeft="50dp"
+	 	        android:src="@drawable/icon_button_search"
+	 	        android:layout_gravity="bottom" />
+	 	    
+	 	    <TextView
+	 	        android:id="@+id/main_menu_button_search"
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.5"
+	 	        android:text="Search"
+	 	        android:gravity="center|center_vertical" />
+	 	    
+
+ 	    </LinearLayout>
+ 	</FrameLayout>
+ 		 	    	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="wrap_content"
+	 	        android:src="@drawable/main_menu_opened_divider" />
+	 	<FrameLayout
+ 	    android:layout_width="match_parent"
+ 	    android:layout_height="wrap_content">
+ 	    
+ 	    <com.motlee.android.view.HorizontalAspectImageButton
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="wrap_content"
+ 	        android:src="@drawable/main_menu_opened_button"
+ 	        android:onClick="onClickShowAllEvents" />
+ 	   	<LinearLayout
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="match_parent"
+ 	        android:orientation="vertical"
+ 	        android:weightSum="1" >
+
+	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.5"
+	 	        android:paddingTop="10dp"
+	 	        android:paddingRight="50dp"
+	 	        android:paddingLeft="50dp"
+	 	        android:src="@drawable/icon_button_all_events"
+	 	        android:layout_gravity="bottom" />
+	 	    
+	 	    <TextView
+	 	        android:id="@+id/main_menu_button_all_events"
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.5"
+	 	        android:text="All Events"
+	 	        android:gravity="center|center_vertical" />
+ 	    </LinearLayout>
+ 	</FrameLayout>
+ 		 	    	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="wrap_content"
+	 	        android:src="@drawable/main_menu_opened_divider" />
+ 	 	<FrameLayout
+ 	    android:layout_width="match_parent"
+ 	    android:layout_height="wrap_content">
+ 	    
+ 	    <com.motlee.android.view.HorizontalAspectImageButton
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="wrap_content"
+ 	        android:src="@drawable/main_menu_opened_button"
+ 	        android:onClick="onClickShowMyEvents" />
+ 	   	<LinearLayout
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="match_parent"
+ 	        android:orientation="vertical"
+ 	        android:weightSum="1" >
+
+	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.5"
+	 	        android:paddingTop="10dp"
+	 	        android:paddingRight="50dp"
+	 	        android:paddingLeft="50dp"
+	 	        android:src="@drawable/icon_button_star"
+	 	        android:layout_gravity="bottom" />
+	 	    
+	 	    <TextView
+	 	        android:id="@+id/main_menu_button_star"
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.5"
+	 	        android:text="My Events"
+	 	        android:gravity="center|center_vertical" />
+	 	    
+ 	    </LinearLayout>
+ 	</FrameLayout>
+ 		 	    	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="wrap_content"
+	 	        android:src="@drawable/main_menu_opened_divider" />
+ 	 	<FrameLayout
+ 	    android:layout_width="match_parent"
+ 	    android:layout_height="wrap_content">
+ 	    
+ 	    <com.motlee.android.view.HorizontalAspectImageButton
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="wrap_content"
+ 	        android:src="@drawable/main_menu_opened_button"
+ 	        android:onClick="onClickShowNearbyEvents" />
+ 	   	<LinearLayout
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="match_parent"
+ 	        android:orientation="vertical"
+ 	        android:weightSum="1" >
+
+	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.5"
+	 	        android:paddingTop="10dp"
+	 	        android:paddingRight="50dp"
+	 	        android:paddingLeft="50dp"
+	 	        android:src="@drawable/icon_button_map"
+	 	        android:layout_gravity="bottom" />
+	 	    
+	 	    <TextView
+	 	        android:id="@+id/main_menu_button_map"
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.5"
+	 	        android:text="Nearby"
+	 	        android:gravity="center|center_vertical" />
+ 	    </LinearLayout>
+ 	</FrameLayout>
+ 		 	    	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="wrap_content"
+	 	        android:src="@drawable/main_menu_opened_divider" />
+ 	 	<FrameLayout
+ 	    android:layout_width="match_parent"
+ 	    android:layout_height="wrap_content">
+ 	    
+ 	    <com.motlee.android.view.HorizontalAspectImageButton
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="wrap_content"
+ 	        android:src="@drawable/main_menu_opened_button" />
+ 	   	<LinearLayout
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="match_parent"
+ 	        android:orientation="vertical"
+ 	        android:weightSum="1" >
+
+	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.5"
+	 	        android:paddingTop="10dp"
+	 	        android:paddingRight="50dp"
+	 	        android:paddingLeft="50dp"
+	 	        android:src="@drawable/icon_button_alert"
+	 	        android:layout_gravity="bottom" />
+	 	    
+	 	    <TextView
+	 	        android:id="@+id/main_menu_button_alert"
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.5"
+	 	        android:text="Notifications"
+	 	        android:gravity="center|center_vertical" />
+	 	    
+ 	    </LinearLayout>
+ 	</FrameLayout>
+ 		 	    	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="wrap_content"
+	 	        android:src="@drawable/main_menu_opened_divider" />
+ 	<FrameLayout
+ 	    android:layout_width="match_parent"
+ 	    android:layout_height="wrap_content">
+ 	    
+ 	    <com.motlee.android.view.HorizontalAspectImageButton
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="wrap_content"
+ 	        android:src="@drawable/main_menu_opened_button" />
+ 	   	<LinearLayout
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="match_parent"
+ 	        android:orientation="vertical"
+ 	        android:weightSum="1" >
+
+	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.5"
+	 	        android:paddingTop="10dp"
+	 	        android:paddingRight="50dp"
+	 	        android:paddingLeft="50dp"
+	 	        android:src="@drawable/icon_button_gear"
+	 	        android:layout_gravity="bottom" />
+	 	    
+	 	    <TextView
+	 	        android:id="@+id/main_menu_button_gear"
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.5"
+	 	        android:text="Settings"
+	 	        android:gravity="center_horizontal|top" />
+ 	    </LinearLayout>
+ 	</FrameLayout>
+</com.motlee.android.layouts.VerticalRatioLinearLayout>

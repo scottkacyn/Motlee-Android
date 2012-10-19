@@ -56,8 +56,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
     private boolean mBounceHack;
 
-    private boolean mFirstLoad;
-    
     public PullToRefreshListView(Context context) {
         super(context);
         init(context);
@@ -106,10 +104,10 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         mRefreshView.setOnClickListener(new OnClickRefreshListener());
         mRefreshOriginalTopPadding = mRefreshView.getPaddingTop();
 
-        mRefreshState = PULL_TO_REFRESH;
+        mRefreshState = TAP_TO_REFRESH;
 
         addHeaderView(mRefreshView);
-        
+
         super.setOnScrollListener(this);
 
         measureView(mRefreshView);
@@ -119,7 +117,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        
         setSelection(1);
     }
 
@@ -167,7 +164,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     public boolean onTouchEvent(MotionEvent event) {
         final int y = (int) event.getY();
         mBounceHack = false;
-        
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
                 if (!isVerticalScrollBarEnabled()) {

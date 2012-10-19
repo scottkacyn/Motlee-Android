@@ -18,3 +18,26 @@
 1350415795468	Rename resource 'map-pin.png'
 1350419097128	Extract method 'setMockPictures'
 1350421337504	Extract method 'setMapOverlays'
+1350438583979	Rename type 'MarkerItemizedOverlay'
+1350438603845	Rename type 'OverlayItemExtended'
+1350439159252	Rename method 'setStoriesForEvent'
+1350446296328	Rename field 'eventListFragment'
+1350447365964	Delete element
+1350450857650	Rename local variable 'view'
+1350490052132	Rename method 'setUpMenuButtons'
+1350490298393	Rename local variable 'mainMenuFragment'
+1350494354430	Copy file
+1350504103276	Rename local variable 'editText'
+1350517405635	Rename field 'images'
+1350518660973	Encapsulate field 'description'
+1350519393146	Encapsulate field 'authoToken'
+1350519398497	Encapsulate field 'userID'
+1350521694433	Encapsulate field 'mAuthToken'
+1350521698081	Encapsulate field 'mUserInfo'
+1350521800856	Rename field 'userID'
+1350522338568	Rename field 'mListener'
+1350522356370	Rename method 'setListener'
+1350570528109	Move compilation unit
+1350570540485	Move compilation unit
+1350571846963	Delete element
+1350623408152	Rename field 'eventInfoLayout'

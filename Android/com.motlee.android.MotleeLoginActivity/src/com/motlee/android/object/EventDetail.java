@@ -6,35 +6,38 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
-import com.motlee.android.event.UserInfoEvent;
-import com.motlee.android.event.UserInfoListener;
+import com.motlee.android.object.event.UserInfoEvent;
+import com.motlee.android.object.event.UserInfoListener;
 
-public class EventDetail {
+public class EventDetail implements Comparable<EventDetail> {
 	
 	private String name;
 	private String description;
 	private Date start_time;
 	private Date end_time;
-	private int id;
 	private int user_id;
-	private int location_id;
+	private Integer location_id;
 	
-	@NoExpose
-	private LocationInfo location;
-	
+	//TODO: Change to Collection<Integer>
 	private final Collection<EventItem> fomos;
+
+	private final Collection<PhotoItem> photos;
+
+	//TODO: Change to Collection<Integer>
+	private final Collection<UserInfo> attendees;
+	
+	private final Collection<EventItemWithBody> stories;
+	
+	// @NoExpose is a way to stop the json parser from including them
+	// when we convert EventDetail to a json.
 	@NoExpose
-	private final Collection<String> imageURLs;
-	@NoExpose
-	private final Collection<PhotoItem> images;
-	@NoExpose
-	private final Collection<Integer> attendees;
-	@NoExpose
-	private UserInfoList userInfoList = UserInfoList.getInstance();
+	private UserInfoList userInfoList;
 	@NoExpose
 	private ArrayList<UserInfoListener> eventList;
 	@NoExpose
-	private final Collection<EventItemWithBody> stories;
+	private LocationInfo location;
+	@NoExpose
+	private int id;
 	
 	
 	public void addListener(UserInfoListener l) 
@@ -47,32 +50,20 @@ public class EventDetail {
 		eventList.remove(l);
 	}
 	
-	public EventDetail(Integer id)
-	{
-		this.user_id = id;
-		this.fomos = new ArrayList<EventItem>();
-		this.imageURLs = new ArrayList<String>();
-		this.attendees = new ArrayList<Integer>();
-		this.stories = new ArrayList<EventItemWithBody>();
-		this.name = "";
-		this.start_time = new Date();
-		this.end_time = new Date();
-		this.location = new LocationInfo();
-		this.images = new ArrayList<PhotoItem>();
-	}
-	
 	public EventDetail()
 	{
 		this.user_id = -1;
 		this.fomos = new ArrayList<EventItem>();
-		this.imageURLs = new ArrayList<String>();
-		this.attendees = new ArrayList<Integer>();
+		this.attendees = new ArrayList<UserInfo>();
 		this.stories = new ArrayList<EventItemWithBody>();
 		this.name = "";
 		this.start_time = new Date();
 		this.end_time = new Date();
-		this.location = new LocationInfo();
-		this.images = new ArrayList<PhotoItem>();
+		this.location = null;
+		this.photos = new ArrayList<PhotoItem>();
+		this.setDescription("");
+		this.location_id = -1;
+		this.userInfoList = UserInfoList.getInstance();
 	}
 	
 	public Integer getEventID()
@@ -80,7 +71,7 @@ public class EventDetail {
 		return this.id;
 	}
 	
-	public void checkUserInfoList()
+	/*public void checkUserInfoList()
 	{
 		ArrayList<Integer> userInfoListCheck = new ArrayList<Integer>();
 		
@@ -108,7 +99,7 @@ public class EventDetail {
 				}
 			}
 		}
-	}
+	}*/
 	
 	public String getEventOwnerSummaryString()
 	{
@@ -128,6 +119,11 @@ public class EventDetail {
 		return user_id;
 	}
 	
+	public void setOwnerID(int userID)
+	{
+		this.user_id = userID;
+	}
+	
 	public int getLocationID()
 	{
 		return this.location_id;
@@ -143,7 +139,7 @@ public class EventDetail {
 		this.location = location;
 	}
 	
-	public Collection<Integer> getAttendees()
+	public Collection<UserInfo> getAttendees()
 	{
 		return this.attendees;
 	}
@@ -151,11 +147,6 @@ public class EventDetail {
 	public Collection<EventItem> getFomos()
 	{
 		return this.fomos;
-	}
-	
-	public Collection<String> getImageURLs()
-	{
-		return this.imageURLs;
 	}
 	
 	public UserInfo getEventOwner()
@@ -185,20 +176,34 @@ public class EventDetail {
 	
 	public String getDateString()
 	{
-		SimpleDateFormat myFormat = new SimpleDateFormat("EEE, d MMM");
-
-		String reformattedStr = myFormat.format(this.start_time);
-		
-		return reformattedStr;
+		if (this.start_time != null)
+		{
+			SimpleDateFormat sdf = new SimpleDateFormat("MMM d");
+			
+			String reformattedStr = sdf.format(this.start_time);
+			
+			return reformattedStr;
+		}
+		else
+		{
+			return "";
+		}
 	}
 	
 	public String getEndDateString()
 	{
-		SimpleDateFormat myFormat = new SimpleDateFormat("EEE, d MMM");
-
-		String reformattedStr = myFormat.format(this.end_time);
-		
-		return reformattedStr;
+		if (this.end_time != null)
+		{
+			SimpleDateFormat sdf = new SimpleDateFormat("MMM d");
+			
+			String reformattedStr = sdf.format(this.end_time);
+			
+			return reformattedStr;
+		}
+		else
+		{
+			return "";
+		}
 	}
 	
 	public void setEndTime(Date endTime)
@@ -216,12 +221,30 @@ public class EventDetail {
 	}
 
 	public Collection<PhotoItem> getImages() {
-		return images;
+		return photos;
 	}
 
 	public CharSequence getStartDateString() {
 		// TODO Auto-generated method stub
 		return getDateString();
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	
+	public int compareTo(EventDetail another) {
+		
+		return this.getStartTime().compareTo(another.getStartTime());
 	}
 	
 	

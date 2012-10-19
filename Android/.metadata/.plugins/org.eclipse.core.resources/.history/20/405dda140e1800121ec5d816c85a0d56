@@ -1,0 +1,17 @@
+package com.motlee.android.object.event;
+
+import java.util.ArrayList;
+import java.util.EventObject;
+
+@SuppressWarnings("serial")
+public class UpdatedEventDetailEvent extends EventObject {
+
+	ArrayList<Integer> mEventIds;
+	
+	public UpdatedEventDetailEvent(Object source, ArrayList<Integer> eventIDs) {
+		super(source);
+		
+		mEventIds = eventIDs;
+	}
+
+}

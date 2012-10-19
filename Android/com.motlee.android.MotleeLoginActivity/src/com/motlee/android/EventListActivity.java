@@ -13,10 +13,12 @@ import com.facebook.android.Facebook.DialogListener;
 import com.motlee.android.adapter.EventListAdapter;
 import com.motlee.android.fragment.EventListFragment;
 import com.motlee.android.fragment.MainMenuFragment;
-import com.motlee.android.fragment.responder.EventDetailResponderFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventListParams;
+import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.MenuFunctions;
+import com.motlee.android.object.event.UpdatedEventDetailEvent;
+import com.motlee.android.object.event.UpdatedEventDetailListener;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -46,21 +48,39 @@ public class EventListActivity extends FragmentActivity {
 	
 	private Facebook facebook = new Facebook("283790891721595");
 	
+	private EventListFragment mEventListFragment;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        EventServiceBuffer.getInstance(this);
         
         FragmentManager     fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         
-        EventListFragment eventListFragment = new EventListFragment();
+        mEventListFragment = new EventListFragment();
         
         eAdapter = new EventListAdapter(this, R.layout.event_list_item, new ArrayList<Integer>());
         
-        eventListFragment.addEventListAdapter(eAdapter);
+        mEventListFragment.addEventListAdapter(eAdapter);
        
+        EventServiceBuffer.setEventDetailListener(new UpdatedEventDetailListener(){
+
+			public void myEventOccurred(UpdatedEventDetailEvent evt) {
+				for (Integer eventID : evt.getEventIds())
+				{
+					eAdapter.add(eventID);
+				}
+				
+				mEventListFragment.getPullToRefreshListView().setSelection(1);
+			}
+        });
+        
+        EventServiceBuffer.getEventsFromService();
+        
+        
         Intent intent = getIntent();
         
         Object listType = null;
@@ -74,19 +94,9 @@ public class EventListActivity extends FragmentActivity {
         	eventListParams.headerText = listType.toString();
         }
         
-        eventListFragment.setEventListParams(eventListParams);
+        mEventListFragment.setEventListParams(eventListParams);
         
-        ft.add(R.id.fragment_content, eventListFragment);
-        
-        
-        EventDetailResponderFragment responder = (EventDetailResponderFragment) fm.findFragmentByTag(EVENT_RESPONDER);
-        if (responder == null) {
-            responder = new EventDetailResponderFragment();
-            
-            // We add the fragment using a Tag since it has no views. It will make the Twitter REST call
-            // for us each time this Activity is created.
-            ft.add(responder, EVENT_RESPONDER);
-        }
+        ft.add(R.id.fragment_content, mEventListFragment);
         
         ft.commit();
     }
@@ -107,6 +117,16 @@ public class EventListActivity extends FragmentActivity {
     	startActivity(eventDetail);
     }
     
+    
+    public void onClickCreateEvent(View view)
+    {
+    	MenuFunctions.showCreateEventPage(view, this);
+    }
+    
+    public void onClickOpenPlusMenu(View view)
+    {
+    	MenuFunctions.openPlusMenu(view, this);
+    }
     
     //onClickMainMenu: When user clicks on main menu button
     

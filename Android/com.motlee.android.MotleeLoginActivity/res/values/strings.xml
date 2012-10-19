@@ -8,5 +8,7 @@
     <string name="facebook_app_id">"283790891721595"</string>
     <string name="title_event_detail_activity">EventDetailActivity</string>
     <string name="title_more_event_detail_activity">MoreEventDetailActivity</string>
+    <string name="title_create_event_activity">CreateEventActivity</string>
+    <string name="title_user_profile_activity">UserProfilePageActivity</string>
     
 </resources>

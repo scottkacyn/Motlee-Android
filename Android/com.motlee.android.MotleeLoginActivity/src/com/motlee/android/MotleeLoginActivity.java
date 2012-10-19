@@ -1,10 +1,22 @@
 package com.motlee.android;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.List;
+
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
 import com.facebook.android.Facebook.DialogListener;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.event.UserInfoEvent;
+import com.motlee.android.object.event.UserInfoListener;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,7 +27,7 @@ import android.view.View;
 
 public class MotleeLoginActivity extends Activity {
 
-    Facebook facebook = new Facebook("283790891721595");
+    Facebook facebook = new Facebook(GlobalVariables.FB_APP_ID);
     private SharedPreferences mPrefs;
     private MotleeLoginActivity instance = this;
     
@@ -43,16 +55,40 @@ public class MotleeLoginActivity extends Activity {
         
         if(access_token != null) {
             facebook.setAccessToken(access_token);
-        }       
+        }              
         
-        if (!facebook.isSessionValid())
-        {
-            setContentView(R.layout.login_page);
-        }
-        else
-        {
-        	startEventListActivity();
-        }
+        EventServiceBuffer.getInstance(this);
+        
+        EventServiceBuffer.setUserInfoListener(new UserInfoListener(){
+
+			public void raised(UserInfoEvent e) {
+				
+		        if (!facebook.isSessionValid())
+		        {
+		            setContentView(R.layout.login_page);
+		        }
+		        else
+		        {
+		        	EventServiceBuffer.setUserInfoListener(null);
+		        	startEventListActivity();
+		        }
+				
+			}
+        	
+        });
+        
+        EventServiceBuffer.getUserInfoFromFacebookAccessToken(access_token);
+    }
+    
+    private class FriendsHolder
+    {
+    	public List<Friends> data;
+    }
+    
+    private class Friends
+    {
+    	public String name;
+    	public String id;
     }
     
     public void onClickFacebookConnect(View view)
@@ -71,17 +107,17 @@ public class MotleeLoginActivity extends Activity {
 
          
             public void onFacebookError(FacebookError error) {
-            	startEventListActivity();
+            	//startEventListActivity();
             }
 
             
             public void onError(DialogError e) {
-            	startEventListActivity();
+            	//startEventListActivity();
             }
 
             
             public void onCancel() {
-            	startEventListActivity();
+            	//startEventListActivity();
             }
         });
     }

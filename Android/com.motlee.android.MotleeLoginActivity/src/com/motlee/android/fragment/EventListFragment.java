@@ -6,9 +6,11 @@ import com.markupartist.android.widget.PullToRefreshListView;
 import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 import com.motlee.android.R;
 import com.motlee.android.adapter.EventListAdapter;
-import com.motlee.android.fragment.responder.EventDetailResponderFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventListParams;
+import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.event.UpdatedEventDetailEvent;
+import com.motlee.android.object.event.UpdatedEventDetailListener;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -75,16 +77,32 @@ public class EventListFragment extends ListFragment {
 		
 		onCreateViewHasBeenCalled = true;
 		
+		ListView listView = (ListView) view.findViewById(android.R.id.list);
+		
+		setRefreshListener(listView);
+		
 		return view;
 	}
 
-	public void setRefreshListener()
+	public void setRefreshListener(ListView listView)
 	{
-        ((PullToRefreshListView) getListView()).setOnRefreshListener(new OnRefreshListener() {
+        ((PullToRefreshListView) listView).setOnRefreshListener(new OnRefreshListener() {
             
             public void onRefresh() {
-            	EventDetailResponderFragment fragment = (EventDetailResponderFragment) getActivity().getSupportFragmentManager().findFragmentByTag("ResponderFragment");
+            	
+            	EventServiceBuffer.setEventDetailListener(new UpdatedEventDetailListener(){
 
+					public void myEventOccurred(UpdatedEventDetailEvent evt) {
+						for (Integer eventID : evt.getEventIds())
+						{
+							mEventListAdapter.add(eventID);
+						}
+						
+						getPullToRefreshListView().setSelection(1);
+					}
+		        });
+            	
+            	EventServiceBuffer.getEventsFromService();
             }
         });
 	}

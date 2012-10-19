@@ -1,0 +1,46 @@
+package com.motlee.android.object.event;
+
+import java.util.EventObject;
+
+import com.motlee.android.object.UserInfo;
+
+
+
+public class UserInfoEvent extends EventObject {
+
+	private String mAuthToken;
+	private UserInfo mUserInfo;
+	
+	public UserInfoEvent(Object source, String authToken, UserInfo userInfo)
+	{
+		super(source);
+	}
+
+	/**
+	 * @return the mAuthToken
+	 */
+	public String getmAuthToken() {
+		return mAuthToken;
+	}
+
+	/**
+	 * @param mAuthToken the mAuthToken to set
+	 */
+	public void setmAuthToken(String mAuthToken) {
+		this.mAuthToken = mAuthToken;
+	}
+
+	/**
+	 * @return the mUserInfo
+	 */
+	public UserInfo getmUserInfo() {
+		return mUserInfo;
+	}
+
+	/**
+	 * @param mUserInfo the mUserInfo to set
+	 */
+	public void setmUserInfo(UserInfo mUserInfo) {
+		this.mUserInfo = mUserInfo;
+	}
+}

@@ -41,6 +41,7 @@
 	        android:layout_height="wrap_content"
 	        android:padding="5dp"
 	        android:src="@drawable/header_right_button"
+	        android:onClick="onRightHeaderButtonClick"
 	        android:background="@android:color/transparent" />
 	    
 	    <TextView 

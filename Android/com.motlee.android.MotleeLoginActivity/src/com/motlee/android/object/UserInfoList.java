@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.HashMap;
 
-import com.motlee.android.event.UserInfoEvent;
-import com.motlee.android.event.UserInfoListener;
+import com.motlee.android.object.event.UserInfoEvent;
+import com.motlee.android.object.event.UserInfoListener;
 
 public class UserInfoList extends HashMap<Integer, UserInfo> {
 

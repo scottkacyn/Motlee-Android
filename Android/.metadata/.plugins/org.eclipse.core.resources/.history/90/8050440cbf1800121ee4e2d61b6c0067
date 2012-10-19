@@ -1,0 +1,15 @@
+package com.motlee.android.event;
+
+import java.util.EventObject;
+
+import com.motlee.android.object.UserInfo;
+
+
+
+public class UserInfoEvent extends EventObject {
+
+	public UserInfoEvent(Object source, String authToken, UserInfo userInfo)
+	{
+		super(source);
+	}
+}

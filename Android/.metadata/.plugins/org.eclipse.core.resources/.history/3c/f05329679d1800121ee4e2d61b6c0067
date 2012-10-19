@@ -1,0 +1,33 @@
+<com.motlee.android.layouts.HorizontalRatioLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/label_button_no_arrow"
+    android:orientation="vertical"
+    >
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+	    <com.motlee.android.view.HorizontalAspectImageButton
+	        android:id="@+id/edit_event_date_time_button"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingLeft="10dp"
+	        android:paddingRight="10dp"
+	        android:onClick="openDateTimePicker"
+	        android:src="@drawable/label_button_no_arrow"
+	        android:background="@android:color/transparent"
+	        />
+	    
+	    <TextView
+	        android:id="@+id/edit_event_date_time_text"
+	        android:layout_height="match_parent"
+	        android:layout_width="wrap_content"/>
+    </FrameLayout>
+    
+    <ImageView 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"/>
+    
+</com.motlee.android.layouts.HorizontalRatioLinearLayout>

@@ -83,8 +83,11 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
         public void add(Integer eventID)
         {
         	Log.w(tag, "add");
-        	this.data.add(eventID);
-        	this.notifyDataSetChanged();
+        	if (!this.data.contains(eventID))
+        	{
+	        	this.data.add(eventID);
+	        	this.notifyDataSetChanged();
+        	}
         }
         
         public void clear()
@@ -100,69 +103,61 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
         public View getView(int position, View convertView, ViewGroup parent) {
         	Log.w(tag, "getView: position, " + position + ", convertView, " + convertView + ", parent: " + parent);
                 // reuse a given view, or inflate a new one from the xml
-                View view;
                  
+                ViewHolder holder = new ViewHolder();
+                
                 if (convertView == null) {
                 	Log.w(tag, "inflating resource: " + resource);
-                        view = this.inflater.inflate(resource, parent, false);
+                        convertView = this.inflater.inflate(resource, parent, false);
+                        
+                        holder.event_header_button = (HorizontalRatioLinearLayout) convertView.findViewById(R.id.event_header);
+                        holder.event_header_name = (TextView) convertView.findViewById(R.id.event_header_name);
+                        holder.event_header_time = (TextView) convertView.findViewById(R.id.event_header_time);
+                        holder.fomo_count = (TextView) convertView.findViewById(R.id.fomo_count);
+                        holder.list_view = (HorizontalListView) convertView.findViewById(R.id.listview);
+                        holder.event_footer_owner = (TextView) convertView.findViewById(R.id.event_footer_owner);
+                        holder.event_footer_location = (TextView) convertView.findViewById(R.id.event_footer_location);
+                        
+                        convertView.setTag(holder);
                 } else {
-                        view = convertView;
+                        holder = (ViewHolder) convertView.getTag();
                 }
                 
+                this.bindData(holder, position);
+                
                 // bind the data to the view object
-                return this.bindData(view, position);
+                return convertView;
         }
         
         /**
          * Bind the provided data to the view.
          * This is the only method not required by base adapter.
          */
-        public View bindData(View view, int position) {
+        public void bindData(ViewHolder holder, int position) {
         	
         	Log.w(tag, "bindData");
-                // make sure it's worth drawing the view
-                if (this.data.get(position) == null) {
-                        return view;
-                }
                 
                 // pull out the object
                 EventDetail item = GlobalEventList.eventDetailMap.get(this.data.get(position));
-                
-                HorizontalRatioLinearLayout button = (HorizontalRatioLinearLayout) view.findViewById(R.id.event_header);
+
                 CharSequence charSequence = Integer.toString(item.getEventID());
+                holder.event_header_button.setContentDescription(charSequence);
                 
-                button.setContentDescription(charSequence);
-                
-                // extract the view object
-                View viewElement = view.findViewById(R.id.event_header_name);
-                // cast to the correct type
-                TextView tv = (TextView)viewElement;
                 // set the value
-                tv.setText(item.getEventName());
-                tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-                
-                viewElement = view.findViewById(R.id.event_header_time);
-                tv = (TextView)viewElement;
-                tv.setText(item.getDateString());
-                tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-                
-                viewElement = view.findViewById(R.id.fomo_count);
-                tv = (TextView)viewElement;
-                tv.setText(Integer.toString(item.getFomos().size()));
-                tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-                
-                viewElement = view.findViewById(R.id.event_footer_owner);
-                tv = (TextView)viewElement;
-                tv.setText(item.getEventOwnerSummaryString());
-                tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-                
-                viewElement = view.findViewById(R.id.event_footer_location);
-                tv = (TextView)viewElement;
-                tv.setText(item.getLocationInfo().locationDescription);
-                tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-                
-                viewElement = view.findViewById(R.id.listview);
-                HorizontalListView hlv = (HorizontalListView) viewElement;
+                holder.event_header_name.setText(item.getEventName());
+                holder.event_header_name.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+
+                holder.event_header_time.setText(item.getDateString());
+                holder.event_header_time.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+
+                holder.fomo_count.setText(Integer.toString(item.getFomos().size()));
+                holder.fomo_count.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+
+                holder.event_footer_owner.setText(item.getEventOwnerSummaryString());
+                holder.event_footer_owner.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+   
+                holder.event_footer_location.setText(item.getLocationInfo().locationDescription);
+                holder.event_footer_location.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
                 
                 ArrayList<String> imageURLs = new ArrayList<String>();
                 for (PhotoItem photo : item.getImages())
@@ -171,10 +166,17 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
                 }
                 
                 imageAdapter.setURLs(imageURLs);
-                hlv.setAdapter(imageAdapter);
-                
-                // return the final view object
-                return view;
+                holder.list_view.setAdapter(imageAdapter);
+        }
+        
+        private static class ViewHolder {
+            public HorizontalRatioLinearLayout event_header_button;
+            public TextView event_header_name;
+            public TextView event_header_time;
+            public TextView fomo_count;
+            public TextView event_footer_owner;
+            public TextView event_footer_location;
+            public HorizontalListView list_view;
         }
 }
 

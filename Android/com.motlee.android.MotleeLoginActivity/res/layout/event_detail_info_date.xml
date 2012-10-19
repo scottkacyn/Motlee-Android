@@ -1,23 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.motlee.android.layouts.HorizontalRatioLinearLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@android:color/transparent">
+    android:background="@drawable/label_button_no_arrow">
     
     
-    <FrameLayout
-        android:layout_height="wrap_content"
+   <FrameLayout
+        android:layout_height="match_parent"
         android:layout_width="match_parent" >
-	    <com.motlee.android.view.HorizontalAspectImageButton 
-	        android:id="@+id/label_button"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:scaleType="fitCenter"
-	        android:src="@drawable/label_button_no_arrow"
-	        android:adjustViewBounds="true"
-	        android:clickable="false"
-	        android:background="@android:color/transparent" />
+
 	    
 	    <LinearLayout
 	        android:layout_width="match_parent"
@@ -29,8 +22,7 @@
 	            android:layout_width="0dp"
 	            android:layout_height="match_parent"
 	            android:layout_gravity="center_vertical"
-	            android:paddingLeft="20dp"
-	            android:paddingRight="10dp"
+	            android:paddingLeft="10dp"
 	            android:layout_weight=".2" />
 		    <TextView 
 		        android:id="@+id/label_date_description"
@@ -38,7 +30,6 @@
 		        android:layout_height="match_parent"
 		        android:layout_weight=".3"
 		        android:gravity="left|center_vertical"
-		        android:padding="5dp"
 		        android:paddingLeft="15dp"
 		        android:background="@android:color/transparent" />
    		    <TextView 
@@ -47,18 +38,19 @@
 		        android:layout_height="wrap_content"
 		        android:layout_weight=".45"
 		        android:gravity="right|center_vertical"
-		        android:padding="5dp"
 		        android:paddingRight="15dp"
 		        android:background="@android:color/transparent" />
 	    </LinearLayout>
-    </FrameLayout>
-    <!-- Will toggle visible/gone when needed -->
-    <ImageView
+	        <ImageView
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scaleType="fitXY"
         android:adjustViewBounds="true"
+        android:layout_gravity="bottom"
         android:src="@drawable/label_button_divider" />
+    </FrameLayout>
+    <!-- Will toggle visible/gone when needed -->
 
-</LinearLayout>
+
+</com.motlee.android.layouts.HorizontalRatioLinearLayout>

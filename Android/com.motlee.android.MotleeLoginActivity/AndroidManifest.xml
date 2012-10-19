@@ -61,6 +61,26 @@
             	android:name="android.support.PARENT_ACTIVITY"
             	android:value="com.example.myfirstapp.MainActivity" />
         </activity>
+        
+        <activity
+            android:name=".CreateEventActivity"
+            android:label="@string/title_create_event_activity"
+            android:theme="@style/app_theme"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
+        <activity
+            android:name=".UserProfilePageActivity"
+            android:label="@string/title_user_profile_activity"
+            android:theme="@style/app_theme"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
     </application>
     
 </manifest>

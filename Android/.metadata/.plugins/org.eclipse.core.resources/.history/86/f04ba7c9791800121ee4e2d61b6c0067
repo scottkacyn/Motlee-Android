@@ -1,0 +1,110 @@
+<com.motlee.android.layouts.VerticalRatioLinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:paddingTop="10dp"
+	android:paddingLeft="10dp"
+	android:paddingBottom="6dp"
+	android:background="@drawable/plus_menu_background">
+
+ 	<FrameLayout
+ 	    android:layout_width="match_parent"
+ 	    android:layout_height="wrap_content">
+ 	    
+ 	    <com.motlee.android.view.HorizontalAspectImageButton
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="wrap_content"
+ 	        android:src="@drawable/main_menu_opened_button_normal" />
+ 	</FrameLayout>
+ 		 	    	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="wrap_content"
+	 	        android:src="@drawable/main_menu_opened_divider" />
+	 	<FrameLayout
+ 	    android:layout_width="match_parent"
+ 	    android:layout_height="wrap_content">
+ 	    
+ 	    <com.motlee.android.view.HorizontalAspectImageButton
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="wrap_content"
+ 	        android:src="@drawable/main_menu_opened_button" />
+ 	   	<LinearLayout
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="match_parent"
+ 	        android:orientation="vertical"
+ 	        android:weightSum="1" >
+
+	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.5"
+	 	        android:paddingRight="42dp"
+	 	        android:paddingLeft="42dp"
+	 	        android:src="@drawable/icon_button_create_event"
+	 	        android:layout_gravity="center" />
+	 	    
+	 	    <TextView
+	 	        android:id="@+id/plus_menu_button_create_events"
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.5"
+	 	        android:text="New Event"
+	 	        android:gravity="center|center_vertical" />
+ 	    </LinearLayout>
+ 	</FrameLayout>
+ 		 	    	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="wrap_content"
+	 	        android:src="@drawable/main_menu_opened_divider" />
+ 	 	<FrameLayout
+ 	    android:layout_width="match_parent"
+ 	    android:layout_height="wrap_content">
+ 	    
+ 	    <com.motlee.android.view.HorizontalAspectImageButton
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="wrap_content"
+ 	        android:src="@drawable/main_menu_opened_button_normal" />
+ 	</FrameLayout>
+ 		 	    	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="wrap_content"
+	 	        android:src="@drawable/main_menu_opened_divider" />
+ 	 	<FrameLayout
+ 	    android:layout_width="match_parent"
+ 	    android:layout_height="wrap_content">
+ 	    
+ 	    <com.motlee.android.view.HorizontalAspectImageButton
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="wrap_content"
+ 	        android:src="@drawable/main_menu_opened_button_normal"/>
+ 	</FrameLayout>
+ 		 	    	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="wrap_content"
+	 	        android:src="@drawable/main_menu_opened_divider" />
+ 	  <FrameLayout
+ 	    android:layout_width="match_parent"
+ 	    android:layout_height="wrap_content">
+ 	    
+ 	    <com.motlee.android.view.HorizontalAspectImageButton
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="wrap_content"
+ 	        android:src="@drawable/main_menu_opened_button_normal" />
+
+ 	</FrameLayout>
+ 		 	    	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="wrap_content"
+	 	        android:src="@drawable/main_menu_opened_divider" />
+ 	<FrameLayout
+ 	    android:layout_width="match_parent"
+ 	    android:layout_height="wrap_content">
+ 	    
+ 	    <com.motlee.android.view.HorizontalAspectImageButton
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="wrap_content"
+ 	        android:src="@drawable/main_menu_opened_button_normal" />
+
+ 	</FrameLayout>
+</com.motlee.android.layouts.VerticalRatioLinearLayout>

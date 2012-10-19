@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <com.motlee.android.layouts.HorizontalRatioLinearLayout
+   <com.motlee.android.layouts.HorizontalRatioLinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
@@ -10,14 +10,13 @@
 		        android:layout_width="0dp"
 		        android:layout_height="match_parent" 
 		        android:gravity="left|center_vertical"
-		        android:paddingLeft="5dp"
 		        android:layout_weight="0.60"
 		        android:weightSum="1">
 		        <ImageView
 		            android:id="@+id/label_button_icon_pictures"
 		            android:layout_width="0dp"
 		            android:layout_height="match_parent"
-		            android:padding="3dp"
+		            android:paddingLeft="10dp"
 		            android:src="@drawable/icon_photos_normal"
 		            android:layout_gravity="center_vertical"
 		            android:layout_weight=".333333" />
@@ -26,8 +25,7 @@
 		    	    android:layout_width="0dp"
 			        android:layout_height="wrap_content"
 			        android:gravity="left|center_vertical"
-			        android:layout_weight=".5"
-			        android:padding="5dp"
+			        android:layout_weight=".66666"
 			        android:paddingLeft="15dp"
 			        android:background="@android:color/transparent" />
 		    </LinearLayout>
@@ -37,7 +35,7 @@
 		        android:layout_width="0dp"
 		        android:layout_height="wrap_content"
 		        android:scaleType="fitCenter"
-		        android:gravity="left|center_vertical"
+		        android:gravity="right|center_vertical"
 		        android:layout_weight="0.13333"
      		    android:padding="0dp"
 		        android:src="@drawable/icon_list_view"
@@ -57,14 +55,5 @@
 		        android:background="@android:color/transparent"
 		        android:onClick="switchToGridView" />
 		  	
-		  	<com.motlee.android.view.HorizontalAspectImageButton 
-		        android:id="@+id/label_button_comment"
-		        android:layout_width="0dp"
-		        android:layout_height="wrap_content"
-		        android:scaleType="fitCenter"
-		        android:gravity="left|center_vertical"
-		        android:layout_weight="0.1333"
-		        android:padding="0dp"
-		        android:src="@drawable/icon_comment"
-		        android:background="@android:color/transparent" />
+
     </com.motlee.android.layouts.HorizontalRatioLinearLayout>

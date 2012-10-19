@@ -1,0 +1,200 @@
+package com.motlee.android.fragment;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+import com.motlee.android.R;
+import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.view.DateTimePicker;
+
+import android.app.Dialog;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
+
+public class CreateEventFragment extends Fragment {
+	
+	private View view;
+	private LayoutInflater inflater;
+	private EventDetail mEventDetail;
+	private String pageTitle = "Create Event";
+	
+	private StretchedBackgroundTableLayout eventInfoLayout;
+	
+	private View mDatePickerStartView;
+	private View mDatePickerEndView;
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+	
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.activity_event_detail_more, null);
+		
+		eventInfoLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_detail_info);
+		eventInfoLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		
+		TextView tv = (TextView) view.findViewById(R.id.header_textView);
+		tv.setText(pageTitle);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		
+		View headerRightButton = view.findViewById(R.id.header_right_layout_button);
+		headerRightButton.setVisibility(View.VISIBLE);
+		
+		setDateLabels();
+		
+		return view;
+	}
+
+	private void setDateLabels() 
+	{
+		eventInfoLayout.removeAllViews();
+		
+		View label = this.inflater.inflate(R.layout.edit_event_name, null);
+		
+		setEventNameEdit(label);
+		
+		mDatePickerStartView = this.inflater.inflate(R.layout.edit_time_picker, null);
+		
+		mDatePickerEndView = this.inflater.inflate(R.layout.edit_time_picker, null);
+		
+		Calendar defaultStartTime = Calendar.getInstance();
+		Calendar defaultEndTime = Calendar.getInstance();
+		
+		if (defaultStartTime.get(Calendar.MINUTE) <= 30)
+		{
+			defaultStartTime.set(Calendar.MINUTE, 30);
+			
+			defaultEndTime.set(Calendar.MINUTE, 30);
+		}
+		else 
+		{
+			defaultStartTime.set(Calendar.MINUTE, 0);
+			defaultStartTime.add(Calendar.HOUR, 1);
+			
+			defaultEndTime.set(Calendar.MINUTE, 0);
+			defaultEndTime.add(Calendar.HOUR, 1);
+		}
+		
+		defaultEndTime.add(Calendar.DATE, 1);
+		
+		
+		setDateTimePicker(mDatePickerStartView, defaultStartTime.toString());
+		setDateTimePicker(mDatePickerEndView, "End Time");
+	}
+	
+	private void setEventNameEdit(View label)
+	{
+		EditText editText = (EditText) label.findViewById(R.id.edit_event_name_text);
+		editText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		editText.setTextColor(R.color.label_color);
+		editText.setHint("Event Name");
+		
+		editText.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+	        public void onFocusChange(View v, boolean hasFocus) {
+	            if (hasFocus) {
+	                ((EditText) v).setTextColor(Color.WHITE);
+	                ((EditText) v).setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+	            } 
+	        }
+	    });
+		
+		TableRow tr = new TableRow(getActivity());
+		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tr.setLayoutParams(lp);
+		tr.addView(label);
+		eventInfoLayout.addView(tr);
+	}
+	
+	private void setDateTimePicker(View label, String dateString)
+	{
+		TextView textView = (TextView) label.findViewById(R.id.edit_event_date_time_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(dateString);
+		
+		TableRow tr = new TableRow(getActivity());
+		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tr.setLayoutParams(lp);
+		tr.addView(label);
+		eventInfoLayout.addView(tr);
+	}
+	
+	public void openDateTimePicker(View view) {
+		
+			showDateTimeDialog();
+	}
+
+	private void showDateTimeDialog() {
+		// Create the dialog
+		final Dialog mDateTimeDialog = new Dialog(getActivity());
+		// Inflate the root layout
+		final RelativeLayout mDateTimeDialogView = (RelativeLayout) inflater.inflate(R.layout.date_time_dialog, null);
+		// Grab widget instance
+		final DateTimePicker mDateTimePicker = (DateTimePicker) mDateTimeDialogView.findViewById(R.id.DateTimePicker);
+		// Check is system is set to use 24h time (this doesn't seem to work as expected though)
+		final String timeS = android.provider.Settings.System.getString(getActivity().getContentResolver(), android.provider.Settings.System.TIME_12_24);
+		final boolean is24h = !(timeS == null || timeS.equals("12"));
+		
+		// Update demo TextViews when the "OK" button is clicked 
+		((Button) mDateTimeDialogView.findViewById(R.id.SetDateTime)).setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				
+				/*mDateTimePicker.clearFocus();
+				// TODO Auto-generated method stub
+				((TextView) getActivity().findViewById(R.id.Date)).setText(mDateTimePicker.get(Calendar.YEAR) + "/" + (mDateTimePicker.get(Calendar.MONTH)+1) + "/"
+						+ mDateTimePicker.get(Calendar.DAY_OF_MONTH));
+				if (mDateTimePicker.is24HourView()) {
+					((TextView) findViewById(R.id.Time)).setText(mDateTimePicker.get(Calendar.HOUR_OF_DAY) + ":" + mDateTimePicker.get(Calendar.MINUTE));
+				} else {
+					((TextView) findViewById(R.id.Time)).setText(mDateTimePicker.get(Calendar.HOUR) + ":" + mDateTimePicker.get(Calendar.MINUTE) + " "
+							+ (mDateTimePicker.get(Calendar.AM_PM) == Calendar.AM ? "AM" : "PM"));
+				}
+				mDateTimeDialog.dismiss();*/
+			}
+		});
+
+		// Cancel the dialog when the "Cancel" button is clicked
+		((Button) mDateTimeDialogView.findViewById(R.id.CancelDialog)).setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				mDateTimeDialog.cancel();
+			}
+		});
+
+		// Reset Date and Time pickers when the "Reset" button is clicked
+		((Button) mDateTimeDialogView.findViewById(R.id.ResetDateTime)).setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				mDateTimePicker.reset();
+			}
+		});
+		
+		// Setup TimePicker
+		mDateTimePicker.setIs24HourView(is24h);
+		// No title on the dialog window
+		mDateTimeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		// Set the dialog content view
+		mDateTimeDialog.setContentView(mDateTimeDialogView);
+		// Display the dialog
+		mDateTimeDialog.show();
+	}
+}

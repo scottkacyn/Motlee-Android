@@ -76,6 +76,21 @@ public class EventDetailActivity extends FragmentActivity {
     }
     
     
+    
+    /*
+     * Left and Right Menu Functions
+     */
+    
+    public void onClickCreateEvent(View view)
+    {
+    	MenuFunctions.showCreateEventPage(view, this);
+    }
+    
+    public void onClickOpenPlusMenu(View view)
+    {
+    	MenuFunctions.openPlusMenu(view, this);
+    }
+    
     public void onClickOpenMainMenu(View view)
     {
     	MenuFunctions.openMainMenu(view, this);

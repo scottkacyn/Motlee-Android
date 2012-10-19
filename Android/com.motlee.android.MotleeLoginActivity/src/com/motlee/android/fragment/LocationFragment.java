@@ -12,8 +12,8 @@ import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
-import com.motlee.android.object.MarkerItemizedOverlay;
-import com.motlee.android.object.OverlayItemExtended;
+import com.motlee.android.object.ClickableBalloonItemizedOverlay;
+import com.motlee.android.object.OverlayItemWithEventID;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -107,10 +107,10 @@ public class LocationFragment extends Fragment {
 		mMapController.animateTo(point);
 		mMapController.setZoom(17);
 		
-		OverlayItemExtended overlay = new OverlayItemExtended(point, pageTitle, location.locationDescription, mEventDetail.getEventID());
+		OverlayItemWithEventID overlay = new OverlayItemWithEventID(point, pageTitle, location.locationDescription, mEventDetail.getEventID());
 		List<Overlay> overlays = map.getOverlays();
 		Drawable drawable = this.getResources().getDrawable(R.drawable.map_pin_for_google);
-		MarkerItemizedOverlay itemizedoverlay = new MarkerItemizedOverlay(drawable, map, this.getActivity());
+		ClickableBalloonItemizedOverlay itemizedoverlay = new ClickableBalloonItemizedOverlay(drawable, map, this.getActivity());
 		itemizedoverlay.addOverlay(overlay);
 		overlays.clear();
 		overlays.add(itemizedoverlay);

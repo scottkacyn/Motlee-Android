@@ -29,6 +29,6 @@
       android:src="@drawable/plus_menu_button"
       android:background="@android:color/transparent"
       android:scaleType="fitCenter"
-      android:onClick="onClickOpenMainMenu"
+      android:onClick="onClickOpenPlusMenu"
       android:gravity="right" />
 </LinearLayout>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@android:color/transparent">
+    
+    
+    <FrameLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" >
+	    <com.motlee.android.view.HorizontalAspectImageButton 
+	        android:id="@+id/label_button"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:scaleType="fitCenter"
+	        android:src="@drawable/label_button"
+	        android:adjustViewBounds="true"
+	        android:onClick="seeMoreDetail"
+	        android:background="@android:color/transparent" />
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent" 
+	        android:layout_gravity="left|center_vertical"
+	        android:weightSum="1">
+	        <ImageView
+	            android:id="@+id/label_button_icon"
+	            android:layout_width="0dp"
+	            android:layout_height="match_parent"
+	            android:layout_gravity="center_vertical"
+	            android:paddingLeft="10dp"
+	            android:layout_weight=".20" />
+		    <TextView 
+		        android:id="@+id/label_button_text"
+	    	    android:layout_width="0dp"
+		        android:layout_height="match_parent"
+		        android:layout_weight=".30"
+		        android:gravity="left|center_vertical"
+		        android:paddingLeft="15dp"
+		        android:background="@android:color/transparent" />
+	    </LinearLayout>
+    </FrameLayout>
+    <!-- Will toggle visible/gone when needed -->
+    <ImageView
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+        android:src="@drawable/label_button_divider" />
+
+</LinearLayout>

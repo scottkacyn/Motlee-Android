@@ -4,21 +4,15 @@ import com.motlee.android.object.GlobalVariables;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.NinePatchDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
-import android.view.View;
 import android.widget.TableLayout;
 
 public class StretchedBackgroundTableLayout extends TableLayout {
-	
-	private final String TAG = "StretchedBackgroundTableLayout";
-	
 	private final int leftPadding;
 	private final int rightPadding;
 	private final int topPadding;
@@ -57,21 +51,6 @@ public class StretchedBackgroundTableLayout extends TableLayout {
 		super.setBackgroundDrawable(resizeBackgroundDrawable(drawable));
 		this.setPadding(leftPadding, topPadding, rightPadding, bottomPadding);
 		Log.d("StretchedBackgroundTableLayout", "left: " + leftPadding + ", top: " + topPadding + ", right: " + rightPadding + ", left: " + leftPadding);
-	}
-	
-	@Override
-	public void onDraw(Canvas canvas)
-	{
-		super.onDraw(canvas);
-	}
-	
-	@Override
-	public void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
-	{
-		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-		
-		int width = MeasureSpec.getSize(widthMeasureSpec);
-		int height = MeasureSpec.getSize(heightMeasureSpec);
 	}
 	
 	@Override

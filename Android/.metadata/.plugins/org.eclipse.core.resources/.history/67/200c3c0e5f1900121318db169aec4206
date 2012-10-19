@@ -1,0 +1,247 @@
+package com.motlee.android.fragment;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+import com.motlee.android.R;
+import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.view.DateTimePicker;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
+
+public class CreateEventFragment extends Fragment {
+	
+	public static String START_TIME = "StartTime";
+	public static String END_TIME = "EndTime";
+	
+	private View view;
+	private LayoutInflater inflater;
+	private EventDetail mEventDetail;
+	private String pageTitle = "Create Event";
+	
+	private StretchedBackgroundTableLayout eventInfoLayout;
+	
+	private View mDatePickerStartView;
+	private View mDatePickerEndView;
+	
+	private Editable mEventName;
+	
+	private Calendar mStartTime;
+	private Calendar mEndTime;
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+	
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.activity_event_detail_more, null);
+		
+		eventInfoLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_detail_info);
+		eventInfoLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		
+		TextView tv = (TextView) view.findViewById(R.id.header_textView);
+		tv.setText(pageTitle);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		
+		View headerRightButton = view.findViewById(R.id.header_right_layout_button);
+		headerRightButton.setVisibility(View.VISIBLE);
+		
+		TextView headerText = (TextView) view.findViewById(R.id.header_right_text);
+		headerText.setText("Start!");
+		
+		initializeTime();
+		
+		setDateLabels();
+		
+		return view;
+	}
+
+	public Calendar getStartTime()
+	{
+		return mStartTime;
+	}
+	
+	public Calendar getEndTime()
+	{
+		return mEndTime;
+	}
+	
+	public String getEventName()
+	{
+		return mEventName.toString();
+	}
+	
+	/*
+	 * setTime sets the selected time from the dialog into
+	 * it's respective start or end time.
+	 * If startTime > endTime, endTime = startTime + 24 hours
+	 * If endTime < startTime, startTime = endTime
+	 */
+	
+	public void setTime(View view, Calendar time)
+	{
+		if (view.getParent() == mDatePickerStartView)
+		{
+			mStartTime = time;
+			
+			if (mStartTime.compareTo(mEndTime) > 0)
+			{
+				mEndTime = (Calendar) mStartTime.clone();
+				mEndTime.add(Calendar.DATE, 1);
+				
+				updateDateTimeText(mDatePickerEndView, mEndTime);
+			}
+			
+			updateDateTimeText(mDatePickerStartView, mStartTime);
+		}
+		else if (view.getParent() == mDatePickerEndView)
+		{
+			mEndTime = time;
+			
+			if (mEndTime.compareTo(mStartTime) < 0)
+			{
+				mStartTime = (Calendar) mEndTime.clone();
+				
+				updateDateTimeText(mDatePickerStartView, mStartTime);
+			}
+			
+			updateDateTimeText(mDatePickerEndView, mEndTime);
+		}
+	}
+	
+	private void updateDateTimeText(View view, Calendar time)
+	{
+		TextView textView = (TextView) view.findViewById(R.id.edit_event_date_time_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(GlobalVariables.getInstance().getDateFormatter().format(time.getTime()));
+	}
+	
+	private void initializeTime()
+	{
+		mStartTime = Calendar.getInstance();
+		mEndTime = Calendar.getInstance();
+		
+		if (mStartTime.get(Calendar.MINUTE) <= 30)
+		{
+			mStartTime.set(Calendar.MINUTE, 30);
+			
+			mEndTime.set(Calendar.MINUTE, 30);
+		}
+		else 
+		{
+			mStartTime.set(Calendar.MINUTE, 0);
+			mStartTime.add(Calendar.HOUR, 1);
+			
+			mEndTime.set(Calendar.MINUTE, 0);
+			mEndTime.add(Calendar.HOUR, 1);
+		}
+		
+		mEndTime.add(Calendar.DATE, 1);
+	}
+	
+	private void setDateLabels() 
+	{
+		eventInfoLayout.removeAllViews();
+		
+		View label = this.inflater.inflate(R.layout.edit_event_name, null);
+		
+		setEventNameEdit(label);
+		
+		mDatePickerStartView = this.inflater.inflate(R.layout.edit_time_picker, null);
+		
+		mDatePickerEndView = this.inflater.inflate(R.layout.edit_time_picker, null);
+		
+		setDateTimePicker(mDatePickerStartView, GlobalVariables.getInstance().getDateFormatter().format(mStartTime.getTime()), "Start");
+		setDateTimePicker(mDatePickerEndView, GlobalVariables.getInstance().getDateFormatter().format(mEndTime.getTime()), "End");
+	}
+	
+	private void setEventNameEdit(View label)
+	{
+		final EditText editText = (EditText) label.findViewById(R.id.edit_event_name_text);
+		editText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		editText.setTextColor(R.color.label_color);
+		editText.setHint("Event Name");
+		mEventName = editText.getText();
+		
+		editText.setOnEditorActionListener(new OnEditorActionListener() {
+
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				
+	            if (event != null&& (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+	                InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+	                // NOTE: In the author's example, he uses an identifier
+	                // called searchBar. If setting this code on your EditText
+	                // then use v.getWindowToken() as a reference to your 
+	                // EditText is passed into this callback as a TextView
+
+	                in.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
+	               return true;
+
+	            }
+	            return false;
+			}
+			});
+		
+		editText.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+	        public void onFocusChange(View v, boolean hasFocus) {
+	            if (hasFocus) {
+	                ((EditText) v).setTextColor(Color.WHITE);
+	                ((EditText) v).setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+	            } 
+	        }
+	    });
+		
+		TableRow tr = new TableRow(getActivity());
+		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tr.setLayoutParams(lp);
+		tr.addView(label);
+		eventInfoLayout.addView(tr);
+	}
+	
+	private void setDateTimePicker(View label, String dateString, String timeLabel)
+	{
+		TextView textView = (TextView) label.findViewById(R.id.edit_event_date_time_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(dateString);
+		
+		textView = (TextView) label.findViewById(R.id.edit_event_date_time_label);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(timeLabel);
+		
+		TableRow tr = new TableRow(getActivity());
+		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tr.setLayoutParams(lp);
+		tr.addView(label);
+		eventInfoLayout.addView(tr);
+	}
+}

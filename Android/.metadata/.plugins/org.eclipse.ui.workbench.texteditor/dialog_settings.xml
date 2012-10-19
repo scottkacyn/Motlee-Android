@@ -2,19 +2,20 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="312" key="DIALOG_WIDTH"/>
-		<item value="415" key="DIALOG_Y_ORIGIN"/>
+		<item value="328" key="DIALOG_Y_ORIGIN"/>
+		<item value="1131" key="DIALOG_X_ORIGIN"/>
 		<item value="437" key="DIALOG_HEIGHT"/>
-		<item value="788" key="DIALOG_X_ORIGIN"/>
 		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
-		<item value="false" key="isRegEx"/>
 		<item value="false" key="casesensitive"/>
+		<item value="false" key="isRegEx"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="setStoriesForEvent" key="selection"/>
+		<item value="attachUriWithQuery" key="selection"/>
 		<list key="findhistory">
+			<item value="attachUriWithQuery"/>
 			<item value="setStoriesForEvent"/>
 			<item value="pull_to_refresh_tap_label"/>
 			<item value="OnScrollListener"/>
@@ -22,7 +23,6 @@
 			<item value="mRefreshOriginalTopPadding"/>
 			<item value="pull_to_refresh_tap_lab"/>
 			<item value="TAP_TO_REFRESH"/>
-			<item value="fomo_button"/>
 		</list>
 		<list key="replacehistory">
 		</list>

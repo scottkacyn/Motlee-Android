@@ -26,11 +26,10 @@
 	 	        android:layout_width="match_parent"
 	 	        android:layout_height="0dp"
 	 	        android:layout_weight="0.5"
-	 	        android:paddingTop="10dp"
-	 	        android:paddingRight="50dp"
-	 	        android:paddingLeft="50dp"
+	 	        android:paddingRight="47dp"
+	 	        android:paddingLeft="47dp"
 	 	        android:src="@drawable/icon_button_search"
-	 	        android:layout_gravity="bottom" />
+	 	        android:layout_gravity="center" />
 	 	    
 	 	    <TextView
 	 	        android:id="@+id/main_menu_button_search"
@@ -66,9 +65,8 @@
 	 	        android:layout_width="match_parent"
 	 	        android:layout_height="0dp"
 	 	        android:layout_weight="0.5"
-	 	        android:paddingTop="10dp"
-	 	        android:paddingRight="50dp"
-	 	        android:paddingLeft="50dp"
+	 	        android:paddingRight="47dp"
+	 	        android:paddingLeft="47dp"
 	 	        android:src="@drawable/icon_button_all_events"
 	 	        android:layout_gravity="bottom" />
 	 	    
@@ -104,9 +102,8 @@
 	 	        android:layout_width="match_parent"
 	 	        android:layout_height="0dp"
 	 	        android:layout_weight="0.5"
-	 	        android:paddingTop="10dp"
-	 	        android:paddingRight="50dp"
-	 	        android:paddingLeft="50dp"
+	 	        android:paddingRight="47dp"
+	 	        android:paddingLeft="47dp"
 	 	        android:src="@drawable/icon_button_star"
 	 	        android:layout_gravity="bottom" />
 	 	    
@@ -143,9 +140,8 @@
 	 	        android:layout_width="match_parent"
 	 	        android:layout_height="0dp"
 	 	        android:layout_weight="0.5"
-	 	        android:paddingTop="10dp"
-	 	        android:paddingRight="50dp"
-	 	        android:paddingLeft="50dp"
+	 	        android:paddingRight="47dp"
+	 	        android:paddingLeft="47dp"
 	 	        android:src="@drawable/icon_button_map"
 	 	        android:layout_gravity="bottom" />
 	 	    
@@ -180,9 +176,8 @@
 	 	        android:layout_width="match_parent"
 	 	        android:layout_height="0dp"
 	 	        android:layout_weight="0.5"
-	 	        android:paddingTop="10dp"
-	 	        android:paddingRight="50dp"
-	 	        android:paddingLeft="50dp"
+	 	        android:paddingRight="47dp"
+	 	        android:paddingLeft="47dp"
 	 	        android:src="@drawable/icon_button_alert"
 	 	        android:layout_gravity="bottom" />
 	 	    
@@ -218,9 +213,8 @@
 	 	        android:layout_width="match_parent"
 	 	        android:layout_height="0dp"
 	 	        android:layout_weight="0.5"
-	 	        android:paddingTop="10dp"
-	 	        android:paddingRight="50dp"
-	 	        android:paddingLeft="50dp"
+	 	        android:paddingRight="47dp"
+	 	        android:paddingLeft="47dp"
 	 	        android:src="@drawable/icon_button_gear"
 	 	        android:layout_gravity="bottom" />
 	 	    

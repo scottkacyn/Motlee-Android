@@ -22,7 +22,7 @@ public class MainMenuFragment extends Fragment {
 	{
 		View view = (View) getActivity().getLayoutInflater().inflate(R.layout.main_menu, null);
 		
-		MenuFunctions.setUpMenuButtons(view);
+		MenuFunctions.setUpMainMenuButtons(view);
 		
 		return view;
 	}

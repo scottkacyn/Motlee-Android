@@ -1,10 +1,12 @@
 package com.motlee.android.object;
 
+import com.motlee.android.CreateEventActivity;
 import com.motlee.android.EventListActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.EventListAdapter;
 import com.motlee.android.fragment.EventListFragment;
 import com.motlee.android.fragment.MainMenuFragment;
+import com.motlee.android.fragment.PlusMenuFragment;
 import com.motlee.android.view.HorizontalAspectImageButton;
 
 import android.app.Activity;
@@ -22,10 +24,11 @@ import android.widget.TextView;
 public class MenuFunctions {
 
 	private static Boolean menuOpen = false;
+	private static Boolean plusMenuOpen = false;
 	
 	private static final int menuTextSize = 19;
 
-	public static void setUpMenuButtons(View view)
+	public static void setUpMainMenuButtons(View view)
 	{
 		TextView tv = (TextView) view.findViewById(R.id.main_menu_button_alert);
 		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
@@ -52,6 +55,13 @@ public class MenuFunctions {
 		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
 	}
 	
+	public static void setUpPlusMenuButtons(View view)
+	{
+		TextView tv = (TextView) view.findViewById(R.id.plus_menu_button_create_events);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
+	}
+	
 	public static void goBack(Activity activity)
 	{
 		activity.finish();
@@ -74,8 +84,26 @@ public class MenuFunctions {
         ft.commit();
 	}
 	
+	public static void openPlusMenu(View view, FragmentActivity activity)
+	{
+    	FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
+        
+        PlusMenuFragment plusMenuFragment = new PlusMenuFragment();
+        
+        ft.add(R.id.plus_menu, plusMenuFragment);
+        
+        HorizontalAspectImageButton menuButton = (HorizontalAspectImageButton) activity.findViewById(R.id.plus_menu_button);
+		
+		menuButton.setEnabled(false);
+        
+		plusMenuOpen = true;
+		
+        ft.commit();
+	}
+	
 	public static boolean onDispatchTouchOverride(MotionEvent ev, FragmentActivity activity)
 	{
+		// Only check if menu is open
 		if (menuOpen)
 		{
 		    Rect menuBounds = new Rect();
@@ -94,10 +122,59 @@ public class MenuFunctions {
 		    	return true;
 		    }
 		}
+		
+		//only check if plus menu is open
+		else if (plusMenuOpen)
+		{
+		    Rect menuBounds = new Rect();
+		    View view = activity.findViewById(R.id.plus_menu);
+		    
+		    int displayWidth = GlobalVariables.getInstance().getDisplay().getWidth();
+		    
+		    view.getDrawingRect(menuBounds);
+	
+		    int left = menuBounds.left;
+		    int right = menuBounds.right;
+		    
+		    int menuWidth = right - left;
+		    
+		    menuBounds.left = displayWidth - menuWidth;
+		    menuBounds.right = displayWidth;
+		    
+		    if (!menuBounds.contains((int) ev.getX(), (int) ev.getY()) && ev.getAction() == MotionEvent.ACTION_DOWN) {
+		        // Tapped outside so we close the main menu
+		        removePlusMenu(activity);
+		    	
+		        return false;
+		    }
+		    else
+		    {
+		    	return true;
+		    }
+		}
 		else
 		{
 			return true;
 		}
+	}
+	
+	public static void removePlusMenu(FragmentActivity activity)
+	{
+    	FragmentManager fm = activity.getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        
+        Fragment fragment = fm.findFragmentById(R.id.plus_menu);
+        
+        if (fragment != null)
+        {
+        	ft.remove(fragment)
+        	.commit();
+	        
+	        plusMenuOpen = false;
+	        
+	        View menuButton = activity.findViewById(R.id.plus_menu_button);
+	        menuButton.setEnabled(true);
+        }
 	}
 	
 	public static void removeMainMenu(FragmentActivity activity)
@@ -144,6 +221,13 @@ public class MenuFunctions {
 		showNewListView(newParams, activity);
 		
 		removeMainMenu(activity);
+	}
+	
+	public static void showCreateEventPage(View view, FragmentActivity activity)
+	{
+		Intent intent = new Intent(activity, CreateEventActivity.class);
+		
+		activity.startActivity(intent);
 	}
 	
 	private static void showNewListView(EventListParams params, FragmentActivity activity)

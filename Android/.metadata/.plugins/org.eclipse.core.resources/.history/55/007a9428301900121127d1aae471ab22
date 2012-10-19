@@ -1,0 +1,7 @@
+package com.motlee.android.event;
+
+import com.motlee.android.object.event.UserInfoEvent;
+
+public interface UserInfoListener {
+	void raised(UserInfoEvent e);
+}

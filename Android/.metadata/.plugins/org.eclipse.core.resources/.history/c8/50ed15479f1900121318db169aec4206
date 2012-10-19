@@ -1,0 +1,186 @@
+package com.motlee.android.fragment;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+
+import com.facebook.android.Facebook;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.motlee.android.R;
+import com.motlee.android.adapter.ImageAdapter;
+import com.motlee.android.layouts.GridListTableLayout;
+import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.UserInfoList;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
+
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.TableLayout.LayoutParams;
+
+public class PeopleListFragment extends Fragment {
+	
+	private String tag = "PeopleListFragment";
+	
+	private static final String JOIN = "Join";
+	private static final String EDIT = "Edit";
+	private static final String LEAVE = "Leave";
+	
+	private String pageTitle = "All Events";
+	
+	private String facebookPrefix = "https://graph.facebook.com/";
+	
+	private StretchedBackgroundTableLayout eventInfoLayout;
+	
+	private View view;
+	
+	private LayoutInflater inflater;
+	
+	private ArrayList<Integer> mUserIDs = new ArrayList<Integer>();
+	
+	private Facebook facebook = new Facebook(GlobalVariables.FB_APP_ID);
+    private ImageLoader imageDownloader;
+    private DisplayImageOptions mOptions;
+    
+	/*@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+	    String[] links = getResources().getStringArray(R.array.tut_links);
+	    String content = links[position];
+	    Intent showContent = new Intent(getActivity().getApplicationContext(),
+	            TutViewerActivity.class);
+	    showContent.setData(Uri.parse(content));
+	    startActivity(showContent);
+	}*/
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+		
+		Log.w(tag, "onCreateView");
+		
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.activity_event_detail_more, null);
+
+		eventInfoLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_detail_info);
+		
+		eventInfoLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		
+		TextView tv = (TextView) view.findViewById(R.id.header_textView);
+		tv.setText(pageTitle);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		
+		View headerRightButton = view.findViewById(R.id.header_right_layout_button);
+		headerRightButton.setVisibility(View.VISIBLE);
+		
+		View headerLeftButton = view.findViewById(R.id.header_left_button);
+		headerLeftButton.setVisibility(View.VISIBLE);
+		
+		tv = (TextView) view.findViewById(R.id.header_right_text);
+		tv.setText(JOIN);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		
+		ImageScaleType ist = ImageScaleType.IN_SAMPLE_POWER_OF_2;
+		
+		mOptions = new DisplayImageOptions.Builder()
+		.showStubImage(R.drawable.stubimage)
+		.resetViewBeforeLoading()
+		.cacheInMemory()
+		.imageScaleType(ist)
+		.cacheOnDisc()
+		.displayer(new SimpleBitmapDisplayer())
+		.build();
+		
+		imageDownloader = ImageLoader.getInstance();
+    	
+    	imageDownloader.init(ImageLoaderConfiguration.createDefault(getActivity()));
+		
+		setUpPeopleList();
+		
+		return view;
+	}
+	
+	public void setPageTitle(String pageTitle)
+	{
+		this.pageTitle = pageTitle;
+	}
+	
+	private void setUpPeopleList() {
+
+		for (int i = 0; i < mUserIDs.size(); i++)
+		{
+			int userID = mUserIDs.get(i);
+			
+			int facebookID = UserInfoList.getInstance().get(userID).uid;
+			
+			String picture = facebookPrefix + Integer.toString(facebookID) + "/picture";
+			
+			String name = UserInfoList.getInstance().get(userID).name;
+			
+			if (i == mUserIDs.size() - 1)
+			{
+				setLabelButton(name, picture, Integer.toString(userID), true);
+			}
+			else
+			{
+				setLabelButton(name, picture, Integer.toString(userID), false);
+			}
+		}
+	}
+
+	private void setLabelButton(String labelText, String imageURL, String description, boolean isLast) {
+		
+		View labelButton = this.inflater.inflate(R.layout.event_detail_info_button, null);
+		
+		View imageButton = labelButton.findViewById(R.id.label_button);
+		imageButton.setContentDescription(description);
+		
+		ImageView imageView = (ImageView) labelButton.findViewById(R.id.label_button_icon);
+		imageDownloader.displayImage(imageURL, imageView, mOptions);
+		
+		TextView textView = (TextView) labelButton.findViewById(R.id.label_button_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(labelText);
+		
+		TableRow tr = new TableRow(getActivity());
+		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tr.setLayoutParams(lp);
+		tr.addView(labelButton);
+		eventInfoLayout.addView(tr);
+		
+		ImageView divider = new ImageView(getActivity());
+		divider.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+		divider.setScaleType(ScaleType.FIT_XY);
+		divider.setAdjustViewBounds(true);
+		divider.setImageDrawable(getResources().getDrawable(R.drawable.label_button_divider));
+		
+		if (!isLast)
+		{
+			tr = new TableRow(getActivity());
+			tr.setLayoutParams(lp);
+			tr.addView(divider);
+			eventInfoLayout.addView(tr);
+		}
+	}
+	
+	public void setUserIdList(ArrayList<Integer> userIDs)
+	{
+		mUserIDs = userIDs;
+	}
+}
