@@ -1,0 +1,322 @@
+package com.motlee.android.fragment;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.View.OnFocusChangeListener;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
+
+import com.facebook.GraphPlace;
+import com.facebook.GraphUser;
+import com.facebook.Request;
+import com.facebook.Request.GraphPlaceListCallback;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.Request.GraphUserListCallback;
+import com.motlee.android.CreateEventActivity;
+import com.motlee.android.R;
+import com.motlee.android.adapter.SearchPeopleAdapter;
+import com.motlee.android.adapter.SearchPlacesAdapter;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.LocationInfo;
+
+public class SearchPlacesFragment extends ListFragmentWithHeader 
+{
+	private String tag = "SearchPlacesFragment";
+	
+	private static final String JOIN = "Join";
+	private static final String EDIT = "Edit";
+	private static final String LEAVE = "Leave";
+	private static final String FOMO = "FOMO";
+	
+	private String pageTitle = "All Events";
+	
+	private View view;
+	
+	private LayoutInflater inflater;
+	
+	private EditText editText;
+	//private ArrayList<Integer> mUserIDs = new ArrayList<Integer>();
+	
+	private SearchPlacesAdapter mAdapter;
+	
+	private Handler mHandler = new Handler();
+	
+	private Request request;
+	private Session facebookSession;
+	
+	private Location mLocation;
+	private int mRadiusInMeters;
+	private int mResultsLimit;
+	private String mSearchText;
+	
+	private ListView mListView;
+	
+	private TextView noResultTextView;
+	
+	@Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        // Get the item that was clicked
+        Object o = this.getListAdapter().getItem(position);
+        String keyword = o.toString();
+        Toast.makeText(getActivity(), "You selected: " + keyword, Toast.LENGTH_LONG)
+                .show();
+    }
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+		
+		Log.w(tag, "onCreateView");
+		
+		loadPlacesData();
+		
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.activity_search, null);
+		
+		mAdapter = new SearchPlacesAdapter(getActivity(), R.layout.search_places_item, new ArrayList<GraphPlace>());
+		
+    	setListAdapter(mAdapter);
+		
+		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
+		tv.setText(pageTitle);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		
+		noResultTextView = (TextView) view.findViewById(R.id.search_could_not_find_text);
+		
+		View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
+		headerLeftButton.setVisibility(View.VISIBLE);
+		
+		setEditText();
+		
+		return view;
+	}
+
+	public void loadPlacesData() {
+		facebookSession = Session.getActiveSession();
+		request = Request.newPlacesSearchRequest(facebookSession, mLocation, mRadiusInMeters, mResultsLimit, mSearchText, graphPlaceListCallback);
+		Request.executeBatchAsync(request);
+	}
+	
+	
+	public void setLocation(Location location)
+	{
+		mLocation = location;
+	}
+	
+	public void setRadiusInMeters(int radiusInMeters)
+	{
+		mRadiusInMeters = radiusInMeters;
+	}
+	
+	public void setSearchText(String textSearch)
+	{
+		mSearchText = textSearch;
+	}
+	
+	public void setResultsLimit(int resultsLimit)
+	{
+		mResultsLimit = resultsLimit;
+	}
+	
+	private void setEditText()
+	{
+		editText = (EditText) view.findViewById(R.id.search_text_box_text);
+		editText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		editText.setHint("Enter place or address");
+		
+		editText.setOnEditorActionListener(editorActionListener);
+		editText.setOnFocusChangeListener(focusChangeListener);
+		editText.addTextChangedListener(mOnSearchBoxTextChanged);
+	}
+	
+	private OnFocusChangeListener focusChangeListener = new OnFocusChangeListener(){
+		// if we have focus, change color for input text
+        public void onFocusChange(View v, boolean hasFocus) {
+            if (hasFocus) {
+                ((EditText) v).setTextColor(Color.WHITE);
+                ((EditText) v).setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+            } 
+        }
+	};
+	
+	private OnEditorActionListener editorActionListener = new OnEditorActionListener(){
+		
+		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+			
+			// if we hit enter on the keyboard, hide keyboard
+            if (event != null&& (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                // NOTE: In the author's example, he uses an identifier
+                // called searchBar. If setting this code on your EditText
+                // then use v.getWindowToken() as a reference to your 
+                // EditText is passed into this callback as a TextView
+
+                in.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                editText.clearFocus();
+                
+               return true;
+
+            }
+            return false;
+		}
+		
+	};
+	
+	private TextWatcher mOnSearchBoxTextChanged = new TextWatcher() {
+
+        public void afterTextChanged(Editable s) {
+        }
+
+        public void beforeTextChanged(CharSequence s, int start, int count,
+                int after) {
+        }
+
+        public void onTextChanged(CharSequence s, int start, int before,
+                int count) {
+        	
+        	setSearchText(s.toString());
+        	
+        	noResultTextView.setText(s);
+        	
+	    	mHandler.post(new Runnable() {
+	    	    
+	    		public void run() { 
+	    			
+	    	    	view.findViewById(R.id.search_progress_bar).setVisibility(View.VISIBLE);
+	    	    	
+	    	    	view.findViewById(R.id.search_list).setVisibility(View.GONE); 
+    	    	}
+    	    });
+	    	
+	    	loadPlacesData();
+        }
+    };
+    
+    private void setLocationAndCloseFragment(LocationInfo location)
+    {
+        CreateEventActivity activity = (CreateEventActivity) getActivity();
+
+		
+        FragmentManager fm = activity.getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        
+        CreateEventFragment mainFragment = (CreateEventFragment) fm.findFragmentByTag(CreateEventActivity.MAIN_FRAGMENT);
+        Fragment searchPlacesFragment = fm.findFragmentByTag(CreateEventActivity.SEARCH_PLACES);
+        
+        activity.setLocationInfo(location, mainFragment);
+        
+        ft.show(mainFragment)
+        .remove(searchPlacesFragment)
+        .commit();
+    }
+    
+    
+    private GraphPlaceListCallback graphPlaceListCallback = new GraphPlaceListCallback(){
+
+		public void onCompleted(List<GraphPlace> places, Response response) {
+	    	
+			mAdapter.setNewSetOfGraphPlaces(places);
+			
+			mListView = getListView();
+			
+			mListView.setOnItemClickListener(new OnItemClickListener(){
+
+				public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+					
+
+				}
+			});
+			
+	    	if (places.size() < 1)
+	    	{
+	    		
+		    	mHandler.post(new Runnable() {
+		    	    
+		    		public void run() { 
+		    			
+		    			ImageButton button = (ImageButton) view.findViewById(R.id.search_could_not_find_button);
+		    			button.setOnClickListener(new OnClickListener(){
+
+							public void onClick(View v) {
+								
+								Geocoder coder = new Geocoder(getActivity());
+								List<Address> address;
+
+								try {
+								    address = coder.getFromLocationName(mSearchText,5);
+								    if (address == null) {
+								        return null;
+								    }
+								    Address location = address.get(0);
+								    location.getLatitude();
+								    location.getLongitude();
+
+								    p1 = new GeoPoint((int) (location.getLatitude() * 1E6),
+								                      (int) (location.getLongitude() * 1E6));
+
+								     return p1;
+								}
+								catch (Exception e)
+								{
+									
+								}
+								
+							}
+		    				
+		    			});
+		    			
+		    	    	view.findViewById(R.id.search_progress_bar).setVisibility(View.GONE);
+		    	    	
+		    	    	view.findViewById(R.id.search_list).setVisibility(View.GONE); 
+		    	    	
+		    	    	view.findViewById(R.id.search_could_not_find).setVisibility(View.VISIBLE);
+	    	    	}
+	    	    });
+	    	}
+	    	else
+	    	{
+		    	mHandler.post(new Runnable() {
+		    	    
+		    		public void run() { 
+		    			
+		    	    	view.findViewById(R.id.search_progress_bar).setVisibility(View.GONE);
+		    	    	
+		    	    	view.findViewById(R.id.search_list).setVisibility(View.VISIBLE); 
+		    	    	
+		    	    	view.findViewById(R.id.search_could_not_find).setVisibility(View.GONE);
+	    	    	}
+	    	    });
+	    	}
+		}
+    };
+}

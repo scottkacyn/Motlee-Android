@@ -36,7 +36,9 @@ public class EventDetailActivity extends FragmentActivity {
         ft = fm.beginTransaction();
         
         EventDetailFragment eventDetailFragment = new EventDetailFragment();
-
+        
+        eventDetailFragment.setHeaderView(findViewById(R.id.header));
+        
         eventDetailFragment.addEventDetail(eDetail);
         
         ft.add(R.id.fragment_content, eventDetailFragment);

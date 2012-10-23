@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="@android:color/transparent">
+    <ScrollView
+        android:id="@+id/event_detail_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:background="@android:color/transparent">	        
+	    
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+	        <com.motlee.android.layouts.StretchedBackgroundTableLayout
+	            android:id="@+id/event_detail_people_title"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:paddingTop="10dp"
+	            android:paddingBottom = "10dp"
+	            android:shrinkColumns="*"/>
+	        
+	        <com.motlee.android.layouts.StretchedBackgroundTableLayout
+	            android:id="@+id/event_detail_people_list"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:paddingTop="10dp"
+	            android:paddingBottom = "10dp"
+	            android:shrinkColumns="*"/>
+	    </LinearLayout>
+        
+    </ScrollView>
+</LinearLayout>

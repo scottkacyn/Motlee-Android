@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
 
+import com.facebook.FacebookActivity;
+import com.facebook.Session;
+import com.facebook.SessionState;
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
@@ -25,7 +28,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 
-public class MotleeLoginActivity extends Activity {
+public class MotleeLoginActivity extends FacebookActivity {
 
     Facebook facebook = new Facebook(GlobalVariables.FB_APP_ID);
     private SharedPreferences mPrefs;
@@ -43,19 +46,20 @@ public class MotleeLoginActivity extends Activity {
         instance.setGothamLigtFont(Typeface.createFromAsset(getAssets(), "fonts/gotham_light.ttf"));
         instance.setHelveticaNeueRegularFont(Typeface.createFromAsset(getAssets(), "fonts/helvetica_neue_bold.ttf"));
         instance.setHelveticaNeueRegularFont(Typeface.createFromAsset(getAssets(), "fonts/helvetica_neue_regular.ttf"));
-
+        instance.setFacebook(facebook);
         
-        mPrefs = getPreferences(MODE_PRIVATE);
-        String access_token = mPrefs.getString("access_token", null);
-        long expires = mPrefs.getLong("access_expires", 0);
+        this.openSession();
         
-        if(expires != 0) {
-            facebook.setAccessExpires(expires);
+        /*Session session = Session.getActiveSession();
+        if (session == null || session.getState().isClosed())
+        {
+        	session = new Session(this);
+        	Session.setActiveSession(session);
         }
         
-        if(access_token != null) {
-            facebook.setAccessToken(access_token);
-        }              
+        session.openForRead(this);*/
+        
+        //access_token = session.get     
         
         EventServiceBuffer.getInstance(this);
         
@@ -63,70 +67,33 @@ public class MotleeLoginActivity extends Activity {
 
 			public void raised(UserInfoEvent e) {
 				
-		        if (!facebook.isSessionValid())
-		        {
-		            setContentView(R.layout.login_page);
-		        }
-		        else
-		        {
-		        	EventServiceBuffer.setUserInfoListener(null);
-		        	startEventListActivity();
-		        }
+				GlobalVariables.getInstance().setUserId(e.getUserInfo().id);
 				
+	        	EventServiceBuffer.setUserInfoListener(null);
+	        	startEventListActivity();
 			}
         	
         });
-        
-        EventServiceBuffer.getUserInfoFromFacebookAccessToken(access_token);
     }
     
-    private class FriendsHolder
-    {
-    	public List<Friends> data;
-    }
-    
-    private class Friends
-    {
-    	public String name;
-    	public String id;
-    }
-    
-    public void onClickFacebookConnect(View view)
-    {
-        facebook.authorize(this, new DialogListener() {
-            
-            public void onComplete(Bundle values) {
-                
-            	SharedPreferences.Editor editor = mPrefs.edit();
-                editor.putString("access_token", facebook.getAccessToken());
-                editor.putLong("access_expires", facebook.getAccessExpires());
-                editor.commit();
-                
-                startEventListActivity();
-            }
+    @Override
+    protected void onSessionStateChange(SessionState state, Exception exception) {
+      // user has either logged in or not ...
+      if (state.isOpened()) {
 
-         
-            public void onFacebookError(FacebookError error) {
-            	//startEventListActivity();
-            }
-
-            
-            public void onError(DialogError e) {
-            	//startEventListActivity();
-            }
-
-            
-            public void onCancel() {
-            	//startEventListActivity();
-            }
-        });
+    	  String access_token = this.getSession().getAccessToken();
+          
+          EventServiceBuffer.getUserInfoFromFacebookAccessToken(access_token);
+      }
     }
     
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        facebook.authorizeCallback(requestCode, resultCode, data);
+        String access_token = this.getSession().getAccessToken();
+        
+        access_token = access_token.substring(4);
     }	
     
     //Starts EventListActivity and finishes this one

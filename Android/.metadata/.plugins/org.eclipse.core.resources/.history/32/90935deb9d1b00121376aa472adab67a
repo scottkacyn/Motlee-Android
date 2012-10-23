@@ -1,0 +1,44 @@
+package com.motlee.android.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.widget.ArrayAdapter;
+
+public class SearchAdapter extends ArrayAdapter<Integer> {
+
+	public SearchAdapter(Context context, int textViewResourceId) {
+		super(context, textViewResourceId);
+		// TODO Auto-generated constructor stub
+	}
+
+	public SearchAdapter(Context context, int resource, int textViewResourceId) {
+		super(context, resource, textViewResourceId);
+		// TODO Auto-generated constructor stub
+	}
+
+	public SearchAdapter(Context context, int textViewResourceId,
+			Integer[] objects) {
+		super(context, textViewResourceId, objects);
+		// TODO Auto-generated constructor stub
+	}
+
+	public SearchAdapter(Context context, int textViewResourceId,
+			List<Integer> objects) {
+		super(context, textViewResourceId, objects);
+		// TODO Auto-generated constructor stub
+	}
+
+	public SearchAdapter(Context context, int resource, int textViewResourceId,
+			Integer[] objects) {
+		super(context, resource, textViewResourceId, objects);
+		// TODO Auto-generated constructor stub
+	}
+
+	public SearchAdapter(Context context, int resource, int textViewResourceId,
+			List<Integer> objects) {
+		super(context, resource, textViewResourceId, objects);
+		// TODO Auto-generated constructor stub
+	}
+
+}

@@ -19,7 +19,7 @@ import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-public class DateDetailFragment extends Fragment {
+public class DateDetailFragment extends FragmentWithHeader {
 
 	private static final String JOIN = "Join";
 	private static final String EDIT = "Edit";
@@ -43,17 +43,17 @@ public class DateDetailFragment extends Fragment {
 		eventInfoLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_detail_info);
 		eventInfoLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
 		
-		TextView tv = (TextView) view.findViewById(R.id.header_textView);
+		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
 		tv.setText(pageTitle);
 		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 		
-		View headerRightButton = view.findViewById(R.id.header_right_layout_button);
+		View headerRightButton = mHeaderView.findViewById(R.id.header_right_layout_button);
 		headerRightButton.setVisibility(View.VISIBLE);
 		
-		View headerLeftButton = view.findViewById(R.id.header_left_button);
+		View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
 		headerLeftButton.setVisibility(View.VISIBLE);
 		
-		tv = (TextView) view.findViewById(R.id.header_right_text);
+		tv = (TextView) mHeaderView.findViewById(R.id.header_right_text);
 		tv.setText(JOIN);
 		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 		

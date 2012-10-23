@@ -4,8 +4,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
-    <include layout="@layout/header"
-        android:id="@+id/header_list" />
 	<com.google.android.maps.MapView
 		android:id="@+id/map_view"
 	    android:layout_width="fill_parent"

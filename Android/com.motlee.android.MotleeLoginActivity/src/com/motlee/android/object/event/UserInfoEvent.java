@@ -13,12 +13,13 @@ public class UserInfoEvent extends EventObject {
 	public UserInfoEvent(Object source, UserInfo userInfo)
 	{
 		super(source);
+		this.mUserInfo = userInfo;
 	}
 
 	/**
 	 * @return the mUserInfo
 	 */
-	public UserInfo getmUserInfo() {
+	public UserInfo getUserInfo() {
 		return mUserInfo;
 	}
 

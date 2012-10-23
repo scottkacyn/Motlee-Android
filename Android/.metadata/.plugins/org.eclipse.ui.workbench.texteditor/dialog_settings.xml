@@ -3,26 +3,26 @@
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="312" key="DIALOG_WIDTH"/>
 		<item value="328" key="DIALOG_Y_ORIGIN"/>
-		<item value="1131" key="DIALOG_X_ORIGIN"/>
 		<item value="437" key="DIALOG_HEIGHT"/>
+		<item value="1131" key="DIALOG_X_ORIGIN"/>
 		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
-		<item value="false" key="casesensitive"/>
 		<item value="false" key="isRegEx"/>
+		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="attachUriWithQuery" key="selection"/>
+		<item value="createLoadingStrategy" key="selection"/>
 		<list key="findhistory">
+			<item value="createLoadingStrategy"/>
+			<item value="getRequestForLoadData"/>
+			<item value="loadDataSkippingRoundTripIfCached"/>
+			<item value="loadData"/>
 			<item value="attachUriWithQuery"/>
 			<item value="setStoriesForEvent"/>
 			<item value="pull_to_refresh_tap_label"/>
 			<item value="OnScrollListener"/>
-			<item value="setSelection"/>
-			<item value="mRefreshOriginalTopPadding"/>
-			<item value="pull_to_refresh_tap_lab"/>
-			<item value="TAP_TO_REFRESH"/>
 		</list>
 		<list key="replacehistory">
 		</list>

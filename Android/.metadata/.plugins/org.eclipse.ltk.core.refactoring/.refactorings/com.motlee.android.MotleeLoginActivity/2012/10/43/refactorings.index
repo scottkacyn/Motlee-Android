@@ -1,0 +1,10 @@
+1350837584752	Delete element
+1350840175515	Delete element
+1350841250490	Delete element
+1350853843384	Rename field 'data'
+1350873782268	Delete element
+1350879172780	Extract method 'setUpLocationListener'
+1350922195966	Extract method 'loadPlacesData'
+1350938734413	Rename resource 'search_places_list.xml'
+1350945738334	Rename field 'mTextSearch'
+1350949539585	Rename type 'SearchFragment'

@@ -43,6 +43,7 @@ public class RubyService extends IntentService {
     public static final int USER_AUTH = 40000;
     public static final int CREATE_EVEVT = 50000;
     public static final int FOMOS = 60000;
+    public static final int ADD_ATTENDEE = 70000;
     
     public static final String EXTRA_HTTP_VERB       = "com.motlee.android.EXTRA_HTTP_VERB";
     public static final String EXTRA_PARAMS          = "com.motlee.android.EXTRA_PARAMS";

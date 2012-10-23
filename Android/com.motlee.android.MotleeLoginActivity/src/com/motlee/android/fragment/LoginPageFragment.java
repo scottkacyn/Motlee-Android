@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class LoginPageFragment extends Fragment {
+public class LoginPageFragment extends FragmentWithHeader {
 
 
     @Override

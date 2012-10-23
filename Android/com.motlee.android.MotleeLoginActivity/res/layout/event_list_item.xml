@@ -107,8 +107,11 @@
 		            android:layout_height="wrap_content"
 		            android:layout_gravity="center_vertical"
 		            style="@style/CodeFont"
-		            android:layout_weight=".5"
+		            android:layout_weight=".65"
 		            android:paddingLeft="3dp"
+		            android:paddingTop="3dp"
+		            android:paddingBottom="3dp"
+		            android:textSize="15dp"
 		            android:ellipsize="end"
 		            android:singleLine="true"/>
 		        
@@ -119,8 +122,11 @@
 		            android:layout_gravity="right|center_vertical"
 		            android:gravity="right"
 		            style="@style/CodeFont"
-		            android:layout_weight=".4"
+		            android:layout_weight=".25"
 		            android:paddingRight="3dp"
+         		    android:paddingTop="3dp"
+		            android:paddingBottom="3dp"
+		            android:textSize="15dp"
 		            android:ellipsize="end"
 		            android:singleLine="true"/>
 		                    

@@ -60,8 +60,7 @@ public class HorizontalRatioLinearLayout extends LinearLayout {
 	{
 		Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
 		
-		Display display = GlobalVariables.getInstance().getDisplay();
-		int width = display.getWidth(); 
+		int width = GlobalVariables.getInstance().getDisplayWidth();
 		
 		float scaleFactor = ((float) width) / bitmap.getWidth();
 

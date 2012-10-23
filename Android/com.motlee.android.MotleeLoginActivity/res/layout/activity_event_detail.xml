@@ -4,8 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical" 
     android:background="@android:color/transparent">
-    <include layout="@layout/header" 
-        android:id="@+id/header_detail"/>
     <ScrollView
         android:id="@+id/event_detail_scroll_view"
         android:layout_width="match_parent"

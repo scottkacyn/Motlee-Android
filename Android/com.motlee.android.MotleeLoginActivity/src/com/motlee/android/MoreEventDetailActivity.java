@@ -41,6 +41,8 @@ public class MoreEventDetailActivity extends FragmentActivity {
         {
             DateDetailFragment dateDetailFragment = new DateDetailFragment();
 
+            dateDetailFragment.setHeaderView(findViewById(R.id.header));
+            
             dateDetailFragment.addEventDetail(eDetail);
             
             ft.add(R.id.fragment_content, dateDetailFragment);
@@ -49,6 +51,8 @@ public class MoreEventDetailActivity extends FragmentActivity {
         if (detailDescription.equals(GlobalVariables.LOCATION))
         {
             LocationFragment locationFragment = new LocationFragment();
+            
+            locationFragment.setHeaderView(findViewById(R.id.header));
 
             locationFragment.addEventDetail(eDetail);
             
@@ -59,6 +63,8 @@ public class MoreEventDetailActivity extends FragmentActivity {
         {
         	PeopleListFragment fragment = new PeopleListFragment();
         	
+        	fragment.setHeaderView(findViewById(R.id.header));
+        	
         	ArrayList<Integer> userIDs = new ArrayList<Integer>();
         	
         	for (EventItem item : eDetail.getFomos())
@@ -66,7 +72,9 @@ public class MoreEventDetailActivity extends FragmentActivity {
         		userIDs.add(item.user_id);
         	}
         	
-        	fragment.setPageTitle(eDetail.getEventName() + " - FOMOs");
+        	fragment.setPageLabel(userIDs.size() + " have FOMO'ed");
+        	
+        	fragment.setPageTitle(eDetail.getEventName());
         	
         	fragment.setUserIdList(userIDs);
         	
@@ -77,6 +85,8 @@ public class MoreEventDetailActivity extends FragmentActivity {
         {
         	PeopleListFragment fragment = new PeopleListFragment();
         	
+        	fragment.setHeaderView(findViewById(R.id.header));
+        	
         	ArrayList<Integer> userIDs = new ArrayList<Integer>();
         	
         	userIDs.add(eDetail.getOwnerID());
@@ -86,7 +96,9 @@ public class MoreEventDetailActivity extends FragmentActivity {
         		userIDs.add(item.id);
         	}
         	
-        	fragment.setPageTitle(eDetail.getEventName() + " - Attendees");
+        	fragment.setPageLabel(userIDs.size() + " are attending");
+        	
+        	fragment.setPageTitle(eDetail.getEventName());
         	
         	fragment.setUserIdList(userIDs);
         	
@@ -103,11 +115,11 @@ public class MoreEventDetailActivity extends FragmentActivity {
     {
     	String userID = view.getContentDescription().toString();
     	
-    	Intent eventDetail = new Intent(MoreEventDetailActivity.this, UserProfilePageActivity.class);
+    	Intent userProfile = new Intent(MoreEventDetailActivity.this, UserProfilePageActivity.class);
     	
-    	eventDetail.putExtra("UserID", Integer.parseInt(userID));
+    	userProfile.putExtra("UserID", Integer.parseInt(userID));
     	
-    	startActivity(eventDetail);
+    	startActivity(userProfile);
     }
     
     

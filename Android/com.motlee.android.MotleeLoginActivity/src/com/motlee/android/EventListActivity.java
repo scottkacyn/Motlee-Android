@@ -23,6 +23,7 @@ import com.motlee.android.object.event.UpdatedEventDetailListener;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.support.v4.app.Fragment;
@@ -45,8 +46,8 @@ public class EventListActivity extends FragmentActivity {
 	
 	private EventListAdapter eAdapter;
 	private EventListParams eventListParams = new EventListParams("All Events");
-	
-	private Facebook facebook = new Facebook("283790891721595");
+
+	private ProgressDialog progressDialog;
 	
 	private EventListFragment mEventListFragment;
 	
@@ -66,6 +67,8 @@ public class EventListActivity extends FragmentActivity {
         
         mEventListFragment.addEventListAdapter(eAdapter);
        
+        mEventListFragment.setHeaderView(findViewById(R.id.header));
+        
         EventServiceBuffer.setEventDetailListener(new UpdatedEventDetailListener(){
 
 			public void myEventOccurred(UpdatedEventDetailEvent evt) {
@@ -75,8 +78,12 @@ public class EventListActivity extends FragmentActivity {
 				}
 				
 				mEventListFragment.getPullToRefreshListView().setSelection(1);
+		        
+		        progressDialog.dismiss();
 			}
         });
+        
+        progressDialog = ProgressDialog.show(EventListActivity.this, "", "Loading");
         
         EventServiceBuffer.getEventsFromService();
         
@@ -96,9 +103,8 @@ public class EventListActivity extends FragmentActivity {
         
         mEventListFragment.setEventListParams(eventListParams);
         
-        ft.add(R.id.fragment_content, mEventListFragment);
-        
-        ft.commit();
+        ft.add(R.id.fragment_content, mEventListFragment)
+        .commit();
     }
     
     public EventListAdapter getEventListAdapter()

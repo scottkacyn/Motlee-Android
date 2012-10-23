@@ -10,5 +10,6 @@
     <string name="title_more_event_detail_activity">MoreEventDetailActivity</string>
     <string name="title_create_event_activity">CreateEventActivity</string>
     <string name="title_user_profile_activity">UserProfilePageActivity</string>
+    <string name="app_id">283790891721595</string>
     
 </resources>

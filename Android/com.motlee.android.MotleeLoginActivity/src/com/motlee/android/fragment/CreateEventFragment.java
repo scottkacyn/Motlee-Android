@@ -1,6 +1,7 @@
 package com.motlee.android.fragment;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -9,7 +10,13 @@ import com.motlee.android.R;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.LocationInfo;
 import com.motlee.android.view.DateTimePicker;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -30,12 +37,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-public class CreateEventFragment extends Fragment {
+public class CreateEventFragment extends FragmentWithHeader {
 	
 	public static String START_TIME = "StartTime";
 	public static String END_TIME = "EndTime";
@@ -46,6 +54,7 @@ public class CreateEventFragment extends Fragment {
 	private String pageTitle = "Create Event";
 	
 	private StretchedBackgroundTableLayout eventInfoLayout;
+	private StretchedBackgroundTableLayout eventFriendLayout;
 	
 	private View mDatePickerStartView;
 	private View mDatePickerEndView;
@@ -55,32 +64,113 @@ public class CreateEventFragment extends Fragment {
 	private Calendar mStartTime;
 	private Calendar mEndTime;
 	
+    private ImageLoader imageDownloader;
+    private DisplayImageOptions mOptions;
+	
+    private ArrayList<Integer> mAttendees;
+    
+    private LocationInfo mLocation;
+    
+    private TextView locationTextView;
+    
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 	        Bundle savedInstanceState)
 	{
 	
 		this.inflater = inflater;
-		view = (View) this.inflater.inflate(R.layout.activity_event_detail_more, null);
+		view = (View) this.inflater.inflate(R.layout.activity_event_create, null);
 		
-		eventInfoLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_detail_info);
+		mAttendees = new ArrayList<Integer>();
+		
+		eventInfoLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_create_info);
 		eventInfoLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
 		
-		TextView tv = (TextView) view.findViewById(R.id.header_textView);
+		eventFriendLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_create_friend_list);
+		eventFriendLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		
+		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
 		tv.setText(pageTitle);
 		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 		
-		View headerRightButton = view.findViewById(R.id.header_right_layout_button);
+		View headerRightButton = mHeaderView.findViewById(R.id.header_right_layout_button);
 		headerRightButton.setVisibility(View.VISIBLE);
 		
-		TextView headerText = (TextView) view.findViewById(R.id.header_right_text);
+		TextView headerText = (TextView) mHeaderView.findViewById(R.id.header_right_text);
 		headerText.setText("Start!");
+		
+		View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
+		headerLeftButton.setVisibility(View.VISIBLE);
 		
 		initializeTime();
 		
 		setDateLabels();
 		
+		setFriendLayout();
+		
+		setLocationLabel();
+		
+		ImageScaleType ist = ImageScaleType.IN_SAMPLE_POWER_OF_2;
+		
+		mOptions = new DisplayImageOptions.Builder()
+		.showStubImage(R.drawable.stubimage)
+		.resetViewBeforeLoading()
+		.cacheInMemory()
+		.imageScaleType(ist)
+		.cacheOnDisc()
+		.displayer(new SimpleBitmapDisplayer())
+		.build();
+		
+		imageDownloader = ImageLoader.getInstance();
+    	
+    	imageDownloader.init(ImageLoaderConfiguration.createDefault(getActivity()));
+		
 		return view;
+	}
+
+	public void setLocationInfo(LocationInfo location)
+	{
+		this.mLocation = location;
+		if (locationTextView != null)
+		{
+			locationTextView.setText(location.locationDescription);
+		}
+	}
+	
+	private void setLocationLabel() 
+	{
+		View labelButton = inflater.inflate(R.layout.event_detail_info_button, null);
+		labelButton.findViewById(R.id.label_button).setContentDescription("Location");
+		
+		ImageView icon = (ImageView) labelButton.findViewById(R.id.label_button_icon);
+		icon.setImageDrawable(getResources().getDrawable(R.drawable.icon_map_background_normal));
+		
+		locationTextView = (TextView) labelButton.findViewById(R.id.label_button_text);
+		locationTextView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		locationTextView.setText(mLocation.locationDescription);
+		
+		TableRow tr = new TableRow(getActivity());
+		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tr.setLayoutParams(lp);
+		tr.addView(labelButton);
+		eventInfoLayout.addView(tr);
+	}
+
+	private void setFriendLayout() {
+		View labelButton = inflater.inflate(R.layout.event_detail_info_button, null);
+		labelButton.findViewById(R.id.label_button_icon).setVisibility(View.GONE);
+		labelButton.findViewById(R.id.divider).setVisibility(View.GONE);
+		labelButton.findViewById(R.id.label_button).setContentDescription("Friend");
+		
+		TextView labelText = (TextView) labelButton.findViewById(R.id.label_button_text);
+		labelText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		labelText.setText("Add Friend");
+		
+		TableRow tr = new TableRow(getActivity());
+		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tr.setLayoutParams(lp);
+		tr.addView(labelButton);
+		eventFriendLayout.addView(tr);
 	}
 
 	public Calendar getStartTime()
@@ -143,6 +233,9 @@ public class CreateEventFragment extends Fragment {
 		textView.setText(GlobalVariables.getInstance().getDateFormatter().format(time.getTime()));
 	}
 	
+	/*
+	 * initializeTime: sets time to next nearest 1/2 hour interval
+	 */
 	private void initializeTime()
 	{
 		mStartTime = Calendar.getInstance();
@@ -151,16 +244,20 @@ public class CreateEventFragment extends Fragment {
 		if (mStartTime.get(Calendar.MINUTE) <= 30)
 		{
 			mStartTime.set(Calendar.MINUTE, 30);
+			mStartTime.set(Calendar.SECOND, 00);
 			
 			mEndTime.set(Calendar.MINUTE, 30);
+			mEndTime.set(Calendar.SECOND, 00);
 		}
 		else 
 		{
 			mStartTime.set(Calendar.MINUTE, 0);
 			mStartTime.add(Calendar.HOUR, 1);
+			mStartTime.set(Calendar.SECOND, 0);
 			
 			mEndTime.set(Calendar.MINUTE, 0);
 			mEndTime.add(Calendar.HOUR, 1);
+			mEndTime.set(Calendar.SECOND, 00);
 		}
 		
 		mEndTime.add(Calendar.DATE, 1);
@@ -184,6 +281,7 @@ public class CreateEventFragment extends Fragment {
 	
 	private void setEventNameEdit(View label)
 	{
+		// set up EditText view. set to "final" so we can use in the editText listeners
 		final EditText editText = (EditText) label.findViewById(R.id.edit_event_name_text);
 		editText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		editText.setTextColor(R.color.label_color);
@@ -194,6 +292,7 @@ public class CreateEventFragment extends Fragment {
 
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 				
+				// if we hit enter on the keyboard, hide keyboard
 	            if (event != null&& (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
 	                InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
@@ -213,7 +312,8 @@ public class CreateEventFragment extends Fragment {
 			});
 		
 		editText.setOnFocusChangeListener(new OnFocusChangeListener() {
-
+			
+			// if we have focus, change color for input text
 	        public void onFocusChange(View v, boolean hasFocus) {
 	            if (hasFocus) {
 	                ((EditText) v).setTextColor(Color.WHITE);
@@ -244,5 +344,37 @@ public class CreateEventFragment extends Fragment {
 		tr.setLayoutParams(lp);
 		tr.addView(label);
 		eventInfoLayout.addView(tr);
+	}
+
+	public ArrayList<Integer> getAttendeeList()
+	{
+		return mAttendees;
+	}
+	
+	public void removePersonFromEvent(View viewToRemove, Integer facebookID)
+	{
+		eventFriendLayout.removeView(viewToRemove);
+		mAttendees.remove(facebookID);
+	}
+	
+	public void addPersonToEvent(Integer facebookID, String attendeeName) {
+		
+		View attendee = inflater.inflate(R.layout.edit_attendees, null);
+		TextView attendeeText = (TextView) attendee.findViewById(R.id.edit_attendee_name);
+		attendeeText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		attendeeText.setText(attendeeName);
+		
+		attendee.findViewById(R.id.edit_attendee_remove).setContentDescription(Integer.toString(facebookID));
+		
+		ImageView profilePic = (ImageView) attendee.findViewById(R.id.edit_attendee_profile_pic);
+		imageDownloader.displayImage("https://graph.facebook.com/" + facebookID + "/picture", profilePic, mOptions);
+		
+		TableRow tr = new TableRow(getActivity());
+		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tr.setLayoutParams(lp);
+		tr.addView(attendee);
+		eventFriendLayout.addView(tr);
+		
+		mAttendees.add(facebookID);
 	}
 }

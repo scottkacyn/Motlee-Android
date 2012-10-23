@@ -1,0 +1,16 @@
+   <com.motlee.android.layouts.StretchedBackgroundLinearLayout
+       xmlns:android="http://schemas.android.com/apk/res/android"
+       android:layout_width="0dp"
+       android:layout_height="wrap_content"
+       android:layout_weight=".33333"
+       android:padding="10dp"
+       android:id="@+id/profile_image_background"
+       android:background="@drawable/label_button_background" >
+       
+       <ImageView
+           android:id="@+id/profile_picture"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:scaleType="fitCenter" />
+       
+   </com.motlee.android.layouts.StretchedBackgroundLinearLayout>    

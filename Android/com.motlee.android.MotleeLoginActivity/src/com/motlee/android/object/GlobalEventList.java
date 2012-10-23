@@ -1,11 +1,16 @@
 package com.motlee.android.object;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class GlobalEventList {
 
 	public static HashMap<Integer, EventDetail> eventDetailMap;
+	
+	public static Set<Integer> myEventDetails;
 	
 	private static GlobalEventList instance;
 	
@@ -20,5 +25,6 @@ public class GlobalEventList {
 	
 	private GlobalEventList() {
 		eventDetailMap = new HashMap<Integer, EventDetail>();
+		myEventDetails = new HashSet<Integer>();
 	}
 }

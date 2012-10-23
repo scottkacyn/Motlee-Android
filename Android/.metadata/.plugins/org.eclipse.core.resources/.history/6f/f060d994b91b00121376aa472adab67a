@@ -1,0 +1,148 @@
+package com.motlee.android.adapter;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
+import com.motlee.android.R;
+import com.motlee.android.object.FacebookPerson;
+import com.motlee.android.object.GlobalVariables;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
+
+import android.content.Context;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+public class SearchPeopleAdapter extends ArrayAdapter<FacebookPerson> {
+	
+	private String tag = "EventListAdapter";
+    // store the context (as an inflated layout)
+    private LayoutInflater inflater;
+    // store the resource
+    private int resource;
+    
+    // store (a reference to) the data
+    private ArrayList<FacebookPerson> data = new ArrayList<FacebookPerson>();
+    
+    private ImageLoader imageDownloader;
+    private DisplayImageOptions mOptions;
+    /**
+     * Default constructor. Creates the new Adaptor object to
+     * provide a ListView with data.
+     * @param context
+     * @param resource
+     * @param data
+     */
+    public SearchPeopleAdapter(Context context, int resource, ArrayList<FacebookPerson> data) {
+    	    super(context, resource, data);
+        	Log.w(tag, "constructor");
+            this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            this.resource = resource;
+            this.data.addAll(data);
+            
+    		ImageScaleType ist = ImageScaleType.IN_SAMPLE_POWER_OF_2;
+    		
+    		mOptions = new DisplayImageOptions.Builder()
+    		.showStubImage(R.drawable.stubimage)
+    		.resetViewBeforeLoading()
+    		.cacheInMemory()
+    		.imageScaleType(ist)
+    		.cacheOnDisc()
+    		.displayer(new SimpleBitmapDisplayer())
+    		.build();
+    		
+    		imageDownloader = ImageLoader.getInstance();
+        	
+        	imageDownloader.init(ImageLoaderConfiguration.createDefault(context));
+    }
+
+    
+    public Collection<FacebookPerson> getData()
+    {
+    	return this.data;
+    }
+    
+    /**
+     * Return the size of the data set.
+     */
+    public int getCount() {
+            return this.data.size();
+    }
+    
+    /**
+     * Return an object in the data set.
+     */
+    public FacebookPerson getItem(int position) {
+            return this.data.get(position);
+    }
+    
+    /**
+     * Return the position provided.
+     */
+    public long getItemId(int position) {
+            return position;
+    }
+
+    public void add(FacebookPerson facebookPerson)
+    {
+    	Log.w(tag, "add");
+    	if (!this.data.contains(facebookPerson))
+    	{
+        	this.data.add(facebookPerson);
+        	this.notifyDataSetChanged();
+    	}
+    }
+    
+    public void clear()
+    {
+    	Log.w(tag, "clear");
+    	this.data.clear();
+    	this.notifyDataSetChanged();
+    }
+    
+    /**
+     * Return a generated view for a position.
+     */
+    public View getView(int position, View convertView, ViewGroup parent) {
+    	Log.w(tag, "getView: position, " + position + ", convertView, " + convertView + ", parent: " + parent);
+            // reuse a given view, or inflate a new one from the xml
+             
+            ViewHolder holder = new ViewHolder();
+            
+            if (convertView == null) {
+            	Log.w(tag, "inflating resource: " + resource);
+                    convertView = this.inflater.inflate(resource, parent, false);
+                    
+                    holder.search_people_profile_pic = (ImageView) convertView.findViewById(R.id.search_button_profile_pic);
+                    holder.search_people_text = (TextView) convertView.findViewById(R.id.search_button_name);
+                    
+                    convertView.setTag(holder);
+            } else {
+                    holder = (ViewHolder) convertView.getTag();
+            }
+            
+            FacebookPerson person = this.data.get(position);
+            
+            holder.search_people_text.setText(person.name);
+            holder.search_people_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+            
+            imageDownloader.displayImage("https://graph.facebook.com/" + person.uid + "/picture", holder.search_people_profile_pic, mOptions);
+            
+            // bind the data to the view object
+            return convertView;
+    }
+    
+    private static class ViewHolder {
+        public ImageView search_people_profile_pic;
+        public TextView search_people_text;
+    }
+
+}

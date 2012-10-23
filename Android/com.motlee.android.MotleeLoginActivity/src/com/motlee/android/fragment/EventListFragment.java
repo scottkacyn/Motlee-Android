@@ -32,7 +32,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class EventListFragment extends ListFragment {
+public class EventListFragment extends ListFragmentWithHeader {
 	
 	private String tag = "EventListFragment";
 	
@@ -43,7 +43,7 @@ public class EventListFragment extends ListFragment {
 	private Boolean onCreateViewHasBeenCalled = false;
 	
 	private Typeface gothamLightFont;
-	
+
 	/*@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 	    String[] links = getResources().getStringArray(R.array.tut_links);
@@ -71,7 +71,7 @@ public class EventListFragment extends ListFragment {
 		
 		setListAdapter(mEventListAdapter);
 		
-		TextView tv = (TextView) view.findViewById(R.id.header_textView);
+		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
 		tv.setTypeface(gothamLightFont);
 		tv.setText(pageTitle);
 		

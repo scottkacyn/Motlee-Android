@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:padding="10dp"
+    android:background="@android:color/transparent">
+	<LinearLayout
+		    android:layout_height="wrap_content"
+		    android:layout_width="match_parent" 
+		    android:weightSum="1"
+		    android:paddingBottom="10dp">
+		    
+		    <com.motlee.android.view.HorizontalAspectImageButton
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:layout_weight=".33333"
+		        android:background="@drawable/label_button_background"
+		        android:scaleType="fitCenter" />
+
+	        <!--  <com.motlee.android.layouts.StretchedBackgroundTableLayout
+	            android:id="@+id/profile_image_background"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:padding="10dp"
+	            android:layout_weight=".33333"
+	            android:shrinkColumns="*"/> -->
+	           
+	        <RelativeLayout
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight=".66666" 
+	            android:orientation="vertical"
+	            android:paddingLeft="5dp"
+	            android:paddingTop="5dp"
+	            android:weightSum="1" >
+	            
+	            <TextView
+	                android:layout_width="wrap_content"
+	                android:layout_height="0dp"
+	                android:id="@+id/profile_text_top"
+	                android:layout_weight=".333333"/>
+	            
+	            <TextView
+	                android:layout_width="wrap_content"
+	                android:layout_height="0dp"
+	                android:id="@+id/profile_text_middle"
+	                android:layout_weight=".333333"/>
+	            	         
+	            <TextView
+	                android:layout_width="wrap_content"
+	                android:layout_height="0dp"
+	                android:id="@+id/profile_text_bottom"
+	                android:layout_weight=".333333"/>
+	            
+	        </RelativeLayout>
+	    </LinearLayout>
+	    
+		<com.motlee.android.layouts.StretchedBackgroundTableLayout
+	            android:id="@+id/profile_picture_attendee_count"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:paddingTop="10dp"
+	            android:paddingBottom = "10dp"
+	            android:shrinkColumns="*"/>
+		
+</LinearLayout>

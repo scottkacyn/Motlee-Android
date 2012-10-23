@@ -26,10 +26,10 @@ import android.widget.TextView;
 
 public class EventListAdapter extends ArrayAdapter<Integer> {
 	
-	private String tag = "EventListAdapter";
+		private String tag = "EventListAdapter";
         // store the context (as an inflated layout)
         private LayoutInflater inflater;
-        // store the resource (typically list_item.xml)
+        // store the resource
         private int resource;
         
         private final ImageAdapter imageAdapter;

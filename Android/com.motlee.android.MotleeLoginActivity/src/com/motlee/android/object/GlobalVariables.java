@@ -3,6 +3,8 @@ package com.motlee.android.object;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
+import com.facebook.android.Facebook;
+
 import android.graphics.Typeface;
 import android.view.Display;
 
@@ -13,6 +15,10 @@ public class GlobalVariables {
     
     private Display display;
     
+    private int displayWidth;
+    
+    private int displayHeight;
+    
     private Typeface helveticaNeueRegularFont;
     
     private Typeface helveticaNeueBoldFont;
@@ -20,6 +26,8 @@ public class GlobalVariables {
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy h:mm aa");
     
     private String authoToken;
+    
+    private Facebook facebook;
    
     private int userId;
     
@@ -62,6 +70,13 @@ public class GlobalVariables {
 	public void setDisplay(Display display)
 	{
 		this.display = display;
+		this.displayWidth = display.getWidth();
+		this.displayHeight = display.getHeight();
+	}
+	
+	public int getDisplayWidth()
+	{
+		return this.displayWidth;
 	}
 	
 	public Display getDisplay()
@@ -109,5 +124,19 @@ public class GlobalVariables {
 	 */
 	public void setUserId(int userId) {
 		this.userId = userId;
+	}
+
+	/**
+	 * @return the facebook
+	 */
+	public Facebook getFacebook() {
+		return facebook;
+	}
+
+	/**
+	 * @param facebook the facebook to set
+	 */
+	public void setFacebook(Facebook facebook) {
+		this.facebook = facebook;
 	}
 }

@@ -1,0 +1,22 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/search_background">
+    
+    <com.motlee.android.layouts.HorizontalRatioLinearLayout
+        android:id="@+id/search_text_box_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true">
+        
+        <EditText 
+            android:id="@+id/search_text_box_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+         	android:paddingLeft="25dp"
+	        android:background="@android:color/transparent"/>
+        
+    </com.motlee.android.layouts.HorizontalRatioLinearLayout>
+    
+</RelativeLayout>

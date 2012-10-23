@@ -10762,3 +10762,863 @@ Command-line arguments:  -os linux -ws gtk -arch x86_64
 
 !ENTRY org.eclipse.ui 4 4 2012-10-18 23:06:53.314
 !MESSAGE Invalid preference page path: XML Syntax
+!SESSION 2012-10-19 09:28:06.350 -----------------------------------------------
+eclipse.buildId=I20110613-1736
+java.version=1.6.0_24
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY org.eclipse.ui 4 4 2012-10-19 10:27:34.914
+!MESSAGE Invalid preference page path: XML Syntax
+!SESSION 2012-10-19 19:08:01.044 -----------------------------------------------
+eclipse.buildId=I20110613-1736
+java.version=1.6.0_24
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY org.eclipse.core.resources 2 10035 2012-10-19 19:08:07.656
+!MESSAGE The workspace exited with unsaved changes in the previous session; refreshing workspace to recover changes.
+
+!ENTRY org.eclipse.core.resources 4 2 2012-10-19 19:08:41.540
+!MESSAGE Problems occurred when invoking code from plug-in: "org.eclipse.core.resources".
+!STACK 0
+java.util.ConcurrentModificationException
+	at java.util.ArrayList$Itr.checkForComodification(ArrayList.java:782)
+	at java.util.ArrayList$Itr.next(ArrayList.java:754)
+	at com.android.ide.eclipse.adt.internal.resources.manager.GlobalProjectMonitor$DeltaVisitor.visit(GlobalProjectMonitor.java:216)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:69)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:80)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:80)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:80)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:80)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:80)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:80)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:80)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:49)
+	at com.android.ide.eclipse.adt.internal.resources.manager.GlobalProjectMonitor$1.resourceChanged(GlobalProjectMonitor.java:501)
+	at org.eclipse.core.internal.events.NotificationManager$1.run(NotificationManager.java:291)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.NotificationManager.notify(NotificationManager.java:285)
+	at org.eclipse.core.internal.events.NotificationManager.broadcastChanges(NotificationManager.java:149)
+	at org.eclipse.core.internal.resources.Workspace.broadcastPostChange(Workspace.java:395)
+	at org.eclipse.core.internal.resources.Workspace.endOperation(Workspace.java:1530)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2353)
+	at org.eclipse.core.internal.resources.Project.internalBuild(Project.java:597)
+	at org.eclipse.core.internal.resources.Project.build(Project.java:114)
+	at com.android.ide.eclipse.adt.internal.sdk.Sdk$3$1.run(Sdk.java:1202)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY org.eclipse.ui 4 4 2012-10-19 19:32:03.233
+!MESSAGE Invalid preference page path: XML Syntax
+!SESSION 2012-10-20 16:17:07.567 -----------------------------------------------
+eclipse.buildId=I20110613-1736
+java.version=1.6.0_24
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY org.eclipse.ui 4 4 2012-10-20 16:23:42.424
+!MESSAGE Invalid preference page path: XML Syntax
+!SESSION 2012-10-21 10:22:33.174 -----------------------------------------------
+eclipse.buildId=I20110613-1736
+java.version=1.6.0_24
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-21 10:24:16.543
+!MESSAGE com.motlee.android.layouts.HorizontalRatioLinearLayout failed to instantiate.
+!STACK 0
+java.lang.NullPointerException
+	at com.motlee.android.layouts.HorizontalRatioLinearLayout.scaleBackgroundImage(HorizontalRatioLinearLayout.java:64)
+	at com.motlee.android.layouts.HorizontalRatioLinearLayout.setBackgroundDrawable(HorizontalRatioLinearLayout.java:54)
+	at android.view.View.<init>(View.java:2160)
+	at android.view.View.<init>(View.java:1899)
+	at android.view.ViewGroup.<init>(ViewGroup.java:286)
+	at android.widget.LinearLayout.<init>(LinearLayout.java:120)
+	at com.motlee.android.layouts.HorizontalRatioLinearLayout.<init>(HorizontalRatioLinearLayout.java:34)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:57)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:532)
+	at com.android.ide.eclipse.adt.internal.editors.layout.ProjectCallback.instantiateClass(ProjectCallback.java:402)
+	at com.android.ide.eclipse.adt.internal.editors.layout.ProjectCallback.loadView(ProjectCallback.java:166)
+	at com.android.layoutlib.bridge.android.BridgeInflater.loadCustomView(BridgeInflater.java:205)
+	at com.android.layoutlib.bridge.android.BridgeInflater.createViewFromTag(BridgeInflater.java:133)
+	at android.view.LayoutInflater.rInflate(LayoutInflater.java:623)
+	at android.view.LayoutInflater.inflate(LayoutInflater.java:408)
+	at android.view.LayoutInflater.inflate(LayoutInflater.java:296)
+	at com.android.layoutlib.bridge.impl.RenderSessionImpl.inflate(RenderSessionImpl.java:279)
+	at com.android.layoutlib.bridge.Bridge.createSession(Bridge.java:318)
+	at com.android.ide.common.rendering.LayoutLibrary.createSession(LayoutLibrary.java:325)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.RenderService.createRenderSession(RenderService.java:372)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart.renderWithBridge(GraphicalEditorPart.java:1638)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart.recomputeLayout(GraphicalEditorPart.java:1389)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart$ConfigListener.onConfigurationChange(GraphicalEditorPart.java:706)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart.onTargetChange(GraphicalEditorPart.java:1291)
+	at com.android.ide.eclipse.adt.internal.editors.layout.LayoutEditorDelegate.onDescriptorsChanged(LayoutEditorDelegate.java:879)
+	at com.android.ide.eclipse.adt.internal.editors.layout.LayoutEditorDelegate.delegateInitUiRootNode(LayoutEditorDelegate.java:798)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart$TargetListener.updateEditor(GraphicalEditorPart.java:1050)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart$TargetListener.onTargetLoaded(GraphicalEditorPart.java:1014)
+	at com.android.ide.eclipse.adt.AdtPlugin$10.run(AdtPlugin.java:1704)
+	at org.eclipse.swt.widgets.RunnableLock.run(RunnableLock.java:35)
+	at org.eclipse.swt.widgets.Synchronizer.runAsyncMessages(Synchronizer.java:135)
+	at org.eclipse.swt.widgets.Display.runAsyncMessages(Display.java:3563)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3212)
+	at org.eclipse.ui.internal.Workbench.runEventLoop(Workbench.java:2701)
+	at org.eclipse.ui.internal.Workbench.runUI(Workbench.java:2665)
+	at org.eclipse.ui.internal.Workbench.access$4(Workbench.java:2499)
+	at org.eclipse.ui.internal.Workbench$7.run(Workbench.java:679)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:332)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:668)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:149)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:123)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:196)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:110)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:79)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:344)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:179)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:616)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:622)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:577)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1410)
+	at org.eclipse.equinox.launcher.Main.main(Main.java:1386)
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-21 10:24:16.716
+!MESSAGE activity_search.xml: com.android.layoutlib.bridge.MockView cannot be cast to android.view.ViewGroup
+!STACK 0
+java.lang.ClassCastException: com.android.layoutlib.bridge.MockView cannot be cast to android.view.ViewGroup
+	at android.view.LayoutInflater.rInflate(LayoutInflater.java:624)
+	at android.view.LayoutInflater.rInflate(LayoutInflater.java:626)
+	at android.view.LayoutInflater.inflate(LayoutInflater.java:408)
+	at android.view.LayoutInflater.inflate(LayoutInflater.java:296)
+	at com.android.layoutlib.bridge.impl.RenderSessionImpl.inflate(RenderSessionImpl.java:279)
+	at com.android.layoutlib.bridge.Bridge.createSession(Bridge.java:318)
+	at com.android.ide.common.rendering.LayoutLibrary.createSession(LayoutLibrary.java:325)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.RenderService.createRenderSession(RenderService.java:372)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart.renderWithBridge(GraphicalEditorPart.java:1638)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart.recomputeLayout(GraphicalEditorPart.java:1389)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart$ConfigListener.onConfigurationChange(GraphicalEditorPart.java:706)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart.onTargetChange(GraphicalEditorPart.java:1291)
+	at com.android.ide.eclipse.adt.internal.editors.layout.LayoutEditorDelegate.onDescriptorsChanged(LayoutEditorDelegate.java:879)
+	at com.android.ide.eclipse.adt.internal.editors.layout.LayoutEditorDelegate.delegateInitUiRootNode(LayoutEditorDelegate.java:798)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart$TargetListener.updateEditor(GraphicalEditorPart.java:1050)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart$TargetListener.onTargetLoaded(GraphicalEditorPart.java:1014)
+	at com.android.ide.eclipse.adt.AdtPlugin$10.run(AdtPlugin.java:1704)
+	at org.eclipse.swt.widgets.RunnableLock.run(RunnableLock.java:35)
+	at org.eclipse.swt.widgets.Synchronizer.runAsyncMessages(Synchronizer.java:135)
+	at org.eclipse.swt.widgets.Display.runAsyncMessages(Display.java:3563)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3212)
+	at org.eclipse.ui.internal.Workbench.runEventLoop(Workbench.java:2701)
+	at org.eclipse.ui.internal.Workbench.runUI(Workbench.java:2665)
+	at org.eclipse.ui.internal.Workbench.access$4(Workbench.java:2499)
+	at org.eclipse.ui.internal.Workbench$7.run(Workbench.java:679)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:332)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:668)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:149)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:123)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:196)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:110)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:79)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:344)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:179)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:616)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:622)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:577)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1410)
+	at org.eclipse.equinox.launcher.Main.main(Main.java:1386)
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-21 10:24:18.575
+!MESSAGE com.motlee.android.layouts.HorizontalRatioLinearLayout failed to instantiate.
+!STACK 0
+java.lang.NullPointerException
+	at com.motlee.android.layouts.HorizontalRatioLinearLayout.scaleBackgroundImage(HorizontalRatioLinearLayout.java:64)
+	at com.motlee.android.layouts.HorizontalRatioLinearLayout.setBackgroundDrawable(HorizontalRatioLinearLayout.java:54)
+	at android.view.View.<init>(View.java:2160)
+	at android.view.View.<init>(View.java:1899)
+	at android.view.ViewGroup.<init>(ViewGroup.java:286)
+	at android.widget.LinearLayout.<init>(LinearLayout.java:120)
+	at com.motlee.android.layouts.HorizontalRatioLinearLayout.<init>(HorizontalRatioLinearLayout.java:34)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:57)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:532)
+	at com.android.ide.eclipse.adt.internal.editors.layout.ProjectCallback.instantiateClass(ProjectCallback.java:402)
+	at com.android.ide.eclipse.adt.internal.editors.layout.ProjectCallback.loadView(ProjectCallback.java:166)
+	at com.android.layoutlib.bridge.android.BridgeInflater.loadCustomView(BridgeInflater.java:205)
+	at com.android.layoutlib.bridge.android.BridgeInflater.createViewFromTag(BridgeInflater.java:133)
+	at android.view.LayoutInflater.rInflate(LayoutInflater.java:623)
+	at android.view.LayoutInflater.inflate(LayoutInflater.java:408)
+	at android.view.LayoutInflater.inflate(LayoutInflater.java:296)
+	at com.android.layoutlib.bridge.impl.RenderSessionImpl.inflate(RenderSessionImpl.java:279)
+	at com.android.layoutlib.bridge.Bridge.createSession(Bridge.java:318)
+	at com.android.ide.common.rendering.LayoutLibrary.createSession(LayoutLibrary.java:325)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.RenderService.createRenderSession(RenderService.java:372)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart.renderWithBridge(GraphicalEditorPart.java:1638)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart.recomputeLayout(GraphicalEditorPart.java:1389)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart$ConfigListener.onConfigurationChange(GraphicalEditorPart.java:706)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart.onTargetChange(GraphicalEditorPart.java:1291)
+	at com.android.ide.eclipse.adt.internal.editors.layout.LayoutEditorDelegate.onDescriptorsChanged(LayoutEditorDelegate.java:879)
+	at com.android.ide.eclipse.adt.internal.editors.layout.LayoutEditorDelegate.delegateInitUiRootNode(LayoutEditorDelegate.java:798)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart$TargetListener.updateEditor(GraphicalEditorPart.java:1050)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart$TargetListener.onTargetLoaded(GraphicalEditorPart.java:1014)
+	at com.android.ide.eclipse.adt.AdtPlugin$10.run(AdtPlugin.java:1704)
+	at org.eclipse.swt.widgets.RunnableLock.run(RunnableLock.java:35)
+	at org.eclipse.swt.widgets.Synchronizer.runAsyncMessages(Synchronizer.java:135)
+	at org.eclipse.swt.widgets.Display.runAsyncMessages(Display.java:3563)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3212)
+	at org.eclipse.ui.internal.Workbench.runEventLoop(Workbench.java:2701)
+	at org.eclipse.ui.internal.Workbench.runUI(Workbench.java:2665)
+	at org.eclipse.ui.internal.Workbench.access$4(Workbench.java:2499)
+	at org.eclipse.ui.internal.Workbench$7.run(Workbench.java:679)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:332)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:668)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:149)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:123)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:196)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:110)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:79)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:344)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:179)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:616)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:622)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:577)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1410)
+	at org.eclipse.equinox.launcher.Main.main(Main.java:1386)
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-21 10:24:18.609
+!MESSAGE activity_search.xml: com.android.layoutlib.bridge.MockView cannot be cast to android.view.ViewGroup
+!STACK 0
+java.lang.ClassCastException: com.android.layoutlib.bridge.MockView cannot be cast to android.view.ViewGroup
+	at android.view.LayoutInflater.rInflate(LayoutInflater.java:624)
+	at android.view.LayoutInflater.rInflate(LayoutInflater.java:626)
+	at android.view.LayoutInflater.inflate(LayoutInflater.java:408)
+	at android.view.LayoutInflater.inflate(LayoutInflater.java:296)
+	at com.android.layoutlib.bridge.impl.RenderSessionImpl.inflate(RenderSessionImpl.java:279)
+	at com.android.layoutlib.bridge.Bridge.createSession(Bridge.java:318)
+	at com.android.ide.common.rendering.LayoutLibrary.createSession(LayoutLibrary.java:325)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.RenderService.createRenderSession(RenderService.java:372)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart.renderWithBridge(GraphicalEditorPart.java:1638)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart.recomputeLayout(GraphicalEditorPart.java:1389)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart$ConfigListener.onConfigurationChange(GraphicalEditorPart.java:706)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart.onTargetChange(GraphicalEditorPart.java:1291)
+	at com.android.ide.eclipse.adt.internal.editors.layout.LayoutEditorDelegate.onDescriptorsChanged(LayoutEditorDelegate.java:879)
+	at com.android.ide.eclipse.adt.internal.editors.layout.LayoutEditorDelegate.delegateInitUiRootNode(LayoutEditorDelegate.java:798)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart$TargetListener.updateEditor(GraphicalEditorPart.java:1050)
+	at com.android.ide.eclipse.adt.internal.editors.layout.gle2.GraphicalEditorPart$TargetListener.onTargetLoaded(GraphicalEditorPart.java:1014)
+	at com.android.ide.eclipse.adt.AdtPlugin$10.run(AdtPlugin.java:1704)
+	at org.eclipse.swt.widgets.RunnableLock.run(RunnableLock.java:35)
+	at org.eclipse.swt.widgets.Synchronizer.runAsyncMessages(Synchronizer.java:135)
+	at org.eclipse.swt.widgets.Display.runAsyncMessages(Display.java:3563)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3212)
+	at org.eclipse.ui.internal.Workbench.runEventLoop(Workbench.java:2701)
+	at org.eclipse.ui.internal.Workbench.runUI(Workbench.java:2665)
+	at org.eclipse.ui.internal.Workbench.access$4(Workbench.java:2499)
+	at org.eclipse.ui.internal.Workbench$7.run(Workbench.java:679)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:332)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:668)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:149)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:123)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:196)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:110)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:79)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:344)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:179)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:616)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:622)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:577)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1410)
+	at org.eclipse.equinox.launcher.Main.main(Main.java:1386)
+
+!ENTRY org.eclipse.ui 4 4 2012-10-21 11:01:06.634
+!MESSAGE Invalid preference page path: XML Syntax
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-21 21:31:39.776
+!MESSAGE 
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/FacebookSDK/res' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:320)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:194)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:266)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:249)
+	at com.android.ide.eclipse.adt.internal.sdk.Sdk$6.run(Sdk.java:1307)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2012-10-21 21:31:39.797
+!MESSAGE Resource '/FacebookSDK/res' does not exist.
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-21 21:31:39.808
+!MESSAGE 
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/PlacePickerSample/res' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:320)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:194)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:266)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:249)
+	at com.android.ide.eclipse.adt.internal.sdk.Sdk$6.run(Sdk.java:1307)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2012-10-21 21:31:39.808
+!MESSAGE Resource '/PlacePickerSample/res' does not exist.
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-21 21:34:19.464
+!MESSAGE 
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/BooleanOGSample/res' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:320)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:194)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:266)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:249)
+	at com.android.ide.eclipse.adt.internal.sdk.Sdk$6.run(Sdk.java:1307)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2012-10-21 21:34:19.464
+!MESSAGE Resource '/BooleanOGSample/res' does not exist.
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-21 21:34:19.465
+!MESSAGE 
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/FriendPickerSample/res' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:320)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:194)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:266)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:249)
+	at com.android.ide.eclipse.adt.internal.sdk.Sdk$6.run(Sdk.java:1307)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2012-10-21 21:34:19.465
+!MESSAGE Resource '/FriendPickerSample/res' does not exist.
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-21 21:34:19.465
+!MESSAGE 
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/Hackbook/res' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:320)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:194)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:266)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:249)
+	at com.android.ide.eclipse.adt.internal.sdk.Sdk$6.run(Sdk.java:1307)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2012-10-21 21:34:19.466
+!MESSAGE Resource '/Hackbook/res' does not exist.
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-21 21:34:19.466
+!MESSAGE 
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/HelloFacebookSample/res' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:320)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:194)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:266)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:249)
+	at com.android.ide.eclipse.adt.internal.sdk.Sdk$6.run(Sdk.java:1307)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2012-10-21 21:34:19.466
+!MESSAGE Resource '/HelloFacebookSample/res' does not exist.
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-21 21:34:19.468
+!MESSAGE 
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/JustRequestSample/res' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:320)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:194)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:266)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:249)
+	at com.android.ide.eclipse.adt.internal.sdk.Sdk$6.run(Sdk.java:1307)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2012-10-21 21:34:19.468
+!MESSAGE Resource '/JustRequestSample/res' does not exist.
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-21 21:34:19.468
+!MESSAGE 
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/Scrumptious/res' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:320)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:194)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:266)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:249)
+	at com.android.ide.eclipse.adt.internal.sdk.Sdk$6.run(Sdk.java:1307)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2012-10-21 21:34:19.469
+!MESSAGE Resource '/Scrumptious/res' does not exist.
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-21 21:34:19.473
+!MESSAGE 
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/ProfilePictureSample/res' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:320)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:194)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:266)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:249)
+	at com.android.ide.eclipse.adt.internal.sdk.Sdk$6.run(Sdk.java:1307)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2012-10-21 21:34:19.473
+!MESSAGE Resource '/ProfilePictureSample/res' does not exist.
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-21 21:34:19.473
+!MESSAGE 
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/SessionLoginSample/res' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:320)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:194)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:266)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:249)
+	at com.android.ide.eclipse.adt.internal.sdk.Sdk$6.run(Sdk.java:1307)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2012-10-21 21:34:19.474
+!MESSAGE Resource '/SessionLoginSample/res' does not exist.
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-21 21:34:19.475
+!MESSAGE 
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/SwitchUserSample/res' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:320)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:194)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:266)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:249)
+	at com.android.ide.eclipse.adt.internal.sdk.Sdk$6.run(Sdk.java:1307)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2012-10-21 21:34:19.481
+!MESSAGE Resource '/SwitchUserSample/res' does not exist.
+!SESSION 2012-10-21 21:40:33.673 -----------------------------------------------
+eclipse.buildId=I20110613-1736
+java.version=1.6.0_24
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY org.eclipse.ui 4 4 2012-10-21 21:42:12.713
+!MESSAGE Invalid preference page path: XML Syntax
+
+!ENTRY org.eclipse.jdt.core 4 0 2012-10-21 22:03:27.826
+!MESSAGE Invalid ZIP archive: libs/android-support-v4.jar [in FacebookSDK]
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-21 22:05:36.470
+!MESSAGE 
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/FacebookSDK/res' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:320)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:194)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:266)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:249)
+	at com.android.ide.eclipse.adt.internal.sdk.Sdk$6.run(Sdk.java:1307)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2012-10-21 22:05:36.487
+!MESSAGE Resource '/FacebookSDK/res' does not exist.
+!SESSION 2012-10-21 22:06:58.895 -----------------------------------------------
+eclipse.buildId=I20110613-1736
+java.version=1.6.0_24
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY org.eclipse.core.resources 2 10035 2012-10-21 22:07:02.871
+!MESSAGE The workspace exited with unsaved changes in the previous session; refreshing workspace to recover changes.
+
+!ENTRY org.eclipse.ui 4 4 2012-10-21 22:07:24.675
+!MESSAGE Invalid preference page path: XML Syntax
+
+!ENTRY com.android.ide.eclipse.adt 1 0 2012-10-21 22:10:36.179
+!MESSAGE No valid Android XML Editor Delegate found for file /FacebookSDK/build.xml [Res null, type null]
+!SESSION 2012-10-21 22:17:55.138 -----------------------------------------------
+eclipse.buildId=I20110613-1736
+java.version=1.6.0_24
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY org.eclipse.ui 4 4 2012-10-21 22:18:26.413
+!MESSAGE Invalid preference page path: XML Syntax
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-21 22:20:05.283
+!MESSAGE loadAndParseRClass failed to find class com.facebook.samples.hellofacebook.R
+!STACK 0
+java.lang.NoClassDefFoundError: com/facebook/samples/hellofacebook/R$layout
+	at java.lang.Class.getDeclaredClasses0(Native Method)
+	at java.lang.Class.getDeclaredClasses(Class.java:1716)
+	at com.android.ide.eclipse.adt.internal.resources.manager.CompiledResourcesMonitor.parseClass(CompiledResourcesMonitor.java:250)
+	at com.android.ide.eclipse.adt.internal.resources.manager.CompiledResourcesMonitor.loadAndParseRClass(CompiledResourcesMonitor.java:220)
+	at com.android.ide.eclipse.adt.internal.resources.manager.CompiledResourcesMonitor.fileChanged(CompiledResourcesMonitor.java:99)
+	at com.android.ide.eclipse.adt.internal.resources.manager.GlobalProjectMonitor$DeltaVisitor.visit(GlobalProjectMonitor.java:220)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:69)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:80)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:80)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:80)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:80)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:80)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:80)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:80)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:80)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:49)
+	at com.android.ide.eclipse.adt.internal.resources.manager.GlobalProjectMonitor$1.resourceChanged(GlobalProjectMonitor.java:501)
+	at org.eclipse.core.internal.events.NotificationManager$1.run(NotificationManager.java:291)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.NotificationManager.notify(NotificationManager.java:285)
+	at org.eclipse.core.internal.events.NotificationManager.broadcastChanges(NotificationManager.java:149)
+	at org.eclipse.core.internal.resources.Workspace.broadcastPostChange(Workspace.java:395)
+	at org.eclipse.core.internal.resources.Workspace.endOperation(Workspace.java:1530)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2353)
+	at org.eclipse.core.internal.events.NotificationManager$NotifyJob.run(NotificationManager.java:40)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+Caused by: java.lang.ClassNotFoundException: com.facebook.samples.hellofacebook.R$layout
+	at com.android.ide.eclipse.adt.internal.resources.manager.ProjectClassLoader.findClass(ProjectClassLoader.java:105)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:321)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:266)
+	... 26 more
+
+!ENTRY org.eclipse.jdt.debug 4 120 2012-10-21 22:59:16.851
+!MESSAGE Exception processing async thread queue
+!SUBENTRY 1 org.eclipse.jdt.debug 4 120 2012-10-21 22:59:16.851
+!MESSAGE Exception processing async thread queue
+!STACK 0
+java.lang.ClassCastException: org.eclipse.jdt.internal.debug.core.model.JDIObjectValue cannot be cast to org.eclipse.jdt.debug.core.IJavaArray
+	at org.eclipse.jdt.internal.debug.ui.JavaDetailFormattersManager.getCompiledExpression(JavaDetailFormattersManager.java:387)
+	at org.eclipse.jdt.internal.debug.ui.JavaDetailFormattersManager.resolveFormatter(JavaDetailFormattersManager.java:158)
+	at org.eclipse.jdt.internal.debug.ui.JavaDetailFormattersManager.access$1(JavaDetailFormattersManager.java:143)
+	at org.eclipse.jdt.internal.debug.ui.JavaDetailFormattersManager$2.run(JavaDetailFormattersManager.java:138)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread$ThreadJob.run(JDIThread.java:2805)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-21 23:50:15.228
+!MESSAGE Parser exception for /home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/AndroidManifest.xml: Content is not allowed in prolog.
+!STACK 0
+org.xml.sax.SAXParseException; lineNumber: 1; columnNumber: 1; Content is not allowed in prolog.
+	at com.sun.org.apache.xerces.internal.parsers.AbstractSAXParser.parse(AbstractSAXParser.java:1234)
+	at com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl$JAXPSAXParser.parse(SAXParserImpl.java:525)
+	at javax.xml.parsers.SAXParser.parse(SAXParser.java:392)
+	at com.android.sdklib.xml.AndroidManifestParser.parse(AndroidManifestParser.java:607)
+	at com.android.ide.eclipse.adt.internal.project.AndroidManifestHelper.parseUnchecked(AndroidManifestHelper.java:75)
+	at com.android.ide.eclipse.adt.internal.project.AndroidManifestHelper.parse(AndroidManifestHelper.java:102)
+	at com.android.ide.eclipse.adt.internal.build.builders.PreCompilerDeltaVisitor.visit(PreCompilerDeltaVisitor.java:222)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:69)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:80)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:49)
+	at com.android.ide.eclipse.adt.internal.build.builders.PreCompilerBuilder.build(PreCompilerBuilder.java:311)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:728)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:199)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:239)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:292)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:295)
+	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:351)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:374)
+	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:143)
+	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:241)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-21 23:58:23.272
+!MESSAGE Parser exception for /home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/AndroidManifest.xml: The element type "activity" must be terminated by the matching end-tag "</activity>".
+!STACK 0
+org.xml.sax.SAXParseException; lineNumber: 85; columnNumber: 7; The element type "activity" must be terminated by the matching end-tag "</activity>".
+	at com.sun.org.apache.xerces.internal.parsers.AbstractSAXParser.parse(AbstractSAXParser.java:1234)
+	at com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl$JAXPSAXParser.parse(SAXParserImpl.java:525)
+	at javax.xml.parsers.SAXParser.parse(SAXParser.java:392)
+	at com.android.sdklib.xml.AndroidManifestParser.parse(AndroidManifestParser.java:607)
+	at com.android.ide.eclipse.adt.internal.project.AndroidManifestHelper.parseUnchecked(AndroidManifestHelper.java:75)
+	at com.android.ide.eclipse.adt.internal.project.AndroidManifestHelper.parse(AndroidManifestHelper.java:102)
+	at com.android.ide.eclipse.adt.internal.build.builders.PreCompilerDeltaVisitor.visit(PreCompilerDeltaVisitor.java:222)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:69)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:80)
+	at org.eclipse.core.internal.events.ResourceDelta.accept(ResourceDelta.java:49)
+	at com.android.ide.eclipse.adt.internal.build.builders.PreCompilerBuilder.build(PreCompilerBuilder.java:311)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:728)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:199)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:239)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:292)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:295)
+	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:351)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:374)
+	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:143)
+	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:241)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SESSION 2012-10-22 10:11:27.917 -----------------------------------------------
+eclipse.buildId=I20110613-1736
+java.version=1.6.0_24
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY org.eclipse.ui 4 4 2012-10-22 10:43:31.945
+!MESSAGE Invalid preference page path: XML Syntax
+
+!ENTRY org.eclipse.jdt.debug 4 120 2012-10-22 10:44:42.972
+!MESSAGE Exception processing async thread queue
+!SUBENTRY 1 org.eclipse.jdt.debug 4 120 2012-10-22 10:44:42.972
+!MESSAGE Exception processing async thread queue
+!STACK 0
+com.sun.jdi.VMDisconnectedException: Got IOException from Virtual Machine
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:165)
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:180)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:177)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:246)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allClasses(VirtualMachineImpl.java:355)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allRefTypes(VirtualMachineImpl.java:382)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.nestedTypes(ReferenceTypeImpl.java:1105)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:310)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:322)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:145)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:160)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildSource(BinaryBasedSourceGenerator.java:74)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getInstanceSourceMapper(EvaluationSourceGenerator.java:195)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getSource(EvaluationSourceGenerator.java:214)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.getCompiledExpression(ASTEvaluationEngine.java:260)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.evaluate(ASTEvaluationEngine.java:119)
+	at org.eclipse.jdt.internal.debug.ui.JavaWatchExpressionDelegate$EvaluationRunnable.run(JavaWatchExpressionDelegate.java:144)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread$ThreadJob.run(JDIThread.java:2805)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY org.eclipse.ui 4 0 2012-10-22 11:01:50.962
+!MESSAGE Unhandled event loop exception
+!STACK 0
+java.lang.IllegalArgumentException: Argument cannot be null
+	at org.eclipse.swt.SWT.error(SWT.java:4263)
+	at org.eclipse.swt.SWT.error(SWT.java:4197)
+	at org.eclipse.swt.SWT.error(SWT.java:4168)
+	at org.eclipse.swt.widgets.Widget.error(Widget.java:466)
+	at org.eclipse.swt.widgets.Control.removeMouseMoveListener(Control.java:1957)
+	at org.eclipse.jface.text.AbstractInformationControl$5.mouseUp(AbstractInformationControl.java:403)
+	at org.eclipse.swt.widgets.TypedListener.handleEvent(TypedListener.java:219)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:84)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1258)
+	at org.eclipse.swt.widgets.Display.runDeferredEvents(Display.java:3588)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3209)
+	at org.eclipse.ui.internal.Workbench.runEventLoop(Workbench.java:2701)
+	at org.eclipse.ui.internal.Workbench.runUI(Workbench.java:2665)
+	at org.eclipse.ui.internal.Workbench.access$4(Workbench.java:2499)
+	at org.eclipse.ui.internal.Workbench$7.run(Workbench.java:679)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:332)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:668)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:149)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:123)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:196)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:110)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:79)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:344)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:179)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:616)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:622)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:577)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1410)
+	at org.eclipse.equinox.launcher.Main.main(Main.java:1386)
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-10-22 12:25:13.596
+!MESSAGE No command output when running: 'am start -n com.motlee.android/com.motlee.android.MotleeLoginActivity -a android.intent.action.MAIN -c android.intent.category.LAUNCHER' on device emulator-5554
+!STACK 0
+com.android.ddmlib.ShellCommandUnresponsiveException
+	at com.android.ddmlib.AdbHelper.executeRemoteCommand(AdbHelper.java:408)
+	at com.android.ddmlib.Device.executeShellCommand(Device.java:453)
+	at com.android.ide.eclipse.adt.internal.launch.ActivityLaunchAction.doLaunchAction(ActivityLaunchAction.java:75)
+	at com.android.ide.eclipse.adt.internal.launch.AndroidLaunchController.doLaunchAction(AndroidLaunchController.java:1272)
+	at com.android.ide.eclipse.adt.internal.launch.AndroidLaunchController.launchApp(AndroidLaunchController.java:1256)
+	at com.android.ide.eclipse.adt.internal.launch.AndroidLaunchController.simpleLaunch(AndroidLaunchController.java:901)
+	at com.android.ide.eclipse.adt.internal.launch.AndroidLaunchController.continueLaunch(AndroidLaunchController.java:743)
+	at com.android.ide.eclipse.adt.internal.launch.AndroidLaunchController.launch(AndroidLaunchController.java:629)
+	at com.android.ide.eclipse.adt.internal.launch.LaunchConfigDelegate.doLaunch(LaunchConfigDelegate.java:322)
+	at com.android.ide.eclipse.adt.internal.launch.LaunchConfigDelegate.launch(LaunchConfigDelegate.java:238)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:854)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:703)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin.buildAndLaunch(DebugUIPlugin.java:937)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin$8.run(DebugUIPlugin.java:1141)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY org.eclipse.jdt.debug 4 120 2012-10-22 13:14:27.276
+!MESSAGE Exception processing async thread queue
+!SUBENTRY 1 org.eclipse.jdt.debug 4 120 2012-10-22 13:14:27.276
+!MESSAGE Exception processing async thread queue
+!STACK 0
+com.sun.jdi.InternalException: Got invalid data:java.io.UTFDataFormatException: Second byte input does not match UTF Specification
+	at org.eclipse.jdi.internal.MirrorImpl.defaultIOExceptionHandler(MirrorImpl.java:285)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allClasses(VirtualMachineImpl.java:370)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allRefTypes(VirtualMachineImpl.java:382)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.nestedTypes(ReferenceTypeImpl.java:1105)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:310)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:315)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:145)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildSource(BinaryBasedSourceGenerator.java:74)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getInstanceSourceMapper(EvaluationSourceGenerator.java:195)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getSource(EvaluationSourceGenerator.java:214)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.getCompiledExpression(ASTEvaluationEngine.java:260)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.evaluate(ASTEvaluationEngine.java:119)
+	at org.eclipse.jdt.internal.debug.ui.JavaWatchExpressionDelegate$EvaluationRunnable.run(JavaWatchExpressionDelegate.java:144)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread$ThreadJob.run(JDIThread.java:2805)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY org.eclipse.core.jobs 4 2 2012-10-22 13:18:29.366
+!MESSAGE An internal error occurred during: "JDI thread evaluations".
+!STACK 0
+java.lang.OutOfMemoryError: Java heap space
+	at org.eclipse.jdi.internal.jdwp.JdwpString.read(JdwpString.java:32)
+	at org.eclipse.jdi.internal.MirrorImpl.readString(MirrorImpl.java:403)
+	at org.eclipse.jdi.internal.ClassTypeImpl.readWithSignature(ClassTypeImpl.java:398)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.readWithTypeTagAndSignature(ReferenceTypeImpl.java:1235)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allClasses(VirtualMachineImpl.java:361)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allRefTypes(VirtualMachineImpl.java:382)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.nestedTypes(ReferenceTypeImpl.java:1105)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:310)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:315)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:145)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildSource(BinaryBasedSourceGenerator.java:74)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getInstanceSourceMapper(EvaluationSourceGenerator.java:195)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getSource(EvaluationSourceGenerator.java:214)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.getCompiledExpression(ASTEvaluationEngine.java:260)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.evaluate(ASTEvaluationEngine.java:119)
+	at org.eclipse.jdt.internal.debug.ui.JavaWatchExpressionDelegate$EvaluationRunnable.run(JavaWatchExpressionDelegate.java:144)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread$ThreadJob.run(JDIThread.java:2805)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY org.eclipse.jdt.debug 4 120 2012-10-22 13:23:09.640
+!MESSAGE Exception processing async thread queue
+!SUBENTRY 1 org.eclipse.jdt.debug 4 120 2012-10-22 13:23:09.640
+!MESSAGE Exception processing async thread queue
+!STACK 0
+com.sun.jdi.VMDisconnectedException: Got IOException from Virtual Machine
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:165)
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:180)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:177)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:246)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allClasses(VirtualMachineImpl.java:355)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allRefTypes(VirtualMachineImpl.java:382)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.nestedTypes(ReferenceTypeImpl.java:1105)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:310)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:315)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:145)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildSource(BinaryBasedSourceGenerator.java:74)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getInstanceSourceMapper(EvaluationSourceGenerator.java:195)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getSource(EvaluationSourceGenerator.java:214)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.getCompiledExpression(ASTEvaluationEngine.java:260)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.evaluate(ASTEvaluationEngine.java:119)
+	at org.eclipse.jdt.internal.debug.ui.JavaWatchExpressionDelegate$EvaluationRunnable.run(JavaWatchExpressionDelegate.java:144)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread$ThreadJob.run(JDIThread.java:2805)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.jdt.debug 4 120 2012-10-22 13:23:09.640
+!MESSAGE Exception processing async thread queue
+!STACK 0
+com.sun.jdi.VMDisconnectedException: Got IOException from Virtual Machine
+	at org.eclipse.jdi.internal.connect.PacketSendManager.sendPacket(PacketSendManager.java:80)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:173)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:246)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allClasses(VirtualMachineImpl.java:355)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allRefTypes(VirtualMachineImpl.java:382)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.nestedTypes(ReferenceTypeImpl.java:1105)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:310)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:145)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildSource(BinaryBasedSourceGenerator.java:74)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getInstanceSourceMapper(EvaluationSourceGenerator.java:195)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getSource(EvaluationSourceGenerator.java:214)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.getCompiledExpression(ASTEvaluationEngine.java:260)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.evaluate(ASTEvaluationEngine.java:119)
+	at org.eclipse.jdt.internal.debug.ui.JavaWatchExpressionDelegate$EvaluationRunnable.run(JavaWatchExpressionDelegate.java:144)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread$ThreadJob.run(JDIThread.java:2805)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY org.eclipse.jdt.debug 4 120 2012-10-22 14:38:12.013
+!MESSAGE Exception processing async thread queue
+!SUBENTRY 1 org.eclipse.jdt.debug 4 120 2012-10-22 14:38:12.013
+!MESSAGE Exception processing async thread queue
+!STACK 0
+java.util.EmptyStackException
+	at java.util.Stack.peek(Stack.java:102)
+	at java.util.Stack.pop(Stack.java:84)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTInstructionCompiler.pop(ASTInstructionCompiler.java:298)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTInstructionCompiler.storeInstruction(ASTInstructionCompiler.java:302)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTInstructionCompiler.endVisit(ASTInstructionCompiler.java:655)
+	at org.eclipse.jdt.core.dom.Block.accept0(Block.java:138)
+	at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+	at org.eclipse.jdt.core.dom.ASTNode.acceptChild(ASTNode.java:2562)
+	at org.eclipse.jdt.core.dom.MethodDeclaration.accept0(MethodDeclaration.java:504)
+	at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+	at org.eclipse.jdt.core.dom.ASTNode.acceptChildren(ASTNode.java:2585)
+	at org.eclipse.jdt.core.dom.AnonymousClassDeclaration.accept0(AnonymousClassDeclaration.java:143)
+	at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+	at org.eclipse.jdt.core.dom.ASTNode.acceptChild(ASTNode.java:2562)
+	at org.eclipse.jdt.core.dom.ClassInstanceCreation.accept0(ClassInstanceCreation.java:335)
+	at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+	at org.eclipse.jdt.core.dom.ASTNode.acceptChild(ASTNode.java:2562)
+	at org.eclipse.jdt.core.dom.ExpressionStatement.accept0(ExpressionStatement.java:144)
+	at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+	at org.eclipse.jdt.core.dom.ASTNode.acceptChildren(ASTNode.java:2585)
+	at org.eclipse.jdt.core.dom.Block.accept0(Block.java:136)
+	at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+	at org.eclipse.jdt.core.dom.ASTNode.acceptChild(ASTNode.java:2562)
+	at org.eclipse.jdt.core.dom.MethodDeclaration.accept0(MethodDeclaration.java:504)
+	at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+	at org.eclipse.jdt.core.dom.ASTNode.acceptChildren(ASTNode.java:2585)
+	at org.eclipse.jdt.core.dom.TypeDeclaration.accept0(TypeDeclaration.java:484)
+	at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+	at org.eclipse.jdt.core.dom.ASTNode.acceptChildren(ASTNode.java:2585)
+	at org.eclipse.jdt.core.dom.CompilationUnit.accept0(CompilationUnit.java:219)
+	at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.createExpressionFromAST(ASTEvaluationEngine.java:448)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.getCompiledExpression(ASTEvaluationEngine.java:267)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.evaluate(ASTEvaluationEngine.java:119)
+	at org.eclipse.jdt.internal.debug.ui.JavaWatchExpressionDelegate$EvaluationRunnable.run(JavaWatchExpressionDelegate.java:144)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread$ThreadJob.run(JDIThread.java:2805)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.jdt.debug 4 120 2012-10-22 14:38:12.014
+!MESSAGE Exception processing async thread queue
+!STACK 0
+java.util.EmptyStackException
+	at java.util.Stack.peek(Stack.java:102)
+	at java.util.Stack.pop(Stack.java:84)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTInstructionCompiler.pop(ASTInstructionCompiler.java:298)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTInstructionCompiler.storeInstruction(ASTInstructionCompiler.java:302)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTInstructionCompiler.endVisit(ASTInstructionCompiler.java:655)
+	at org.eclipse.jdt.core.dom.Block.accept0(Block.java:138)
+	at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+	at org.eclipse.jdt.core.dom.ASTNode.acceptChild(ASTNode.java:2562)
+	at org.eclipse.jdt.core.dom.MethodDeclaration.accept0(MethodDeclaration.java:504)
+	at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+	at org.eclipse.jdt.core.dom.ASTNode.acceptChildren(ASTNode.java:2585)
+	at org.eclipse.jdt.core.dom.AnonymousClassDeclaration.accept0(AnonymousClassDeclaration.java:143)
+	at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+	at org.eclipse.jdt.core.dom.ASTNode.acceptChild(ASTNode.java:2562)
+	at org.eclipse.jdt.core.dom.ClassInstanceCreation.accept0(ClassInstanceCreation.java:335)
+	at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+	at org.eclipse.jdt.core.dom.ASTNode.acceptChild(ASTNode.java:2562)
+	at org.eclipse.jdt.core.dom.ExpressionStatement.accept0(ExpressionStatement.java:144)
+	at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+	at org.eclipse.jdt.core.dom.ASTNode.acceptChildren(ASTNode.java:2585)
+	at org.eclipse.jdt.core.dom.Block.accept0(Block.java:136)
+	at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+	at org.eclipse.jdt.core.dom.ASTNode.acceptChild(ASTNode.java:2562)
+	at org.eclipse.jdt.core.dom.MethodDeclaration.accept0(MethodDeclaration.java:504)
+	at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+	at org.eclipse.jdt.core.dom.ASTNode.acceptChildren(ASTNode.java:2585)
+	at org.eclipse.jdt.core.dom.TypeDeclaration.accept0(TypeDeclaration.java:484)
+	at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+	at org.eclipse.jdt.core.dom.ASTNode.acceptChildren(ASTNode.java:2585)
+	at org.eclipse.jdt.core.dom.CompilationUnit.accept0(CompilationUnit.java:219)
+	at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.createExpressionFromAST(ASTEvaluationEngine.java:448)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.getCompiledExpression(ASTEvaluationEngine.java:267)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.evaluate(ASTEvaluationEngine.java:119)
+	at org.eclipse.jdt.internal.debug.ui.JavaWatchExpressionDelegate$EvaluationRunnable.run(JavaWatchExpressionDelegate.java:144)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread$ThreadJob.run(JDIThread.java:2805)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SESSION 2012-10-22 16:42:28.778 -----------------------------------------------
+eclipse.buildId=I20110613-1736
+java.version=1.6.0_24
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY org.eclipse.core.resources 2 10035 2012-10-22 16:42:34.410
+!MESSAGE The workspace exited with unsaved changes in the previous session; refreshing workspace to recover changes.
+
+!ENTRY org.eclipse.ui 4 4 2012-10-22 17:07:24.798
+!MESSAGE Invalid preference page path: XML Syntax

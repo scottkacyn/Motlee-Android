@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,6 +22,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.motlee.android.EventListActivity;
 import com.motlee.android.R;
@@ -46,6 +49,8 @@ public class EventServiceBuffer extends Object {
     private static final String WEB_SERVICE_URL = "http://dev.motleeapp.com/api/";
     private static String AUTH_TOK = "auth_token";
     
+    public static final String MY_EVENTS = "me";
+    public static final String NO_EVENT_FILTER = "none";
     
     // HTTP Success code is 200. We add a constant to that code to in RubyService
     // avoiding other types of HTTP codes
@@ -54,6 +59,7 @@ public class EventServiceBuffer extends Object {
     public static final int storySuccessCode = 200 + RubyService.STORY;
     public static final int userAuthSuccessCode = 200 + RubyService.USER_AUTH;
     public static final int createEventSuccessCode = 201 + RubyService.CREATE_EVEVT;
+    public static final int addAttendeeSuccessCode = 201 + RubyService.ADD_ATTENDEE;
     public static final int fomoSuccessCode = 200 + RubyService.FOMOS;
     
     private static UpdatedEventDetailListener mEventDetailListener;
@@ -91,11 +97,50 @@ public class EventServiceBuffer extends Object {
 		mEventDetailListener = listener;
 	}
 	
+	public static void removeEventDetailListener()
+	{
+		mEventDetailListener = null;
+	}
+	
 	public static void setUserInfoListener(UserInfoListener listener)
 	{
 		mUserInfoListener = listener;
 	}
 	
+	public static void removeUserInfoListener()
+	{
+		mUserInfoListener = null;
+	}
+	
+	public static void sendAttendeesForEvent(Integer eventID, ArrayList<Integer> attendees) 
+	{
+		
+		String attendeeUIDs = "";
+		
+		for (Integer attendeeID : attendees)
+		{
+			attendeeUIDs = attendeeUIDs + attendeeID + ",";
+		}
+		
+		attendeeUIDs = attendeeUIDs.substring(0, attendeeUIDs.length() - 1);
+		
+		Bundle params = new Bundle();
+		params.putString("uids", attendeeUIDs);
+		params.putString(AUTH_TOK, GlobalVariables.getInstance().getAuthoToken());
+		
+        Intent intent = new Intent(mContext, RubyService.class);
+        intent.setData(Uri.parse(WEB_SERVICE_URL + "events/" + eventID + "/join"));
+        
+        // Here we are going to place our REST call parameters. Note that
+        // we could have just used Uri.Builder and appendQueryParameter()
+        // here, but I wanted to illustrate how to use the Bundle params.
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.POST);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.ADD_ATTENDEE);
+        intent.putExtra(RubyService.EXTRA_PARAMS, params);
+        
+        mContext.startService(intent);
+	}
 	
 	public static void sendNewEventToDatabase(EventDetail eDetail)
 	{
@@ -198,12 +243,13 @@ public class EventServiceBuffer extends Object {
 	
     public static void getEventsFromService()
     {      
-        // This is where we make our REST call to the service. We also pass in our ResultReceiver
-        // defined in the RESTResponderFragment super class.
-        
-        // We will explicitly call our Service since we probably want to keep it as a private
-        // component in our app. You could do this with Intent actions as well, but you have
-        // to make sure you define your intent filters correctly in your manifest.
+    	// No filter for my events/ nearby returns all events
+    	
+    	getEventsFromService(NO_EVENT_FILTER);
+    }
+	
+	public static void getEventsFromService(String eventParam)
+	{
         Intent intent = new Intent(mContext, RubyService.class);
         intent.setData(Uri.parse(WEB_SERVICE_URL + "events"));
         
@@ -213,13 +259,19 @@ public class EventServiceBuffer extends Object {
         // Here we are going to place our REST call parameters. Note that
         // we could have just used Uri.Builder and appendQueryParameter()
         // here, but I wanted to illustrate how to use the Bundle params.
+        
+		if (eventParam != NO_EVENT_FILTER)
+		{
+			formData.putString("page", eventParam);
+		}
+		
         intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
         intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
         intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.EVENT);
         intent.putExtra(RubyService.EXTRA_PARAMS, formData);
         // Here we send our Intent to our RESTService.
         mContext.startService(intent);
-    }
+	}
     
     private void getStoriesForEventFromService(int eventID)
     {
@@ -277,6 +329,10 @@ public class EventServiceBuffer extends Object {
         else if (code == fomoSuccessCode && result != null)
         {
         	getFomosFromJson(result);
+        }
+        else if (code == this.addAttendeeSuccessCode && result != null)
+        {
+        	
         }
         else {
         	
@@ -397,6 +453,8 @@ public class EventServiceBuffer extends Object {
     	
     	UserInfo userInfo = gson.fromJson(json, UserDataHolder.class).user;
     	
+    	Log.d(this.toString(), "Add to UserInfoList: UserInfo.id: " + userInfo.id);
+    	
     	UserInfoList.getInstance().put(userInfo.id, userInfo);
     	
     	if (mUserInfoListener != null)
@@ -420,41 +478,91 @@ public class EventServiceBuffer extends Object {
         	
         	JsonArray array = new JsonArray();
         	
-        	if (json.length() > 0)
-        	{
-        		array = parser.parse(json).getAsJsonArray();
-        	}
         	Gson gson = new GsonBuilder()
         	.addDeserializationExclusionStrategy(new NoExposeExclusionStrategy())
         	.create();
-
-        	for (JsonElement element : array)
+        	
+        	Set<Integer> eventIDs = new HashSet<Integer>();
+        	
+        	if (json.length() > 0)
         	{
-       		    EventDetail eDetail = gson.fromJson(element, EventDetailHolder.class).event;
+        		JsonElement elem = parser.parse(json);
         		
-       		    setMockPictures(eDetail);
-       		    
-       		    setMockLocation(eDetail);
-       		    
-       		    //TODO: get rid of this once we have separate calls for stories/fomos/attendees
-       		    eDetail.getStories().clear();
-       		    
-        		GlobalEventList.eventDetailMap.put(eDetail.getEventID(), eDetail);
+    			EventDetail eDetail;
         		
-        		if (!UserInfoList.getInstance().containsKey(eDetail.getOwnerID()))
+        		if (elem.isJsonArray())
         		{
-        			getUserInfoFromService(eDetail.getOwnerID());
+        			array = elem.getAsJsonArray();
+        			
+
+        			
+                	for (JsonElement element : array)
+                	{
+               		    eDetail = gson.fromJson(element, EventDetailHolder.class).event;
+                		
+               		    setMockPictures(eDetail);
+               		    
+               		    setMockLocation(eDetail);
+               		    
+               		    //TODO: get rid of this once we have separate calls for stories/fomos/attendees
+               		    eDetail.getStories().clear();
+               		    
+                		GlobalEventList.eventDetailMap.put(eDetail.getEventID(), eDetail);
+                		
+                		if (eDetail.getOwnerID() == GlobalVariables.getInstance().getUserId())
+                		{
+                			GlobalEventList.myEventDetails.add(eDetail.getEventID());
+                		}
+                		
+                		if (!UserInfoList.getInstance().containsKey(eDetail.getOwnerID()))
+                		{
+                			Log.d(this.toString(), "requesting id for UserID: " + eDetail.getOwnerID());
+                			
+                			getUserInfoFromService(eDetail.getOwnerID());
+                		}
+                		
+                		getStoriesForEventFromService(eDetail.getEventID());
+                		
+                		eventIDs.add(eDetail.getEventID());
+                		
+                		//getFomosFromService(eDetail.getEventID());
+                	}
         		}
-        		
-        		getStoriesForEventFromService(eDetail.getEventID());
-        		
-        		//getFomosFromService(eDetail.getEventID());
+        		else
+        		{
+        			eDetail = gson.fromJson(elem, EventDetailHolder.class).event;
+        			
+           		    setMockPictures(eDetail);
+           		    
+           		    setMockLocation(eDetail);
+           		    
+           		    //TODO: get rid of this once we have separate calls for stories/fomos/attendees
+           		    eDetail.getStories().clear();
+           		    
+            		GlobalEventList.eventDetailMap.put(eDetail.getEventID(), eDetail);
+            		
+            		if (eDetail.getOwnerID() == GlobalVariables.getInstance().getUserId())
+            		{
+            			GlobalEventList.myEventDetails.add(eDetail.getEventID());
+            		}
+            		
+            		if (!UserInfoList.getInstance().containsKey(eDetail.getOwnerID()))
+            		{
+            			getUserInfoFromService(eDetail.getOwnerID());
+            		}
+            		
+            		getStoriesForEventFromService(eDetail.getEventID());
+            		
+            		eventIDs.add(eDetail.getEventID());
+        		}
         	}
         	
-        	UpdatedEventDetailEvent event = new UpdatedEventDetailEvent(this, GlobalEventList.eventDetailMap.keySet());
-        	
-        	mEventDetailListener.myEventOccurred(event);
-        	
+        	if (mEventDetailListener != null)
+        	{
+	        	UpdatedEventDetailEvent event = new UpdatedEventDetailEvent(this, eventIDs);
+	        	
+	        	mEventDetailListener.myEventOccurred(event);
+        	}
         	/*eventArrayList = new ArrayList<EventDetail>();
         	
         	EventDetail eDetail = gson.fromJson(getMockJson(), EventDetail.class);
@@ -504,7 +612,5 @@ public class EventServiceBuffer extends Object {
         "http://www.coolcarshotgirls.com/wp-content/uploads/2012/04/1440x900-e1335051383553.jpg",
         "http://1.media.collegehumor.cvcdn.com/62/44/collegehumor.9cb4c4cbaf979b21040e4217d531bf76.jpg"
     };
-    
-    
-    
+
 }

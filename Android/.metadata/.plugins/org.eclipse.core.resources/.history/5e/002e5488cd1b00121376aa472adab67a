@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.motlee.android.layouts.HorizontalRatioLinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/label_button_no_arrow">
+    
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent" 
+	        android:layout_gravity="left|center_vertical"
+	        android:weightSum="1">
+	        <ImageView
+	            android:id="@+id/edit_attendee_profile_pic"
+	            android:layout_width="0dp"
+	            android:layout_height="match_parent"
+	            android:layout_gravity="center_vertical"
+	            android:paddingLeft="10dp"
+	            android:layout_weight=".20" />
+		    <TextView 
+		        android:id="@+id/edit_attendee_name"
+	    	    android:layout_width="0dp"
+		        android:layout_height="match_parent"
+		        android:layout_weight=".60"
+		        android:gravity="left|center_vertical"
+		        android:paddingLeft="15dp"
+		        android:background="@android:color/transparent" />
+		    
+		    <com.motlee.android.view.HorizontalAspectImageButton
+		        android:id="@+id/edit_attendee_remove"
+		        android:layout_width="0dp"
+		        android:layout_weight=".15"
+		        android:layout_height="match_parent"
+		        android:scaleType="fitCenter"
+		        android:adjustViewBounds="true"
+		        android:onClick="removePersonFromEvent"/>
+	    </LinearLayout>
+	        <ImageView
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+        android:layout_gravity="top"
+        android:src="@drawable/search_keyline_divider" />
+    </FrameLayout>
+    <!-- Will toggle visible/gone when needed -->
+
+
+</com.motlee.android.layouts.HorizontalRatioLinearLayout>

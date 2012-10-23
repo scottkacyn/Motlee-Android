@@ -41,3 +41,8 @@
 1350570540485	Move compilation unit
 1350571846963	Delete element
 1350623408152	Rename field 'eventInfoLayout'
+1350657247466	Extract method 'initializeImageDownloader'
+1350657370914	Extract method 'setProfilePicture'
+1350657443015	Rename field 'profileEventAttendeeCount'
+1350679338065	Encapsulate field 'facebook'
+1350698049642	Rename field 'eventInfoLayout'

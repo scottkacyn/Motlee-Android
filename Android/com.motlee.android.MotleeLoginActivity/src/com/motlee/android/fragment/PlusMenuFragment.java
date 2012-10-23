@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-public class PlusMenuFragment extends Fragment {
+public class PlusMenuFragment extends FragmentWithHeader {
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
