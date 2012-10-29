@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -29,6 +31,8 @@ import com.motlee.android.R;
 import com.motlee.android.adapter.EventListAdapter;
 import com.motlee.android.enums.EventItemType;
 import com.motlee.android.fragment.EventListFragment;
+import com.motlee.android.object.event.UpdatedAttendeeEvent;
+import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 import com.motlee.android.object.event.UserInfoEvent;
@@ -46,7 +50,7 @@ public class EventServiceBuffer extends Object {
 	private static Context mContext;
 	private static ResultReceiver mReceiver;
 	
-    private static final String WEB_SERVICE_URL = "http://dev.motleeapp.com/api/";
+    private static final String WEB_SERVICE_URL = "http://quiet-fjord-9439.herokuapp.com/api/";
     private static String AUTH_TOK = "auth_token";
     
     public static final String MY_EVENTS = "me";
@@ -59,11 +63,14 @@ public class EventServiceBuffer extends Object {
     public static final int storySuccessCode = 200 + RubyService.STORY;
     public static final int userAuthSuccessCode = 200 + RubyService.USER_AUTH;
     public static final int createEventSuccessCode = 201 + RubyService.CREATE_EVEVT;
-    public static final int addAttendeeSuccessCode = 201 + RubyService.ADD_ATTENDEE;
+    public static final int addAttendeeSuccessCode = 200 + RubyService.ADD_ATTENDEE;
     public static final int fomoSuccessCode = 200 + RubyService.FOMOS;
     
     private static UpdatedEventDetailListener mEventDetailListener;
     private static UserInfoListener mUserInfoListener;
+    private static UpdatedAttendeeListener mAttendeeListener;
+    
+    private static Vector<Integer> mEventsToFinish = new Vector<Integer>();
     
 	public static synchronized EventServiceBuffer getInstance(Context context)
 	{
@@ -92,6 +99,11 @@ public class EventServiceBuffer extends Object {
         GlobalEventList.getInstance();
 	}
 	
+	public static void setAttendeeListener(UpdatedAttendeeListener listener)
+	{
+		mAttendeeListener = listener;
+	}
+	
 	public static void setEventDetailListener(UpdatedEventDetailListener listener)
 	{
 		mEventDetailListener = listener;
@@ -112,34 +124,51 @@ public class EventServiceBuffer extends Object {
 		mUserInfoListener = null;
 	}
 	
+	public static void sendPhotoToDatabase(Integer mEventID) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	public static void sendAttendeesForEvent(Integer eventID, ArrayList<Integer> attendees) 
 	{
-		
-		String attendeeUIDs = "";
-		
-		for (Integer attendeeID : attendees)
+		if (attendees.size() > 0)
 		{
-			attendeeUIDs = attendeeUIDs + attendeeID + ",";
+		
+			String attendeeUIDs = "";
+			
+			for (Integer attendeeID : attendees)
+			{
+				attendeeUIDs = attendeeUIDs + attendeeID + ",";
+			}
+			
+			attendeeUIDs = attendeeUIDs.substring(0, attendeeUIDs.length() - 1);
+			
+			Bundle params = new Bundle();
+			params.putString("uids", attendeeUIDs);
+			params.putString(AUTH_TOK, GlobalVariables.getInstance().getAuthoToken());
+			
+	        EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);
+	        intent.setData(Uri.parse(WEB_SERVICE_URL + "events/" + eventID + "/join"));
+	        
+	        // Here we are going to place our REST call parameters. Note that
+	        // we could have just used Uri.Builder and appendQueryParameter()
+	        // here, but I wanted to illustrate how to use the Bundle params.
+	        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+	        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.POST);
+	        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.ADD_ATTENDEE);
+	        intent.putExtra(RubyService.EXTRA_PARAMS, params);
+	        
+	        mContext.startService(intent);
 		}
-		
-		attendeeUIDs = attendeeUIDs.substring(0, attendeeUIDs.length() - 1);
-		
-		Bundle params = new Bundle();
-		params.putString("uids", attendeeUIDs);
-		params.putString(AUTH_TOK, GlobalVariables.getInstance().getAuthoToken());
-		
-        Intent intent = new Intent(mContext, RubyService.class);
-        intent.setData(Uri.parse(WEB_SERVICE_URL + "events/" + eventID + "/join"));
-        
-        // Here we are going to place our REST call parameters. Note that
-        // we could have just used Uri.Builder and appendQueryParameter()
-        // here, but I wanted to illustrate how to use the Bundle params.
-        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
-        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.POST);
-        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.ADD_ATTENDEE);
-        intent.putExtra(RubyService.EXTRA_PARAMS, params);
-        
-        mContext.startService(intent);
+		else
+		{
+			if (mAttendeeListener != null)
+			{
+				UpdatedAttendeeEvent event = new UpdatedAttendeeEvent(instance, new HashSet<Integer>());
+				
+				mAttendeeListener.raised(event);
+			}
+		}
 	}
 	
 	public static void sendNewEventToDatabase(EventDetail eDetail)
@@ -153,7 +182,7 @@ public class EventServiceBuffer extends Object {
 		eventDetailBundle.putInt("event[location_id]", eDetail.getLocationID());
 		eventDetailBundle.putString(AUTH_TOK, GlobalVariables.getInstance().getAuthoToken());
 		
-        Intent intent = new Intent(mContext, RubyService.class);
+        EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);
         intent.setData(Uri.parse(WEB_SERVICE_URL + "events"));
         
         // Here we are going to place our REST call parameters. Note that
@@ -169,7 +198,7 @@ public class EventServiceBuffer extends Object {
 	
 	public static void getUserInfoFromFacebookAccessToken(String accessToken)
 	{
-        Intent intent = new Intent(mContext, RubyService.class);
+        EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);
         intent.setData(Uri.parse(WEB_SERVICE_URL + "tokens"));
         
         // Here we are going to place our REST call parameters. Note that
@@ -191,7 +220,7 @@ public class EventServiceBuffer extends Object {
 	{
 		if (eventID > 0)
 		{
-	        Intent intent = new Intent(mContext, RubyService.class);
+	        EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);
 	        intent.setData(Uri.parse(WEB_SERVICE_URL + "events/" + eventID + "/fomos"));
 	        
 	        Bundle formData = new Bundle();
@@ -210,7 +239,7 @@ public class EventServiceBuffer extends Object {
 	{
 		if (userID > 0)
 		{
-	        Intent intent = new Intent(mContext, RubyService.class);
+	        EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);
 	        intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + userID));
 	        
 	        Bundle formData = new Bundle();
@@ -227,7 +256,7 @@ public class EventServiceBuffer extends Object {
 	
 	public static void getUserInfoFromService()
 	{
-        Intent intent = new Intent(mContext, RubyService.class);
+        EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);
         intent.setData(Uri.parse(WEB_SERVICE_URL + "users"));
         
         Bundle formData = new Bundle();
@@ -250,7 +279,7 @@ public class EventServiceBuffer extends Object {
 	
 	public static void getEventsFromService(String eventParam)
 	{
-        Intent intent = new Intent(mContext, RubyService.class);
+        EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);
         intent.setData(Uri.parse(WEB_SERVICE_URL + "events"));
         
         
@@ -332,18 +361,31 @@ public class EventServiceBuffer extends Object {
         }
         else if (code == this.addAttendeeSuccessCode && result != null)
         {
-        	
+        	getAttendeesFromJson(result);
         }
         else {
         	
             if (mContext instanceof Activity) {
                 Toast.makeText(mContext, "Failed to load Event data. Check your internet settings.", Toast.LENGTH_SHORT).show();
+                
+                //AlertDialog dialog = AlertDialog.Builder((Activity) mContext)
+                //		.
             }
             Log.d("EventServiceBuffer", "Failed: code: " + code + ", result: " + result);
         }
     }
     
-    private void getUserAuthFromJson(String json) {
+    private void getAttendeesFromJson(String result) {
+		
+    	if (mAttendeeListener != null)
+    	{
+    		mAttendeeListener.raised(null);
+    	}
+	}
+
+
+
+	private void getUserAuthFromJson(String json) {
 		
 		Gson gson = new Gson();
     	
@@ -389,14 +431,12 @@ public class EventServiceBuffer extends Object {
     	{
     		EventItem fomos = gson.fromJson(element, FomosHolder.class).fomos;
     		
-    		fomos.type = EventItemType.FOMO;
-    		
     		if (!UserInfoList.getInstance().containsKey(fomos.user_id))
     		{
     			getUserInfoFromService(fomos.user_id);
     		}
     		
-    		GlobalEventList.eventDetailMap.get(fomos.event_id).getFomos().add(fomos);
+    		GlobalEventList.eventDetailMap.get(fomos.event_id).addFomo(fomos.user_id);
     	}
 	}
 	
@@ -494,18 +534,33 @@ public class EventServiceBuffer extends Object {
         		{
         			array = elem.getAsJsonArray();
         			
-
-        			
                 	for (JsonElement element : array)
                 	{
+                		UserInfo ownerInfo = new UserInfo();
+                		
+                		JsonObject object = element.getAsJsonObject();
+                		
+                		JsonObject event = object.getAsJsonObject("event");
+                		
+                		JsonElement userObject = event.get("owner");
+                		
+                		if (!userObject.isJsonNull())
+                		{
+                			
+                			JsonArray user = userObject.getAsJsonArray();
+                    		for (JsonElement userElement : user)
+                    		{
+                    			ownerInfo = gson.fromJson(userElement, UserInfo.class);
+                    		}
+                		}
+                		
+
+                		
                		    eDetail = gson.fromJson(element, EventDetailHolder.class).event;
                 		
                		    setMockPictures(eDetail);
                		    
                		    setMockLocation(eDetail);
-               		    
-               		    //TODO: get rid of this once we have separate calls for stories/fomos/attendees
-               		    eDetail.getStories().clear();
                		    
                 		GlobalEventList.eventDetailMap.put(eDetail.getEventID(), eDetail);
                 		
@@ -516,7 +571,7 @@ public class EventServiceBuffer extends Object {
                 		
                 		if (!UserInfoList.getInstance().containsKey(eDetail.getOwnerID()))
                 		{
-                			Log.d(this.toString(), "requesting id for UserID: " + eDetail.getOwnerID());
+                			UserInfoList.getInstance().put(eDetail.getOwnerID(), ownerInfo);
                 			
                 			getUserInfoFromService(eDetail.getOwnerID());
                 		}
@@ -606,11 +661,16 @@ public class EventServiceBuffer extends Object {
     }
     
     private static final String[] URLS = {
-        "http://red-hot-girls.com/img/red-hot-girls.com/img2/20120312/200/hot_girls_just_wanna_have_fun_200_40.jpg",
-        "http://img.red-hot-girls.com/img/red-hot-girls.com/img2/20120604/200/hot_girls_with_body_paint_on_their_boobs_200_08.jpg",
-        "http://red-hot-girls.com/img/red-hot-girls.com/img1/20110310/200/hot_hooters_girls_200_01.jpg",
-        "http://www.coolcarshotgirls.com/wp-content/uploads/2012/04/1440x900-e1335051383553.jpg",
-        "http://1.media.collegehumor.cvcdn.com/62/44/collegehumor.9cb4c4cbaf979b21040e4217d531bf76.jpg"
+    	"http://i00.i.aliimg.com/wsphoto/v0/569589836/Free-Shipping-Krazy-sexy-women-s-party-dress-one-piece-dress-slim-no-265.jpg",
+        "http://blogs.laweekly.com/westcoastsound/big-whup-0-cover.jpg",
+        "http://i.imgur.com/A13A0.jpg",
+        "http://f0.bcbits.com/z/42/91/4291977758-1.jpg",
+        "http://f0.bcbits.com/z/42/81/4281601160-1.jpg",
+        "http://blogs.wickedlocal.com/springsteen/files/2012/08/Springsteen-312.jpg"
+        
+        
     };
+
+
 
 }

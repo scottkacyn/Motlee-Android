@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 
 import com.motlee.android.object.event.UserInfoEvent;
@@ -17,14 +18,16 @@ public class EventDetail implements Comparable<EventDetail> {
 	private Date end_time;
 	private int user_id;
 	private Integer location_id;
+	private int fomo_count;
+	private int attendee_count;
 	
 	//TODO: Change to Collection<Integer>
-	private final Collection<EventItem> fomos;
+	private final Collection<Integer> fomos;
 
 	private final Collection<PhotoItem> photos;
 
 	//TODO: Change to Collection<Integer>
-	private final Collection<UserInfo> attendees;
+	private final Collection<Integer> attendees;
 	
 	private final Collection<EventItemWithBody> stories;
 	
@@ -39,7 +42,6 @@ public class EventDetail implements Comparable<EventDetail> {
 	@NoExpose
 	private int id;
 	
-	
 	public void addListener(UserInfoListener l) 
 	{
 		eventList.add(l);
@@ -53,8 +55,8 @@ public class EventDetail implements Comparable<EventDetail> {
 	public EventDetail()
 	{
 		this.user_id = -1;
-		this.fomos = new ArrayList<EventItem>();
-		this.attendees = new ArrayList<UserInfo>();
+		this.fomos = new ArrayList<Integer>();
+		this.attendees = new ArrayList<Integer>();
 		this.stories = new ArrayList<EventItemWithBody>();
 		this.name = "";
 		this.start_time = new Date();
@@ -101,19 +103,33 @@ public class EventDetail implements Comparable<EventDetail> {
 		}
 	}*/
 	
+	
+	/*
+	 * method to get solely the string for the owner name in the event list
+	 */
 	public String getEventOwnerSummaryString()
 	{
 		if (!userInfoList.containsKey(user_id))
 		{
-			return Integer.toString(user_id) + " + " + attendees.size() + " Others";
+			return Integer.toString(user_id) + " + " + attendee_count + " Others";
 		}
 		else
 		{
-			return userInfoList.get(user_id).name + " + " + attendees.size() + " Others";
+			return userInfoList.get(user_id).name + " + " + attendee_count + " Others";
 		}
 	}
 	
-	//TODO: Destroy this once UserInfoList is connected to web
+	
+	public int getAttendeeCount()
+	{
+		return this.attendee_count;
+	}
+	
+	public int getFomoCount()
+	{
+		return this.fomo_count;
+	}
+	
 	public int getOwnerID()
 	{
 		return user_id;
@@ -139,14 +155,38 @@ public class EventDetail implements Comparable<EventDetail> {
 		this.location = location;
 	}
 	
-	public Collection<UserInfo> getAttendees()
+	public void addAttendee(int attendee)
 	{
-		return this.attendees;
+		this.attendees.add(attendee);
+		attendee_count++;
 	}
 	
-	public Collection<EventItem> getFomos()
+	public void addAttendee(Collection<Integer> attendees)
 	{
-		return this.fomos;
+		this.attendees.addAll(attendees);
+		attendee_count = attendee_count + attendees.size();
+	}
+	
+	public void addFomo(int fomo)
+	{
+		this.fomos.add(fomo);
+		fomo_count++;
+	}
+	
+	public void addFomo(Collection<Integer> fomos)
+	{
+		this.fomos.addAll(fomos);
+		fomo_count = fomo_count + fomos.size();
+	}
+	
+	public Collection<Integer> getAttendees()
+	{
+		return Collections.unmodifiableCollection(this.attendees);
+	}
+	
+	public Collection<Integer> getFomos()
+	{
+		return Collections.unmodifiableCollection(this.fomos);
 	}
 	
 	public UserInfo getEventOwner()

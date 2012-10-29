@@ -38,9 +38,9 @@ public class StretchedBackgroundTableLayout extends TableLayout {
 	
 	private Drawable resizeBackgroundDrawable(Drawable drawable)
 	{
-		Display display = GlobalVariables.getInstance().getDisplay();
+		int width = GlobalVariables.getInstance().getDisplayWidth();
 		
-		drawable.setBounds(0, 0, display.getWidth(), 0);
+		drawable.setBounds(0, 0, width, 0);
 		
 		return drawable;
 	}

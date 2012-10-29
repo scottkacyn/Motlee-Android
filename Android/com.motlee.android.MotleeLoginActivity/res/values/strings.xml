@@ -10,6 +10,9 @@
     <string name="title_more_event_detail_activity">MoreEventDetailActivity</string>
     <string name="title_create_event_activity">CreateEventActivity</string>
     <string name="title_user_profile_activity">UserProfilePageActivity</string>
+    <string name="title_take_photo_activity">TakePhotoActivity</string>
+    <string name="title_photo_detail_activity">PhotoDetailActivity</string>
     <string name="app_id">283790891721595</string>
+    <string name="album_name">Motlee Pictures</string>
     
 </resources>

@@ -6,6 +6,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -21,6 +23,9 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+
+import com.motlee.android.object.EqualityIntent;
+import com.motlee.android.object.GlobalVariables;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -51,7 +56,7 @@ public class RubyService extends IntentService {
     public static final String EXTRA_DATA_CONTENT	 = "com.motlee.android.EXTRA_DATA_CONTENT";
     
     public static final String REST_RESULT = "com.motlee.android.REST_RESULT";
-
+    
     public RubyService() {
         super(TAG);
     }
@@ -60,7 +65,9 @@ public class RubyService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         // When an intent is received by this Service, this method
         // is called on a new thread.
-        
+    	
+    	Log.d(TAG, "Running on Thread: " + Thread.currentThread().getName());
+    	
         Uri    action = intent.getData();
         Bundle extras = intent.getExtras();
         
@@ -75,8 +82,8 @@ public class RubyService extends IntentService {
         // We default to GET if no verb was specified.
         int            verb     = extras.getInt(EXTRA_HTTP_VERB, GET);
         Bundle         params   = extras.getParcelable(EXTRA_PARAMS);
-        ResultReceiver receiver = extras.getParcelable(EXTRA_RESULT_RECEIVER);
-        int dataContent			= extras.getInt(EXTRA_DATA_CONTENT, EVENT);
+        final ResultReceiver receiver = extras.getParcelable(EXTRA_RESULT_RECEIVER);
+        final int dataContent			= extras.getInt(EXTRA_DATA_CONTENT, EVENT);
         
         try {            
             // Here we define our base request object which we will
@@ -132,34 +139,51 @@ public class RubyService extends IntentService {
             }
             
             if (request != null) {
-                HttpClient client = new DefaultHttpClient();
+                final HttpClient client = new DefaultHttpClient();
                 
                 // Let's send some useful debug information so we can monitor things
                 // in LogCat.
                 Log.d(TAG, "Executing request: "+ verbToString(verb) +": "+ action.toString());
-                
+                final HttpRequestBase finalRequest = request;
                 // Finally, we send our request using HTTP. This is the synchronous
                 // long operation that we need to run on this thread.
-                HttpResponse response = client.execute(request);
-                
-                HttpEntity responseEntity = response.getEntity();
-                StatusLine responseStatus = response.getStatusLine();
-                int        statusCode     = responseStatus != null ? responseStatus.getStatusCode() : 0;
-                
-                statusCode = statusCode + dataContent;
-                
-                // Our ResultReceiver allows us to communicate back the results to the caller. This
-                // class has a method named send() that can send back a code and a Bundle
-                // of data. ResultReceiver and IntentService abstract away all the IPC code
-                // we would need to write to normally make this work.
-                if (responseEntity != null) {
-                    Bundle resultData = new Bundle();
-                    resultData.putString(REST_RESULT, EntityUtils.toString(responseEntity));
-                    receiver.send(statusCode, resultData);
-                }
-                else {
-                    receiver.send(statusCode, null);
-                }
+                GlobalVariables.getInstance().getExecutorService().execute(new Runnable(){
+                	public void run()
+                	{
+                		try
+                		{
+	                        HttpResponse response;
+							response = client.execute(finalRequest);
+	                        
+	                        HttpEntity responseEntity = response.getEntity();
+	                        StatusLine responseStatus = response.getStatusLine();
+	                        int        statusCode     = responseStatus != null ? responseStatus.getStatusCode() : 0;
+	                        
+	                        statusCode = statusCode + dataContent;
+	                        
+	                        // Our ResultReceiver allows us to communicate back the results to the caller. This
+	                        // class has a method named send() that can send back a code and a Bundle
+	                        // of data. ResultReceiver and IntentService abstract away all the IPC code
+	                        // we would need to write to normally make this work.
+	                        if (responseEntity != null) {
+	                            Bundle resultData = new Bundle();
+	                            resultData.putString(REST_RESULT, EntityUtils.toString(responseEntity));
+	                            receiver.send(statusCode, resultData);
+	                        }
+	                        else {
+	                            receiver.send(statusCode, null);
+	                        }
+                		}
+                        catch (ClientProtocolException e) {
+                            Log.e(TAG, "There was a problem when sending the request.", e);
+                            receiver.send(0, null);
+                        }
+                        catch (IOException e) {
+                            Log.e(TAG, "There was a problem when sending the request.", e);
+                            receiver.send(0, null);
+                        }
+                	}
+                });
             }
         }
         catch (URISyntaxException e) {
@@ -170,17 +194,9 @@ public class RubyService extends IntentService {
             Log.e(TAG, "A UrlEncodedFormEntity was created with an unsupported encoding.", e);
             receiver.send(0, null);
         }
-        catch (ClientProtocolException e) {
-            Log.e(TAG, "There was a problem when sending the request.", e);
-            receiver.send(0, null);
-        }
-        catch (IOException e) {
-            Log.e(TAG, "There was a problem when sending the request.", e);
-            receiver.send(0, null);
-        }
     }
 
-    private static void attachUriWithQuery(HttpRequestBase request, Uri uri, Bundle params) {
+	private static void attachUriWithQuery(HttpRequestBase request, Uri uri, Bundle params) {
         try {
             if (params == null) {
                 // No params were given or they have already been
@@ -236,5 +252,5 @@ public class RubyService extends IntentService {
         
         return formList;
     }
-
+    
 }

@@ -1,0 +1,165 @@
+package com.motlee.android.fragment;
+
+import kankan.wheel.widget.WheelView;
+import kankan.wheel.widget.adapters.AbstractWheelAdapter;
+import kankan.wheel.widget.adapters.ArrayWheelAdapter;
+import kankan.wheel.widget.adapters.WheelViewAdapter;
+import android.content.Context;
+import android.database.DataSetObserver;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.OnFocusChangeListener;
+import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.ImageView.ScaleType;
+import android.widget.TextView.OnEditorActionListener;
+
+import com.motlee.android.R;
+import com.motlee.android.adapter.CurrentEventWheelAdapter;
+import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.GlobalVariables;
+
+public class TakePhotoFragment extends FragmentWithHeader {
+	
+	private LayoutInflater inflater;
+	private View view;
+	
+	private StretchedBackgroundTableLayout picutreHolder;
+	
+	private String pageTitle = "Take Photo";
+	
+	private Bitmap takenPhoto;
+	
+	private StretchedBackgroundTableLayout photoDetailLayout;
+	private CurrentEventWheelAdapter mAdapter;
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+	
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.activity_take_photo, null);
+		
+		photoDetailLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.photo_detail_layout);
+		photoDetailLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		
+		WheelView eventWheel = (WheelView) view.findViewById(R.id.event_wheel);
+		eventWheel.setViewAdapter(mAdapter);
+		
+		TextView textView = (TextView) view.findViewById(R.id.scroll_view_text);
+		
+		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
+		tv.setText(pageTitle);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		
+		View headerRightButton = mHeaderView.findViewById(R.id.header_right_layout_button);
+		headerRightButton.setVisibility(View.VISIBLE);
+		
+		View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
+		headerLeftButton.setVisibility(View.VISIBLE);
+		
+		setUpPicture();
+		
+		setUpPhotoDetailLabels();
+		
+		return view;
+	}
+	
+	private void setUpPhotoDetailLabels() 
+	{
+		View labelButton = inflater.inflate(R.layout.event_detail_info_button, null);
+		labelButton.findViewById(R.id.label_button_icon).setVisibility(View.GONE);
+		
+		TextView labelText = (TextView) labelButton.findViewById(R.id.label_button_text);
+		labelText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		labelText.setText("Select Event...");
+		
+		TableRow tr = new TableRow(getActivity());
+		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tr.setLayoutParams(lp);
+		tr.addView(labelButton);
+		photoDetailLayout.addView(tr);
+		
+		View photoDescription = inflater.inflate(R.layout.edit_photo_description, null);
+		
+		setPhotoDescriptionEdit(photoDescription);
+	}
+
+	private void setPhotoDescriptionEdit(View label)
+	{
+		// set up EditText view. set to "final" so we can use in the editText listeners
+		final EditText editText = (EditText) label.findViewById(R.id.edit_event_name_text);
+		editText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		editText.setTextColor(R.color.label_color);
+		editText.setHint("Photo Description...");
+		//mEventName = editText.getText();
+		
+		editText.setOnEditorActionListener(new OnEditorActionListener() {
+
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				
+				// if we hit enter on the keyboard, hide keyboard
+	            if (event != null&& (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+	                InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+	                // NOTE: In the author's example, he uses an identifier
+	                // called searchBar. If setting this code on your EditText
+	                // then use v.getWindowToken() as a reference to your 
+	                // EditText is passed into this callback as a TextView
+
+	                in.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+	                editText.clearFocus();
+	                
+	               return true;
+
+	            }
+	            return false;
+			}
+			});
+		
+		editText.setOnFocusChangeListener(new OnFocusChangeListener() {
+			
+			// if we have focus, change color for input text
+	        public void onFocusChange(View v, boolean hasFocus) {
+	            if (hasFocus) {
+	                ((EditText) v).setTextColor(Color.WHITE);
+	                ((EditText) v).setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+	            } 
+	        }
+	    });
+		
+		TableRow tr = new TableRow(getActivity());
+		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tr.setLayoutParams(lp);
+		tr.addView(label);
+		photoDetailLayout.addView(tr);
+	}
+	
+	public void setScrollWheelAdapter(CurrentEventWheelAdapter adapter)
+	{
+		this.mAdapter = adapter;
+	}
+	
+	private void setUpPicture()
+	{
+		ImageView imageView = (ImageView) view.findViewById(R.id.taken_picture);
+		imageView.setImageBitmap(this.takenPhoto);
+		
+	}
+	
+	public void setBitmap(Bitmap thePic)
+	{
+		this.takenPhoto = thePic;
+	}
+}

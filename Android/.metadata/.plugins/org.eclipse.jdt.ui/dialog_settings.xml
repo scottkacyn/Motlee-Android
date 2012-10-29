@@ -22,7 +22,7 @@
 		<item value="true" key="GenerateJavadoc"/>
 	</section>
 	<section name="BuildPathsPropertyPage">
-		<item value="3" key="pageIndex"/>
+		<item value="2" key="pageIndex"/>
 	</section>
 	<section name="RefactoringWizard.preview">
 		<item value="400" key="height"/>
@@ -84,7 +84,7 @@
 		<item value="false" key="updateQualifiedNames"/>
 		<item value="1" key="updateSimilarElementsMatchStrategy"/>
 		<item value="false" key="updateTextualMatches"/>
-		<item value="false" key="updateSimilarElements"/>
+		<item value="true" key="updateSimilarElements"/>
 	</section>
 	<section name="RenameInformationPopup">
 	</section>

@@ -1,0 +1,123 @@
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.motlee.android.adapter;
+
+import java.util.Collection;
+
+import com.motlee.android.R;
+import com.motlee.android.object.GlobalVariables;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
+
+import android.content.Context;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+
+public class ImageAdapter extends BaseAdapter {
+
+	private final Context context;
+	private final int resource;
+	private final LayoutInflater inflater;
+	
+    private String[] URLS = {};
+    
+    public ImageAdapter(Context context, int resource)
+    {
+    	super();
+    	
+    	this.context = context;
+    	this.resource = resource;
+    	this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+    
+    public int getCount() {
+        return URLS.length;
+    }
+
+    public String getItem(int position) {
+        return URLS[position];
+    }
+
+    public long getItemId(int position) {
+        return URLS[position].hashCode();
+    }
+
+    public void setURLs(Collection<String> imageURLs)
+    {
+    	this.URLS = imageURLs.toArray(new String[imageURLs.size()]);
+    }
+    
+    public View getView(int position, View contentView, ViewGroup parent) {
+        
+    	ViewHolder holder = new ViewHolder();
+    	
+    	if (contentView == null) {
+            contentView = (View) this.inflater.inflate(resource, null);
+            
+            holder.imageThumbnail = (ImageView) contentView.findViewById(R.id.imageThumbnail);
+            
+            contentView.setTag(holder);
+        }
+    	else
+    	{
+    		holder = (ViewHolder) contentView.getTag();
+    	}
+    	
+    	if (holder == null)
+    	{
+    	
+    	Log.d("ImageAdapter", "position: " + position + "URLS.size() = " + URLS.length);
+    	}
+    	try
+    	{
+    	GlobalVariables.getInstance().downloadThumbnailImage(context, holder.imageThumbnail, URLS[position]);
+    	}
+    	catch (Exception e)
+    	{
+    		Log.d("ImageAdapter", "e: " + e.getMessage() + "holder: " + holder);
+    	}
+        holder.imageThumbnail.setVisibility(View.VISIBLE);
+        
+        return holder.imageThumbnail;
+    }
+
+    private class ViewHolder
+    {
+    	public ImageView imageThumbnail;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

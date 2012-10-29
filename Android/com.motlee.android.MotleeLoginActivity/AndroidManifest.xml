@@ -15,6 +15,7 @@
         android:theme="@style/app_theme"  >
         
         <uses-library android:name="com.google.android.maps"/>
+        <uses-feature android:name="android.hardware.camera" />
         
         <activity
             android:name=".MotleeLoginActivity"
@@ -36,6 +37,7 @@
             android:name=".EventListActivity"
             android:label="@string/title_activity_event_list"
             android:theme="@style/app_theme"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" >
             <meta-data
             	android:name="android.support.PARENT_ACTIVITY"
@@ -46,6 +48,7 @@
             android:name=".EventDetailActivity"
             android:label="@string/title_event_detail_activity"
             android:theme="@style/app_theme"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" >
             <meta-data
             	android:name="android.support.PARENT_ACTIVITY"
@@ -56,6 +59,7 @@
             android:name=".MoreEventDetailActivity"
             android:label="@string/title_more_event_detail_activity"
             android:theme="@style/app_theme"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" >
             <meta-data
             	android:name="android.support.PARENT_ACTIVITY"
@@ -66,6 +70,7 @@
             android:name=".CreateEventActivity"
             android:label="@string/title_create_event_activity"
             android:theme="@style/app_theme"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" >
             <meta-data
             	android:name="android.support.PARENT_ACTIVITY"
@@ -76,11 +81,35 @@
             android:name=".UserProfilePageActivity"
             android:label="@string/title_user_profile_activity"
             android:theme="@style/app_theme"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" >
             <meta-data
             	android:name="android.support.PARENT_ACTIVITY"
             	android:value="com.example.myfirstapp.MainActivity" />
         </activity>
+        
+        <activity
+            android:name=".TakePhotoActivity"
+            android:label="@string/title_take_photo_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
+        <activity
+            android:name=".PhotoDetailActivity"
+            android:label="@string/title_photo_detail_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/app_id"/>
     </application>
     

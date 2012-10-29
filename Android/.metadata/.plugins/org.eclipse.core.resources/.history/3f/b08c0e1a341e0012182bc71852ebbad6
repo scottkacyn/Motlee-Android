@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" 
+        android:layout_gravity="top"
+        android:padding="10dp">
+	    <LinearLayout
+	        android:id="@+id/event_detail_scroll_view"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:padding="30dp"
+	        android:background="@android:color/transparent">	        
+		        
+	        <ImageView
+	            android:id="@+id/taken_picture"
+	            android:padding="10dp"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:scaleType="fitCenter"
+	            android:adjustViewBounds="true"/>
+	        
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            
+            <!-- TODO switch drawable -->
+	        <com.motlee.android.view.HorizontalAspectImageButton 
+	            android:id="@+id/taken_picture_recrop"
+	            android:paddingTop="10dp"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:src="@drawable/label_button" 
+	            android:onClick="onRecropPicture" />
+	        
+      		<TextView 
+		        android:id="@+id/scroll_view_text"
+	    	    android:layout_width="match_parent"
+		        android:layout_height="match_parent"
+		        android:gravity="center|center_vertical"
+		        android:padding="5dp"
+		        android:text="Recrop"
+		        android:background="@android:color/transparent" />
+	    </FrameLayout>
+	    </LinearLayout>
+	    
+	    <LinearLayout
+	        android:id="@+id/buffer"
+	        android:layout_width="match_parent"
+	        android:layout_height="10dp"
+	        android:layout_below="@id/event_detail_scroll_view"
+	        android:background="@android:color/transparent"/>
+	    
+	    <com.motlee.android.layouts.StretchedBackgroundTableLayout
+	        android:id="@+id/photo_detail_layout"
+	        android:layout_below="@id/buffer"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingTop="10dp"
+	        android:paddingBottom="10dp" />
+	    
+   	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="25dp"
+	        android:layout_below="@id/photo_detail_layout"
+	        android:background="@android:color/transparent"/>
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:id="@+id/scroll_view_layout_button"
+	    android:visibility="gone" >
+	    <com.motlee.android.layouts.RatioBackgroundRelativeLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:background="@drawable/scroll_wheel_button_background">
+	        
+		    <FrameLayout
+		        android:layout_height="match_parent"
+		        android:layout_width="wrap_content"
+		        android:layout_alignParentRight="true" >
+			    <com.motlee.android.view.VerticalAspectImageButton 
+			        android:id="@+id/scroll_view_button"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			        android:padding="5dp"
+			        android:src="@drawable/button_orange"
+			        android:onClick="onDoneChoosingEvent"
+			        android:background="@android:color/transparent" />
+			    
+			    <TextView 
+			        android:id="@+id/scroll_view_text"
+		    	    android:layout_width="match_parent"
+			        android:layout_height="match_parent"
+			        android:gravity="center|center_vertical"
+			        android:padding="5dp"
+			        android:text="Done"
+			        android:background="@android:color/transparent" />
+		    </FrameLayout>
+	        
+	        
+	    </com.motlee.android.layouts.RatioBackgroundRelativeLayout>
+	    <com.motlee.android.layouts.HorizontalRatioLinearLayout
+	        android:id="@+id/event_wheel_background"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:background="@drawable/scroll_wheel_background"
+	        android:padding="5dp"
+	        android:gravity="bottom"
+	        android:layout_gravity="bottom" >
+	        
+		    <kankan.wheel.widget.WheelView
+		        android:id="@+id/event_wheel"
+				android:layout_height="match_parent"
+				android:layout_width="0dp"
+				android:layout_gravity="left"
+				android:layout_weight="1"
+				android:layout_margin="10dp" />
+		    
+	    </com.motlee.android.layouts.HorizontalRatioLinearLayout>
+    </LinearLayout>
+</FrameLayout>

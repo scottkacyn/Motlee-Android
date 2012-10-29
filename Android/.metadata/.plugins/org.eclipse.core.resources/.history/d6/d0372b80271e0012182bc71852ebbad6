@@ -1,0 +1,7 @@
+package com.motlee.android;
+
+import android.support.v4.app.FragmentActivity;
+
+public class GetPhotoFromLibraryActivity extends FragmentActivity {
+
+}

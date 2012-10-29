@@ -43,7 +43,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-public class CreateEventFragment extends FragmentWithHeader {
+public class CreateEventFragment extends BaseMotleeFragment {
 	
 	public static String START_TIME = "StartTime";
 	public static String END_TIME = "EndTime";
@@ -89,25 +89,13 @@ public class CreateEventFragment extends FragmentWithHeader {
 		eventFriendLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_create_friend_list);
 		eventFriendLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
 		
-		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
-		tv.setText(pageTitle);
-		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		
-		View headerRightButton = mHeaderView.findViewById(R.id.header_right_layout_button);
-		headerRightButton.setVisibility(View.VISIBLE);
-		
-		TextView headerText = (TextView) mHeaderView.findViewById(R.id.header_right_text);
-		headerText.setText("Start!");
-		
-		View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
-		headerLeftButton.setVisibility(View.VISIBLE);
+		setPageHeader(pageTitle);
+		showRightHeaderButton("Start!");
+		showLeftHeaderButton();
 		
 		initializeTime();
-		
 		setDateLabels();
-		
 		setFriendLayout();
-		
 		setLocationLabel();
 		
 		ImageScaleType ist = ImageScaleType.IN_SAMPLE_POWER_OF_2;

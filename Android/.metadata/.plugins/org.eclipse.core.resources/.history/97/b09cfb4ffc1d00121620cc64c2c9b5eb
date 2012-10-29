@@ -1,0 +1,71 @@
+package com.motlee.android.fragment;
+
+import kankan.wheel.widget.WheelView;
+import kankan.wheel.widget.adapters.AbstractWheelAdapter;
+import kankan.wheel.widget.adapters.ArrayWheelAdapter;
+import kankan.wheel.widget.adapters.WheelViewAdapter;
+import android.content.Context;
+import android.database.DataSetObserver;
+import android.graphics.Bitmap;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.ImageView.ScaleType;
+
+import com.motlee.android.R;
+import com.motlee.android.adapter.CurrentEventWheelAdapter;
+import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.GlobalVariables;
+
+public class TakePhotoFragment extends FragmentWithHeader {
+	
+	private LayoutInflater inflater;
+	private View view;
+	
+	private StretchedBackgroundTableLayout picutreHolder;
+	
+	private String pageTitle = "Take Photo";
+	
+	private Bitmap takenPhoto;
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+	
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.activity_take_photo, null);
+		
+		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
+		tv.setText(pageTitle);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		
+		View headerRightButton = mHeaderView.findViewById(R.id.header_right_layout_button);
+		headerRightButton.setVisibility(View.VISIBLE);
+		
+		View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
+		headerLeftButton.setVisibility(View.VISIBLE);
+		
+		setUpPicture();
+		
+		return view;
+	}
+	
+	private void setUpPicture()
+	{
+		ImageView imageView = (ImageView) view.findViewById(R.id.taken_picture);
+		imageView.setImageBitmap(this.takenPhoto);
+		
+	}
+	
+	public void setBitmap(Bitmap thePic)
+	{
+		this.takenPhoto = thePic;
+	}
+}

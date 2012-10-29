@@ -8,3 +8,17 @@
 1350938734413	Rename resource 'search_places_list.xml'
 1350945738334	Rename field 'mTextSearch'
 1350949539585	Rename type 'SearchFragment'
+1351023520598	Rename method 'handleBigCameraPhoto'
+1351027041418	Delete element
+1351117149565	Delete element
+1351127861566	Rename type 'BaseActivity'
+1351167787239	Rename type 'FragmentWithHeader'
+1351168702877	Delete element
+1351180225647	Rename local variable 'eventDetailIntent'
+1351181061358	Rename field 'editText'
+1351185809646	Rename method 'areEqual'
+1351186097957	Delete element
+1351208725064	Rename type 'UpdateAttendeeListener'
+1351279131751	Delete element
+1351279159545	Delete element
+1351284126040	Delete element

@@ -13,6 +13,7 @@ import com.motlee.android.enums.EventItemType;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventItemWithBody;
 import com.motlee.android.object.GlobalEventList;
+import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.UserInfoList;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -37,13 +38,11 @@ import android.widget.TextView;
 
 /**
  * @author zackmartinsek
- *
+ * specifically takes care 
  */
 public class GridListTableLayout extends StretchedBackgroundTableLayout {
 
 	private LayoutInflater inflater;
-	
-	private ImageLoader imageDownloader;
 	
 	private Context context;
 	
@@ -67,15 +66,13 @@ public class GridListTableLayout extends StretchedBackgroundTableLayout {
 	private void init()
 	{
 		inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-		
-		imageDownloader = ImageLoader.getInstance();
-    	
-    	imageDownloader.init(ImageLoaderConfiguration.createDefault(context));
 	}
 	
 	public void addList(Collection<EventItemWithBody> collection)
 	{
 		this.removeAllViews();
+		
+		this.setStretchAllColumns(true);
 		
 		for (EventItemWithBody item : collection)
 		{
@@ -89,20 +86,10 @@ public class GridListTableLayout extends StretchedBackgroundTableLayout {
 				
 				textView.setVisibility(View.GONE);
 				
-				ImageView imageView = (ImageView) view.findViewById(R.id.story_picture_picture);
-				
-				ImageScaleType ist = ImageScaleType.EXACTLY;
+				ImageView imageView = (ImageView) view.findViewById(R.id.grid_thumbnail);
+		    	imageView.setTag(item);
 		    	
-				DisplayImageOptions options = new DisplayImageOptions.Builder()
-				.showStubImage(R.drawable.stubimage)
-				.resetViewBeforeLoading()
-				.cacheInMemory()
-				.imageScaleType(ist)
-				.cacheOnDisc()
-				.displayer(new SimpleBitmapDisplayer())
-				.build();
-		    	
-		        imageDownloader.displayImage(((PhotoItem)item).url, imageView, options);
+		        GlobalVariables.getInstance().dowloadImage(context, imageView, ((PhotoItem)item).url);
 		        
 		        imageView.setVisibility(View.VISIBLE);
 			}
@@ -113,9 +100,7 @@ public class GridListTableLayout extends StretchedBackgroundTableLayout {
 				
 				textView.setText(item.body);
 				
-				ImageView imageView = (ImageView) view.findViewById(R.id.story_picture_picture);
-				
-				imageView.setVisibility(View.GONE);
+				view.findViewById(R.id.story_picture_picture).setVisibility(View.GONE);
 				
 				textView.setVisibility(View.VISIBLE);
 			}
@@ -133,13 +118,13 @@ public class GridListTableLayout extends StretchedBackgroundTableLayout {
 	{
 		ImageView imageView = (ImageView) view.findViewById(R.id.story_picture_profile_pic);
 		
-		imageView.setImageBitmap(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.stubimage));
+		Integer facebookID = UserInfoList.getInstance().get(item.user_id).uid;
+        
+		GlobalVariables.getInstance().downloadThumbnailImage(context, imageView, GlobalVariables.getInstance().getFacebookPictureUrl(facebookID));
 		
 		TextView textView = (TextView) view.findViewById(R.id.story_picture_username);
 		
-		//textView.setText(UserInfoList.getInstance().get(item.user_id).name);
-		
-		textView.setText("");
+		textView.setText(UserInfoList.getInstance().get(item.user_id).name);
 		
 		textView = (TextView) view.findViewById(R.id.story_picture_time);
 		
@@ -149,6 +134,8 @@ public class GridListTableLayout extends StretchedBackgroundTableLayout {
 	public void addGrid(Collection<PhotoItem> images) {
 		
 		this.removeAllViews();
+		
+		this.setShrinkAllColumns(true);
 		
 		PhotoItem[] imageArray = (PhotoItem[])images.toArray(new PhotoItem[images.size()]);
 		
@@ -161,22 +148,12 @@ public class GridListTableLayout extends StretchedBackgroundTableLayout {
 				tr = new TableRow(context);
 			}
 			
-			View view = this.inflate(context, R.layout.thumbnail, null);
+			View view = this.inflate(context, R.layout.thumbnail_grid, null);
 			
-			ImageView imageView = (ImageView) view.findViewById(R.id.imageThumbnail);
-
-      		ImageScaleType ist = ImageScaleType.EXACTLY;
-	    	
-			DisplayImageOptions options = new DisplayImageOptions.Builder()
-			.showStubImage(R.drawable.stubimage)
-			.resetViewBeforeLoading()
-			.cacheInMemory()
-			.imageScaleType(ist)
-			.cacheOnDisc()
-			.displayer(new SimpleBitmapDisplayer())
-			.build();
-	    	
-	        imageDownloader.displayImage(imageArray[i].url, imageView, options);		
+			ImageView imageView = (ImageView) view.findViewById(R.id.grid_thumbnail);
+			imageView.setTag(imageArray[i]);
+			
+			GlobalVariables.getInstance().downloadThumbnailImage(context, imageView, imageArray[i].url);		
 	        
 			tr.addView(view);
 			

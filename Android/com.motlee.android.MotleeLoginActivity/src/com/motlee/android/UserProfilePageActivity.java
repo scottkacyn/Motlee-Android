@@ -40,7 +40,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 
-public class UserProfilePageActivity extends FragmentActivity {
+public class UserProfilePageActivity extends BaseMotleeActivity {
     
 	private int mUserID;
 	
@@ -118,9 +118,4 @@ public class UserProfilePageActivity extends FragmentActivity {
         
 		
     }
-			
-	public void goBack(View view)
-	{
-		MenuFunctions.goBack(this);
-	}
 }

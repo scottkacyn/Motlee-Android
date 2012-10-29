@@ -1,0 +1,75 @@
+package com.motlee.android.fragment;
+
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.motlee.android.R;
+import com.motlee.android.layouts.StretchedBackgroundLinearLayout;
+import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.GlobalEventList;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.UserInfoList;
+
+public class PhotoDetailFragment extends BaseMotleeFragment {
+	
+	private View view;
+	private LayoutInflater inflater;
+	private String pageTitle = "All Events";
+	
+	private PhotoItem mPhotoItem;
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+	
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.activity_photo_detail, null);
+
+		setPageHeader(GlobalEventList.eventDetailMap.get(mPhotoItem.event_id).getEventName());
+		showLeftHeaderButton();
+		
+		setUpPage();
+		
+		return view;
+	}
+	
+	private void setUpPage() {
+		
+		ImageView photo = (ImageView) view.findViewById(R.id.photo_detail_picture);
+		GlobalVariables.getInstance().dowloadImage(getActivity(), photo, mPhotoItem.url);
+		
+		ImageView profilePic = (ImageView) view.findViewById(R.id.photo_detail_thumbnail);
+		
+		Integer facebookID = UserInfoList.getInstance().get(mPhotoItem.user_id).uid;
+		
+		GlobalVariables.getInstance().dowloadImage(getActivity(), profilePic, GlobalVariables.getInstance().getFacebookPictureUrl(facebookID));
+		
+		TextView userName = (TextView) view.findViewById(R.id.photo_detail_name_text);
+		userName.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		userName.setText(UserInfoList.getInstance().get(mPhotoItem.user_id).name);
+		
+		TextView timeText = (TextView) view.findViewById(R.id.photo_detail_time_text);
+		timeText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		timeText.setText(mPhotoItem.created_at.toString());
+		
+		TextView locationText = (TextView) view.findViewById(R.id.photo_detail_name_text);
+		locationText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		locationText.setText(mPhotoItem.location.locationDescription);
+		
+	}
+
+	public void setDetailImage(PhotoItem photoItem)
+	{
+		this.mPhotoItem = photoItem;
+	}
+	
+	
+}

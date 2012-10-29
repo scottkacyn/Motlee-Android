@@ -1,0 +1,16 @@
+package com.motlee.android.adapter;
+
+import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
+import kankan.wheel.widget.adapters.AbstractWheelAdapter;
+import kankan.wheel.widget.adapters.ArrayWheelAdapter;
+
+public class CurrentEventWheelAdapter extends ArrayWheelAdapter<Integer> {
+
+	public CurrentEventWheelAdapter(Context context, Object[] items) {
+		super(context, items);
+		// TODO Auto-generated constructor stub
+	}
+
+}

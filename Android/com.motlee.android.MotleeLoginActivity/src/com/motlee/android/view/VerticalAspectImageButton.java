@@ -13,7 +13,8 @@ import android.widget.ImageButton;
 
 public class VerticalAspectImageButton extends ImageButton {
 
-	private Bitmap bitmap;
+	private Integer bitmapHeight;
+	private Integer bitmapWidth;
 	
 	public VerticalAspectImageButton(Context context) {
 		super(context);
@@ -52,17 +53,17 @@ public class VerticalAspectImageButton extends ImageButton {
 		
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 		
-		if (bitmap != null)
+		if (this.bitmapWidth != null && this.bitmapHeight != null)
 		{
 			int width = MeasureSpec.getSize(widthMeasureSpec);
 			int height = MeasureSpec.getSize(heightMeasureSpec);
 			
-			float scaleFactor = ((float) height) / bitmap.getHeight();
+			float scaleFactor = ((float) height) / this.bitmapHeight;
 	
 			Matrix scale = new Matrix();
 			scale.postScale(scaleFactor, scaleFactor);
 			
-			width = (int)(((float) bitmap.getWidth()) * scaleFactor);
+			width = (int)(((float) this.bitmapWidth) * scaleFactor);
 			
 			this.setMeasuredDimension(width, height);
 		}
@@ -75,11 +76,13 @@ public class VerticalAspectImageButton extends ImageButton {
 		if (drawable instanceof StateListDrawable)
 		{
 			StateListDrawable stateListDrawable = (StateListDrawable) drawable;
-			this.bitmap = ((BitmapDrawable) stateListDrawable.getCurrent()).getBitmap();
+			this.bitmapHeight = ((BitmapDrawable) stateListDrawable.getCurrent()).getBitmap().getHeight();
+			this.bitmapWidth = ((BitmapDrawable) stateListDrawable.getCurrent()).getBitmap().getWidth();
 		}
 		else
 		{
-			this.bitmap = ((BitmapDrawable) drawable).getBitmap();
+			this.bitmapHeight = ((BitmapDrawable) drawable).getBitmap().getHeight();
+			this.bitmapWidth = ((BitmapDrawable) drawable).getBitmap().getWidth();
 		}
 		return;
 	}

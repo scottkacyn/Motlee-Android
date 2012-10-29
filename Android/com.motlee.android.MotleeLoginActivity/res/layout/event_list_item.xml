@@ -85,7 +85,7 @@
 			            android:gravity="center"/>     
 		            
 		        </LinearLayout>
-		        <com.motlee.android.view.HorizontalListView
+		        <com.devsmart.android.ui.HorizontalListView
 		          	android:id="@+id/listview"
 		  			android:layout_width="0dp"
 		  			android:layout_weight=".80"

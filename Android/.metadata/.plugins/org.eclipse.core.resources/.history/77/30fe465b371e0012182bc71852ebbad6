@@ -1,0 +1,61 @@
+package com.motlee.android;
+
+import com.motlee.android.object.MenuFunctions;
+
+import android.support.v4.app.FragmentActivity;
+import android.view.MotionEvent;
+import android.view.View;
+
+public class BaseActivity extends FragmentActivity {
+
+    public void onClickTakePhoto(View view)
+    {
+    	MenuFunctions.takePictureOnPhone(view, this);
+    }
+    
+    public void onClickCreateEvent(View view)
+    {
+    	MenuFunctions.showCreateEventPage(view, this);
+    }
+    
+    public void onClickOpenPlusMenu(View view)
+    {
+    	MenuFunctions.openPlusMenu(view, this);
+    }
+    
+    //onClickMainMenu: When user clicks on main menu button
+    
+    public void onClickOpenMainMenu(View view)
+    {
+    	MenuFunctions.openMainMenu(view, this);
+    }
+    
+	public void onClickShowAllEvents(View view)
+	{
+		MenuFunctions.showAllEvents(view, this);
+	}
+	
+	public void onClickShowMyEvents(View view)
+	{
+		MenuFunctions.showMyEvents(view, this);
+	}
+	
+	public void onClickShowNearbyEvents(View view)
+	{
+		MenuFunctions.showNearbyEvents(view, this);
+	}
+	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		
+		if (MenuFunctions.onDispatchTouchOverride(ev, this))
+		{
+			return super.dispatchTouchEvent(ev);
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
+}

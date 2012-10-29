@@ -7,6 +7,8 @@ import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.MenuFunctions;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -17,10 +19,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 
-public class EventDetailActivity extends FragmentActivity {
+public class EventDetailActivity extends BaseMotleeActivity {
 
 	private FragmentTransaction ft;
 	private EventDetail eDetail;
+	
+	@Override
+	public void onNewIntent(Intent intent)
+	{
+		ft = getSupportFragmentManager().beginTransaction();
+		
+        ft.replace(R.id.fragment_content, setUpFragment(intent))
+        .commit();
+	}
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,12 +39,16 @@ public class EventDetailActivity extends FragmentActivity {
 
         setContentView(R.layout.main);
         
-        Intent intent = getIntent();
-        
-        eDetail = GlobalEventList.eventDetailMap.get(intent.getExtras().get("EventID"));
-        
         FragmentManager     fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
+        
+        ft.add(R.id.fragment_content, setUpFragment(getIntent()))
+        .commit();
+    }
+	
+	private Fragment setUpFragment(Intent intent) {
+		
+		eDetail = GlobalEventList.eventDetailMap.get(intent.getExtras().get("EventID"));
         
         EventDetailFragment eventDetailFragment = new EventDetailFragment();
         
@@ -41,11 +56,9 @@ public class EventDetailActivity extends FragmentActivity {
         
         eventDetailFragment.addEventDetail(eDetail);
         
-        ft.add(R.id.fragment_content, eventDetailFragment);
-        
-        ft.commit();
-    }
-	
+        return eventDetailFragment;
+	}
+    
     public void switchToGridView(View view)
     {
     	EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
@@ -60,11 +73,6 @@ public class EventDetailActivity extends FragmentActivity {
     	fragment.addListToTableLayout();
     }
     
-    public void goBack(View view)
-    {
-    	MenuFunctions.goBack(this);
-    }
-    
     public void seeMoreDetail(View view)
     {
     	String description = view.getContentDescription().toString();
@@ -77,52 +85,20 @@ public class EventDetailActivity extends FragmentActivity {
     	startActivity(eventDetail);
     }
     
-    
-    
-    /*
-     * Left and Right Menu Functions
-     */
-    
-    public void onClickCreateEvent(View view)
-    {
-    	MenuFunctions.showCreateEventPage(view, this);
-    }
-    
-    public void onClickOpenPlusMenu(View view)
-    {
-    	MenuFunctions.openPlusMenu(view, this);
-    }
-    
-    public void onClickOpenMainMenu(View view)
-    {
-    	MenuFunctions.openMainMenu(view, this);
-    }
-    
-	public void onClickShowAllEvents(View view)
+    /*@Override
+	protected void backButtonPressed()
 	{
-		MenuFunctions.showAllEvents(view, this);
-	}
-	
-	public void onClickShowMyEvents(View view)
-	{
-		MenuFunctions.showMyEvents(view, this);
-	}
-	
-	public void onClickShowNearbyEvents(View view)
-	{
-		MenuFunctions.showNearbyEvents(view, this);
-	}
-	
-	@Override
-	public boolean dispatchTouchEvent(MotionEvent ev) {
-		
-		if (MenuFunctions.onDispatchTouchOverride(ev, this))
-		{
-			return super.dispatchTouchEvent(ev);
-		}
-		else
-		{
-			return true;
-		}
-	}
+    	ActivityManager m = (ActivityManager) this.getSystemService( Context.ACTIVITY_SERVICE );
+    	List<RunningTaskInfo> runningTaskInfoList =  m.
+    	Iterator<RunningTaskInfo> itr = runningTaskInfoList.iterator();
+    	while(itr.hasNext()){
+    	    RunningTaskInfo runningTaskInfo = (RunningTaskInfo)itr.next();
+    	    int id = runningTaskInfo.id;
+    	    CharSequence desc= runningTaskInfo.description;
+    	    int numOfActivities = runningTaskInfo.numActivities;
+    	    String topActivity = runningTaskInfo.topActivity.getShortClassName();
+    	}
+    	
+		super.onBackPressed();
+	}*/
 }

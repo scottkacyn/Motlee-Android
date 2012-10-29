@@ -71,6 +71,8 @@ public class StretchedBackgroundLinearLayout extends LinearLayout {
 					
 					Drawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, imageWidth, imageHeight, false));
 					
+					bitmap = null;
+					
 					this.setBackgroundDrawable(d);
 				}
 			}

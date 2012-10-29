@@ -1,0 +1,37 @@
+package com.motlee.android.adapter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import com.motlee.android.object.GlobalEventList;
+import com.motlee.android.object.GlobalVariables;
+
+import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
+import kankan.wheel.widget.adapters.AbstractWheelAdapter;
+import kankan.wheel.widget.adapters.ArrayWheelAdapter;
+
+public class CurrentEventWheelAdapter extends ArrayWheelAdapter<Integer> {
+
+	private List<Integer> eventItems;
+	
+	public CurrentEventWheelAdapter(Context context, Integer[] items) {
+		super(context, items);
+		eventItems = Arrays.asList(items);
+	}
+
+    @Override
+    public CharSequence getItemText(int index) {
+        if (index >= 0 && index < eventItems.size()) {
+            return GlobalEventList.eventDetailMap.get(eventItems.get(index));
+            if (item instanceof CharSequence) {
+                return (CharSequence) item;
+            }
+            return item.toString();
+        }
+        return null;
+    }
+	
+}

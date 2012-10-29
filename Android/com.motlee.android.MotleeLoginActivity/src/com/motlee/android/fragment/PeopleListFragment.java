@@ -34,7 +34,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
 
-public class PeopleListFragment extends FragmentWithHeader {
+public class PeopleListFragment extends BaseMotleeFragment {
 	
 	private String tag = "PeopleListFragment";
 	
@@ -88,19 +88,9 @@ public class PeopleListFragment extends FragmentWithHeader {
 		eventDetailPeopleLabel = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_detail_people_title);
 		eventDetailPeopleLabel.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
 		
-		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
-		tv.setText(pageTitle);
-		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		
-		View headerRightButton = mHeaderView.findViewById(R.id.header_right_layout_button);
-		headerRightButton.setVisibility(View.VISIBLE);
-		
-		View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
-		headerLeftButton.setVisibility(View.VISIBLE);
-		
-		tv = (TextView) mHeaderView.findViewById(R.id.header_right_text);
-		tv.setText(JOIN);
-		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		setPageHeader(pageTitle);
+		showRightHeaderButton(JOIN);
+		showLeftHeaderButton();
 		
 		ImageScaleType ist = ImageScaleType.IN_SAMPLE_POWER_OF_2;
 		

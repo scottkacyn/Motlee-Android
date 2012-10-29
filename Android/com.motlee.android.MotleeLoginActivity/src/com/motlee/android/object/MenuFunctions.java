@@ -1,8 +1,10 @@
 package com.motlee.android.object;
 
 import com.motlee.android.CreateEventActivity;
+import com.motlee.android.EventDetailActivity;
 import com.motlee.android.EventListActivity;
 import com.motlee.android.R;
+import com.motlee.android.TakePhotoActivity;
 import com.motlee.android.adapter.EventListAdapter;
 import com.motlee.android.fragment.EventListFragment;
 import com.motlee.android.fragment.MainMenuFragment;
@@ -12,6 +14,7 @@ import com.motlee.android.view.HorizontalAspectImageButton;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -60,11 +63,14 @@ public class MenuFunctions {
 		TextView tv = (TextView) view.findViewById(R.id.plus_menu_button_create_events);
 		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
-	}
-	
-	public static void goBack(Activity activity)
-	{
-		activity.finish();
+		
+		tv = (TextView) view.findViewById(R.id.plus_menu_button_take_photo);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
+		
+		tv = (TextView) view.findViewById(R.id.plus_menu_button_upload_photo);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
 	}
 	
 	public static void openMainMenu(View view, FragmentActivity activity)
@@ -196,9 +202,45 @@ public class MenuFunctions {
         }
 	}
 	
+	public static void takePictureOnPhone(View view, FragmentActivity activity)
+	{
+		Intent takePictureIntent = new Intent(activity, TakePhotoActivity.class);
+		takePictureIntent.putExtra("Action", TakePhotoActivity.TAKE_PHOTO);
+		takePictureIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		removePlusMenu(activity);
+		activity.startActivity(takePictureIntent);
+		if (!(activity instanceof EventListActivity) || !(activity instanceof EventDetailActivity))
+		{
+			activity.finish();
+		}
+	}
+	
+	public static void uploadPictureFromPhone(View view, FragmentActivity activity)
+	{
+		Intent takePictureIntent = new Intent(activity, TakePhotoActivity.class);
+		takePictureIntent.putExtra("Action", TakePhotoActivity.GET_PHOTO_LIBRARY);
+		takePictureIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		removePlusMenu(activity);
+		activity.startActivity(takePictureIntent);
+	}
+	
+	public static void showCreateEventPage(View view, FragmentActivity activity)
+	{
+		Intent intent = new Intent(activity, CreateEventActivity.class);
+		
+		removePlusMenu(activity);
+		
+		activity.startActivity(intent);
+		
+		if (!(activity instanceof EventListActivity) || !(activity instanceof EventDetailActivity))
+		{
+			activity.finish();
+		}
+	}
+	
 	public static void showAllEvents(View view, FragmentActivity activity)
 	{
-		EventListParams newParams = new EventListParams("All Events");
+		EventListParams newParams = new EventListParams("All Events", EventServiceBuffer.NO_EVENT_FILTER);
 		
 		showNewListView(newParams, activity);
 		
@@ -207,7 +249,7 @@ public class MenuFunctions {
 	
 	public static void showMyEvents(View view, FragmentActivity activity)
 	{
-		EventListParams newParams = new EventListParams("My Events");
+		EventListParams newParams = new EventListParams("My Events", EventServiceBuffer.MY_EVENTS);
 		
 		showNewListView(newParams, activity);
 		
@@ -216,48 +258,28 @@ public class MenuFunctions {
 	
 	public static void showNearbyEvents(View view, FragmentActivity activity)
 	{
-		EventListParams newParams = new EventListParams("Nearby Events");
+		// TODO: add get nearby events call to database: EventServiceBuffer.NEARBY_EVENTS
+		EventListParams newParams = new EventListParams("Nearby Events", EventServiceBuffer.NO_EVENT_FILTER);
 		
 		showNewListView(newParams, activity);
 		
 		removeMainMenu(activity);
 	}
 	
-	public static void showCreateEventPage(View view, FragmentActivity activity)
-	{
-		Intent intent = new Intent(activity, CreateEventActivity.class);
-		
-		activity.startActivity(intent);
-	}
-	
 	private static void showNewListView(EventListParams params, FragmentActivity activity)
 	{
 		if (activity instanceof EventListActivity)
 		{
-			FragmentManager fm = activity.getSupportFragmentManager();	
+			EventListActivity eventListActivity = (EventListActivity) activity;
 			
-			EventListFragment eventListFragment = new EventListFragment();
-			
-			eventListFragment.addEventListAdapter(((EventListActivity) activity).getEventListAdapter());
-			
-			eventListFragment.setEventListParams(params);
-			
-			MainMenuFragment mainMenuFragment = (MainMenuFragment) fm.findFragmentById(R.id.main_menu);
-			
-			FragmentTransaction ft = fm.beginTransaction();
-			
-			ft.replace(R.id.fragment_content, eventListFragment);
-			
-			ft.remove(mainMenuFragment);
-			
-			ft.commit();
+			eventListActivity.requestNewDataForList(params.dataContent, params.headerText);
 		}
 		else
 		{
 			Intent intent = new Intent(activity, EventListActivity.class);
 			
 			intent.putExtra("ListType", params.headerText);
-			
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			activity.startActivity(intent);
 		}
 	}

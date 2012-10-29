@@ -16,7 +16,8 @@ import android.widget.ImageView.ScaleType;
 
 public class HorizontalAspectImageButton extends ImageButton {
 
-	private Bitmap bitmap;
+	private int bitmapHeight;
+	private int bitmapWidth;
 	
 	private final int leftPadding;
 	private final int rightPadding;
@@ -77,12 +78,12 @@ public class HorizontalAspectImageButton extends ImageButton {
 		int width = MeasureSpec.getSize(widthMeasureSpec);
 		int height = MeasureSpec.getSize(heightMeasureSpec);
 		
-		float scaleFactor = ((float) width) / bitmap.getWidth();
+		float scaleFactor = ((float) width) / this.bitmapWidth;
 
 		Matrix scale = new Matrix();
 		scale.postScale(scaleFactor, scaleFactor);
 		
-		height = (int)(((float) bitmap.getHeight()) * scaleFactor);
+		height = (int)(((float) this.bitmapHeight) * scaleFactor);
 		
 		this.setMeasuredDimension(width, height);
 	}
@@ -94,12 +95,14 @@ public class HorizontalAspectImageButton extends ImageButton {
 		if (drawable instanceof StateListDrawable)
 		{
 			StateListDrawable stateListDrawable = (StateListDrawable) drawable;
-			this.bitmap = ((BitmapDrawable) stateListDrawable.getCurrent()).getBitmap();
+			this.bitmapHeight = ((BitmapDrawable) stateListDrawable.getCurrent()).getBitmap().getHeight();
+			this.bitmapWidth = ((BitmapDrawable) stateListDrawable.getCurrent()).getBitmap().getWidth();
 			this.setPadding(this.leftPadding, this.topPadding, this.rightPadding, this.bottomPadding);
 		}
 		else
 		{
-			this.bitmap = ((BitmapDrawable) drawable).getBitmap();
+			this.bitmapHeight = ((BitmapDrawable) drawable).getBitmap().getHeight();
+			this.bitmapWidth = ((BitmapDrawable) drawable).getBitmap().getWidth();
 		}
 		
 	}

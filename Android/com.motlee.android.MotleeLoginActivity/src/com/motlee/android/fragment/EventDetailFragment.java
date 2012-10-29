@@ -32,7 +32,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
 
-public class EventDetailFragment extends FragmentWithHeader {
+public class EventDetailFragment extends BaseMotleeFragment {
 	private String tag = "EventDetailFragment";
 	
 	private static final String JOIN = "Join";
@@ -92,19 +92,9 @@ public class EventDetailFragment extends FragmentWithHeader {
 			setNavigationButtons();
 		}
 		
-		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
-		tv.setText(pageTitle);
-		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		
-		View headerRightButton = mHeaderView.findViewById(R.id.header_right_layout_button);
-		headerRightButton.setVisibility(View.VISIBLE);
-		
-		View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
-		headerLeftButton.setVisibility(View.VISIBLE);
-		
-		tv = (TextView) mHeaderView.findViewById(R.id.header_right_text);
-		tv.setText(JOIN);
-		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		setPageHeader(pageTitle);
+		showRightHeaderButton(JOIN);
+		showLeftHeaderButton();
 		
 		initializeOnPageButtons(view);
 		
@@ -149,8 +139,8 @@ public class EventDetailFragment extends FragmentWithHeader {
 		
 		setLabelButton(mEventDetail.getDateString(), getResources().getDrawable(R.drawable.icon_time_normal), GlobalVariables.DATE);
 		setLabelButton(mEventDetail.getLocationInfo().locationDescription, getResources().getDrawable(R.drawable.icon_map_background_normal), GlobalVariables.LOCATION);
-		setLabelButton(mEventDetail.getAttendees().size() + " People", getResources().getDrawable(R.drawable.icon_friend_normal), GlobalVariables.ATTENDEES);
-		setLabelButton(mEventDetail.getFomos().size() + " FOMOs", getResources().getDrawable(R.drawable.icon_fomo_normal), GlobalVariables.FOMOS);
+		setLabelButton(mEventDetail.getAttendeeCount() + " People", getResources().getDrawable(R.drawable.icon_friend_normal), GlobalVariables.ATTENDEES);
+		setLabelButton(mEventDetail.getFomoCount()+ " FOMOs", getResources().getDrawable(R.drawable.icon_fomo_normal), GlobalVariables.FOMOS);
 		setPictureLabel(mEventDetail.getImages().size() + " Pictures");
 	}
 

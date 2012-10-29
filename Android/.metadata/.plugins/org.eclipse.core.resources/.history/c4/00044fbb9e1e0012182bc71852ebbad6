@@ -1,0 +1,53 @@
+package com.motlee.android.fragment;
+
+import kankan.wheel.widget.WheelView;
+import kankan.wheel.widget.adapters.WheelViewAdapter;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.motlee.android.R;
+import com.motlee.android.adapter.CurrentEventWheelAdapter;
+import com.motlee.android.layouts.StretchedBackgroundLinearLayout;
+import com.motlee.android.object.GlobalVariables;
+
+public class SelectEventFragment extends FragmentWithHeader {
+	
+	private LayoutInflater inflater;
+	private View view;
+	
+	private CurrentEventWheelAdapter mAdapter;
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+	
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.activity_select_event, null);
+		
+		WheelView eventWheel = (WheelView) view.findViewById(R.id.event_wheel);
+		
+		eventWheel.setViewAdapter(mAdapter);
+		
+		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
+		tv.setText("Take Photo");
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		
+		View headerRightButton = mHeaderView.findViewById(R.id.header_right_layout_button);
+		headerRightButton.setVisibility(View.VISIBLE);
+		
+		View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
+		headerLeftButton.setVisibility(View.VISIBLE);
+		
+		return view;
+	}
+	
+	public void setScrollWheelAdapter(CurrentEventWheelAdapter adapter)
+	{
+		this.mAdapter = adapter;
+	}
+	
+}

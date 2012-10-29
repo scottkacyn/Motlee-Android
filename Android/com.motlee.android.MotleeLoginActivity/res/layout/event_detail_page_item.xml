@@ -18,19 +18,20 @@
   			android:layout_weight=".20"
   			android:layout_height="45dp"
   			android:contentDescription="Profile Pic"
-  			android:background="#ddd" />
+  			android:background="@android:color/transparent" />
         
         <LinearLayout android:id="@+id/story_picture_title"
             android:layout_width="0dp"
             android:layout_weight=".80"
             android:layout_height="45dp"
+            android:paddingLeft="5dp"
             android:orientation="vertical">
 	        <TextView android:id="@+id/story_picture_username"
 	            android:layout_height="wrap_content"
 	            android:layout_width="match_parent"
 	            style="@style/CodeFont.Small"
 	            android:padding="3dp"
-	            android:gravity="center" /> 
+	            android:gravity="left" /> 
 	            
 	        <TextView android:id="@+id/story_picture_time"
 				android:layout_width="match_parent"
@@ -46,14 +47,29 @@
     <FrameLayout android:id="@+id/event_footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:background="@android:color/transparent"
         >
         
-
-        <ImageView android:id="@+id/story_picture_picture"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:contentDescription="Event Detail Picture"/>
+		<LinearLayout 
+		    android:id="@+id/story_picture_picture"
+		    android:layout_width="match_parent"
+		    android:gravity="center_horizontal"
+		    android:layout_height="100dp" 
+		    android:paddingBottom="5dp">
+		    
+		    <ImageView
+		        android:id="@+id/grid_thumbnail"
+		        android:layout_height="match_parent"
+		        android:padding="3dp"
+		        android:layout_width="wrap_content"
+		        android:layout_gravity="center"
+		        android:adjustViewBounds="true" 
+		        android:clickable="true"
+		        android:onClick="showPictureDetail"
+		        android:background="@drawable/image_thumbnail_background"/>
+		    
+		</LinearLayout>
         
         <TextView android:id="@+id/story_picture_story"
             android:layout_height="wrap_content"

@@ -1,0 +1,33 @@
+package com.motlee.android.fragment;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.motlee.android.R;
+import com.motlee.android.layouts.StretchedBackgroundLinearLayout;
+import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.EventDetail;
+
+public class PhotoDetailFragment extends BaseMotleeFragment {
+	
+	private View view;
+	private LayoutInflater inflater;
+	private EventDetail mEventDetail;
+	private String pageTitle = "All Events";
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+	
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.activity_photo_detail, null);
+		
+		setPageHeader(pageTitle);
+		showLeftHeaderButton();
+		
+		return view;
+	}
+}

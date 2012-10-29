@@ -19,7 +19,7 @@ import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-public class DateDetailFragment extends FragmentWithHeader {
+public class DateDetailFragment extends BaseMotleeFragment {
 
 	private static final String JOIN = "Join";
 	private static final String EDIT = "Edit";
@@ -43,19 +43,9 @@ public class DateDetailFragment extends FragmentWithHeader {
 		eventInfoLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_detail_info);
 		eventInfoLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
 		
-		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
-		tv.setText(pageTitle);
-		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		
-		View headerRightButton = mHeaderView.findViewById(R.id.header_right_layout_button);
-		headerRightButton.setVisibility(View.VISIBLE);
-		
-		View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
-		headerLeftButton.setVisibility(View.VISIBLE);
-		
-		tv = (TextView) mHeaderView.findViewById(R.id.header_right_text);
-		tv.setText(JOIN);
-		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		setPageHeader(pageTitle);
+		showRightHeaderButton(JOIN);
+		showLeftHeaderButton();
 		
 		setDateLabels();
 		

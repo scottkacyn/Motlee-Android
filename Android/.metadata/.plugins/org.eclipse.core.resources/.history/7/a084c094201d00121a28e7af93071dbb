@@ -1,0 +1,13 @@
+package com.motlee.android.object;
+
+public class EventListParams {
+
+	public String headerText = "All Events";
+	public String eventType = EventServiceBuffer.NO_EVENT_FILTER;
+	
+	public EventListParams(String headerText, String eventType)
+	{
+		this.headerText = headerText;
+		this.eventType = eventType;
+	}
+}

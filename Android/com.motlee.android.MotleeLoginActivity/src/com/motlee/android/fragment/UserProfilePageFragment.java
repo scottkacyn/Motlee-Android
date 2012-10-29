@@ -45,7 +45,7 @@ import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-public class UserProfilePageFragment extends FragmentWithHeader {
+public class UserProfilePageFragment extends BaseMotleeFragment {
 	
 	private View view;
 	private LayoutInflater inflater;
@@ -80,17 +80,11 @@ public class UserProfilePageFragment extends FragmentWithHeader {
 		//profileImageBackground = (StretchedBackgroundTableLayout) view.findViewById(R.id.profile_image_background);
 		//profileImageBackground.setBackgroundDrawable(getResources().getDrawable(R.drawable.label_button_background));
 		
-		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
-		tv.setText(UserInfoList.getInstance().get(mUserID).name);
-		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		
-		View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
-		headerLeftButton.setVisibility(View.VISIBLE);
+		setPageHeader(pageTitle);
+		showLeftHeaderButton();
     	
 		this.initializeImageDownloader();
-		
 		this.setPictureURL();
-		
 		this.setPageLayout();
 		
 		return view;

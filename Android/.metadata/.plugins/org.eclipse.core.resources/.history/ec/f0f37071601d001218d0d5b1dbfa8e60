@@ -1,0 +1,23 @@
+package com.motlee.android.adapter;
+
+import android.view.View;
+import android.view.ViewGroup;
+import kankan.wheel.widget.adapters.AbstractWheelAdapter;
+
+public class CurrentEventWheelAdapter extends AbstractWheelAdapter {
+
+	public CurrentEventWheelAdapter() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public int getItemsCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public View getItem(int index, View convertView, ViewGroup parent) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

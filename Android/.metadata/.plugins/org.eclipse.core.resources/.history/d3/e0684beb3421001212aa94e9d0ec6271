@@ -1,0 +1,76 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" 
+    android:background="@android:color/transparent"
+    android:orientation="vertical">
+    
+    <LinearLayout android:id="@+id/story_picture_header"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="@android:color/transparent"
+        android:weightSum="1.0"
+        android:orientation="horizontal">
+        
+       <ImageView
+          	android:id="@+id/story_picture_profile_pic"
+  			android:layout_width="0dp"
+  			android:layout_weight=".20"
+  			android:layout_height="45dp"
+  			android:contentDescription="Profile Pic"
+  			android:background="@android:color/transparent" />
+        
+        <LinearLayout android:id="@+id/story_picture_title"
+            android:layout_width="0dp"
+            android:layout_weight=".80"
+            android:layout_height="45dp"
+            android:paddingLeft="5dp"
+            android:orientation="vertical">
+	        <TextView android:id="@+id/story_picture_username"
+	            android:layout_height="wrap_content"
+	            android:layout_width="match_parent"
+	            style="@style/CodeFont.Small"
+	            android:padding="3dp"
+	            android:gravity="left" /> 
+	            
+	        <TextView android:id="@+id/story_picture_time"
+				android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            style="@style/CodeFont.Tiny"
+	            android:padding="3dp"/>     
+            
+        </LinearLayout>
+
+            
+    </LinearLayout>
+    
+    <FrameLayout android:id="@+id/event_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="@android:color/transparent"
+        >
+        
+		<include layout="@layout/thumbnail_grid"
+		    android:id="@+id/story_picture_picture"
+		    android:layout_gravity="center_horiztonal"/>
+        
+        <!-- <ImageView android:id="@+id/story_picture_picture"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="Event Detail Picture"
+            android:clickable="true"
+            android:scaleType="center"
+            android:adjustViewBounds="true"
+            android:onClick="showPictureDetail"/> -->
+        
+        <TextView android:id="@+id/story_picture_story"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:scrollHorizontally="false"
+            style="@style/CodeFont"/>
+                    
+    </FrameLayout>
+
+</LinearLayout>

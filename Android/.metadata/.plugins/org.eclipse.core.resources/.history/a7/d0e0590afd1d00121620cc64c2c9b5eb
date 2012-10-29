@@ -1,0 +1,96 @@
+package com.motlee.android.fragment;
+
+import kankan.wheel.widget.WheelView;
+import kankan.wheel.widget.adapters.AbstractWheelAdapter;
+import kankan.wheel.widget.adapters.ArrayWheelAdapter;
+import kankan.wheel.widget.adapters.WheelViewAdapter;
+import android.content.Context;
+import android.database.DataSetObserver;
+import android.graphics.Bitmap;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.ImageView.ScaleType;
+
+import com.motlee.android.R;
+import com.motlee.android.adapter.CurrentEventWheelAdapter;
+import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.GlobalVariables;
+
+public class TakePhotoFragment extends FragmentWithHeader {
+	
+	private LayoutInflater inflater;
+	private View view;
+	
+	private StretchedBackgroundTableLayout picutreHolder;
+	
+	private String pageTitle = "Take Photo";
+	
+	private Bitmap takenPhoto;
+	
+	private StretchedBackgroundTableLayout photoDetailLayout;
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+	
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.activity_take_photo, null);
+		
+		photoDetailLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.photo_detail_layout);
+		photoDetailLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		
+		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
+		tv.setText(pageTitle);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		
+		View headerRightButton = mHeaderView.findViewById(R.id.header_right_layout_button);
+		headerRightButton.setVisibility(View.VISIBLE);
+		
+		View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
+		headerLeftButton.setVisibility(View.VISIBLE);
+		
+		setUpPicture();
+		
+		setUpPhotoDetailLabels();
+		
+		return view;
+	}
+	
+	private void setUpPhotoDetailLabels() 
+	{
+		View labelButton = inflater.inflate(R.layout.event_detail_info_button, null);
+		labelButton.findViewById(R.id.label_button_icon).setVisibility(View.GONE);
+		labelButton.findViewById(R.id.divider).setVisibility(View.GONE);
+		
+		TextView labelText = (TextView) labelButton.findViewById(R.id.label_button_text);
+		labelText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		labelText.setText("Select Event...");
+		
+		TableRow tr = new TableRow(getActivity());
+		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tr.setLayoutParams(lp);
+		tr.addView(labelButton);
+		photoDetailLayout.addView(tr);
+		
+	}
+
+	private void setUpPicture()
+	{
+		ImageView imageView = (ImageView) view.findViewById(R.id.taken_picture);
+		imageView.setImageBitmap(this.takenPhoto);
+		
+	}
+	
+	public void setBitmap(Bitmap thePic)
+	{
+		this.takenPhoto = thePic;
+	}
+}

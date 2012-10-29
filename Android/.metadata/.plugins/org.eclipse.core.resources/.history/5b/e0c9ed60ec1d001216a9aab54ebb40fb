@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:paddingBottom="0dp"
+    android:orientation="vertical" 
+    android:background="@android:color/transparent">
+    
+    <com.motlee.android.layouts.StretchedBackgroundLinearLayout
+        android:id="@+id/event_detail_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:background="@drawable/label_button_background">	        
+	        
+        <ImageView
+            android:id="@+id/taken_picture"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"/>
+        
+    </com.motlee.android.layouts.StretchedBackgroundLinearLayout>
+    
+    <com.motlee.android.layouts.StretchedBackgroundLinearLayout
+        android:id="@+id/event_wheel_background"
+        android:layout_width="match_parent"
+        android:layuot_width="wrap_content"
+        android:background="@drawable/scroll_wheel_background"
+        android:layout_gravity="bottom|center_horizontal">
+        
+	    <kankan.wheel.widget.WheelView
+	        android:id="@+id/event_wheel"
+			android:layout_height="match_parent"
+			android:layout_width="match_parent"
+	        android:layout_gravity="bottom"
+			android:layout_margin="10dp" />
+	    
+    </com.motlee.android.layouts.StretchedBackgroundLinearLayout>
+    
+</FrameLayout>

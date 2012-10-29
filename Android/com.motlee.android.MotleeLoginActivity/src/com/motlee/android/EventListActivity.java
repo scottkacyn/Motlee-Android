@@ -16,6 +16,7 @@ import com.motlee.android.fragment.MainMenuFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventListParams;
 import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
@@ -39,13 +40,13 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-public class EventListActivity extends FragmentActivity {
+public class EventListActivity extends BaseMotleeActivity {
 
 	// Fragment Tag Strings
 	private static String EVENT_RESPONDER = "EventResponderFragment";
 	
 	private EventListAdapter eAdapter;
-	private EventListParams eventListParams = new EventListParams("All Events");
+	private EventListParams eventListParams = new EventListParams("All Events", EventServiceBuffer.NO_EVENT_FILTER);
 
 	private ProgressDialog progressDialog;
 	
@@ -56,7 +57,7 @@ public class EventListActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        EventServiceBuffer.getInstance(this);
+        GlobalVariables.getInstance().setMenuButtonsHeight(findViewById(R.id.menu_buttons).getHeight());
         
         FragmentManager     fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
@@ -68,25 +69,6 @@ public class EventListActivity extends FragmentActivity {
         mEventListFragment.addEventListAdapter(eAdapter);
        
         mEventListFragment.setHeaderView(findViewById(R.id.header));
-        
-        EventServiceBuffer.setEventDetailListener(new UpdatedEventDetailListener(){
-
-			public void myEventOccurred(UpdatedEventDetailEvent evt) {
-				for (Integer eventID : evt.getEventIds())
-				{
-					eAdapter.add(eventID);
-				}
-				
-				mEventListFragment.getPullToRefreshListView().setSelection(1);
-		        
-		        progressDialog.dismiss();
-			}
-        });
-        
-        progressDialog = ProgressDialog.show(EventListActivity.this, "", "Loading");
-        
-        EventServiceBuffer.getEventsFromService();
-        
         
         Intent intent = getIntent();
         
@@ -103,6 +85,8 @@ public class EventListActivity extends FragmentActivity {
         
         mEventListFragment.setEventListParams(eventListParams);
         
+        requestNewDataForList(eventListParams.dataContent, eventListParams.headerText);
+        
         ft.add(R.id.fragment_content, mEventListFragment)
         .commit();
     }
@@ -111,6 +95,40 @@ public class EventListActivity extends FragmentActivity {
     {
     	return eAdapter;
     }
+    
+    public void requestNewDataForList(String dataContent, String headerText)
+    {
+    	eventListParams.headerText = headerText;
+    	eventListParams.dataContent = dataContent;
+    	
+    	mEventListFragment.setEventListParams(eventListParams);
+    	
+        EventServiceBuffer.getInstance(this);
+    	
+        EventServiceBuffer.setEventDetailListener(new UpdatedEventDetailListener(){
+
+			public void myEventOccurred(UpdatedEventDetailEvent evt) {
+				
+				eAdapter.clear();
+				
+				for (Integer eventID : evt.getEventIds())
+				{
+					eAdapter.add(eventID);
+				}
+				
+				mEventListFragment.setListAdapter(eAdapter);
+				mEventListFragment.getPullToRefreshListView().setSelection(1);
+				mEventListFragment.getPullToRefreshListView().onRefreshComplete();
+				
+		        progressDialog.dismiss();
+			}
+        });
+        
+        progressDialog = ProgressDialog.show(EventListActivity.this, "", "Loading");
+        
+        EventServiceBuffer.getEventsFromService(dataContent);
+    }
+    
     
     public void onClickGetEventDetail(View view)
     {
@@ -122,52 +140,6 @@ public class EventListActivity extends FragmentActivity {
     	
     	startActivity(eventDetail);
     }
-    
-    
-    public void onClickCreateEvent(View view)
-    {
-    	MenuFunctions.showCreateEventPage(view, this);
-    }
-    
-    public void onClickOpenPlusMenu(View view)
-    {
-    	MenuFunctions.openPlusMenu(view, this);
-    }
-    
-    //onClickMainMenu: When user clicks on main menu button
-    
-    public void onClickOpenMainMenu(View view)
-    {
-    	MenuFunctions.openMainMenu(view, this);
-    }
-    
-	public void onClickShowAllEvents(View view)
-	{
-		MenuFunctions.showAllEvents(view, this);
-	}
-	
-	public void onClickShowMyEvents(View view)
-	{
-		MenuFunctions.showMyEvents(view, this);
-	}
-	
-	public void onClickShowNearbyEvents(View view)
-	{
-		MenuFunctions.showNearbyEvents(view, this);
-	}
-	
-	@Override
-	public boolean dispatchTouchEvent(MotionEvent ev) {
-		
-		if (MenuFunctions.onDispatchTouchOverride(ev, this))
-		{
-			return super.dispatchTouchEvent(ev);
-		}
-		else
-		{
-			return true;
-		}
-	}
 }
 
 

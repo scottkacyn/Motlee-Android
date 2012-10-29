@@ -8,14 +8,19 @@ import com.motlee.android.fragment.SearchPeopleFragment;
 import com.motlee.android.fragment.SearchPlacesFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
+import com.motlee.android.object.event.UpdatedAttendeeEvent;
+import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 import com.motlee.android.view.DateTimePicker;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -35,7 +40,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class CreateEventActivity extends FragmentActivity {
+public class CreateEventActivity extends BaseMotleeActivity {
 	
 	public static String MAIN_FRAGMENT = "MainFragment";
 	public static String SEARCH_PEOPLE = "SearchPeople";
@@ -58,6 +63,10 @@ public class CreateEventActivity extends FragmentActivity {
 	private LocationInfo selectLocation;
 	private SearchPlacesFragment searchPlacesFragment;
 
+	private ProgressDialog progressDialog;
+
+	private Integer mEventID;
+	
 	/*
 	 * get initial location of user and set up locationListener to update if 
 	 * user moves by more than LOCATION_CHANGE_THRESHOLD (default=50) meters
@@ -141,6 +150,8 @@ public class CreateEventActivity extends FragmentActivity {
         setContentView(R.layout.main);
  
         searchPlacesFragment = new SearchPlacesFragment();
+        
+        setUpLocationListener();
         
         selectLocation = new LocationInfo("My Location", mLocation.getLatitude(), mLocation.getLongitude());
         
@@ -267,13 +278,32 @@ public class CreateEventActivity extends FragmentActivity {
 				{
 					for (Integer eventID : evt.getEventIds())
 					{
+						mEventID = eventID;
 						EventServiceBuffer.sendAttendeesForEvent(eventID, attendees);
 					}
 				}
 			}
     	});
     	
+    	EventServiceBuffer.setAttendeeListener(new UpdatedAttendeeListener(){
+
+			public void raised(UpdatedAttendeeEvent e) {
+				// TODO Right now this method returns null
+				GlobalEventList.eventDetailMap.get(mEventID).addAttendee(attendees);
+				
+				Intent seeDetailIntent = new Intent(CreateEventActivity.this, EventDetailActivity.class);
+				seeDetailIntent.putExtra("EventID", mEventID);
+				seeDetailIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+				progressDialog.dismiss();
+				startActivity(seeDetailIntent);
+				finish();
+			}
+    		
+    	});
+    	
     	EventServiceBuffer.sendNewEventToDatabase(eDetail);
+    	
+    	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Loading");
     }
     
     /*

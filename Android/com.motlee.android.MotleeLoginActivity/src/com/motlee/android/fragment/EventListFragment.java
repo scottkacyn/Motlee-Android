@@ -9,6 +9,7 @@ import com.motlee.android.adapter.EventListAdapter;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventListParams;
 import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 
@@ -27,7 +28,9 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -68,6 +71,8 @@ public class EventListFragment extends ListFragmentWithHeader {
 		
 		Log.w(tag, "onCreateView");
 		View view = (View) getActivity().getLayoutInflater().inflate(R.layout.activity_event_list, null);
+		
+		//view.findViewById(R.id.buffer).setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, GlobalVariables.getInstance().getMenuButtonsHeight()));
 		
 		setListAdapter(mEventListAdapter);
 		
@@ -115,6 +120,8 @@ public class EventListFragment extends ListFragmentWithHeader {
 	public void addEventListAdapter(EventListAdapter eAdapter) {
 		Log.w(tag, "addEventListAdapter");
 		mEventListAdapter = eAdapter;
+		
+		setListAdapter(mEventListAdapter);
 	}
 	
 	public void setEventListParams(EventListParams params)

@@ -1,0 +1,58 @@
+package com.motlee.android.adapter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import com.motlee.android.object.GlobalEventList;
+import com.motlee.android.object.GlobalVariables;
+
+import android.content.Context;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import kankan.wheel.widget.adapters.AbstractWheelAdapter;
+import kankan.wheel.widget.adapters.ArrayWheelAdapter;
+
+public class CurrentEventWheelAdapter extends ArrayWheelAdapter<Integer> {
+
+	public static Integer CREATE_EVENT = -1;
+	
+	private ArrayList<Integer> eventItems;
+	
+	public CurrentEventWheelAdapter(Context context, Integer[] items) {
+		super(context, items);
+		eventItems = (ArrayList<Integer>) Arrays.asList(items);
+		eventItems.add(0, CREATE_EVENT);
+	}
+
+	public Integer getEventItem(int index)
+	{
+		return eventItems.get(index);
+	}
+	
+    @Override
+    public View getItem(int index, View convertView, ViewGroup parent) {
+    	TextView textView = (TextView) super.getItem(index, convertView, parent);
+    	textView.setGravity(Gravity.LEFT);
+    	return textView;
+    }
+	
+    @Override
+    public CharSequence getItemText(int index) {
+        if (index >= 0 && index < eventItems.size()) {
+        	Integer eventID = eventItems.get(index);
+        	if (eventID == CREATE_EVENT)
+        	{
+        		return "Add New Event";
+        	}
+        	else
+        	{
+        		return GlobalEventList.eventDetailMap.get(eventItems.get(index)).getEventName();
+        	}
+        }
+        return null;
+    }
+	
+}

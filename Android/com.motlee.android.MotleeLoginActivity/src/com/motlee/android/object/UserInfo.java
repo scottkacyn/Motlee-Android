@@ -6,16 +6,16 @@ import com.motlee.android.enums.Gender;
 
 public class UserInfo {
 	
-	public final int id;
-	public final int uid;
-	public final String name;
-	public final String first_name;
-	public final String last_name;
-	public final String email;
-	public final String gender;
+	public int id;
+	public int uid;
+	public String name;
+	public String first_name;
+	public String last_name;
+	public String email;
+	public String gender;
 	private LocationInfo locationInfo;
-	public final String picture;
-	public final Date birthday;
+	public String picture;
+	public Date birthday;
 	
 	public UserInfo(int userID, int facebookID, String name, String email, Gender gender, String profilePicture, Date birthDate, LocationInfo locationInfo)
 	{
@@ -29,6 +29,11 @@ public class UserInfo {
 		this.birthday = birthDate;
 		this.first_name = "";
 		this.last_name = "";
+	}
+	
+	public UserInfo()
+	{
+
 	}
 	
 	public UserInfo(int userID, int facebookID, String name, String email, Gender gender, String profilePicture, Date birthDate)

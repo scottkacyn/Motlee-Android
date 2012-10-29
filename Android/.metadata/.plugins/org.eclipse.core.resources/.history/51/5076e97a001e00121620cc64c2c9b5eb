@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="0dp"
+    android:weightSum="1"
+    android:orientation="vertical"
+    android:background="@android:color/transparent">
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5" 
+        android:padding="10dp" >
+        
+	    <com.motlee.android.layouts.RatioBackgroundRelativeLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingLeft="10dp"
+	        android:background="@drawable/label_button_background">	        
+		        
+	        <TextView
+	            android:id="@+id/select_event_text"
+	            android:gravity="left|center_vertical"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:text="Select Event..."/>
+	        
+	    </com.motlee.android.layouts.RatioBackgroundRelativeLayout>
+    </LinearLayout>
+    
+    <com.motlee.android.layouts.StretchedBackgroundLinearLayout
+        android:id="@+id/event_wheel_background"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
+        android:background="@drawable/scroll_wheel_background"
+        android:padding="5dp"
+        android:layout_gravity="bottom|fill_horizontal" >
+        
+	    <kankan.wheel.widget.WheelView
+	        android:id="@+id/event_wheel"
+			android:layout_height="match_parent"
+			android:layout_width="0dp"
+			android:layout_weight="1"
+			android:layout_margin="10dp" />
+	    
+    </com.motlee.android.layouts.StretchedBackgroundLinearLayout>
+    
+</LinearLayout>
