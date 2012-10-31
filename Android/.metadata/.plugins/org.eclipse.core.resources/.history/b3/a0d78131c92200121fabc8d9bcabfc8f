@@ -1,0 +1,11 @@
+package com.motlee.android.object;
+
+import com.google.gson.JsonArray;
+
+public class RemoveJsonArray extends JsonArray {
+
+	public RemoveJsonArray() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

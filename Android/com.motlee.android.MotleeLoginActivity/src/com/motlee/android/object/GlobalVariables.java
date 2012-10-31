@@ -7,7 +7,21 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import javax.net.ssl.SSLSocketFactory;
+
+import org.apache.http.HttpVersion;
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
+
 import com.facebook.android.Facebook;
+import com.motlee.android.EventListActivity;
 import com.motlee.android.R;
 import com.nostra13.universalimageloader.cache.memory.impl.LRULimitedMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -22,6 +36,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.util.LruCache;
 import android.view.Display;
 import android.widget.ImageView;
@@ -55,6 +75,8 @@ public class GlobalVariables {
     
     private ExecutorService threadPool = Executors.newCachedThreadPool();
     
+    private Location userLocation;
+    
     public static String FOMOS = "fomos";
     public static String ATTENDEES = "attendees";
     public static String DATE = "date";
@@ -73,7 +95,82 @@ public class GlobalVariables {
 	}
 	
 	private GlobalVariables() {
+		
+	}
+	
+	private LocationListener locationListener;
+	private static final int LOCATION_CHANGE_THRESHOLD = 20; //meters
 
+	/*
+	 * Set up locationListener, we basically get the current location right now
+	 * and when the user moves by LOCATION_CHANGE_THRESHOLD, we update
+	 */
+	public void setUpLocationListener(Context context)
+	{
+		userLocation = null;
+	    // Instantiate the default criteria for a location provider
+		// TODO: May need to change in future
+	    Criteria criteria = new Criteria();
+	    // Get a location manager from the system services
+	    LocationManager locationManager = 
+	            (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+	    // Get the location provider that best matches the criteria
+	    String bestProvider = locationManager.getBestProvider(criteria, false);
+	    if (bestProvider != null) {
+	        // Get the user's last known location
+	    	userLocation = locationManager.getLastKnownLocation(bestProvider);
+	        if (locationManager.isProviderEnabled(bestProvider) 
+	                    && locationListener == null) {
+	            // Set up a location listener if one is not already set up
+	            // and the selected provider is enabled
+	            locationListener = new LocationListener() {
+	                
+	                public void onLocationChanged(Location location) {
+	                    // On location updates, compare the current
+	                    // location to the desired location set in the
+	                    // place picker
+	                    float distance = location.distanceTo(
+	                    		userLocation);
+	                    if (distance >= LOCATION_CHANGE_THRESHOLD) {
+	                    	userLocation = location;
+	                    }
+	                }
+	                
+	                public void onStatusChanged(String s, int i, 
+	                            Bundle bundle) {
+	                }
+	                
+	                public void onProviderEnabled(String s) {
+	                }
+	                
+	                public void onProviderDisabled(String s) {
+	                }
+	            };
+	            locationManager.requestLocationUpdates(bestProvider, 
+	                    1, LOCATION_CHANGE_THRESHOLD,
+	                    locationListener, 
+	                    Looper.getMainLooper());
+	        }
+	    }
+	}
+	
+	public HttpClient setUpHttpClient()
+	{
+		DefaultHttpClient ret = null;
+		
+        //SETS UP PARAMETERS
+        HttpParams params = new BasicHttpParams();
+        //REGISTERS SCHEMES FOR BOTH HTTP AND HTTPS
+        SchemeRegistry registry = new SchemeRegistry();
+        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+        ThreadSafeClientConnManager manager = new ThreadSafeClientConnManager(params, registry);
+        ret = new DefaultHttpClient(manager, params);
+        return ret;
+	}
+	
+	public Location getUserLocation()
+	{
+		return this.userLocation;
 	}
 	
 	public ExecutorService getExecutorService()

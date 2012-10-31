@@ -15,7 +15,7 @@ import com.motlee.android.R;
 import com.motlee.android.layouts.StretchedBackgroundLinearLayout;
 import com.motlee.android.layouts.StretchedBackgroundRelativeLayout;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
-import com.motlee.android.object.DateStringFomatter;
+import com.motlee.android.object.DateStringFormatter;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
@@ -77,9 +77,7 @@ public class PhotoDetailFragment extends BaseMotleeFragment {
 				{
 					touchOverlay.setVisibility(View.GONE);
 				}
-				
 			}
-			
 		});
 		
 		View bottomInfo = inflater.inflate(R.layout.photo_detail_bottom_info, null);
@@ -96,7 +94,7 @@ public class PhotoDetailFragment extends BaseMotleeFragment {
 		
 		TextView timeText = (TextView) bottomInfo.findViewById(R.id.photo_detail_time_text);
 		timeText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-		timeText.setText(DateStringFomatter.getPastDateString(mPhotoItem.created_at));
+		timeText.setText(DateStringFormatter.getPastDateString(mPhotoItem.created_at));
 		
 		TextView locationText = (TextView) bottomInfo.findViewById(R.id.photo_detail_location_text);
 		locationText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());

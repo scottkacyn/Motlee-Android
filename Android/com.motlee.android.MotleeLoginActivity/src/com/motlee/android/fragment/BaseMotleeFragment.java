@@ -33,8 +33,11 @@ public class BaseMotleeFragment extends Fragment {
 	
 	protected void showRightHeaderButton(String buttonText)
 	{
-		View headerRightButton = mHeaderView.findViewById(R.id.header_right_layout_button);
-		headerRightButton.setVisibility(View.VISIBLE);
+		View headerRightButtonlayout = mHeaderView.findViewById(R.id.header_right_layout_button);
+		headerRightButtonlayout.setVisibility(View.VISIBLE);
+		
+		View headerRightButton = mHeaderView.findViewById(R.id.header_right_button);
+		headerRightButton.setTag(buttonText);
 		
 		TextView headerRightButtonText = (TextView) mHeaderView.findViewById(R.id.header_right_text);
 		headerRightButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());

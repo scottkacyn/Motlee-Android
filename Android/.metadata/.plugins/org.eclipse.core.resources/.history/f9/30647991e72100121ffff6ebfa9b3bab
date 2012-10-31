@@ -1,0 +1,27 @@
+package com.motlee.android;
+
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.EventServiceBuffer;
+
+import android.view.View;
+
+public class BaseDetailActivity extends BaseMotleeActivity {
+
+	public static final String EDIT = "Edit";
+	public static final String JOIN = "Join";
+	protected EventDetail eDetail;
+	
+	public void onRightHeaderButtonClick(View view)
+	{
+		if (view.getTag().toString() == EDIT)
+		{
+			
+		}
+		else if (view.getTag().toString() == JOIN)
+		{
+			EventServiceBuffer.getInstance(this);
+			EventServiceBuffer.
+		}
+	}
+	
+}

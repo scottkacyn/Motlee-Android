@@ -16,10 +16,11 @@
 <typeInfo handle="=com.motlee.android.MotleeLoginActivity/src&lt;com.motlee.android.fragment{ListFragmentWithHeader.java[ListFragmentWithHeader" modifiers="1" timestamp="1350663544000"/>
 <typeInfo handle="=com.motlee.android.MotleeLoginActivity/\/home\/zackmartinsek\/Downloads\/android-sdk-linux\/platforms\/android-10\/android.jar&lt;android.provider(ContactsContract$CommonDataKinds$Relation.class[Relation" modifiers="25" timestamp="1349478794000"/>
 <typeInfo handle="=com.motlee.android.MotleeLoginActivity/\/home\/zackmartinsek\/Downloads\/android-sdk-linux\/platforms\/android-10\/android.jar&lt;android.widget(RelativeLayout.class[RelativeLayout" modifiers="33" timestamp="1349478794000"/>
-<typeInfo handle="=com.motlee.android.MotleeLoginActivity/src&lt;com.motlee.android{BaseMotleeActivity.java[BaseMotleeActivity" modifiers="1" timestamp="1351351635000"/>
-<typeInfo handle="=com.motlee.android.MotleeLoginActivity/src&lt;com.motlee.android.fragment{BaseMotleeFragment.java[BaseMotleeFragment" modifiers="1" timestamp="1351174788000"/>
 <typeInfo handle="=com.motlee.android.MotleeLoginActivity/\/home\/zackmartinsek\/Downloads\/android-sdk-linux\/platforms\/android-10\/android.jar&lt;java.lang(Comparable.class[Comparable" modifiers="1537" timestamp="1349478794000"/>
 <typeInfo handle="=com.motlee.android.MotleeLoginActivity/\/home\/zackmartinsek\/Downloads\/android-sdk-linux\/platforms\/android-10\/android.jar&lt;android.content(Intent.class[Intent" modifiers="33" timestamp="1349478794000"/>
 <typeInfo handle="=com.motlee.android.MotleeLoginActivity/\/home\/zackmartinsek\/Downloads\/android-sdk-linux\/platforms\/android-10\/android.jar&lt;java.util(EventObject.class[EventObject" modifiers="33" timestamp="1349478794000"/>
 <typeInfo handle="=com.motlee.android.MotleeLoginActivity/\/home\/zackmartinsek\/Downloads\/android-sdk-linux\/platforms\/android-10\/android.jar&lt;java.lang(Object.class[Object" modifiers="33" timestamp="1349478794000"/>
+<typeInfo handle="=com.motlee.android.MotleeLoginActivity/\/home\/zackmartinsek\/Motlee\/Android\/com.motlee.android.MotleeLoginActivity\/libs\/gson-2.2.2.jar&lt;com.google.gson(JsonArray.class[JsonArray" modifiers="49" timestamp="1349481830000"/>
+<typeInfo handle="=com.motlee.android.MotleeLoginActivity/src&lt;com.motlee.android{BaseMotleeActivity.java[BaseMotleeActivity" modifiers="1" timestamp="1351642299000"/>
+<typeInfo handle="=com.motlee.android.MotleeLoginActivity/src&lt;com.motlee.android.fragment{BaseMotleeFragment.java[BaseMotleeFragment" modifiers="1" timestamp="1351529295000"/>
 </typeInfoHistroy>

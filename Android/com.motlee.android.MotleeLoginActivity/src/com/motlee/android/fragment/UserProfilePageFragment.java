@@ -54,9 +54,6 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 	
 	private StretchedBackgroundTableLayout profileImageBackground;
 	private StretchedBackgroundTableLayout profilePictureAttendeeCount;
-	
-    private ImageLoader imageDownloader;
-    private DisplayImageOptions mOptions;
     
     private String pictureURL;
 	
@@ -82,9 +79,7 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 		
 		setPageHeader(pageTitle);
 		showLeftHeaderButton();
-    	
-		this.initializeImageDownloader();
-		this.setPictureURL();
+
 		this.setPageLayout();
 		
 		return view;
@@ -106,11 +101,17 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 	public void setUserId(int userID)
 	{
 		this.mUserID = userID;
+		if (view != null)
+		{
+			setPageLayout();
+		}
 	}
 	
 	
 	private void setPageLayout()
 	{
+		setPictureURL();
+		
 		setProfilePicture();
 		
 		setProfileInformation();
@@ -164,30 +165,12 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 	private void setProfilePicture() {
 		final ImageView imageView = (ImageView) view.findViewById(R.id.profile_picture);
 		
-		imageDownloader.displayImage(pictureURL, imageView, mOptions);
+		GlobalVariables.getInstance().dowloadImage(getActivity(), imageView, pictureURL);
 		//TableRow tr = new TableRow(getActivity());
 		//LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		//tr.setLayoutParams(lp);
 		//tr.addView(thumbnailView);
 		//profileImageBackground.addView(tr);
-	}
-	
-	private void initializeImageDownloader() {
-		
-		ImageScaleType ist = ImageScaleType.IN_SAMPLE_POWER_OF_2;
-		
-		mOptions = new DisplayImageOptions.Builder()
-		.showStubImage(R.drawable.stubimage)
-		.resetViewBeforeLoading()
-		.cacheInMemory()
-		.imageScaleType(ist)
-		.cacheOnDisc()
-		.displayer(new SimpleBitmapDisplayer())
-		.build();
-		
-		imageDownloader = ImageLoader.getInstance();
-    	
-    	imageDownloader.init(ImageLoaderConfiguration.createDefault(getActivity()));
 	}
 	
 	private void setPictureURL() {

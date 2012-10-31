@@ -2,19 +2,20 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="814" key="DIALOG_WIDTH"/>
-		<item value="415" key="DIALOG_Y_ORIGIN"/>
-		<item value="88" key="DIALOG_X_ORIGIN"/>
+		<item value="462" key="DIALOG_Y_ORIGIN"/>
 		<item value="225" key="DIALOG_HEIGHT"/>
+		<item value="537" key="DIALOG_X_ORIGIN"/>
 		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
-		<item value="false" key="casesensitive"/>
 		<item value="false" key="isRegEx"/>
+		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="Executing request" key="selection"/>
+		<item value="selectLocation" key="selection"/>
 		<list key="findhistory">
+			<item value="selectLocation"/>
 			<item value="Executing request"/>
 			<item value="Intent intent = new Intent(mContext, RubyService.class);"/>
 			<item value="itemsLayout.addView"/>
@@ -22,7 +23,6 @@
 			<item value="dataObserver"/>
 			<item value="setview"/>
 			<item value="searchTextTimer"/>
-			<item value="createLoadingStrategy"/>
 		</list>
 		<list key="replacehistory">
 			<item value="EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);"/>

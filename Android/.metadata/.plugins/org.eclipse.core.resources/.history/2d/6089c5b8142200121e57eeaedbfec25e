@@ -1,0 +1,90 @@
+package com.motlee.android;
+
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.TableLayout.LayoutParams;
+
+import com.motlee.android.layouts.GridListTableLayout;
+import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.GlobalVariables;
+
+public class SettingsActivity extends BaseMotleeActivity {
+	
+	private LayoutInflater inflater;
+	private View view;
+	
+	private StretchedBackgroundTableLayout settingsTable;
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.activity_settings, null);
+		
+		
+		settingsTable = view.findViewById(id)
+		settingsTable.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		
+		if (mEventDetail != null)
+		{
+			addListToTableLayout();
+		}
+		
+		if (mEventDetail != null)
+		{
+			setNavigationButtons();
+		}
+		
+		setPageHeader(pageTitle);
+		if (mEventDetail != null)
+		{
+			showRightHeaderButton(mEventDetail);
+		}
+		
+		showLeftHeaderButton();
+		
+		onCreateViewHasBeenCalled = true;
+		
+		return view;
+	}
+	
+	private void setNavigationButtons()
+	{
+		eventInfoLayout.removeAllViews();
+		
+		setLabelButton(mEventDetail.getDateString(), getResources().getDrawable(R.drawable.icon_time_normal), GlobalVariables.DATE);
+		setLabelButton(mEventDetail.getLocationInfo().locationDescription, getResources().getDrawable(R.drawable.icon_map_background_normal), GlobalVariables.LOCATION);
+		setLabelButton(mEventDetail.getAttendeeCount() + " People", getResources().getDrawable(R.drawable.icon_friend_normal), GlobalVariables.ATTENDEES);
+		setLabelButton(mEventDetail.getFomoCount()+ " FOMOs", getResources().getDrawable(R.drawable.icon_fomo_normal), GlobalVariables.FOMOS);
+		setPictureLabel(mEventDetail.getImages().size() + " Pictures");
+	}
+
+	private void setLabelButton(String labelText, Drawable image, String description) {
+		
+		View labelButton = this.inflater.inflate(R.layout.event_detail_info_button, null);
+		
+		View imageButton = labelButton.findViewById(R.id.label_button);
+		imageButton.setContentDescription(description);
+		
+		ImageView imageView = (ImageView) labelButton.findViewById(R.id.label_button_icon);
+		imageView.setImageDrawable(image);
+		
+		TextView textView = (TextView) labelButton.findViewById(R.id.label_button_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(labelText);
+		
+		TableRow tr = new TableRow(getActivity());
+		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tr.setLayoutParams(lp);
+		tr.addView(labelButton);
+		eventInfoLayout.addView(tr);
+	}
+}

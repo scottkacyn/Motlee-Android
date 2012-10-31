@@ -1,5 +1,6 @@
 package com.motlee.android.fragment;
 
+import com.facebook.LoginButton;
 import com.facebook.android.*;
 import com.facebook.android.Facebook.*;
 import com.motlee.android.R;
@@ -13,19 +14,17 @@ import android.view.ViewGroup;
 
 public class LoginPageFragment extends BaseMotleeFragment {
 
-
-    @Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		
-	}
+	private LoginButton facebookButton;
 	
     @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 	        Bundle savedInstanceState)
 	{
-    	
-    	return (View) getActivity().getLayoutInflater().inflate(R.layout.login_page, null);
+    	View view = inflater.inflate(R.layout.login_page, null);
+
+    	facebookButton = (LoginButton) view.findViewById(R.id.auth_button);
+    	facebookButton.setApplicationId(getString(R.string.app_id));
+
+        return view;
 	}
 }

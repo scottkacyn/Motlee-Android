@@ -8,6 +8,7 @@ import java.util.Date;
 import com.motlee.android.adapter.CurrentEventWheelAdapter;
 import com.motlee.android.fragment.TakePhotoFragment;
 import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
@@ -182,34 +183,20 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 		}
 		else
 		{
-			final Activity activity = this;
+			Integer[] eventIDs = GlobalEventList.myEventDetails.toArray(new Integer[GlobalEventList.myEventDetails.size()]);
 			
-			EventServiceBuffer.setEventDetailListener(new UpdatedEventDetailListener(){
-	
-				public void myEventOccurred(UpdatedEventDetailEvent evt) {
-					
-					Integer[] eventIDs = evt.getEventIds().toArray(new Integer[evt.getEventIds().size()]);
-					
-					FragmentManager fm = getSupportFragmentManager();
-					FragmentTransaction ft = fm.beginTransaction();
-					
-					mAdapter = new CurrentEventWheelAdapter(activity, eventIDs);
-					
-					TakePhotoFragment takePhotoFragment = new TakePhotoFragment();
-					takePhotoFragment.setHeaderView(activity.findViewById(R.id.header));
-					takePhotoFragment.setScrollWheelAdapter(mAdapter);
-					takePhotoFragment.setBitmap(thePic);
-					
-					ft.add(R.id.fragment_content, takePhotoFragment, TAKE_PHOTO_FRAGMENT)
-					.commit();
-					
-					progressDialog.dismiss();
-				}
-			});
+			FragmentManager fm = getSupportFragmentManager();
+			FragmentTransaction ft = fm.beginTransaction();
 			
-			EventServiceBuffer.getEventsFromService(EventServiceBuffer.MY_EVENTS);
+			mAdapter = new CurrentEventWheelAdapter(this, eventIDs);
 			
-	        progressDialog = ProgressDialog.show(TakePhotoActivity.this, "", "Loading");
+			TakePhotoFragment takePhotoFragment = new TakePhotoFragment();
+			takePhotoFragment.setHeaderView(findViewById(R.id.header));
+			takePhotoFragment.setScrollWheelAdapter(mAdapter);
+			takePhotoFragment.setBitmap(thePic);
+			
+			ft.add(R.id.fragment_content, takePhotoFragment, TAKE_PHOTO_FRAGMENT)
+			.commit();
 		}
 	}
 	

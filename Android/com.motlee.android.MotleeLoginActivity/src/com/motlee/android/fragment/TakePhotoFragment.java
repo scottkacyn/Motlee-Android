@@ -52,8 +52,6 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	private LayoutInflater inflater;
 	private View view;
 	
-	private StretchedBackgroundTableLayout picutreHolder;
-	
 	private String pageTitle = "Take Photo";
 	
 	private Bitmap takenPhoto;
@@ -65,7 +63,7 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	
 	private TextView mEventName;
 	private Integer mEventID = CurrentEventWheelAdapter.EVENT_NOT_SET;
-	private LocationInfo mLocation;
+	private LocationInfo mLocation = new LocationInfo();
 	
 	private EditText photoDescriptionEdit;
 	
@@ -136,9 +134,17 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 						GlobalVariables.getInstance().getUserId(), pictureDate, 
 						photoDescriptionEdit.getText().toString(), pictureURL, mLocation);
 				
+				Intent eventDetailIntent = new Intent(getActivity(), EventDetailActivity.class);
+				eventDetailIntent.putExtra("EventID", photo.event_id);
+				eventDetailIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+				getActivity().startActivity(eventDetailIntent);
+				
 				Intent photoDetailIntent = new Intent(getActivity(), PhotoDetailActivity.class);
 				photoDetailIntent.putExtra("PhotoItem", photo);
 				getActivity().startActivity(photoDetailIntent);
+				
+				takenPhoto.recycle();
+				getActivity().finish();
 			}
 			
 		}
@@ -244,7 +250,7 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	            }
 	            return false;
 			}
-			});
+		});
 		
 		photoDescriptionEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
 			
@@ -256,25 +262,7 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	            } 
 	        }
 	    });
-		
-		photoDescriptionEdit.addTextChangedListener(new TextWatcher() {
-	
-	        public void afterTextChanged(Editable s) {
-	        }
-	
-	        public void beforeTextChanged(CharSequence s, int start, int count,
-	                int after) {
-	        }
-	
-	        public void onTextChanged(CharSequence s, int start, int before,
-	                int count) {
-	        	int width = photoDescriptionEdit.getWidth();
-	        	int parentWidth = ((View) photoDescriptionEdit.getParent()).getWidth();
-	        	int displayWidth = GlobalVariables.getInstance().getDisplayWidth();
-	        	return;
-	        }
-	
-	    });
+
 		
 		TableRow tr = new TableRow(getActivity());
 		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);

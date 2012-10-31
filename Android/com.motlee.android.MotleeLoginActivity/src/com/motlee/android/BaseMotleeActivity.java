@@ -1,5 +1,6 @@
 package com.motlee.android;
 
+import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.MenuFunctions;
 
@@ -9,6 +10,11 @@ import android.view.View;
 
 public class BaseMotleeActivity extends FragmentActivity {
 
+	
+	final public void onClickPostStory(View view)
+	{
+		MenuFunctions.postComment(view, this);
+	}
 	
 	final public void showPictureDetail(View view)
 	{
@@ -57,6 +63,11 @@ public class BaseMotleeActivity extends FragmentActivity {
 		MenuFunctions.showNearbyEvents(view, this);
 	}
 	
+	final public void onClickShowSettings(View view)
+	{
+		MenuFunctions.showSettings(this);
+	}
+	
 	@Override
 	final public boolean dispatchTouchEvent(MotionEvent ev) {
 		
@@ -68,6 +79,22 @@ public class BaseMotleeActivity extends FragmentActivity {
 		{
 			return true;
 		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onDestroy()
+	 * Override onDestroy to ensure we do not have any attachments to other
+	 * objects or activities to prevent memory leaks
+	 */
+	@Override
+	public void onDestroy()
+	{
+		EventServiceBuffer.setAttendeeListener(null);
+		EventServiceBuffer.setEventDetailListener(null);
+		EventServiceBuffer.setUserInfoListener(null);
+		EventServiceBuffer.finishContext(this);
+		super.onDestroy();
 	}
 	
 	//********************************

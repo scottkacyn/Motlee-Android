@@ -1,2 +1,7 @@
 1351443597976	Delete element
 1351466721935	Extract method 'setUpFragment'
+1351524182045	Rename type 'DateStringFomatter'
+1351524535849	Extract method 'setUpProfilePageFragment'
+1351566502564	Delete element
+1351625828922	Delete element
+1351632400915	Rename resource 'facebook_settings.xml'

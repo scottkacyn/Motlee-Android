@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.util.List;
 
 import com.facebook.FacebookActivity;
+import com.facebook.LoginButton;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.android.DialogError;
@@ -16,8 +17,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.motlee.android.fragment.LoginPageFragment;
+import com.motlee.android.fragment.SplashScreenFragment;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.event.UpdatedEventDetailEvent;
+import com.motlee.android.object.event.UpdatedEventDetailListener;
 import com.motlee.android.object.event.UserInfoEvent;
 import com.motlee.android.object.event.UserInfoListener;
 
@@ -26,6 +31,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 
 public class MotleeLoginActivity extends FacebookActivity {
@@ -38,7 +45,16 @@ public class MotleeLoginActivity extends FacebookActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+        setContentView(R.layout.first_screen);
         // Get existing access_token if any
+        
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        
+        LoginPageFragment loginPageFragment = new LoginPageFragment();
+        
+        ft.add(R.id.fragment, loginPageFragment)
+        .commit();
         
         GlobalVariables instance = GlobalVariables.getInstance();
         
@@ -48,7 +64,7 @@ public class MotleeLoginActivity extends FacebookActivity {
         instance.setHelveticaNeueRegularFont(Typeface.createFromAsset(getAssets(), "fonts/helvetica_neue_regular.ttf"));
         instance.setFacebook(facebook);
         
-        this.openSession();
+        //this.openSession();
         
         /*Session session = Session.getActiveSession();
         if (session == null || session.getState().isClosed())
@@ -63,6 +79,18 @@ public class MotleeLoginActivity extends FacebookActivity {
         
         EventServiceBuffer.getInstance(this);
         
+        EventServiceBuffer.setEventDetailListener(new UpdatedEventDetailListener(){
+
+			public void myEventOccurred(UpdatedEventDetailEvent evt) {
+				// TODO Auto-generated method stub
+				
+				EventServiceBuffer.setEventDetailListener(null);
+				EventServiceBuffer.finishContext(MotleeLoginActivity.this);
+				startEventListActivity();
+			}
+        	
+        });
+        
         EventServiceBuffer.setUserInfoListener(new UserInfoListener(){
 
 			public void raised(UserInfoEvent e) {
@@ -70,7 +98,9 @@ public class MotleeLoginActivity extends FacebookActivity {
 				GlobalVariables.getInstance().setUserId(e.getUserInfo().id);
 				
 	        	EventServiceBuffer.setUserInfoListener(null);
-	        	startEventListActivity();
+	        	
+	        	EventServiceBuffer.getEventsFromService();
+	        	
 			}
         	
         });
@@ -80,7 +110,14 @@ public class MotleeLoginActivity extends FacebookActivity {
     protected void onSessionStateChange(SessionState state, Exception exception) {
       // user has either logged in or not ...
       if (state.isOpened()) {
-
+    	  
+    	  FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+    	  
+    	  SplashScreenFragment splashScreenFragment = new SplashScreenFragment();
+    	  
+    	  ft.replace(R.id.fragment, splashScreenFragment)
+    	  .commit();
+    	  
     	  String access_token = this.getSession().getAccessToken();
           
           EventServiceBuffer.getUserInfoFromFacebookAccessToken(access_token);

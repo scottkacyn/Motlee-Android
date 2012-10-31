@@ -46,18 +46,15 @@ public class CreateEventActivity extends BaseMotleeActivity {
 	public static String SEARCH_PEOPLE = "SearchPeople";
 	public static String SEARCH_PLACES = "SearchPlaces";
 	
-	
-	private LocationListener locationListener;
 	private static final Location SAN_FRANCISCO_LOCATION = new Location("") {{
         setLatitude(37.7750);
         setLongitude(-122.4183);
 	}};
 	
 	private Location mLocation;
-	private static final int SEARCH_RADIUS_METERS = 1000;
+	private static final int SEARCH_RADIUS_METERS = 10000;
 	private static final int SEARCH_RESULT_LIMIT = 50;
 	private static final String SEARCH_TEXT = "";
-	private static final int LOCATION_CHANGE_THRESHOLD = 50; // meters
 	private View mCurrentDateTimePickerFocus;
 	
 	private LocationInfo selectLocation;
@@ -73,50 +70,7 @@ public class CreateEventActivity extends BaseMotleeActivity {
 	 */
 	private void setUpLocationListener() {
 		try {
-		    mLocation = null;
-		    // Instantiate the default criteria for a location provider
-		    Criteria criteria = new Criteria();
-		    // Get a location manager from the system services
-		    LocationManager locationManager = 
-		            (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		    // Get the location provider that best matches the criteria
-		    String bestProvider = locationManager.getBestProvider(criteria, false);
-		    if (bestProvider != null) {
-		        // Get the user's last known location
-		    	mLocation = locationManager.getLastKnownLocation(bestProvider);
-		        if (locationManager.isProviderEnabled(bestProvider) 
-		                    && locationListener == null) {
-		            // Set up a location listener if one is not already set up
-		            // and the selected provider is enabled
-		            locationListener = new LocationListener() {
-		                
-		                public void onLocationChanged(Location location) {
-		                    // On location updates, compare the current
-		                    // location to the desired location set in the
-		                    // place picker
-		                    float distance = location.distanceTo(
-		                            mLocation);
-		                    if (distance >= LOCATION_CHANGE_THRESHOLD) {
-		                        mLocation = location;
-		                    }
-		                }
-		                
-		                public void onStatusChanged(String s, int i, 
-		                            Bundle bundle) {
-		                }
-		                
-		                public void onProviderEnabled(String s) {
-		                }
-		                
-		                public void onProviderDisabled(String s) {
-		                }
-		            };
-		            locationManager.requestLocationUpdates(bestProvider, 
-		                    1, LOCATION_CHANGE_THRESHOLD,
-		                    locationListener, 
-		                    Looper.getMainLooper());
-		        }
-		    }
+			mLocation = GlobalVariables.getInstance().getUserLocation();
 		    if (mLocation == null) {
 		        // Set the default location if there is no
 		        // initial location
@@ -142,6 +96,7 @@ public class CreateEventActivity extends BaseMotleeActivity {
 		} catch (Exception ex) {
 		    Log.e("CreateEventActivity", ex.getMessage());
 		}
+		
 	}
 	
     @Override
@@ -269,8 +224,9 @@ public class CreateEventActivity extends BaseMotleeActivity {
     	eDetail.setStartTime(fragment.getStartTime().getTime());
     	eDetail.setEndTime(fragment.getEndTime().getTime());
     	eDetail.setOwnerID(GlobalVariables.getInstance().getUserId());
+    	eDetail.setLocationInfo(fragment.getLocationInfo());
     	
-    	EventServiceBuffer.setEventDetailListener(new UpdatedEventDetailListener(){
+    	EventServiceBuffer.setEventDetailListener(new UpdatedEventDetailListener() {
 
 			public void myEventOccurred(UpdatedEventDetailEvent evt) {
 				
@@ -314,7 +270,7 @@ public class CreateEventActivity extends BaseMotleeActivity {
 		mCurrentDateTimePickerFocus = (View) view.getParent();
 		showDateTimeDialog();
 	}
-	
+
 	/*
 	 * initializes the DateTimePicker dialog
 	 */

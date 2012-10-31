@@ -110,6 +110,39 @@
             	android:value="com.example.myfirstapp.MainActivity" />
         </activity>
         
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_settings_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
+        <activity
+            android:name=".SettingsDetailActivity"
+            android:label="@string/title_settings_detail_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
+        <activity
+            android:name=".PostStoryActivity"
+            android:label="@string/title_post_story_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/app_id"/>
     </application>
     

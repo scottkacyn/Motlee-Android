@@ -3,7 +3,9 @@ package com.motlee.android.object;
 import com.motlee.android.CreateEventActivity;
 import com.motlee.android.EventDetailActivity;
 import com.motlee.android.EventListActivity;
+import com.motlee.android.PostStoryActivity;
 import com.motlee.android.R;
+import com.motlee.android.SettingsActivity;
 import com.motlee.android.TakePhotoActivity;
 import com.motlee.android.adapter.EventListAdapter;
 import com.motlee.android.fragment.EventListFragment;
@@ -69,6 +71,10 @@ public class MenuFunctions {
 		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
 		
 		tv = (TextView) view.findViewById(R.id.plus_menu_button_upload_photo);
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
+		
+		tv = (TextView) view.findViewById(R.id.plus_menu_button_post_story);
 		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
 	}
@@ -215,6 +221,17 @@ public class MenuFunctions {
 		}
 	}
 	
+	public static void postComment(View view, FragmentActivity activity)
+	{
+		Intent postStoryIntent = new Intent(activity, PostStoryActivity.class);
+		removePlusMenu(activity);
+		activity.startActivity(postStoryIntent);
+		if (!(activity instanceof EventListActivity) || !(activity instanceof EventDetailActivity))
+		{
+			activity.finish();
+		}
+	}
+	
 	public static void uploadPictureFromPhone(View view, FragmentActivity activity)
 	{
 		Intent takePictureIntent = new Intent(activity, TakePhotoActivity.class);
@@ -236,6 +253,14 @@ public class MenuFunctions {
 		{
 			activity.finish();
 		}
+	}
+	
+	public static void showSettings(FragmentActivity activity)
+	{
+		Intent intent = new Intent(activity, SettingsActivity.class);
+		activity.startActivity(intent);
+		
+		removeMainMenu(activity);
 	}
 	
 	public static void showAllEvents(View view, FragmentActivity activity)

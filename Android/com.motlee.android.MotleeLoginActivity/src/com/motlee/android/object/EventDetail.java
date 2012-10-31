@@ -111,11 +111,11 @@ public class EventDetail implements Comparable<EventDetail> {
 	{
 		if (!userInfoList.containsKey(user_id))
 		{
-			return Integer.toString(user_id) + " + " + attendee_count + " Others";
+			return Integer.toString(user_id) + " + " + (attendee_count - 1) + " Others";
 		}
 		else
 		{
-			return userInfoList.get(user_id).name + " + " + attendee_count + " Others";
+			return userInfoList.get(user_id).name + " + " + (attendee_count - 1) + " Others";
 		}
 	}
 	

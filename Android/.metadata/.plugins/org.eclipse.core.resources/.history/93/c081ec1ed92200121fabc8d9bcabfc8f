@@ -1,0 +1,5 @@
+package com.motlee.android.fragment;
+
+public class NotificationSettingsFragment extends BaseMotleeFragment {
+
+}

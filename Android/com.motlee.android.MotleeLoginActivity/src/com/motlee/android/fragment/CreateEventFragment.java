@@ -116,6 +116,11 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		return view;
 	}
 
+	public LocationInfo getLocationInfo()
+	{
+		return this.mLocation;
+	}
+	
 	public void setLocationInfo(LocationInfo location)
 	{
 		this.mLocation = location;

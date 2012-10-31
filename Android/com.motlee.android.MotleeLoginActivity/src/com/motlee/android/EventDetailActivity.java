@@ -19,18 +19,24 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 
-public class EventDetailActivity extends BaseMotleeActivity {
+public class EventDetailActivity extends BaseDetailActivity {
 
 	private FragmentTransaction ft;
-	private EventDetail eDetail;
 	
+	/*
+	 * (non-Javadoc)
+	 * @see com.google.android.maps.MapActivity#onNewIntent(android.content.Intent)
+	 * We override onNewIntent. This is a singleTask Activity so we need to load the 
+	 * new event data into the existing fragment
+	 */
 	@Override
 	public void onNewIntent(Intent intent)
 	{
-		ft = getSupportFragmentManager().beginTransaction();
+		EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
 		
-        ft.replace(R.id.fragment_content, setUpFragment(intent))
-        .commit();
+		eDetail = GlobalEventList.eventDetailMap.get(intent.getExtras().get("EventID"));
+		
+        fragment.addEventDetail(eDetail);
 	}
 	
     @Override
@@ -84,6 +90,13 @@ public class EventDetailActivity extends BaseMotleeActivity {
     	
     	startActivity(eventDetail);
     }
+
+	@Override
+	void enterEditMode() {
+		
+		
+		
+	}
     
     /*@Override
 	protected void backButtonPressed()

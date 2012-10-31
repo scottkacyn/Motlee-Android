@@ -90,17 +90,22 @@ public class UserProfilePageActivity extends BaseMotleeActivity {
 				        FragmentManager     fm = getSupportFragmentManager();
 				        FragmentTransaction ft = fm.beginTransaction();
 				        
-				        UserProfilePageFragment userProfileFragment = new UserProfilePageFragment();
+				        UserProfilePageFragment userProfileFragment = (UserProfilePageFragment) fm.findFragmentById(R.id.fragment_content);
 				        
-				        userProfileFragment.setBirthdayLocationObject(userDetails);
-				        
-				        userProfileFragment.setHeaderView(findViewById(R.id.header));
-				        
-				        userProfileFragment.setUserId(mUserID);
-				        
-				        ft.add(R.id.fragment_content, userProfileFragment);
-				        
-				        ft.commit();
+				        if (userProfileFragment == null)
+				        {
+				        	userProfileFragment = new UserProfilePageFragment();
+				    
+					        setUpProfilePageFragment(userDetails, userProfileFragment);
+				        	
+					        ft.add(R.id.fragment_content, userProfileFragment);
+					        
+					        ft.commit();
+				        }
+				        else
+				        {
+					        setUpProfilePageFragment(userDetails, userProfileFragment);
+				        }
 				        
 				        progressDialog.dismiss();
 						
@@ -118,4 +123,13 @@ public class UserProfilePageActivity extends BaseMotleeActivity {
         
 		
     }
+	
+	private void setUpProfilePageFragment(GraphObject userDetails, UserProfilePageFragment userProfileFragment) 
+	{
+		userProfileFragment.setBirthdayLocationObject(userDetails);
+		
+		userProfileFragment.setHeaderView(findViewById(R.id.header));
+		
+		userProfileFragment.setUserId(mUserID);
+	}
 }

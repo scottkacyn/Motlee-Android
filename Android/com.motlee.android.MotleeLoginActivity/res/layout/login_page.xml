@@ -5,15 +5,13 @@
     android:layout_weight="1"
     android:background="@color/background">
 
-    <ImageButton
-        android:id="@+id/menu_button"
+    <com.facebook.LoginButton
+        android:id="@+id/auth_button"
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:width="140dp"
         android:height="24dp"
-        android:src="@drawable/fb_connect"
-        android:onClick="onClickFacebookConnect"
         android:contentDescription="FacebookLogin" />
     
     

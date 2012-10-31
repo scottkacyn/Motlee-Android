@@ -202,6 +202,7 @@
  	    <com.motlee.android.view.HorizontalAspectImageButton
  	        android:layout_width="match_parent"
  	        android:layout_height="wrap_content"
+ 	        android:onClick="onClickShowSettings"
  	        android:src="@drawable/main_menu_opened_button" />
  	   	<LinearLayout
  	        android:layout_width="match_parent"

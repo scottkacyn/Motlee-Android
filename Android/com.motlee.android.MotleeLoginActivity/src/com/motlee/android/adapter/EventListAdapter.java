@@ -2,6 +2,7 @@ package com.motlee.android.adapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Vector;
 
 import com.motlee.android.R;
 import com.motlee.android.layouts.HorizontalRatioLinearLayout;
@@ -28,6 +29,10 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
 	
 		private String tag = "EventListAdapter";
         // store the context (as an inflated layout)
+		
+		//Default Integer to represent the "Load More Button"
+		private static final Integer LOAD_MORE_BUTTON = -9999;
+		
         private LayoutInflater inflater;
         // store the resource
         private int resource;
@@ -35,7 +40,7 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
         private final ImageAdapter imageAdapter;
         
         // store (a reference to) the data
-        private ArrayList<Integer> data = new ArrayList<Integer>();
+        private Vector<Integer> data = new Vector<Integer>();
         
         /**
          * Default constructor. Creates the new Adaptor object to
@@ -50,6 +55,7 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
                 this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 this.resource = resource;
                 this.data.addAll(data);
+                this.data.add(LOAD_MORE_BUTTON);
                 imageAdapter = new ImageAdapter(context, R.layout.thumbnail);
         }
 
@@ -85,7 +91,11 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
         	Log.w(tag, "add");
         	if (!this.data.contains(eventID))
         	{
+        		this.data.remove(this.data.size() - 1);
 	        	this.data.add(eventID);
+	        	
+	        	// Add load more button to bottom of eventList
+	        	this.data.add(LOAD_MORE_BUTTON);
 	        	this.notifyDataSetChanged();
         	}
         }
@@ -94,6 +104,9 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
         {
         	Log.w(tag, "clear");
         	this.data.clear();
+        	
+        	// Add load more button to bottom of eventList
+        	this.data.add(LOAD_MORE_BUTTON);
         	this.notifyDataSetChanged();
         }
         
@@ -123,7 +136,14 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
                         holder = (ViewHolder) convertView.getTag();
                 }
                 
-                this.bindData(holder, position);
+                if (this.data.get(position) == LOAD_MORE_BUTTON)
+                {
+                	convertView = this.inflater.inflate(R.layout.event_list_load_more, null);
+                }
+                else
+                {
+                	this.bindData(holder, position);
+                }
                 
                 // bind the data to the view object
                 return convertView;

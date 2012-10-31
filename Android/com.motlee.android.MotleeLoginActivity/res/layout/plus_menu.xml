@@ -65,7 +65,31 @@
  	    <com.motlee.android.view.HorizontalAspectImageButton
  	        android:layout_width="match_parent"
  	        android:layout_height="wrap_content"
- 	        android:src="@drawable/main_menu_opened_button_normal" />
+ 	        android:src="@drawable/main_menu_opened_button"
+ 	        android:onClick="onClickPostStory" />
+ 	   	<LinearLayout
+ 	        android:layout_width="match_parent"
+ 	        android:layout_height="match_parent"
+ 	        android:orientation="vertical"
+ 	        android:weightSum="1" >
+
+	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.5"
+	 	        android:paddingRight="43dp"
+	 	        android:paddingLeft="43dp"
+	 	        android:src="@drawable/icon_button_comment"
+	 	        android:layout_gravity="top" />
+	 	    
+	 	    <TextView
+	 	        android:id="@+id/plus_menu_button_post_story"
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.5"
+	 	        android:text="Post Story"
+	 	        android:gravity="center_horizontal|top" />
+ 	    </LinearLayout>
  	</FrameLayout>
  		 	    	 	    <ImageView
 	 	        android:layout_width="match_parent"

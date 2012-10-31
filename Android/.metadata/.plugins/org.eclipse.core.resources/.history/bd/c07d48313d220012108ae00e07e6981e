@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent">
+    
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="2"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+        
+        <ImageView
+            android:id="@+id/facebook_profile_pic"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1.5"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"/>
+        
+        <TextView
+            android:id="@+id/facebook_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+        
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content" 
+        android:layout_marginRight="10dp"
+        android:gravity="center">
+        
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" >
+            
+		    <com.motlee.android.view.HorizontalAspectImageButton
+		        android:id="@+id/facebook_logout_button"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_gravity="center"
+		        android:padding="5dp"
+		        android:scaleType="fitCenter"
+		        android:src="@drawable/header_right_button"
+		        android:onClick="onFacebookLogout"
+		        android:background="@android:color/transparent" />
+		    
+		    <TextView 
+		        android:id="@+id/header_right_text"
+	    	    android:layout_width="match_parent"
+		        android:layout_height="match_parent"
+		        android:gravity="center|center_vertical"
+		        android:layout_gravity="center"
+		        android:text="Logout"
+		        android:padding="5dp"
+		        android:background="@android:color/transparent" />
+            
+        </FrameLayout>
+        
+    </LinearLayout>
+    
+</LinearLayout>

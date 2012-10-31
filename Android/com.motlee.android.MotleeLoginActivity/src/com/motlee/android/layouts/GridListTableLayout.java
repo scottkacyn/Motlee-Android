@@ -8,8 +8,10 @@ import java.util.Collection;
 import java.util.List;
 
 import com.motlee.android.R;
+import com.motlee.android.UserProfilePageActivity;
 import com.motlee.android.adapter.ImageAdapter;
 import com.motlee.android.enums.EventItemType;
+import com.motlee.android.object.DateStringFormatter;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventItemWithBody;
 import com.motlee.android.object.GlobalEventList;
@@ -23,6 +25,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
@@ -117,20 +120,39 @@ public class GridListTableLayout extends StretchedBackgroundTableLayout {
 	private void setUpStoryPictureHeader(View view, EventItem item)
 	{
 		ImageView imageView = (ImageView) view.findViewById(R.id.story_picture_profile_pic);
-		
+		imageView.setClickable(true);
+		imageView.setOnClickListener(onClickListener);
+		imageView.setTag(item.user_id);
 		Integer facebookID = UserInfoList.getInstance().get(item.user_id).uid;
         
 		GlobalVariables.getInstance().downloadThumbnailImage(context, imageView, GlobalVariables.getInstance().getFacebookPictureUrl(facebookID));
 		
 		TextView textView = (TextView) view.findViewById(R.id.story_picture_username);
-		
+		textView.setClickable(true);
+		textView.setOnClickListener(onClickListener);
+		textView.setTag(item.user_id);
 		textView.setText(UserInfoList.getInstance().get(item.user_id).name);
 		
 		textView = (TextView) view.findViewById(R.id.story_picture_time);
 		
-		textView.setText(item.created_at.toString());
+		textView.setText(DateStringFormatter.getPastDateString(item.created_at));
 	}
 
+	private OnClickListener onClickListener = new OnClickListener()
+	{
+
+		public void onClick(View v) {
+			
+			int userID = (Integer) v.getTag();
+			
+			Intent userProfileIntent = new Intent(context, UserProfilePageActivity.class);
+			userProfileIntent.putExtra("UserID", userID);
+			context.startActivity(userProfileIntent);
+			
+		}
+		
+	};
+	
 	public void addGrid(Collection<PhotoItem> images) {
 		
 		this.removeAllViews();

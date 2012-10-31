@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.motlee.android.BaseDetailActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.EventListAdapter;
 import com.motlee.android.layouts.GridListTableLayout;
@@ -32,12 +33,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
 
-public class EventDetailFragment extends BaseMotleeFragment {
+public class EventDetailFragment extends BaseDetailFragment {
 	private String tag = "EventDetailFragment";
-	
-	private static final String JOIN = "Join";
-	private static final String EDIT = "Edit";
-	private static final String LEAVE = "Leave";
 	
 	private EventDetail mEventDetail;
 	
@@ -50,17 +47,10 @@ public class EventDetailFragment extends BaseMotleeFragment {
 	
 	private View view;
 	
+	private boolean isEditMode = false;
+	
 	private LayoutInflater inflater;
 	
-	/*@Override
-	public void onListItemClick(ListView l, View v, int position, long id) {
-	    String[] links = getResources().getStringArray(R.array.tut_links);
-	    String content = links[position];
-	    Intent showContent = new Intent(getActivity().getApplicationContext(),
-	            TutViewerActivity.class);
-	    showContent.setData(Uri.parse(content));
-	    startActivity(showContent);
-	}*/
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -93,35 +83,23 @@ public class EventDetailFragment extends BaseMotleeFragment {
 		}
 		
 		setPageHeader(pageTitle);
-		showRightHeaderButton(JOIN);
-		showLeftHeaderButton();
+		if (mEventDetail != null)
+		{
+			showRightHeaderButton(mEventDetail);
+		}
 		
-		initializeOnPageButtons(view);
+		showLeftHeaderButton();
 		
 		onCreateViewHasBeenCalled = true;
 		
 		return view;
 	}
-
-	
-	
-	public void initializeOnPageButtons(View view)
-	{
-		TextView tv = (TextView) view.findViewById(R.id.label_split_button_left_text);
-		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		tv.setText("Add Item");
-		
-		tv = (TextView) view.findViewById(R.id.label_split_button_right_text);
-		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		tv.setText("Add Friends");
-	}
-	
-	
 	
 	public void addEventDetail(EventDetail eDetail) {
 		Log.w(tag, "addEventDetail");
 		mEventDetail = eDetail;
 		this.pageTitle = mEventDetail.getEventName();
+		setPageHeader(pageTitle);
 		if (girdListTableLayout != null)
 		{
 			addListToTableLayout();
