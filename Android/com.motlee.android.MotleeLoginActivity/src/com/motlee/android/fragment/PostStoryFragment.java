@@ -95,8 +95,7 @@ public class PostStoryFragment extends BaseMotleeFragment {
 		storyEditText = (EditText) label.findViewById(R.id.edit_event_name_text);
 		storyEditText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		storyEditText.setTextColor(R.color.label_color);
-		storyEditText.setHint("Photo Description...");
-		storyEditText.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+		storyEditText.setHint("Story...");
 		//mEventName = editText.getText();
 		
 		storyEditText.setOnEditorActionListener(new OnEditorActionListener() {

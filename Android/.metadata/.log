@@ -1923,3 +1923,215 @@ java.lang.NullPointerException
 	at org.eclipse.jdt.internal.debug.core.EventDispatcher.access$0(EventDispatcher.java:104)
 	at org.eclipse.jdt.internal.debug.core.EventDispatcher$1.run(EventDispatcher.java:248)
 	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SESSION 2012-10-31 10:06:17.178 -----------------------------------------------
+eclipse.buildId=I20110613-1736
+java.version=1.6.0_24
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY org.eclipse.ui 4 4 2012-10-31 10:46:32.450
+!MESSAGE Invalid preference page path: XML Syntax
+
+!ENTRY org.eclipse.jdt.debug 4 120 2012-10-31 12:47:11.995
+!MESSAGE Exception processing async thread queue
+!SUBENTRY 1 org.eclipse.jdt.debug 4 120 2012-10-31 12:47:11.995
+!MESSAGE Exception processing async thread queue
+!STACK 0
+com.sun.jdi.InternalException: Got invalid data:java.io.UTFDataFormatException: Second byte input does not match UTF Specification
+	at org.eclipse.jdi.internal.MirrorImpl.defaultIOExceptionHandler(MirrorImpl.java:285)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allClasses(VirtualMachineImpl.java:370)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allRefTypes(VirtualMachineImpl.java:382)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.nestedTypes(ReferenceTypeImpl.java:1105)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:310)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:315)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:145)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildSource(BinaryBasedSourceGenerator.java:74)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getInstanceSourceMapper(EvaluationSourceGenerator.java:195)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getSource(EvaluationSourceGenerator.java:214)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.getCompiledExpression(ASTEvaluationEngine.java:260)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.evaluate(ASTEvaluationEngine.java:119)
+	at org.eclipse.jdt.internal.debug.ui.JavaWatchExpressionDelegate$EvaluationRunnable.run(JavaWatchExpressionDelegate.java:144)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread$ThreadJob.run(JDIThread.java:2805)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.jdt.debug 4 120 2012-10-31 12:47:11.996
+!MESSAGE Exception processing async thread queue
+!STACK 0
+org.eclipse.jdi.TimeoutException: Timeout occurred while waiting for packet 3070.
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:171)
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:180)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:177)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:246)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allClasses(VirtualMachineImpl.java:355)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allRefTypes(VirtualMachineImpl.java:382)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.nestedTypes(ReferenceTypeImpl.java:1105)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:310)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:145)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildSource(BinaryBasedSourceGenerator.java:74)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getInstanceSourceMapper(EvaluationSourceGenerator.java:195)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getSource(EvaluationSourceGenerator.java:214)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.getCompiledExpression(ASTEvaluationEngine.java:260)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.evaluate(ASTEvaluationEngine.java:119)
+	at org.eclipse.jdt.internal.debug.ui.JavaWatchExpressionDelegate$EvaluationRunnable.run(JavaWatchExpressionDelegate.java:144)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread$ThreadJob.run(JDIThread.java:2805)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.jdt.debug 4 120 2012-10-31 12:47:11.996
+!MESSAGE Exception processing async thread queue
+!STACK 0
+org.eclipse.jdi.TimeoutException: Timeout occurred while waiting for packet 3071.
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:171)
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:180)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:177)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:246)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allClasses(VirtualMachineImpl.java:355)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allRefTypes(VirtualMachineImpl.java:382)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.nestedTypes(ReferenceTypeImpl.java:1105)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:310)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:145)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildSource(BinaryBasedSourceGenerator.java:74)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getInstanceSourceMapper(EvaluationSourceGenerator.java:195)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getSource(EvaluationSourceGenerator.java:214)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.getCompiledExpression(ASTEvaluationEngine.java:260)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.evaluate(ASTEvaluationEngine.java:119)
+	at org.eclipse.jdt.internal.debug.ui.JavaWatchExpressionDelegate$EvaluationRunnable.run(JavaWatchExpressionDelegate.java:144)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread$ThreadJob.run(JDIThread.java:2805)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.jdt.debug 4 120 2012-10-31 12:47:11.997
+!MESSAGE Exception processing async thread queue
+!STACK 0
+org.eclipse.jdi.TimeoutException: Timeout occurred while waiting for packet 3072.
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:171)
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:180)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:177)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:246)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allClasses(VirtualMachineImpl.java:355)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allRefTypes(VirtualMachineImpl.java:382)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.nestedTypes(ReferenceTypeImpl.java:1105)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:310)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:145)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildSource(BinaryBasedSourceGenerator.java:74)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getInstanceSourceMapper(EvaluationSourceGenerator.java:195)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getSource(EvaluationSourceGenerator.java:214)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.getCompiledExpression(ASTEvaluationEngine.java:260)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.evaluate(ASTEvaluationEngine.java:119)
+	at org.eclipse.jdt.internal.debug.ui.JavaWatchExpressionDelegate$EvaluationRunnable.run(JavaWatchExpressionDelegate.java:144)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread$ThreadJob.run(JDIThread.java:2805)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.jdt.debug 4 120 2012-10-31 12:47:11.997
+!MESSAGE Exception processing async thread queue
+!STACK 0
+org.eclipse.jdi.TimeoutException: Timeout occurred while waiting for packet 3073.
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:171)
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:180)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:177)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:246)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allClasses(VirtualMachineImpl.java:355)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allRefTypes(VirtualMachineImpl.java:382)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.nestedTypes(ReferenceTypeImpl.java:1105)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:310)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:145)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildSource(BinaryBasedSourceGenerator.java:74)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getInstanceSourceMapper(EvaluationSourceGenerator.java:195)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getSource(EvaluationSourceGenerator.java:214)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.getCompiledExpression(ASTEvaluationEngine.java:260)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.evaluate(ASTEvaluationEngine.java:119)
+	at org.eclipse.jdt.internal.debug.ui.JavaWatchExpressionDelegate$EvaluationRunnable.run(JavaWatchExpressionDelegate.java:144)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread$ThreadJob.run(JDIThread.java:2805)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.jdt.debug 4 120 2012-10-31 12:47:11.997
+!MESSAGE Exception processing async thread queue
+!STACK 0
+org.eclipse.jdi.TimeoutException: Timeout occurred while waiting for packet 3074.
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:171)
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:180)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:177)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:246)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allClasses(VirtualMachineImpl.java:355)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allRefTypes(VirtualMachineImpl.java:382)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.nestedTypes(ReferenceTypeImpl.java:1105)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:310)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:145)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildSource(BinaryBasedSourceGenerator.java:74)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getInstanceSourceMapper(EvaluationSourceGenerator.java:195)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getSource(EvaluationSourceGenerator.java:214)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.getCompiledExpression(ASTEvaluationEngine.java:260)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.evaluate(ASTEvaluationEngine.java:119)
+	at org.eclipse.jdt.internal.debug.ui.JavaWatchExpressionDelegate$EvaluationRunnable.run(JavaWatchExpressionDelegate.java:144)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread$ThreadJob.run(JDIThread.java:2805)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.jdt.debug 4 120 2012-10-31 12:47:11.997
+!MESSAGE Exception processing async thread queue
+!STACK 0
+org.eclipse.jdi.TimeoutException: Timeout occurred while waiting for packet 3075.
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:171)
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:180)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:177)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:246)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allClasses(VirtualMachineImpl.java:355)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allRefTypes(VirtualMachineImpl.java:382)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.nestedTypes(ReferenceTypeImpl.java:1105)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:310)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:145)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildSource(BinaryBasedSourceGenerator.java:74)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getInstanceSourceMapper(EvaluationSourceGenerator.java:195)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getSource(EvaluationSourceGenerator.java:214)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.getCompiledExpression(ASTEvaluationEngine.java:260)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.evaluate(ASTEvaluationEngine.java:119)
+	at org.eclipse.jdt.internal.debug.ui.JavaWatchExpressionDelegate$EvaluationRunnable.run(JavaWatchExpressionDelegate.java:144)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread$ThreadJob.run(JDIThread.java:2805)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.jdt.debug 4 120 2012-10-31 12:47:11.998
+!MESSAGE Exception processing async thread queue
+!STACK 0
+org.eclipse.jdi.TimeoutException: Timeout occurred while waiting for packet 3076.
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:171)
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:180)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:177)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:246)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allClasses(VirtualMachineImpl.java:355)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allRefTypes(VirtualMachineImpl.java:382)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.nestedTypes(ReferenceTypeImpl.java:1105)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:310)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:145)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildSource(BinaryBasedSourceGenerator.java:74)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getInstanceSourceMapper(EvaluationSourceGenerator.java:195)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getSource(EvaluationSourceGenerator.java:214)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.getCompiledExpression(ASTEvaluationEngine.java:260)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.evaluate(ASTEvaluationEngine.java:119)
+	at org.eclipse.jdt.internal.debug.ui.JavaWatchExpressionDelegate$EvaluationRunnable.run(JavaWatchExpressionDelegate.java:144)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread$ThreadJob.run(JDIThread.java:2805)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY org.eclipse.jdt.debug 4 120 2012-10-31 12:55:46.923
+!MESSAGE Exception processing async thread queue
+!SUBENTRY 1 org.eclipse.jdt.debug 4 120 2012-10-31 12:55:46.923
+!MESSAGE Exception processing async thread queue
+!STACK 0
+com.sun.jdi.InternalException: Got invalid data:java.io.EOFException
+	at org.eclipse.jdi.internal.MirrorImpl.defaultIOExceptionHandler(MirrorImpl.java:285)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allClasses(VirtualMachineImpl.java:370)
+	at org.eclipse.jdi.internal.VirtualMachineImpl.allRefTypes(VirtualMachineImpl.java:382)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.nestedTypes(ReferenceTypeImpl.java:1105)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:310)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:315)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildTypeDeclaration(BinaryBasedSourceGenerator.java:145)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.BinaryBasedSourceGenerator.buildSource(BinaryBasedSourceGenerator.java:74)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getInstanceSourceMapper(EvaluationSourceGenerator.java:195)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.EvaluationSourceGenerator.getSource(EvaluationSourceGenerator.java:214)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.getCompiledExpression(ASTEvaluationEngine.java:260)
+	at org.eclipse.jdt.internal.debug.eval.ast.engine.ASTEvaluationEngine.evaluate(ASTEvaluationEngine.java:119)
+	at org.eclipse.jdt.internal.debug.ui.JavaWatchExpressionDelegate$EvaluationRunnable.run(JavaWatchExpressionDelegate.java:144)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread$ThreadJob.run(JDIThread.java:2805)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+
+!ENTRY org.eclipse.core.jobs 4 2 2012-10-31 13:10:09.775
+!MESSAGE An internal error occurred during: "JDI Event Dispatch".
+!STACK 0
+java.lang.NullPointerException
+	at org.eclipse.jdt.internal.debug.core.breakpoints.JavaBreakpoint.installableReferenceType(JavaBreakpoint.java:373)
+	at org.eclipse.jdt.internal.debug.core.breakpoints.JavaBreakpoint.handleClassPrepareEvent(JavaBreakpoint.java:331)
+	at org.eclipse.jdt.internal.debug.core.breakpoints.JavaBreakpoint.handleEvent(JavaBreakpoint.java:271)
+	at org.eclipse.jdt.internal.debug.core.EventDispatcher.dispatch(EventDispatcher.java:154)
+	at org.eclipse.jdt.internal.debug.core.EventDispatcher.access$0(EventDispatcher.java:104)
+	at org.eclipse.jdt.internal.debug.core.EventDispatcher$1.run(EventDispatcher.java:248)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)

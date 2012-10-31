@@ -33,6 +33,9 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
 		//Default Integer to represent the "Load More Button"
 		private static final Integer LOAD_MORE_BUTTON = -9999;
 		
+		private static final Integer LOAD_MORE = 1;
+		private static final Integer EVENT_ITEM = 2;
+		
         private LayoutInflater inflater;
         // store the resource
         private int resource;
@@ -91,11 +94,7 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
         	Log.w(tag, "add");
         	if (!this.data.contains(eventID))
         	{
-        		this.data.remove(this.data.size() - 1);
 	        	this.data.add(eventID);
-	        	
-	        	// Add load more button to bottom of eventList
-	        	this.data.add(LOAD_MORE_BUTTON);
 	        	this.notifyDataSetChanged();
         	}
         }
@@ -105,10 +104,9 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
         	Log.w(tag, "clear");
         	this.data.clear();
         	
-        	// Add load more button to bottom of eventList
-        	this.data.add(LOAD_MORE_BUTTON);
         	this.notifyDataSetChanged();
         }
+        
         
         /**
          * Return a generated view for a position.
@@ -121,30 +119,23 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
                 
                 if (convertView == null) {
                 	Log.w(tag, "inflating resource: " + resource);
-                        convertView = this.inflater.inflate(resource, parent, false);
-                        
-                        holder.event_header_button = (HorizontalRatioLinearLayout) convertView.findViewById(R.id.event_header);
-                        holder.event_header_name = (TextView) convertView.findViewById(R.id.event_header_name);
-                        holder.event_header_time = (TextView) convertView.findViewById(R.id.event_header_time);
-                        holder.fomo_count = (TextView) convertView.findViewById(R.id.fomo_count);
-                        holder.list_view = (HorizontalListView) convertView.findViewById(R.id.listview);
-                        holder.event_footer_owner = (TextView) convertView.findViewById(R.id.event_footer_owner);
-                        holder.event_footer_location = (TextView) convertView.findViewById(R.id.event_footer_location);
-                        
-                        convertView.setTag(holder);
+	                        convertView = this.inflater.inflate(resource, parent, false);
+	                        
+	                        holder.event_header_button = (HorizontalRatioLinearLayout) convertView.findViewById(R.id.event_header);
+	                        holder.event_header_name = (TextView) convertView.findViewById(R.id.event_header_name);
+	                        holder.event_header_time = (TextView) convertView.findViewById(R.id.event_header_time);
+	                        holder.fomo_count = (TextView) convertView.findViewById(R.id.fomo_count);
+	                        holder.list_view = (HorizontalListView) convertView.findViewById(R.id.listview);
+	                        holder.event_footer_owner = (TextView) convertView.findViewById(R.id.event_footer_owner);
+	                        holder.event_footer_location = (TextView) convertView.findViewById(R.id.event_footer_location);
+	                        convertView.setTag(holder);
+                			
                 } else {
                         holder = (ViewHolder) convertView.getTag();
                 }
-                
-                if (this.data.get(position) == LOAD_MORE_BUTTON)
-                {
-                	convertView = this.inflater.inflate(R.layout.event_list_load_more, null);
-                }
-                else
-                {
-                	this.bindData(holder, position);
-                }
-                
+
+                this.bindData(holder, position);
+           
                 // bind the data to the view object
                 return convertView;
         }

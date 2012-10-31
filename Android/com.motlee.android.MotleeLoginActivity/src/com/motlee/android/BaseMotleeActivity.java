@@ -93,7 +93,6 @@ public class BaseMotleeActivity extends FragmentActivity {
 		EventServiceBuffer.setAttendeeListener(null);
 		EventServiceBuffer.setEventDetailListener(null);
 		EventServiceBuffer.setUserInfoListener(null);
-		EventServiceBuffer.finishContext(this);
 		super.onDestroy();
 	}
 	

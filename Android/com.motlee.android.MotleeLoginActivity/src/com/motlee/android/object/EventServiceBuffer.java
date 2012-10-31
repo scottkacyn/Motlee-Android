@@ -52,11 +52,13 @@ public class EventServiceBuffer extends Object {
 	private static Context mContext;
 	private static ResultReceiver mReceiver;
 	
-    private static final String WEB_SERVICE_URL = "http://quiet-fjord-9439.herokuapp.com/api/";
+    private static final String WEB_SERVICE_URL = "http://dev.motleeapp.com/api/";
     private static String AUTH_TOK = "auth_token";
     
     public static final String MY_EVENTS = "me";
     public static final String NO_EVENT_FILTER = "none";
+    
+    private static String FB_TOKEN;
     
     // HTTP Success code is 200. We add a constant to that code to in RubyService
     // avoiding other types of HTTP codes
@@ -207,6 +209,8 @@ public class EventServiceBuffer extends Object {
 	
 	public static void getUserInfoFromFacebookAccessToken(String accessToken)
 	{
+		FB_TOKEN = accessToken;
+		
         Intent intent = new Intent(mContext, RubyService.class);
         intent.setData(Uri.parse(WEB_SERVICE_URL + "tokens"));
         
@@ -218,7 +222,7 @@ public class EventServiceBuffer extends Object {
         intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.USER_AUTH);
         
         Bundle formData = new Bundle();
-        formData.putString("access_token", accessToken);
+        formData.putString("access_token", FB_TOKEN);
         
         intent.putExtra(RubyService.EXTRA_PARAMS, formData);
         // Here we send our Intent to our RESTService.
@@ -294,6 +298,7 @@ public class EventServiceBuffer extends Object {
         
         Bundle formData = new Bundle();
         formData.putString(AUTH_TOK, GlobalVariables.getInstance().getAuthoToken());
+        formData.putString("access_token", FB_TOKEN);
         // Here we are going to place our REST call parameters. Note that
         // we could have just used Uri.Builder and appendQueryParameter()
         // here, but I wanted to illustrate how to use the Bundle params.

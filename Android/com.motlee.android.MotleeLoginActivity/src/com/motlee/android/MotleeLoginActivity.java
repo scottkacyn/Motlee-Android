@@ -85,7 +85,6 @@ public class MotleeLoginActivity extends FacebookActivity {
 				// TODO Auto-generated method stub
 				
 				EventServiceBuffer.setEventDetailListener(null);
-				EventServiceBuffer.finishContext(MotleeLoginActivity.this);
 				startEventListActivity();
 			}
         	

@@ -85,6 +85,7 @@ public class EventListFragment extends ListFragmentWithHeader {
 		ListView listView = (ListView) view.findViewById(android.R.id.list);
 		
 		setRefreshListener(listView);
+		listView.addFooterView(inflater.inflate(R.layout.event_list_load_more, null));
 		
 		return view;
 	}
