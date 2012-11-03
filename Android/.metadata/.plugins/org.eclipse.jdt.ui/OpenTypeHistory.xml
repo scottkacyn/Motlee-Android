@@ -18,9 +18,10 @@
 <typeInfo handle="=com.motlee.android.MotleeLoginActivity/\/home\/zackmartinsek\/Downloads\/android-sdk-linux\/platforms\/android-10\/android.jar&lt;android.widget(RelativeLayout.class[RelativeLayout" modifiers="33" timestamp="1349478794000"/>
 <typeInfo handle="=com.motlee.android.MotleeLoginActivity/\/home\/zackmartinsek\/Downloads\/android-sdk-linux\/platforms\/android-10\/android.jar&lt;java.lang(Comparable.class[Comparable" modifiers="1537" timestamp="1349478794000"/>
 <typeInfo handle="=com.motlee.android.MotleeLoginActivity/\/home\/zackmartinsek\/Downloads\/android-sdk-linux\/platforms\/android-10\/android.jar&lt;android.content(Intent.class[Intent" modifiers="33" timestamp="1349478794000"/>
-<typeInfo handle="=com.motlee.android.MotleeLoginActivity/\/home\/zackmartinsek\/Downloads\/android-sdk-linux\/platforms\/android-10\/android.jar&lt;java.util(EventObject.class[EventObject" modifiers="33" timestamp="1349478794000"/>
 <typeInfo handle="=com.motlee.android.MotleeLoginActivity/\/home\/zackmartinsek\/Downloads\/android-sdk-linux\/platforms\/android-10\/android.jar&lt;java.lang(Object.class[Object" modifiers="33" timestamp="1349478794000"/>
 <typeInfo handle="=com.motlee.android.MotleeLoginActivity/\/home\/zackmartinsek\/Motlee\/Android\/com.motlee.android.MotleeLoginActivity\/libs\/gson-2.2.2.jar&lt;com.google.gson(JsonArray.class[JsonArray" modifiers="49" timestamp="1349481830000"/>
-<typeInfo handle="=com.motlee.android.MotleeLoginActivity/src&lt;com.motlee.android{BaseMotleeActivity.java[BaseMotleeActivity" modifiers="1" timestamp="1351642299000"/>
+<typeInfo handle="=com.motlee.android.MotleeLoginActivity/src&lt;com.motlee.android{BaseMotleeActivity.java[BaseMotleeActivity" modifiers="1" timestamp="1351706979000"/>
 <typeInfo handle="=com.motlee.android.MotleeLoginActivity/src&lt;com.motlee.android.fragment{BaseMotleeFragment.java[BaseMotleeFragment" modifiers="1" timestamp="1351529295000"/>
+<typeInfo handle="=com.motlee.android.MotleeLoginActivity/\/home\/zackmartinsek\/Downloads\/android-sdk-linux\/platforms\/android-10\/android.jar&lt;java.util(EventObject.class[EventObject" modifiers="33" timestamp="1349478794000"/>
+<typeInfo handle="=com.motlee.android.MotleeLoginActivity/src&lt;com.motlee.android.object{EventItem.java[EventItem" modifiers="1" timestamp="1351887957000"/>
 </typeInfoHistroy>

@@ -6,6 +6,7 @@ import com.motlee.android.fragment.DateDetailFragment;
 import com.motlee.android.fragment.EventDetailFragment;
 import com.motlee.android.fragment.LocationFragment;
 import com.motlee.android.fragment.PeopleListFragment;
+import com.motlee.android.object.Attendee;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.GlobalEventList;
@@ -65,15 +66,15 @@ public class MoreEventDetailActivity extends BaseMotleeActivity {
         	
         	fragment.setHeaderView(findViewById(R.id.header));
         	
-        	ArrayList<Integer> userIDs = new ArrayList<Integer>();
+        	ArrayList<UserInfo> users = new ArrayList<UserInfo>();
         	
-        	userIDs.addAll(eDetail.getFomos());
+        	users.addAll(eDetail.getFomos());
         	
-        	fragment.setPageLabel(userIDs.size() + " have FOMO'ed");
+        	fragment.setPageLabel(users.size() + " have FOMO'ed");
         	
         	fragment.setPageTitle(eDetail.getEventName());
         	
-        	fragment.setUserIdList(userIDs);
+        	fragment.setUserList(users);
         	
         	ft.add(R.id.fragment_content, fragment);
         }
@@ -84,17 +85,15 @@ public class MoreEventDetailActivity extends BaseMotleeActivity {
         	
         	fragment.setHeaderView(findViewById(R.id.header));
         	
-        	ArrayList<Integer> userIDs = new ArrayList<Integer>();
+        	ArrayList<UserInfo> users = new ArrayList<UserInfo>();
         	
-        	userIDs.add(eDetail.getOwnerID());
+        	users.addAll(eDetail.getAttendees());
         	
-        	userIDs.addAll(eDetail.getAttendees());
-        	
-        	fragment.setPageLabel(userIDs.size() + " are attending");
+        	fragment.setPageLabel(users.size() + " are attending");
         	
         	fragment.setPageTitle(eDetail.getEventName());
         	
-        	fragment.setUserIdList(userIDs);
+        	fragment.setUserList(users);
         	
         	ft.add(R.id.fragment_content, fragment);
         }

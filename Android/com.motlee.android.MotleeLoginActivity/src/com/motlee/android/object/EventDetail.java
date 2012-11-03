@@ -22,13 +22,17 @@ public class EventDetail implements Comparable<EventDetail> {
 	private int attendee_count;
 	
 	//TODO: Change to Collection<Integer>
-	private final Collection<Integer> fomos;
+	@NoExpose
+	private final Collection<UserInfo> fomoers;
 
-	private final Collection<PhotoItem> photos;
+	@NoExpose
+	private final ArrayList<PhotoItem> photos;
 
 	//TODO: Change to Collection<Integer>
-	private final Collection<Integer> attendees;
+	@NoExpose
+	private final Collection<UserInfo> people_attending;
 	
+	@NoExpose
 	private final Collection<EventItemWithBody> stories;
 	
 	// @NoExpose is a way to stop the json parser from including them
@@ -55,8 +59,8 @@ public class EventDetail implements Comparable<EventDetail> {
 	public EventDetail()
 	{
 		this.user_id = -1;
-		this.fomos = new ArrayList<Integer>();
-		this.attendees = new ArrayList<Integer>();
+		this.fomoers = new ArrayList<UserInfo>();
+		this.people_attending = new ArrayList<UserInfo>();
 		this.stories = new ArrayList<EventItemWithBody>();
 		this.name = "";
 		this.start_time = new Date();
@@ -71,6 +75,16 @@ public class EventDetail implements Comparable<EventDetail> {
 	public Integer getEventID()
 	{
 		return this.id;
+	}
+	
+	public void UpdateEventDetail(EventDetail eDetail)
+	{
+		this.name = eDetail.getEventName();
+		this.description = eDetail.getDescription();
+		this.start_time = eDetail.getStartTime();
+		this.end_time = eDetail.getEndTime();
+		this.fomo_count = eDetail.getFomoCount();
+		this.attendee_count = eDetail.getAttendeeCount();
 	}
 	
 	/*public void checkUserInfoList()
@@ -155,38 +169,50 @@ public class EventDetail implements Comparable<EventDetail> {
 		this.location = location;
 	}
 	
-	public void addAttendee(int attendee)
+	public void clearAttendees()
 	{
-		this.attendees.add(attendee);
+		this.people_attending.clear();
+		attendee_count = 0;
+	}
+	
+	public void addAttendee(UserInfo attendee)
+	{
+		this.people_attending.add(attendee);
 		attendee_count++;
 	}
 	
-	public void addAttendee(Collection<Integer> attendees)
+	public void addAttendee(Collection<UserInfo> attendees)
 	{
-		this.attendees.addAll(attendees);
+		this.people_attending.addAll(attendees);
 		attendee_count = attendee_count + attendees.size();
 	}
 	
-	public void addFomo(int fomo)
+	public void clearFomo()
 	{
-		this.fomos.add(fomo);
+		this.fomoers.clear();
+		fomo_count = 0;
+	}
+	
+	public void addFomo(UserInfo fomo)
+	{
+		this.fomoers.add(fomo);
 		fomo_count++;
 	}
 	
-	public void addFomo(Collection<Integer> fomos)
+	public void addFomo(Collection<UserInfo> fomos)
 	{
-		this.fomos.addAll(fomos);
+		this.fomoers.addAll(fomos);
 		fomo_count = fomo_count + fomos.size();
 	}
 	
-	public Collection<Integer> getAttendees()
+	public Collection<UserInfo> getAttendees()
 	{
-		return Collections.unmodifiableCollection(this.attendees);
+		return Collections.unmodifiableCollection(this.people_attending);
 	}
 	
-	public Collection<Integer> getFomos()
+	public Collection<UserInfo> getFomos()
 	{
-		return Collections.unmodifiableCollection(this.fomos);
+		return Collections.unmodifiableCollection(this.fomoers);
 	}
 	
 	public UserInfo getEventOwner()
@@ -260,7 +286,7 @@ public class EventDetail implements Comparable<EventDetail> {
 		return stories;
 	}
 
-	public Collection<PhotoItem> getImages() {
+	public ArrayList<PhotoItem> getImages() {
 		return photos;
 	}
 

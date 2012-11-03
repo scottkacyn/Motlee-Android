@@ -13,6 +13,7 @@ import com.motlee.android.layouts.GridListTableLayout;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.UserInfoList;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -54,7 +55,7 @@ public class PeopleListFragment extends BaseMotleeFragment {
 	
 	private LayoutInflater inflater;
 	
-	private ArrayList<Integer> mUserIDs = new ArrayList<Integer>();
+	private ArrayList<UserInfo> mUsers = new ArrayList<UserInfo>();
 	
 	private Facebook facebook = new Facebook(GlobalVariables.FB_APP_ID);
     private ImageLoader imageDownloader;
@@ -142,25 +143,25 @@ public class PeopleListFragment extends BaseMotleeFragment {
 	private void setUpPeopleList() 
 	{
 
-		if (mUserIDs.size() > 0)
+		if (mUsers.size() > 0)
 		{
-			for (int i = 0; i < mUserIDs.size(); i++)
+			for (int i = 0; i < mUsers.size(); i++)
 			{
-				int userID = mUserIDs.get(i);
+				UserInfo user = mUsers.get(i);
 				
-				int facebookID = UserInfoList.getInstance().get(userID).uid;
+				int facebookID = user.uid;
 				
 				String picture = facebookPrefix + Integer.toString(facebookID) + "/picture";
 				
-				String name = UserInfoList.getInstance().get(userID).name;
+				String name = user.name;
 				
-				if (i == mUserIDs.size() - 1)
+				if (i == mUsers.size() - 1)
 				{
-					setLabelButton(name, picture, Integer.toString(userID), true);
+					setLabelButton(name, picture, Integer.toString(user.id), true);
 				}
 				else
 				{
-					setLabelButton(name, picture, Integer.toString(userID), false);
+					setLabelButton(name, picture, Integer.toString(user.id), false);
 				}
 			}
 		}
@@ -198,8 +199,8 @@ public class PeopleListFragment extends BaseMotleeFragment {
 		eventDetailPeopleList.addView(tr);
 	}
 	
-	public void setUserIdList(ArrayList<Integer> userIDs)
+	public void setUserList(ArrayList<UserInfo> users)
 	{
-		mUserIDs = userIDs;
+		mUsers = users;
 	}
 }

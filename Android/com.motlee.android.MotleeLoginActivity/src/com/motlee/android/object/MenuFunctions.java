@@ -8,6 +8,7 @@ import com.motlee.android.R;
 import com.motlee.android.SettingsActivity;
 import com.motlee.android.TakePhotoActivity;
 import com.motlee.android.adapter.EventListAdapter;
+import com.motlee.android.fragment.BaseMotleeFragment;
 import com.motlee.android.fragment.EventListFragment;
 import com.motlee.android.fragment.MainMenuFragment;
 import com.motlee.android.fragment.PlusMenuFragment;
@@ -265,7 +266,7 @@ public class MenuFunctions {
 	
 	public static void showAllEvents(View view, FragmentActivity activity)
 	{
-		EventListParams newParams = new EventListParams("All Events", EventServiceBuffer.NO_EVENT_FILTER);
+		EventListParams newParams = new EventListParams(BaseMotleeFragment.ALL_EVENTS, EventServiceBuffer.NO_EVENT_FILTER);
 		
 		showNewListView(newParams, activity);
 		
@@ -274,7 +275,7 @@ public class MenuFunctions {
 	
 	public static void showMyEvents(View view, FragmentActivity activity)
 	{
-		EventListParams newParams = new EventListParams("My Events", EventServiceBuffer.MY_EVENTS);
+		EventListParams newParams = new EventListParams(BaseMotleeFragment.MY_EVENTS, EventServiceBuffer.MY_EVENTS);
 		
 		showNewListView(newParams, activity);
 		
@@ -284,7 +285,7 @@ public class MenuFunctions {
 	public static void showNearbyEvents(View view, FragmentActivity activity)
 	{
 		// TODO: add get nearby events call to database: EventServiceBuffer.NEARBY_EVENTS
-		EventListParams newParams = new EventListParams("Nearby Events", EventServiceBuffer.NO_EVENT_FILTER);
+		EventListParams newParams = new EventListParams(BaseMotleeFragment.NEARBY_EVENTS, EventServiceBuffer.NO_EVENT_FILTER);
 		
 		showNewListView(newParams, activity);
 		

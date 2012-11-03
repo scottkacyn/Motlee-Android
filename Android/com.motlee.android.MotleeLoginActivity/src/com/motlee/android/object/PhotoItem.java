@@ -7,25 +7,37 @@ import android.os.Parcelable;
 
 import com.motlee.android.enums.EventItemType;
 
-public class PhotoItem extends EventItemWithBody {
+public class PhotoItem extends EventItem {
 
-	public String url;
-	public LocationInfo location;
+	public String caption;
+	public String image_file_name;
+	public double lat;
+	public double lon;
+	public LocationInfo location = new LocationInfo();
+	
+	public PhotoItem()
+	{
+		super();
+		type = EventItemType.PICTURE;
+	}
 	
 	public PhotoItem(Integer eventID, EventItemType type,
-			Integer userID, Date timeCreated, String body, String url) {
-		super(eventID, type, userID, timeCreated, body);
+			Integer userID, Date timeCreated, String caption, String imageFileName) {
+		super(eventID, type, userID, timeCreated);
 		
-		this.url = url;
+		this.image_file_name = imageFileName;
 		this.location = new LocationInfo();
 	}
 
 	public PhotoItem(Integer eventID, EventItemType type,
-			Integer userID, Date timeCreated, String body, String url, LocationInfo location) {
-		super(eventID, type, userID, timeCreated, body);
+			Integer userID, Date timeCreated, String caption, String imageFileName, LocationInfo location) {
+		super(eventID, type, userID, timeCreated);
 		
-		this.url = url;
+		this.caption = caption;
+		this.image_file_name = imageFileName;
 		this.location = location;
+		this.lat = location.latitude;
+		this.lon = location.longitude;
 	}
 
 	public int describeContents() {
@@ -35,14 +47,19 @@ public class PhotoItem extends EventItemWithBody {
 
 	protected PhotoItem(Parcel in) {
 		super(in);
-		this.url = in.readString();
-		// TODO: make LocationInfo Parcelable
+		this.caption = in.readString();
+		this.image_file_name = in.readString();
+		this.lat = in.readDouble();
+		this.lon = in.readDouble();
 		this.location = in.readParcelable(LocationInfo.class.getClassLoader());
 	}
 	
 	public void writeToParcel(Parcel out, int flags) {
 		super.writeToParcel(out, flags);
-		out.writeString(this.url);
+		out.writeString(this.caption);
+		out.writeString(this.image_file_name);
+		out.writeDouble(this.lat);
+		out.writeDouble(this.lon);
 		out.writeParcelable(this.location, flags);
 	}
 	

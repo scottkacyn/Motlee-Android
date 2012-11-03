@@ -71,13 +71,13 @@ public class GridListTableLayout extends StretchedBackgroundTableLayout {
 		inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
 	}
 	
-	public void addList(Collection<EventItemWithBody> collection)
+	public void addList(Collection<EventItem> collection)
 	{
 		this.removeAllViews();
 		
 		this.setStretchAllColumns(true);
 		
-		for (EventItemWithBody item : collection)
+		for (EventItem item : collection)
 		{
 			View view = this.inflate(context, R.layout.event_detail_page_item, null);
 			
@@ -92,7 +92,9 @@ public class GridListTableLayout extends StretchedBackgroundTableLayout {
 				ImageView imageView = (ImageView) view.findViewById(R.id.grid_thumbnail);
 		    	imageView.setTag(item);
 		    	
-		        GlobalVariables.getInstance().dowloadImage(context, imageView, ((PhotoItem)item).url);
+		    	PhotoItem photo = (PhotoItem) item;
+		    	
+		        GlobalVariables.getInstance().dowloadImage(context, imageView, GlobalVariables.getInstance().getAWSUrlCompressed(photo));
 		        
 		        imageView.setVisibility(View.VISIBLE);
 			}
@@ -101,7 +103,7 @@ public class GridListTableLayout extends StretchedBackgroundTableLayout {
 			{							
 				TextView textView = (TextView) view.findViewById(R.id.story_picture_story);
 				
-				textView.setText(item.body);
+				textView.setText(((EventItemWithBody)item).body);
 				
 				view.findViewById(R.id.story_picture_picture).setVisibility(View.GONE);
 				
@@ -175,7 +177,7 @@ public class GridListTableLayout extends StretchedBackgroundTableLayout {
 			ImageView imageView = (ImageView) view.findViewById(R.id.grid_thumbnail);
 			imageView.setTag(imageArray[i]);
 			
-			GlobalVariables.getInstance().downloadThumbnailImage(context, imageView, imageArray[i].url);		
+			GlobalVariables.getInstance().downloadThumbnailImage(context, imageView, GlobalVariables.getInstance().getAWSUrlThumbnail(imageArray[i]));		
 	        
 			tr.addView(view);
 			

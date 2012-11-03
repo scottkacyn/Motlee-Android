@@ -1,5 +1,6 @@
 package com.motlee.android.object;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -15,6 +16,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,6 +39,8 @@ import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
+import com.motlee.android.object.event.UpdatedPhotoEvent;
+import com.motlee.android.object.event.UpdatedPhotoListener;
 import com.motlee.android.object.event.UserInfoEvent;
 import com.motlee.android.object.event.UserInfoListener;
 import com.motlee.android.service.RubyService;
@@ -69,13 +73,14 @@ public class EventServiceBuffer extends Object {
     public static final int createEventSuccessCode = HttpStatus.SC_CREATED + RubyService.CREATE_EVEVT;
     public static final int addAttendeeSuccessCode = HttpStatus.SC_OK + RubyService.ADD_ATTENDEE;
     public static final int fomoSuccessCode = HttpStatus.SC_OK + RubyService.FOMOS;
+    public static final int photoSuccessCode = HttpStatus.SC_OK + RubyService.PHOTO;
+    public static final int singleEventSuccessCode = HttpStatus.SC_OK + RubyService.EVENT_SINGLE;
     
     private static UpdatedEventDetailListener mEventDetailListener;
     private static UserInfoListener mUserInfoListener;
     private static UpdatedAttendeeListener mAttendeeListener;
-    
-    private static Vector<Integer> mEventsToFinish = new Vector<Integer>();
-    
+	private static UpdatedPhotoListener mPhotoListener;
+
 	public static synchronized EventServiceBuffer getInstance(Context context)
 	{
 		mContext = context;
@@ -109,6 +114,11 @@ public class EventServiceBuffer extends Object {
         GlobalEventList.getInstance();
 	}
 	
+	public static void setPhotoListener(UpdatedPhotoListener listener)
+	{
+		mPhotoListener = listener;
+	}
+	
 	public static void setAttendeeListener(UpdatedAttendeeListener listener)
 	{
 		mAttendeeListener = listener;
@@ -134,13 +144,44 @@ public class EventServiceBuffer extends Object {
 		mUserInfoListener = null;
 	}
 	
-	public static void sendPhotoToDatabase(Integer mEventID) {
-		// TODO Auto-generated method stub
+	public static void sendPhotoToDatabase(Integer eventID, String mCurrentPhotoPath, LocationInfo location, String caption) {
+
+		Bundle params = new Bundle();
+		params.putString(AUTH_TOK, GlobalVariables.getInstance().getAuthoToken());
+		params.putInt("photo[event_id]", eventID);
+		params.putDouble("photo[lat]", location.latitude);
+		params.putDouble("photo[lon]", location.longitude);
+		params.putString("photo[caption]", caption);
+		params.putInt("photo[user_id]", GlobalVariables.getInstance().getUserId());
+		params.putString("photo[image]", mCurrentPhotoPath);
 		
+		//image.recycle();
+		
+        Intent intent = new Intent(mContext, RubyService.class);
+        intent.setData(Uri.parse(WEB_SERVICE_URL + "events/" + eventID + "/photos/new"));
+        
+        // Here we are going to place our REST call parameters. Note that
+        // we could have just used Uri.Builder and appendQueryParameter()
+        // here, but I wanted to illustrate how to use the Bundle params.
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.POST);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.PHOTO);
+        intent.putExtra(RubyService.EXTRA_PARAMS, params);
+        
+        mContext.startService(intent);
+		
+	}
+	
+	public static void joinEvent(Integer eventID)
+	{
+		sendAttendeesForEvent(eventID, new ArrayList<Integer>());
 	}
 	
 	public static void sendAttendeesForEvent(Integer eventID, ArrayList<Integer> attendees) 
 	{
+		Bundle params = new Bundle();
+		params.putString(AUTH_TOK, GlobalVariables.getInstance().getAuthoToken());
+		
 		if (attendees.size() > 0)
 		{
 		
@@ -153,32 +194,22 @@ public class EventServiceBuffer extends Object {
 			
 			attendeeUIDs = attendeeUIDs.substring(0, attendeeUIDs.length() - 1);
 			
-			Bundle params = new Bundle();
 			params.putString("uids", attendeeUIDs);
-			params.putString(AUTH_TOK, GlobalVariables.getInstance().getAuthoToken());
-			
-	        Intent intent = new Intent(mContext, RubyService.class);
-	        intent.setData(Uri.parse(WEB_SERVICE_URL + "events/" + eventID + "/join"));
-	        
-	        // Here we are going to place our REST call parameters. Note that
-	        // we could have just used Uri.Builder and appendQueryParameter()
-	        // here, but I wanted to illustrate how to use the Bundle params.
-	        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
-	        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.POST);
-	        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.ADD_ATTENDEE);
-	        intent.putExtra(RubyService.EXTRA_PARAMS, params);
-	        
-	        mContext.startService(intent);
+			params.putString("type", "invite");
 		}
-		else
-		{
-			if (mAttendeeListener != null)
-			{
-				UpdatedAttendeeEvent event = new UpdatedAttendeeEvent(instance, new HashSet<Integer>());
-				
-				mAttendeeListener.raised(event);
-			}
-		}
+		
+        Intent intent = new Intent(mContext, RubyService.class);
+        intent.setData(Uri.parse(WEB_SERVICE_URL + "events/" + eventID + "/join"));
+		
+        // Here we are going to place our REST call parameters. Note that
+        // we could have just used Uri.Builder and appendQueryParameter()
+        // here, but I wanted to illustrate how to use the Bundle params.
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.POST);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.ADD_ATTENDEE);
+        intent.putExtra(RubyService.EXTRA_PARAMS, params);
+        
+        mContext.startService(intent);
 	}
 	
 	public static void sendNewEventToDatabase(EventDetail eDetail)
@@ -227,25 +258,6 @@ public class EventServiceBuffer extends Object {
         intent.putExtra(RubyService.EXTRA_PARAMS, formData);
         // Here we send our Intent to our RESTService.
         mContext.startService(intent);
-	}
-	
-	public static void getFomosFromService(int eventID)
-	{
-		if (eventID > 0)
-		{
-	        Intent intent = new Intent(mContext, RubyService.class);
-	        intent.setData(Uri.parse(WEB_SERVICE_URL + "events/" + eventID + "/fomos"));
-	        
-	        Bundle formData = new Bundle();
-	        formData.putString(AUTH_TOK, GlobalVariables.getInstance().getAuthoToken());
-	        
-	        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
-	        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
-	        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.FOMOS);
-	        intent.putExtra(RubyService.EXTRA_PARAMS, formData);
-	
-	        mContext.startService(intent);
-		}
 	}
 	
 	public static void getUserInfoFromService(int userID)
@@ -302,7 +314,7 @@ public class EventServiceBuffer extends Object {
         // Here we are going to place our REST call parameters. Note that
         // we could have just used Uri.Builder and appendQueryParameter()
         // here, but I wanted to illustrate how to use the Bundle params.
-        
+
 		if (eventParam != NO_EVENT_FILTER)
 		{
 			formData.putString("page", eventParam);
@@ -316,11 +328,29 @@ public class EventServiceBuffer extends Object {
         mContext.startService(intent);
 	}
     
-    private void getStoriesForEventFromService(int eventID)
+	public static void getEventsFromService(Integer eventID)
+	{
+        Intent intent = new Intent(mContext, RubyService.class);
+        intent.setData(Uri.parse(WEB_SERVICE_URL + "events/" + eventID));
+        
+        
+        Bundle formData = new Bundle();
+        formData.putString(AUTH_TOK, GlobalVariables.getInstance().getAuthoToken());
+        formData.putString("access_token", FB_TOKEN);
+		
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.EVENT_SINGLE);
+        intent.putExtra(RubyService.EXTRA_PARAMS, formData);
+        // Here we send our Intent to our RESTService.
+        mContext.startService(intent);
+	}
+
+    public static void getPhotosForEventFromService(int eventID)
     {
         Intent intent = new Intent(mContext, RubyService.class);
         
-        String uri = WEB_SERVICE_URL + "events/" + eventID + "/stories.json";
+        String uri = WEB_SERVICE_URL + "events/" + eventID + "/photos";
         
         intent.setData(Uri.parse(uri));
         
@@ -332,13 +362,13 @@ public class EventServiceBuffer extends Object {
         // here, but I wanted to illustrate how to use the Bundle params.
         intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
         intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
-        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.STORY);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.PHOTO);
         intent.putExtra(RubyService.EXTRA_PARAMS, formData);
         
         // Here we send our Intent to our RESTService.
         mContext.startService(intent);
     }
-
+    
     public void onRESTResult(int code, String result) {
         // Here is where we handle our REST response. This is similar to the 
         // LoaderCallbacks<D>.onLoadFinished() call from the previous tutorial.
@@ -357,10 +387,6 @@ public class EventServiceBuffer extends Object {
         {
         	getUserInfoFromJson(result);
         }
-        else if (code == storySuccessCode && result != null)
-        {
-        	getStoryInfoFromJson(result);
-        }
         else if (code == userAuthSuccessCode && result != null)
         {
         	getUserAuthFromJson(result);
@@ -369,13 +395,17 @@ public class EventServiceBuffer extends Object {
         {
         	getEventsFromJson(result);
         }
-        else if (code == fomoSuccessCode && result != null)
-        {
-        	getFomosFromJson(result);
-        }
-        else if (code == this.addAttendeeSuccessCode && result != null)
+        else if (code == addAttendeeSuccessCode && result != null)
         {
         	getAttendeesFromJson(result);
+        }
+        else if (code == photoSuccessCode && result != null)
+        {
+        	getPhotosFromJson(result);
+        }
+        else if (code == singleEventSuccessCode && result != null)
+        {
+        	getEventDetailFromJson(result);
         }
         else {
         	
@@ -389,7 +419,133 @@ public class EventServiceBuffer extends Object {
         }
     }
     
-    private void getAttendeesFromJson(String result) {
+    private void getEventDetailFromJson(String result) {
+		
+    	if (mEventDetailListener != null)
+    	{
+        	Gson gson = new GsonBuilder()
+        	.addDeserializationExclusionStrategy(new NoExposeExclusionStrategy())
+        	.setDateFormat("MM/dd/yyyy")
+        	.create();
+    		
+    		JsonParser parser = new JsonParser();
+    		
+    		JsonObject object = parser.parse(result).getAsJsonObject();
+    		
+    		JsonObject eventObject = object.getAsJsonObject("event").getAsJsonObject("event");
+    		
+    		JsonArray attendingElement = eventObject.getAsJsonArray("people_attending");
+    		
+    		JsonArray fomoers = eventObject.getAsJsonArray("fomoers");
+    		
+    		JsonArray stories = eventObject.getAsJsonArray("stories");
+    		
+    		EventDetail eDetail = gson.fromJson(eventObject, EventDetail.class);
+    		
+    		EventDetail originalEventDetail;
+    		
+    		if (GlobalEventList.eventDetailMap.containsKey(eDetail.getEventID()))
+    		{
+    			originalEventDetail = GlobalEventList.eventDetailMap.get(eDetail.getEventID());
+    			
+    			originalEventDetail.UpdateEventDetail(eDetail);
+    		}
+    		else
+    		{
+    			GlobalEventList.eventDetailMap.put(eDetail.getEventID(), eDetail);
+    			
+    			originalEventDetail = eDetail;
+    		}
+    		
+    		originalEventDetail.clearAttendees();
+    		for (JsonElement element : attendingElement)
+    		{
+    			originalEventDetail.addAttendee(gson.fromJson(element, UserInfo.class));
+    		}
+    		
+    		originalEventDetail.clearFomo();
+    		for (JsonElement element : fomoers)
+    		{
+    			originalEventDetail.addFomo(gson.fromJson(element, UserInfo.class));
+    		}
+    		
+    		originalEventDetail.getStories().clear();
+    		for (JsonElement element : stories)
+    		{
+    			originalEventDetail.getStories().add(gson.fromJson(element, EventItemWithBody.class));
+    		}
+    		
+    		Set<Integer> eventDetails = new HashSet<Integer>();
+    		
+    		eventDetails.add(eDetail.getEventID());
+    		
+    		UpdatedEventDetailEvent evt = new UpdatedEventDetailEvent(this, eventDetails);
+    		
+    		mEventDetailListener.myEventOccurred(evt);
+    	}
+		
+	}
+
+	private void getPhotosFromJson(String result) {
+		
+		Gson gson = new Gson();
+		
+    	JsonParser parser = new JsonParser();
+    	
+    	JsonArray array = new JsonArray();
+    	
+    	Set<PhotoItem> photos = new HashSet<PhotoItem>();
+    	
+    	Integer eventID = -100;
+    	
+    	if (result.length() > 0)
+    	{
+    		JsonElement element = parser.parse(result);
+    		
+    		JsonObject jsonPhotos = element.getAsJsonObject();
+    		
+    		if (jsonPhotos.get("photos").isJsonArray())
+    		{
+	    		array = jsonPhotos.get("photos").getAsJsonArray();
+	
+		    	for (JsonElement jsonElement : array)
+		    	{
+		    		PhotoItem photo = gson.fromJson(jsonElement, PhotosHolder.class).photo;
+		    		
+		    		if (!UserInfoList.getInstance().containsKey(photo.user_id))
+		    		{
+		    			getUserInfoFromService(photo.user_id);
+		    		}
+		    		
+		    		photo.type = EventItemType.PICTURE;
+		    		
+		    		eventID = photo.event_id;
+		    		
+		    		photos.add(photo);
+		    	}
+		    	
+	    		if (eventID != -100)
+	    		{
+	    			GlobalEventList.eventDetailMap.get(eventID).getImages().clear();
+	    			GlobalEventList.eventDetailMap.get(eventID).getImages().addAll(photos);
+	    		}
+    		}
+    		
+        	if (mPhotoListener != null)
+        	{
+        		UpdatedPhotoEvent e = new UpdatedPhotoEvent(this, photos);
+        		
+        		mPhotoListener.photoEvent(e);
+        	}
+    	}
+	}
+
+	private class PhotosHolder
+	{
+		public PhotoItem photo;
+	}
+    
+	private void getAttendeesFromJson(String result) {
 		
     	if (mAttendeeListener != null)
     	{
@@ -426,79 +582,6 @@ public class EventServiceBuffer extends Object {
 	public static Collection<EventDetail> getEventDetails() {
 
     	return GlobalEventList.eventDetailMap.values();
-    }
-    
-	private void getFomosFromJson(String json)
-	{
-		Gson gson = new Gson();
-		
-    	JsonParser parser = new JsonParser();
-    	
-    	JsonArray array = new JsonArray();
-    	
-    	if (json.length() > 0)
-    	{
-    		array = parser.parse(json).getAsJsonArray();
-    	}
-		
-    	for (JsonElement element : array)
-    	{
-    		EventItem fomos = gson.fromJson(element, FomosHolder.class).fomos;
-    		
-    		if (!UserInfoList.getInstance().containsKey(fomos.user_id))
-    		{
-    			getUserInfoFromService(fomos.user_id);
-    		}
-    		
-    		GlobalEventList.eventDetailMap.get(fomos.event_id).addFomo(fomos.user_id);
-    	}
-	}
-	
-	private class FomosHolder
-	{
-		public EventItem fomos;
-	}
-	
-    private void getStoryInfoFromJson(String json) {
-		Gson gson = new Gson();
-		
-    	JsonParser parser = new JsonParser();
-    	
-    	JsonArray array = new JsonArray();
-    	
-    	if (json.length() > 0)
-    	{
-    		array = parser.parse(json).getAsJsonArray();
-    	}
-		
-    	for (JsonElement element : array)
-    	{
-    		EventItemWithBody story = gson.fromJson(element, StoryHolder.class).story;
-    		
-    		story.type = EventItemType.STORY;
-    		
-    		for (EventItem comment : story.comments)
-    		{
-    			comment.type = EventItemType.COMMENT;
-    		}
-    		
-    		if (!UserInfoList.getInstance().containsKey(story.user_id))
-    		{
-    			getUserInfoFromService(story.user_id);
-    		}
-    		
-    		GlobalEventList.eventDetailMap.get(story.event_id).getStories().add(story);
-    	}
-	}
-
-    private class StoryHolder
-    {
-    	public EventItemWithBody story;
-    	
-    	public StoryHolder()
-    	{
-    		
-    	}
     }
     
 	private void getUserInfoFromJson(String json)
@@ -567,17 +650,21 @@ public class EventServiceBuffer extends Object {
                     			ownerInfo = gson.fromJson(userElement, UserInfo.class);
                     		}
                 		}
-                		
 
-                		
                		    eDetail = gson.fromJson(element, EventDetailHolder.class).event;
-                		
-               		    setMockPictures(eDetail);
                		    
                		    setMockLocation(eDetail);
                		    
-                		GlobalEventList.eventDetailMap.put(eDetail.getEventID(), eDetail);
-                		
+               		    if (GlobalEventList.eventDetailMap.containsKey(eDetail.getEventID()))
+               		    {
+               		    	GlobalEventList.eventDetailMap.get(eDetail.getEventID()).UpdateEventDetail(eDetail);
+               		    }
+               		    else
+               		    {
+               		    	GlobalEventList.eventDetailMap.put(eDetail.getEventID(), eDetail);
+               		    	
+               		    }
+               		    
                 		if (eDetail.getOwnerID() == GlobalVariables.getInstance().getUserId())
                 		{
                 			GlobalEventList.myEventDetails.add(eDetail.getEventID());
@@ -590,26 +677,29 @@ public class EventServiceBuffer extends Object {
                 			getUserInfoFromService(eDetail.getOwnerID());
                 		}
                 		
-                		getStoriesForEventFromService(eDetail.getEventID());
-                		
-                		eventIDs.add(eDetail.getEventID());
+                		getPhotosForEventFromService(eDetail.getEventID());
                 		
                 		//getFomosFromService(eDetail.getEventID());
+                		
+                		eventIDs.add(eDetail.getEventID());
                 	}
         		}
         		else
         		{
         			eDetail = gson.fromJson(elem, EventDetailHolder.class).event;
-        			
-           		    setMockPictures(eDetail);
            		    
            		    setMockLocation(eDetail);
            		    
-           		    //TODO: get rid of this once we have separate calls for stories/fomos/attendees
-           		    eDetail.getStories().clear();
+           		    if (GlobalEventList.eventDetailMap.containsKey(eDetail.getEventID()))
+           		    {
+           		    	GlobalEventList.eventDetailMap.get(eDetail.getEventID()).UpdateEventDetail(eDetail);
+           		    }
+           		    else
+           		    {
+           		    	GlobalEventList.eventDetailMap.put(eDetail.getEventID(), eDetail);
+           		    	
+           		    }
            		    
-            		GlobalEventList.eventDetailMap.put(eDetail.getEventID(), eDetail);
-            		
             		if (eDetail.getOwnerID() == GlobalVariables.getInstance().getUserId())
             		{
             			GlobalEventList.myEventDetails.add(eDetail.getEventID());
@@ -619,8 +709,6 @@ public class EventServiceBuffer extends Object {
             		{
             			getUserInfoFromService(eDetail.getOwnerID());
             		}
-            		
-            		getStoriesForEventFromService(eDetail.getEventID());
             		
             		eventIDs.add(eDetail.getEventID());
         		}
@@ -652,17 +740,6 @@ public class EventServiceBuffer extends Object {
 		LocationInfo location = new LocationInfo("My House", 41.909435, -87.639489);
 		eDetail.setLocationInfo(location);
 	}
-
-	private void setMockPictures(EventDetail eDetail) {
-		eDetail.getImages().clear();
-		
-		for (int i = 0; i < URLS.length; i++)
-		{
-			PhotoItem photo = new PhotoItem(eDetail.getEventID(), EventItemType.PICTURE, eDetail.getOwnerID(), new Date(), "Hot Tits!", URLS[i]);
-			
-			eDetail.getImages().add(photo);
-		}
-	}
     
     private class EventDetailHolder
     {
@@ -673,18 +750,4 @@ public class EventServiceBuffer extends Object {
     		
     	}
     }
-    
-    private static final String[] URLS = {
-    	"http://i00.i.aliimg.com/wsphoto/v0/569589836/Free-Shipping-Krazy-sexy-women-s-party-dress-one-piece-dress-slim-no-265.jpg",
-        "http://blogs.laweekly.com/westcoastsound/big-whup-0-cover.jpg",
-        "http://i.imgur.com/A13A0.jpg",
-        "http://f0.bcbits.com/z/42/91/4291977758-1.jpg",
-        "http://f0.bcbits.com/z/42/81/4281601160-1.jpg",
-        "http://blogs.wickedlocal.com/springsteen/files/2012/08/Springsteen-312.jpg"
-        
-        
-    };
-
-
-
 }

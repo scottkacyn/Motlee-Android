@@ -1,6 +1,8 @@
 package com.motlee.android;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,7 +19,9 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -44,9 +48,12 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 	private static final String JPEG_FILE_SUFFIX = ".jpg";
 	private static final String TAKEN_PHOTO = "TakenPhoto";
 	
+	private static final String MOTLEE_PATH = "Pictures/Motlee/";
+	
 	private boolean recropping = false;
 	
 	private String mCurrentPhotoPath;
+	private String mCurrentCroppedPhotoPath;
 	private Uri picUri;
 	
 	private static final String CAMERA_DIR = "/dcim/";
@@ -122,7 +129,14 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			if (resultCode == RESULT_OK) {
 				
 				picUri = data.getData();
-				
+				if (picUri == null)
+				{
+					picUri = Uri.fromFile(new File(mCurrentPhotoPath));
+				}
+				else
+				{
+					mCurrentPhotoPath = getPath(picUri);
+				}
 				performCrop();
 			}
 			break;
@@ -131,7 +145,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			if (resultCode == RESULT_OK) {
 				
 				picUri = data.getData();
-				
+				mCurrentPhotoPath = getPath(picUri);
 				performCrop();
 			}
 			break;
@@ -142,8 +156,34 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			
 			Bundle extras = data.getExtras();
 			System.gc();
+			
+			String[] fileParts = mCurrentPhotoPath.split("/");
+			
+			String fileName = fileParts[fileParts.length - 1];
+			
+			File croppedFile = getCroppedPhotoFile(fileName);
+			
+			mCurrentCroppedPhotoPath = croppedFile.getAbsolutePath();
+			
+			FileOutputStream out = null;
+			try {
+				out = new FileOutputStream(getCroppedPhotoFile(fileName));
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			//get the cropped bitmap
 			final Bitmap thePic = extras.getParcelable("data");
+			
+			if (thePic.compress(CompressFormat.JPEG, 90, out))
+			{
+				thePic.recycle();
+			}
+			else
+			{
+				// TODO: handle destruction
+			}
 			
 			mHandler.post(new Runnable() {
 			    
@@ -157,6 +197,18 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 		} // switch
 	}
 	
+	private File getCroppedPhotoFile(String fileName) {
+		
+		File file = new File(Environment.getExternalStorageDirectory(), MOTLEE_PATH);
+	    if (!file.exists()) {
+	        if (!file.mkdirs()) {
+	            Log.e("TravellerLog :: ", "Problem creating Image folder");
+	        }
+	    }
+		
+	    return new File(file, fileName);
+	}
+
 	public void onRecropPicture(View view)
 	{
 		this.recropping = true;
@@ -174,7 +226,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			TakePhotoFragment takePhotoFragment = new TakePhotoFragment();
 			takePhotoFragment.setHeaderView(findViewById(R.id.header));
 			takePhotoFragment.setScrollWheelAdapter(mAdapter);
-			takePhotoFragment.setBitmap(thePic);
+			takePhotoFragment.setPhotoPath(mCurrentCroppedPhotoPath);
 			
 			ft.replace(R.id.fragment_content, takePhotoFragment, TAKE_PHOTO_FRAGMENT)
 			.commit();
@@ -193,7 +245,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			TakePhotoFragment takePhotoFragment = new TakePhotoFragment();
 			takePhotoFragment.setHeaderView(findViewById(R.id.header));
 			takePhotoFragment.setScrollWheelAdapter(mAdapter);
-			takePhotoFragment.setBitmap(thePic);
+			takePhotoFragment.setPhotoPath(mCurrentCroppedPhotoPath);
 			
 			ft.add(R.id.fragment_content, takePhotoFragment, TAKE_PHOTO_FRAGMENT)
 			.commit();
@@ -206,7 +258,6 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 		
 		if (mCurrentPhotoPath != null) {
 			galleryAddPic();
-			mCurrentPhotoPath = null;
 		}
 	}
 	
@@ -310,6 +361,15 @@ public class TakePhotoActivity extends BaseMotleeActivity {
     		Toast toast = Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT);
     		toast.show();
     	}
+    }
+    
+    public String getPath(Uri uri) {
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = managedQuery(uri, projection, null, null, null);
+        int column_index = cursor
+                .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
     }
     
     @Override

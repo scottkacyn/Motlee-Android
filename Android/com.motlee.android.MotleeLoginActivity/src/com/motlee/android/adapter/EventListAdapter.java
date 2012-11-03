@@ -40,7 +40,7 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
         // store the resource
         private int resource;
         
-        private final ImageAdapter imageAdapter;
+        private Context mContext;
         
         // store (a reference to) the data
         private Vector<Integer> data = new Vector<Integer>();
@@ -55,11 +55,11 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
         public EventListAdapter(Context context, int resource, ArrayList<Integer> data) {
         	    super(context, resource, data);
             	Log.w(tag, "constructor");
+            	this.mContext = context;
                 this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 this.resource = resource;
                 this.data.addAll(data);
                 this.data.add(LOAD_MORE_BUTTON);
-                imageAdapter = new ImageAdapter(context, R.layout.thumbnail);
         }
 
         
@@ -128,6 +128,7 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
 	                        holder.list_view = (HorizontalListView) convertView.findViewById(R.id.listview);
 	                        holder.event_footer_owner = (TextView) convertView.findViewById(R.id.event_footer_owner);
 	                        holder.event_footer_location = (TextView) convertView.findViewById(R.id.event_footer_location);
+	                        holder.imageAdapter = new ImageAdapter(mContext, R.layout.thumbnail);
 	                        convertView.setTag(holder);
                 			
                 } else {
@@ -173,11 +174,18 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
                 ArrayList<String> imageURLs = new ArrayList<String>();
                 for (PhotoItem photo : item.getImages())
                 {
-                	imageURLs.add(photo.url);
+                	imageURLs.add(GlobalVariables.getInstance().getAWSUrlThumbnail(photo));
                 }
                 
-                imageAdapter.setURLs(imageURLs);
-                holder.list_view.setAdapter(imageAdapter);
+                if (holder.list_view.getAdapter() != null)
+                {
+                	holder.imageAdapter.setURLs(item.getImages());
+                }
+                else
+                {
+                	holder.imageAdapter.setURLs(item.getImages());
+                	holder.list_view.setAdapter(holder.imageAdapter);
+                }
         }
         
         private static class ViewHolder {
@@ -188,6 +196,7 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
             public TextView event_footer_owner;
             public TextView event_footer_location;
             public HorizontalListView list_view;
+            public ImageAdapter imageAdapter;
         }
 }
 

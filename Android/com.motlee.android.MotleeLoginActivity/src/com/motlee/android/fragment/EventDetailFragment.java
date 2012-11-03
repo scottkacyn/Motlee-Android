@@ -100,6 +100,12 @@ public class EventDetailFragment extends BaseDetailFragment {
 		mEventDetail = eDetail;
 		this.pageTitle = mEventDetail.getEventName();
 		setPageHeader(pageTitle);
+		
+		if (mEventDetail != null)
+		{
+			showRightHeaderButton(mEventDetail);
+		}
+		
 		if (girdListTableLayout != null)
 		{
 			addListToTableLayout();
@@ -190,7 +196,7 @@ public class EventDetailFragment extends BaseDetailFragment {
 	
 	public void addListToTableLayout()
 	{
-		List<EventItemWithBody> storyPhotoList = new ArrayList<EventItemWithBody>();
+		List<EventItem> storyPhotoList = new ArrayList<EventItem>();
 		storyPhotoList.addAll(mEventDetail.getStories());
 		storyPhotoList.addAll(mEventDetail.getImages());
 		Collections.sort(storyPhotoList);

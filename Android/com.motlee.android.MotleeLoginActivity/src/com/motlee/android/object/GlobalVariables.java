@@ -77,6 +77,8 @@ public class GlobalVariables {
     
     private Location userLocation;
     
+    private String AWS_URL = "http://s3.amazonaws.com/motlee-development-photos/images/";
+    
     public static String FOMOS = "fomos";
     public static String ATTENDEES = "attendees";
     public static String DATE = "date";
@@ -154,6 +156,16 @@ public class GlobalVariables {
 	    }
 	}
 	
+	public String getAWSUrlThumbnail(PhotoItem photo)
+	{
+		return AWS_URL + photo.id + "/thumbnail/" + photo.image_file_name;
+	}
+	
+	public String getAWSUrlCompressed(PhotoItem photo)
+	{
+		return AWS_URL + photo.id + "/compressed/" + photo.image_file_name;
+	}
+	
 	public HttpClient setUpHttpClient()
 	{
 		DefaultHttpClient ret = null;
@@ -222,9 +234,15 @@ public class GlobalVariables {
 		.displayer(new SimpleBitmapDisplayer())
 		.build();
 		
+		ImageLoaderConfiguration imageConfiguration = new ImageLoaderConfiguration.Builder(context)
+		.memoryCacheExtraOptions(720, 720)
+		.memoryCache(new LRULimitedMemoryCache(4 * 1024 * 1024))
+		.defaultDisplayImageOptions(options)
+		.build();
+		
 		imageDownloader = ImageLoader.getInstance();
     	
-    	imageDownloader.init(ImageLoaderConfiguration.createDefault(context));
+    	imageDownloader.init(imageConfiguration);
     	
     	imageDownloader.displayImage(url, imageView, options);
 	}
@@ -234,16 +252,14 @@ public class GlobalVariables {
   		ImageScaleType ist = ImageScaleType.EXACTLY;
     	
 		DisplayImageOptions options = new DisplayImageOptions.Builder()
-		.showStubImage(R.drawable.stubimage)
+		.showStubImage(R.drawable.placeholder)
 		.resetViewBeforeLoading()
 		.imageScaleType(ist)
-		.cacheInMemory()
+		.cacheOnDisc()
 		.displayer(new SimpleBitmapDisplayer())
 		.build();
 		
 		ImageLoaderConfiguration imageConfiguration = new ImageLoaderConfiguration.Builder(context)
-		.memoryCacheExtraOptions(200, 200)
-		.memoryCache(new LRULimitedMemoryCache(4 * 1024 * 1024))
 		.defaultDisplayImageOptions(options)
 		.build();
 		
@@ -259,7 +275,7 @@ public class GlobalVariables {
   		ImageScaleType ist = ImageScaleType.EXACTLY;
     	
 		DisplayImageOptions options = new DisplayImageOptions.Builder()
-		.showStubImage(R.drawable.stubimage)
+		.showStubImage(R.drawable.placeholder)
 		.resetViewBeforeLoading()
 		.imageScaleType(ist)
 		.cacheOnDisc()

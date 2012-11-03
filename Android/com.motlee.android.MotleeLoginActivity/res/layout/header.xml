@@ -60,6 +60,15 @@
         android:id="@+id/bottom_header"
         android:background="@drawable/header_bottom_background"
         android:layout_below="@id/top_header">
+    	
+    	<ImageView 
+    	    android:id="@+id/header_icon"
+    	    android:layout_height="match_parent"
+    	    android:layout_width="wrap_content"
+    	    android:scaleType="fitCenter"
+    	    android:adjustViewBounds="true"
+    	    android:visibility="gone" />
+    	
         <TextView android:id="@+id/header_textView" 
             android:layout_width="wrap_content"
             android:layout_height="match_parent"

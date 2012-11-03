@@ -33,7 +33,7 @@ public class UserInfo {
 	
 	public UserInfo()
 	{
-
+		
 	}
 	
 	public UserInfo(int userID, int facebookID, String name, String email, Gender gender, String profilePicture, Date birthDate)
@@ -59,5 +59,28 @@ public class UserInfo {
 	{
 		return this.locationInfo;
 	}
+	
+    @Override
+    public int hashCode() {
+        int hashCode = 29;
+        hashCode = hashCode + this.id;
+        hashCode = hashCode + this.uid;
+        return hashCode;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (obj == this)
+            return true;
+        if (obj.getClass() != getClass())
+            return false;
+
+        UserInfo that = (UserInfo) obj;
+        
+        return
+	        ( this.uid == that.uid ) ;
+    }
 }
 

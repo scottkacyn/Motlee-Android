@@ -1,8 +1,19 @@
 package com.motlee.android.enums;
 
 public enum EventItemType {
-	PICTURE,
-	STORY,
-	COMMENT,
-	FOMO
+	PICTURE(1),
+	STORY(2),
+	COMMENT(3),
+	FOMO(4),
+	ATTENDEE(5);
+	
+	private final int value;
+	private EventItemType(int value)
+	{
+		this.value = value;
+	}
+	
+	public int getValue() {
+        return value;
+    }
 }

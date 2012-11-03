@@ -244,8 +244,8 @@ public class CreateEventActivity extends BaseMotleeActivity {
     	EventServiceBuffer.setAttendeeListener(new UpdatedAttendeeListener(){
 
 			public void raised(UpdatedAttendeeEvent e) {
-				// TODO Right now this method returns null
-				GlobalEventList.eventDetailMap.get(mEventID).addAttendee(attendees);
+
+				//GlobalEventList.eventDetailMap.get(mEventID).addAttendee(attendees);
 				
 				Intent seeDetailIntent = new Intent(CreateEventActivity.this, EventDetailActivity.class);
 				seeDetailIntent.putExtra("EventID", mEventID);

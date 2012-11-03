@@ -13,16 +13,16 @@
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="selectLocation" key="selection"/>
+		<item value="eventListener" key="selection"/>
 		<list key="findhistory">
+			<item value="eventListener"/>
+			<item value="photos"/>
+			<item value="getImages"/>
+			<item value="configuration"/>
+			<item value="mCurrentPhotoPath"/>
+			<item value="handleCameraPic"/>
+			<item value="paramsToList"/>
 			<item value="selectLocation"/>
-			<item value="Executing request"/>
-			<item value="Intent intent = new Intent(mContext, RubyService.class);"/>
-			<item value="itemsLayout.addView"/>
-			<item value="itemsLayout"/>
-			<item value="dataObserver"/>
-			<item value="setview"/>
-			<item value="searchTextTimer"/>
 		</list>
 		<list key="replacehistory">
 			<item value="EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);"/>

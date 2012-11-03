@@ -1,5 +1,7 @@
 package com.motlee.android.service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -20,6 +22,12 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -29,6 +37,9 @@ import com.motlee.android.object.GlobalVariables;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ResultReceiver;
@@ -49,6 +60,8 @@ public class RubyService extends IntentService {
     public static final int CREATE_EVEVT = 50000;
     public static final int FOMOS = 60000;
     public static final int ADD_ATTENDEE = 70000;
+	public static final int PHOTO = 80000;
+	public static final int EVENT_SINGLE = 90000;
     
     public static final String EXTRA_HTTP_VERB       = "com.motlee.android.EXTRA_HTTP_VERB";
     public static final String EXTRA_PARAMS          = "com.motlee.android.EXTRA_PARAMS";
@@ -119,8 +132,37 @@ public class RubyService extends IntentService {
                     HttpPost postRequest = (HttpPost) request;
                     
                     if (params != null) {
-                        UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(paramsToList(params));
-                        postRequest.setEntity(formEntity);
+                    	if (dataContent == PHOTO)
+                    	{
+                    		MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+                    		for (String key : params.keySet())
+                    		{
+                    			if (key.equals("photo[image]"))
+                    			{
+                    				String filePath = params.getString(key);
+                    				
+                    				String[] fileParts = filePath.split("/");
+                    				
+                    				String fileName = fileParts[fileParts.length - 1];
+                    				
+                    				File img = new File(filePath);
+                    				ContentBody cb = new FileBody(img, fileName, "image/jpeg", null);
+
+                    				reqEntity.addPart(key, cb);
+                    			}
+                    			else
+                    			{
+                    				reqEntity.addPart(key, new StringBody(params.get(key).toString()));
+                    			}
+                    		}
+                    		postRequest.setEntity(reqEntity);
+
+                    	}
+                    	else
+                    	{
+	                        UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(paramsToList(params));
+	                        postRequest.setEntity(formEntity);
+                    	}
                     }
                 }
                 break;

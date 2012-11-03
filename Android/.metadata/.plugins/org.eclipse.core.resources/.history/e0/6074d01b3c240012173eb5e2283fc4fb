@@ -1,0 +1,216 @@
+package com.motlee.android.adapter;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Vector;
+
+import com.motlee.android.R;
+import com.motlee.android.layouts.HorizontalRatioLinearLayout;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.GlobalEventList;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.UserInfo;
+import com.devsmart.android.ui.HorizontalListView;
+
+import android.content.Context;
+import android.graphics.Typeface;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+public class EventListAdapter extends ArrayAdapter<Integer> {
+	
+		private String tag = "EventListAdapter";
+        // store the context (as an inflated layout)
+		
+		//Default Integer to represent the "Load More Button"
+		private static final Integer LOAD_MORE_BUTTON = -9999;
+		
+		private static final Integer LOAD_MORE = 1;
+		private static final Integer EVENT_ITEM = 2;
+		
+        private LayoutInflater inflater;
+        // store the resource
+        private int resource;
+        
+        private final ImageAdapter imageAdapter;
+        
+        // store (a reference to) the data
+        private Vector<Integer> data = new Vector<Integer>();
+        
+        /**
+         * Default constructor. Creates the new Adaptor object to
+         * provide a ListView with data.
+         * @param context
+         * @param resource
+         * @param data
+         */
+        public EventListAdapter(Context context, int resource, ArrayList<Integer> data) {
+        	    super(context, resource, data);
+            	Log.w(tag, "constructor");
+                this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                this.resource = resource;
+                this.data.addAll(data);
+                this.data.add(LOAD_MORE_BUTTON);
+                imageAdapter = new ImageAdapter(context, R.layout.thumbnail);
+        }
+
+        
+        public Collection<Integer> getData()
+        {
+        	return this.data;
+        }
+        
+        /**
+         * Return the size of the data set.
+         */
+        public int getCount() {
+                return this.data.size();
+        }
+        
+        /**
+         * Return an object in the data set.
+         */
+        public Integer getItem(int position) {
+                return this.data.get(position);
+        }
+        
+        /**
+         * Return the position provided.
+         */
+        public long getItemId(int position) {
+                return position;
+        }
+
+        public void add(Integer eventID)
+        {
+        	Log.w(tag, "add");
+        	if (!this.data.contains(eventID))
+        	{
+	        	this.data.add(eventID);
+	        	this.notifyDataSetChanged();
+        	}
+        }
+        
+        public void clear()
+        {
+        	Log.w(tag, "clear");
+        	this.data.clear();
+        	
+        	this.notifyDataSetChanged();
+        }
+        
+        
+        /**
+         * Return a generated view for a position.
+         */
+        public View getView(int position, View convertView, ViewGroup parent) {
+        	Log.w(tag, "getView: position, " + position + ", convertView, " + convertView + ", parent: " + parent);
+                // reuse a given view, or inflate a new one from the xml
+                 
+                ViewHolder holder = new ViewHolder();
+                
+                if (convertView == null) {
+                	Log.w(tag, "inflating resource: " + resource);
+	                        convertView = this.inflater.inflate(resource, parent, false);
+	                        
+	                        holder.event_header_button = (HorizontalRatioLinearLayout) convertView.findViewById(R.id.event_header);
+	                        holder.event_header_name = (TextView) convertView.findViewById(R.id.event_header_name);
+	                        holder.event_header_time = (TextView) convertView.findViewById(R.id.event_header_time);
+	                        holder.fomo_count = (TextView) convertView.findViewById(R.id.fomo_count);
+	                        holder.list_view = (HorizontalListView) convertView.findViewById(R.id.listview);
+	                        holder.event_footer_owner = (TextView) convertView.findViewById(R.id.event_footer_owner);
+	                        holder.event_footer_location = (TextView) convertView.findViewById(R.id.event_footer_location);
+	                        convertView.setTag(holder);
+                			
+                } else {
+                        holder = (ViewHolder) convertView.getTag();
+                }
+
+                this.bindData(holder, position);
+           
+                // bind the data to the view object
+                return convertView;
+        }
+        
+        /**
+         * Bind the provided data to the view.
+         * This is the only method not required by base adapter.
+         */
+        public void bindData(ViewHolder holder, int position) {
+        	
+        	Log.w(tag, "bindData");
+                
+                // pull out the object
+                EventDetail item = GlobalEventList.eventDetailMap.get(this.data.get(position));
+
+                CharSequence charSequence = Integer.toString(item.getEventID());
+                holder.event_header_button.setContentDescription(charSequence);
+                
+                // set the value
+                holder.event_header_name.setText(item.getEventName());
+                holder.event_header_name.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+
+                holder.event_header_time.setText(item.getDateString());
+                holder.event_header_time.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+
+                holder.fomo_count.setText(Integer.toString(item.getFomoCount()));
+                holder.fomo_count.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+
+                holder.event_footer_owner.setText(item.getEventOwnerSummaryString());
+                holder.event_footer_owner.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+   
+                holder.event_footer_location.setText(item.getLocationInfo().locationDescription);
+                holder.event_footer_location.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+                
+                ArrayList<String> imageURLs = new ArrayList<String>();
+                for (PhotoItem photo : item.getImages())
+                {
+                	imageURLs.add(GlobalVariables.getInstance().getAWSUrlThumbnail(photo));
+                }
+                
+                imageAdapter.setURLs(imageURLs);
+                holder.list_view.setAdapter(imageAdapter);
+        }
+        
+        private static class ViewHolder {
+            public HorizontalRatioLinearLayout event_header_button;
+            public TextView event_header_name;
+            public TextView event_header_time;
+            public TextView fomo_count;
+            public TextView event_footer_owner;
+            public TextView event_footer_location;
+            public HorizontalListView list_view;
+        }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

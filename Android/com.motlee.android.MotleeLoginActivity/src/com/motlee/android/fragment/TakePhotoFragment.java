@@ -1,5 +1,6 @@
 package com.motlee.android.fragment;
 
+import java.io.File;
 import java.util.Date;
 
 import kankan.wheel.widget.WheelView;
@@ -14,6 +15,7 @@ import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -46,6 +48,8 @@ import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.event.UpdatedPhotoEvent;
+import com.motlee.android.object.event.UpdatedPhotoListener;
 
 public class TakePhotoFragment extends BaseMotleeFragment {
 	
@@ -70,6 +74,8 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	// TODO: get rid of this in leue of real image URL
 	private String pictureURL = "http://mentalitymagazine.com/wp-content/uploads/2012/06/8-e1340850932512.jpg";
 	private Date pictureDate = new Date();
+	
+	private String mCurrentPhotoPath;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
@@ -126,25 +132,28 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 			else
 			{
 				EventServiceBuffer.getInstance(getActivity());
-				EventServiceBuffer.sendPhotoToDatabase(mEventID);
+
+				EventServiceBuffer.setPhotoListener(new UpdatedPhotoListener(){
+
+					public void photoEvent(UpdatedPhotoEvent e) {
+						
+						PhotoItem photo = e.getPhotos().iterator().next();
+						
+						Intent eventDetailIntent = new Intent(getActivity(), EventDetailActivity.class);
+						eventDetailIntent.putExtra("EventID", photo.event_id);
+						eventDetailIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+						getActivity().startActivity(eventDetailIntent);
+						
+						Intent photoDetailIntent = new Intent(getActivity(), PhotoDetailActivity.class);
+						photoDetailIntent.putExtra("PhotoItem", photo);
+						getActivity().startActivity(photoDetailIntent);
+						
+						getActivity().finish();
+					}
+					
+				});
 				
-				// TODO: Actually get a PhotoItem from database
-				
-				PhotoItem photo = new PhotoItem(mEventID, EventItemType.PICTURE,
-						GlobalVariables.getInstance().getUserId(), pictureDate, 
-						photoDescriptionEdit.getText().toString(), pictureURL, mLocation);
-				
-				Intent eventDetailIntent = new Intent(getActivity(), EventDetailActivity.class);
-				eventDetailIntent.putExtra("EventID", photo.event_id);
-				eventDetailIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-				getActivity().startActivity(eventDetailIntent);
-				
-				Intent photoDetailIntent = new Intent(getActivity(), PhotoDetailActivity.class);
-				photoDetailIntent.putExtra("PhotoItem", photo);
-				getActivity().startActivity(photoDetailIntent);
-				
-				takenPhoto.recycle();
-				getActivity().finish();
+				EventServiceBuffer.sendPhotoToDatabase(mEventID, mCurrentPhotoPath, mLocation, photoDescriptionEdit.getText().toString());
 			}
 			
 		}
@@ -279,12 +288,19 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	private void setUpPicture()
 	{
 		ImageView imageView = (ImageView) view.findViewById(R.id.taken_picture);
-		imageView.setImageBitmap(this.takenPhoto);
+		imageView.setImageURI(Uri.fromFile(new File(mCurrentPhotoPath)));
+		
+	}
+
+	public void setPhotoPath(String currentPhotoPath) {
+		
+		this.mCurrentPhotoPath = currentPhotoPath;
 		
 	}
 	
-	public void setBitmap(Bitmap thePic)
+	@Override
+	public void onDestroy()
 	{
-		this.takenPhoto = thePic;
+		super.onDestroy();
 	}
 }

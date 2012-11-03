@@ -76,9 +76,8 @@ public class EventListFragment extends ListFragmentWithHeader {
 		
 		setListAdapter(mEventListAdapter);
 		
-		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
-		tv.setTypeface(gothamLightFont);
-		tv.setText(pageTitle);
+		this.setPageHeader(pageTitle);
+		this.setHeaderIcon(pageTitle);
 		
 		onCreateViewHasBeenCalled = true;
 		
@@ -134,12 +133,8 @@ public class EventListFragment extends ListFragmentWithHeader {
 		
 		if (onCreateViewHasBeenCalled)
 		{
-			TextView view = (TextView) getActivity().findViewById(R.id.header_textView);
-			
-			if (view != null)
-			{
-				view.setText(pageTitle);
-			}
+			this.setPageHeader(pageTitle);
+			this.setHeaderIcon(pageTitle);
 		}
 	}
 }

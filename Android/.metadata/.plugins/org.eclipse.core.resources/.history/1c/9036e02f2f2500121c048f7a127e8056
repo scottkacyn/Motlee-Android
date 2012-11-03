@@ -1,0 +1,11 @@
+package com.motlee.android.object;
+
+import com.motlee.android.enums.EventItemType;
+
+public class Attendee extends EventItem {
+
+	public Attendee()
+	{
+		type = EventItemType.ATTENDEE;
+	}
+}

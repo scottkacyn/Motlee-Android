@@ -2,6 +2,7 @@ package com.motlee.android;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Set;
 
 import shared.ui.actionscontentview.ActionsContentView;
 
@@ -19,8 +20,11 @@ import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.MenuFunctions;
+import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
+import com.motlee.android.object.event.UpdatedPhotoEvent;
+import com.motlee.android.object.event.UpdatedPhotoListener;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -61,6 +65,13 @@ public class EventListActivity extends BaseMotleeActivity {
         GlobalVariables.getInstance().setMenuButtonsHeight(findViewById(R.id.menu_buttons).getHeight());
         
         GlobalVariables.getInstance().setUpLocationListener(this);
+        
+        EventServiceBuffer.setPhotoListener(photoListener);
+        
+        for (int eventID : GlobalEventList.eventDetailMap.keySet())
+        {
+        	EventServiceBuffer.getPhotosForEventFromService(eventID);
+        }
         
         FragmentManager     fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
@@ -124,30 +135,43 @@ public class EventListActivity extends BaseMotleeActivity {
     	
         EventServiceBuffer.getInstance(this);
     	
-        EventServiceBuffer.setEventDetailListener(new UpdatedEventDetailListener(){
-
-			public void myEventOccurred(UpdatedEventDetailEvent evt) {
-				
-				eAdapter.clear();
-				
-				for (Integer eventID : evt.getEventIds())
-				{
-					eAdapter.add(eventID);
-				}
-				
-				mEventListFragment.setListAdapter(eAdapter);
-				mEventListFragment.getPullToRefreshListView().setSelection(1);
-				mEventListFragment.getPullToRefreshListView().onRefreshComplete();
-				
-		        progressDialog.dismiss();
-			}
-        });
+        EventServiceBuffer.setEventDetailListener(eventListener);
+        
+        EventServiceBuffer.setPhotoListener(photoListener);
         
         progressDialog = ProgressDialog.show(EventListActivity.this, "", "Loading");
         
         EventServiceBuffer.getEventsFromService(dataContent);
     }
     
+    public UpdatedEventDetailListener eventListener = new UpdatedEventDetailListener(){
+    	
+		public void myEventOccurred(UpdatedEventDetailEvent evt) {
+			
+			eAdapter.clear();
+			
+			for (Integer eventID : evt.getEventIds())
+			{
+				eAdapter.add(eventID);
+			}
+			
+			mEventListFragment.setListAdapter(eAdapter);
+			mEventListFragment.getPullToRefreshListView().setSelection(1);
+			mEventListFragment.getPullToRefreshListView().onRefreshComplete();
+			
+	        progressDialog.dismiss();
+		}
+    };
+    
+
+	private UpdatedPhotoListener photoListener = new UpdatedPhotoListener(){
+
+		public void photoEvent(UpdatedPhotoEvent e) {
+			
+			eAdapter.notifyDataSetChanged();
+		}
+		
+	};
     
     public void onClickGetEventDetail(View view)
     {
