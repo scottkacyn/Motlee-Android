@@ -33,7 +33,7 @@ public class EventDetail implements Comparable<EventDetail> {
 	private final Collection<UserInfo> people_attending;
 	
 	@NoExpose
-	private final Collection<EventItemWithBody> stories;
+	private final Collection<StoryItem> stories;
 	
 	// @NoExpose is a way to stop the json parser from including them
 	// when we convert EventDetail to a json.
@@ -61,7 +61,7 @@ public class EventDetail implements Comparable<EventDetail> {
 		this.user_id = -1;
 		this.fomoers = new ArrayList<UserInfo>();
 		this.people_attending = new ArrayList<UserInfo>();
-		this.stories = new ArrayList<EventItemWithBody>();
+		this.stories = new ArrayList<StoryItem>();
 		this.name = "";
 		this.start_time = new Date();
 		this.end_time = new Date();
@@ -282,7 +282,7 @@ public class EventDetail implements Comparable<EventDetail> {
 		return this.end_time;
 	}
 
-	public Collection<EventItemWithBody> getStories() {
+	public Collection<StoryItem> getStories() {
 		return stories;
 	}
 

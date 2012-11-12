@@ -13,7 +13,6 @@ import android.widget.TableLayout.LayoutParams;
 
 import com.motlee.android.R;
 import com.motlee.android.SettingsActivity;
-import com.motlee.android.layouts.GridListTableLayout;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.GlobalVariables;
 

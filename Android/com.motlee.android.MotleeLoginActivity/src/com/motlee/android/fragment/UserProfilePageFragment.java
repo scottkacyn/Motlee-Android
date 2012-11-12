@@ -55,6 +55,8 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 	private StretchedBackgroundTableLayout profileImageBackground;
 	private StretchedBackgroundTableLayout profilePictureAttendeeCount;
     
+	private int facebookID;
+	
     private String pictureURL;
 	
     private String birthDate;
@@ -98,15 +100,15 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 		this.birthDate = object.getProperty("birthday").toString();
 	}
 	
-	public void setUserId(int userID)
+	public void setUserId(int userID, int facebookID)
 	{
 		this.mUserID = userID;
+		this.facebookID = facebookID;
 		if (view != null)
 		{
 			setPageLayout();
 		}
 	}
-	
 	
 	private void setPageLayout()
 	{
@@ -165,7 +167,7 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 	private void setProfilePicture() {
 		final ImageView imageView = (ImageView) view.findViewById(R.id.profile_picture);
 		
-		GlobalVariables.getInstance().dowloadImage(getActivity(), imageView, pictureURL);
+		GlobalVariables.getInstance().downloadImage(imageView, pictureURL);
 		//TableRow tr = new TableRow(getActivity());
 		//LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		//tr.setLayoutParams(lp);
@@ -175,7 +177,7 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 	
 	private void setPictureURL() {
 		
-		pictureURL = "https://graph.facebook.com/" + UserInfoList.getInstance().get(mUserID).uid + "/picture?type=large";
+		pictureURL = "https://graph.facebook.com/" + facebookID + "/picture?type=large";
 		
 	}
 }

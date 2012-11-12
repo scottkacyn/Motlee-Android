@@ -25,7 +25,8 @@ public class EventItem implements Comparable<EventItem>, Parcelable {
 	 */
 	public Integer id;
 	
-	public ArrayList<EventItem> comments = new ArrayList<EventItem>();
+	public ArrayList<Comment> comments = new ArrayList<Comment>();
+	public ArrayList<Like> likes = new ArrayList<Like>();
 	
 	public EventItem(Integer eventID, EventItemType type, Integer userID, Date timeCreated)
 	{
@@ -33,7 +34,8 @@ public class EventItem implements Comparable<EventItem>, Parcelable {
 		this.type = type;
 		this.user_id = userID;
 		this.created_at = timeCreated;
-		this.comments = new ArrayList<EventItem>();
+		this.comments = new ArrayList<Comment>();
+		this.likes = new ArrayList<Like>();
 	}
 
 	public int compareTo(EventItem item) {
@@ -47,13 +49,14 @@ public class EventItem implements Comparable<EventItem>, Parcelable {
 	}
 
 	protected EventItem(Parcel in) {
-		
+		this();
 		this.id = in.readInt();
 		this.event_id = in.readInt();
 		this.type = EventItemType.valueOf(in.readString());
 		this.user_id = in.readInt();
 		this.created_at = new Date(in.readLong());
-		in.readList(this.comments, null);
+		in.readTypedList(this.comments, Comment.CREATOR);
+		in.readTypedList(this.likes, Like.CREATOR);
 	}
 	
 	public EventItem() {
@@ -67,7 +70,8 @@ public class EventItem implements Comparable<EventItem>, Parcelable {
 		out.writeString((type == null) ? "" : type.name());
 		out.writeInt(user_id);
 		out.writeLong(created_at.getTime());
-		out.writeList(comments);
+		out.writeTypedList(comments);
+		out.writeTypedList(likes);
 	}
 	
 	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
@@ -83,7 +87,6 @@ public class EventItem implements Comparable<EventItem>, Parcelable {
     @Override
     public int hashCode() {
         int hashCode = SEED;
-        hashCode = hashCode + event_id;
         hashCode = hashCode + user_id;
         hashCode = hashCode + id;
         hashCode = hashCode + type.getValue();
@@ -93,6 +96,13 @@ public class EventItem implements Comparable<EventItem>, Parcelable {
 	        for (EventItem comment : comments)
 	        {
 	        	hashCode = hashCode + comment.hashCode();
+	        }
+        }
+        if (likes != null)
+        {
+	        for (EventItem like : likes)
+	        {
+	        	hashCode = hashCode + like.hashCode();
 	        }
         }
         return hashCode;
@@ -114,6 +124,7 @@ public class EventItem implements Comparable<EventItem>, Parcelable {
 	        ( this.event_id == that.event_id )&&
 	        ( this.user_id == that.user_id )&&
 	        ( this.comments.equals(that.comments )) &&
+	        ( this.likes.equals(that.likes )) &&
 	        ( this.created_at.equals(that.created_at )) &&
 	        ( this.type.equals(that.type )) ;
     }

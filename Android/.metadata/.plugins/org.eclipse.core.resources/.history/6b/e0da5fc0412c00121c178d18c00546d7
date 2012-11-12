@@ -1,0 +1,162 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.motlee.android"
+    android:versionCode="1"
+    android:versionName="1.0" >
+    
+	<uses-permission android:name="android.permission.INTERNET" /> 
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-sdk
+        android:minSdkVersion="10"
+        android:targetSdkVersion="15" />
+
+    <application
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/app_theme"  >
+        
+        <uses-library android:name="com.google.android.maps"/>
+        <uses-feature android:name="android.hardware.camera" />
+        
+        <activity
+            android:name=".MotleeLoginActivity"
+            android:label="@string/title_login_page" 
+            android:theme="@style/app_theme"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <service android:name=".service.RubyService"/>
+        
+        <activity android:name="com.facebook.LoginActivity" />
+        
+        <activity
+            android:name=".EventListActivity"
+            android:label="@string/title_activity_event_list"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
+        <activity
+            android:name=".EventDetailActivity"
+            android:label="@string/title_event_detail_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
+        <activity
+            android:name=".MoreEventDetailActivity"
+            android:label="@string/title_more_event_detail_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
+        <activity
+            android:name=".CreateEventActivity"
+            android:label="@string/title_create_event_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
+        <activity
+            android:name=".UserProfilePageActivity"
+            android:label="@string/title_user_profile_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
+        <activity
+            android:name=".TakePhotoActivity"
+            android:label="@string/title_take_photo_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
+        <activity
+            android:name=".EventItemDetailActivity"
+            android:label="@string/title_photo_detail_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_settings_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
+        <activity
+            android:name=".SettingsDetailActivity"
+            android:label="@string/title_settings_detail_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
+        <activity
+            android:name=".PostStoryActivity"
+            android:label="@string/title_post_story_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        com.droid4you.util.cropimage
+        
+        <activity
+            android:name="com.droid4you.util.cropimage.CropImage"
+            android:label="@string/title_crop_image_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/app_id"/>
+    </application>
+    
+</manifest>

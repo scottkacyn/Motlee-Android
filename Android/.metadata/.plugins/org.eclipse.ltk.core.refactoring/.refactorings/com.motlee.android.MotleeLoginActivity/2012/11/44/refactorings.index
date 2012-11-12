@@ -1,3 +1,8 @@
 1351810849063	Rename field 'URLS'
 1351893756512	Rename field 'fomos'
 1351893771717	Rename field 'attendees'
+1351918198846	Delete element
+1351918739843	Rename type 'PhotoDetailActivity'
+1351918797656	Rename type 'EventItemWithBody'
+1351920441869	Rename field 'mPhotoItem'
+1351921440383	Rename type 'PhotoDetailFragment'

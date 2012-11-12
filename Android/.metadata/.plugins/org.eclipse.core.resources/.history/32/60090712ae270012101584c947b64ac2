@@ -1,0 +1,15 @@
+package com.motlee.android.object;
+
+public class GridPictures {
+
+	public static final String NO_PICTURE = "NoPicture";
+	
+	public String image1;
+	public String image2;
+	public String image3;
+	
+	public GridPictures() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

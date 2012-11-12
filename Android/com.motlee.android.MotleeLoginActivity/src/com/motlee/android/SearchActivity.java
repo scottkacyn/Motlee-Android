@@ -15,7 +15,6 @@ public class SearchActivity extends BaseMotleeActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
  
-        EventServiceBuffer.getInstance(this);
         findViewById(R.id.menu_buttons).setVisibility(View.GONE);
         
         FragmentManager     fm = getSupportFragmentManager();

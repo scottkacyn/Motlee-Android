@@ -6,12 +6,15 @@ import java.util.Vector;
 
 import com.motlee.android.R;
 import com.motlee.android.layouts.HorizontalRatioLinearLayout;
+import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.UserInfo;
 import com.devsmart.android.ui.HorizontalListView;
+import com.emilsjolander.components.StickyListHeaders.StickyListHeadersBaseAdapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -19,10 +22,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class EventListAdapter extends ArrayAdapter<Integer> {
@@ -112,7 +118,6 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
          * Return a generated view for a position.
          */
         public View getView(int position, View convertView, ViewGroup parent) {
-        	Log.w(tag, "getView: position, " + position + ", convertView, " + convertView + ", parent: " + parent);
                 // reuse a given view, or inflate a new one from the xml
                  
                 ViewHolder holder = new ViewHolder();
@@ -121,7 +126,9 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
                 	Log.w(tag, "inflating resource: " + resource);
 	                        convertView = this.inflater.inflate(resource, parent, false);
 	                        
-	                        holder.event_header_button = (HorizontalRatioLinearLayout) convertView.findViewById(R.id.event_header);
+	                        holder.event_background = (RelativeLayout) convertView.findViewById(R.id.event_list_detail_background);
+	                        holder.event_footer_background = (LinearLayout) convertView.findViewById(R.id.event_footer);
+	                        holder.event_header_button = (LinearLayout) convertView.findViewById(R.id.event_header);
 	                        holder.event_header_name = (TextView) convertView.findViewById(R.id.event_header_name);
 	                        holder.event_header_time = (TextView) convertView.findViewById(R.id.event_header_time);
 	                        holder.fomo_count = (TextView) convertView.findViewById(R.id.fomo_count);
@@ -146,12 +153,32 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
          * This is the only method not required by base adapter.
          */
         public void bindData(ViewHolder holder, int position) {
-        	
-        	Log.w(tag, "bindData");
                 
                 // pull out the object
                 EventDetail item = GlobalEventList.eventDetailMap.get(this.data.get(position));
 
+                
+                if (holder.event_background.getBackground() == null)
+                {
+                	DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.event_list_detail_background, GlobalVariables.DISPLAY_WIDTH);
+                	holder.event_background.setBackgroundDrawable(drawable.getDrawable());
+                	//holder.event_background.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, drawable.getHeight()));
+                }
+                
+                if (holder.event_header_button.getBackground() == null)
+                {
+                	DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.event_list_detail_header_background, GlobalVariables.DISPLAY_WIDTH);
+                	holder.event_header_button.setBackgroundDrawable(drawable.getDrawable());
+                	holder.event_header_button.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, drawable.getHeight()));
+                }
+                
+                if (holder.event_footer_background.getBackground() == null)
+                {
+                	DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.event_list_detail_footer_background, GlobalVariables.DISPLAY_WIDTH);
+                	holder.event_footer_background.setBackgroundDrawable(drawable.getDrawable());
+                	//holder.event_footer_background.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, drawable.getHeight()));
+                }
+                
                 CharSequence charSequence = Integer.toString(item.getEventID());
                 holder.event_header_button.setContentDescription(charSequence);
                 
@@ -189,7 +216,7 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
         }
         
         private static class ViewHolder {
-            public HorizontalRatioLinearLayout event_header_button;
+            public LinearLayout event_header_button;
             public TextView event_header_name;
             public TextView event_header_time;
             public TextView fomo_count;
@@ -197,7 +224,11 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
             public TextView event_footer_location;
             public HorizontalListView list_view;
             public ImageAdapter imageAdapter;
+            public RelativeLayout event_background;
+            public LinearLayout event_footer_background;
         }
+
+
 }
 
 

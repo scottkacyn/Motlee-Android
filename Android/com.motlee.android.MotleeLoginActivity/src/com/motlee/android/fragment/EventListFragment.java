@@ -95,8 +95,6 @@ public class EventListFragment extends ListFragmentWithHeader {
             
             public void onRefresh() {
             	
-            	EventServiceBuffer.getInstance(getActivity());
-            	
             	EventServiceBuffer.setEventDetailListener(new UpdatedEventDetailListener(){
 
 					public void myEventOccurred(UpdatedEventDetailEvent evt) {

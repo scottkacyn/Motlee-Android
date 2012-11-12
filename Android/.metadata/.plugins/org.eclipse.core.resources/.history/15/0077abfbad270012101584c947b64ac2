@@ -1,0 +1,9 @@
+package com.motlee.android.object;
+
+public class GridPictures {
+
+	public GridPictures() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

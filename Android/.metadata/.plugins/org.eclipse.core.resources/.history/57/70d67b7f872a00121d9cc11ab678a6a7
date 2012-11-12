@@ -1,0 +1,101 @@
+package com.motlee.android.object;
+
+import java.util.HashMap;
+
+import com.motlee.android.R;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.DisplayMetrics;
+
+public class DrawableCache {
+
+	private static HashMap<Integer, DrawableWithHeight> drawables = new HashMap<Integer, DrawableWithHeight>();
+	
+	private static DrawableCache instance;
+	private static Resources mResources;
+	
+	public synchronized static DrawableCache getInstance(Resources resources)
+	{
+		mResources = resources;
+		if (instance == null)
+		{
+			instance = new DrawableCache();
+		}
+		return instance;
+	}
+	
+	private DrawableCache() {
+		
+		DrawableWithHeight detailBackground = scaleBackgroundImage(mResources.getDrawable(R.drawable.event_list_detail_background));
+		drawables.put(R.drawable.event_list_detail_background, detailBackground);
+		
+		DrawableWithHeight detailHeader = scaleBackgroundImage(mResources.getDrawable(R.drawable.event_list_detail_header_background));
+		drawables.put(R.drawable.event_list_detail_header_background, detailHeader);
+		
+		DrawableWithHeight detailFooter = scaleBackgroundImage(mResources.getDrawable(R.drawable.event_list_detail_footer_background));
+		drawables.put(R.drawable.event_list_detail_footer_background, detailFooter);
+		
+		DrawableWithHeight storyDetailBackground = scaleBackgroundImage(mResources.getDrawable(R.drawable.story_detail_background));
+		drawables.put(R.drawable.story_detail_background, storyDetailBackground);
+		
+		DrawableWithHeight itemDetailHeader = scaleBackgroundImage(mResources.getDrawable(R.drawable.item_detail_top), GlobalVariables.getInstance().getDisplayWidth() - convertDpToPixel(20));
+		drawables.put(R.drawable.item_detail_top, itemDetailHeader);
+		
+		DrawableWithHeight itemDetailBottom = scaleBackgroundImage(mResources.getDrawable(R.drawable.item_detail_bottom), GlobalVariables.getInstance().getDisplayWidth() - convertDpToPixel(20));
+		drawables.put(R.drawable.item_detail_bottom, itemDetailBottom);
+		
+		DrawableWithHeight labelButtonBackground = scaleBackgroundImage(mResources.getDrawable(R.drawable.label_button_no_arrow), GlobalVariables.getInstance().getDisplayWidth() - convertDpToPixel(20));
+		drawables.put(R.drawable.label_button_no_arrow, labelButtonBackground);
+		
+		DrawableWithHeight placeHolder = new DrawableWithHeight(mResources.getDrawable(R.drawable.placeholder), 100, 100);
+		drawables.put(R.drawable.placeholder, placeHolder);
+	}
+
+	public static HashMap<Integer, DrawableWithHeight> getDrawables()
+	{
+		return drawables;
+	}
+	
+	private DrawableWithHeight scaleBackgroundImage(Drawable drawable)
+	{
+		return scaleBackgroundImage(drawable, GlobalVariables.getInstance().getDisplayWidth());
+	}
+	
+	private DrawableWithHeight scaleBackgroundImage(Drawable drawable, int width)
+	{
+		Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+		
+		float scaleFactor = ((float) width) / bitmap.getWidth();
+
+		Matrix scale = new Matrix();
+		scale.postScale(scaleFactor, scaleFactor);
+		
+		int layout_height = (int)(((float) bitmap.getHeight()) * scaleFactor);
+		
+		bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), scale, false);
+		
+		Drawable d = new BitmapDrawable(mResources, bitmap);
+		
+		bitmap = null;
+		
+		return new DrawableWithHeight(d, layout_height, width);
+	}
+	
+	/**
+	 * This method convets dp unit to equivalent device specific value in pixels. 
+	 * 
+	 * @param dp A value in dp(Device independent pixels) unit. Which we need to convert into pixels
+	 * @param context Context to get resources and device specific display metrics
+	 * @return A float value to represent Pixels equivalent to dp according to device
+	 */
+	public static int convertDpToPixel(float dp){
+	    DisplayMetrics metrics = mResources.getDisplayMetrics();
+	    float px = dp * (metrics.densityDpi/160f);
+	    return Math.round(px);
+	}
+}

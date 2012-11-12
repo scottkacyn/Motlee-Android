@@ -9,7 +9,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.motlee.android.R;
 import com.motlee.android.adapter.ImageAdapter;
-import com.motlee.android.layouts.GridListTableLayout;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
@@ -157,11 +156,11 @@ public class PeopleListFragment extends BaseMotleeFragment {
 				
 				if (i == mUsers.size() - 1)
 				{
-					setLabelButton(name, picture, Integer.toString(user.id), true);
+					setLabelButton(name, picture, user, true);
 				}
 				else
 				{
-					setLabelButton(name, picture, Integer.toString(user.id), false);
+					setLabelButton(name, picture, user, false);
 				}
 			}
 		}
@@ -171,12 +170,12 @@ public class PeopleListFragment extends BaseMotleeFragment {
 		}
 	}
 
-	private void setLabelButton(String labelText, String imageURL, String description, boolean isLast) {
+	private void setLabelButton(String labelText, String imageURL, UserInfo user, boolean isLast) {
 		
 		View labelButton = this.inflater.inflate(R.layout.event_detail_info_button, null);
 		
 		View imageButton = labelButton.findViewById(R.id.label_button);
-		imageButton.setContentDescription(description);
+		imageButton.setTag(user);
 		
 		ImageView imageView = (ImageView) labelButton.findViewById(R.id.label_button_icon);
 		imageView.setPadding(0, 3, 0, 3);

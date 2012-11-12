@@ -1,0 +1,21 @@
+<FrameLayout
+      android:layout_height="match_parent"
+      android:layout_width="wrap_content">
+   <com.motlee.android.view.VerticalAspectImageButton 
+       android:id="@+id/comment_send_button"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:padding="5dp"
+       android:src="@drawable/header_right_button"
+       android:onClick="sendComment"
+       android:background="@android:color/transparent" />
+   
+   <TextView 
+       android:id="@+id/header_right_text"
+  	    android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:gravity="center|center_vertical"
+       android:padding="5dp"
+       android:text="Send"
+       android:background="@android:color/transparent" />
+ </FrameLayout> 

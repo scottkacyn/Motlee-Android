@@ -14,6 +14,7 @@ import com.facebook.android.Facebook.DialogListener;
 import com.motlee.android.adapter.EventListAdapter;
 import com.motlee.android.fragment.EventListFragment;
 import com.motlee.android.fragment.MainMenuFragment;
+import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventListParams;
 import com.motlee.android.object.EventServiceBuffer;
@@ -23,6 +24,8 @@ import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
+import com.motlee.android.object.event.UpdatedFomoEvent;
+import com.motlee.android.object.event.UpdatedFomoListener;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
 
@@ -45,7 +48,7 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-public class EventListActivity extends BaseMotleeActivity {
+public class EventListActivity extends BaseMotleeActivity implements UpdatedFomoListener {
 
 	// Fragment Tag Strings
 	private static String EVENT_RESPONDER = "EventResponderFragment";
@@ -60,11 +63,16 @@ public class EventListActivity extends BaseMotleeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
         setContentView(R.layout.main);
+        
+        DrawableCache.getInstance(getResources());
         
         GlobalVariables.getInstance().setMenuButtonsHeight(findViewById(R.id.menu_buttons).getHeight());
         
         GlobalVariables.getInstance().setUpLocationListener(this);
+        
+        GlobalVariables.getInstance().initializeImageLoader(this);
         
         EventServiceBuffer.setPhotoListener(photoListener);
         
@@ -133,8 +141,6 @@ public class EventListActivity extends BaseMotleeActivity {
     	
     	mEventListFragment.setEventListParams(eventListParams);
     	
-        EventServiceBuffer.getInstance(this);
-    	
         EventServiceBuffer.setEventDetailListener(eventListener);
         
         EventServiceBuffer.setPhotoListener(photoListener);
@@ -183,6 +189,25 @@ public class EventListActivity extends BaseMotleeActivity {
     	
     	startActivity(eventDetail);
     }
+    
+    @Override
+    public void onPause()
+    {
+    	super.onPause();
+    }
+    
+    public void sendFomo(View view)
+    {
+    	EventServiceBuffer.setFomoListener(this);
+    	
+    	EventServiceBuffer.sendFomoToDatabase((Integer) view.getTag()); 
+    }
+
+	public void fomoSuccess(UpdatedFomoEvent event) {
+		
+		
+		
+	}
 }
 
 

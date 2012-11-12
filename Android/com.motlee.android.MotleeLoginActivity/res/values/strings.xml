@@ -15,6 +15,8 @@
     <string name="title_settings_activity">SettingsActivity</string>
     <string name="title_settings_detail_activity">SettingsDetailActivity</string>
     <string name="title_post_story_activity">PostStoryActivity</string>
+    <string name="title_crop_image_activity">CropImage</string>
+    <string name="title_comment_activity">CommentActivity</string>
     <string name="app_id">283790891721595</string>
     <string name="album_name">Motlee Pictures</string>
     

@@ -2,6 +2,7 @@ package com.motlee.android.fragment;
 
 import kankan.wheel.widget.WheelView;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
@@ -19,12 +20,16 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.motlee.android.EventItemDetailActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.CurrentEventWheelAdapter;
 import com.motlee.android.layouts.StretchedBackgroundRelativeLayout;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.event.UpdatedStoryEvent;
+import com.motlee.android.object.event.UpdatedStoryListener;
 
 public class PostStoryFragment extends BaseMotleeFragment {
 
@@ -58,6 +63,7 @@ public class PostStoryFragment extends BaseMotleeFragment {
 		
 		setPageHeader(pageTitle);
 		showLeftHeaderButton();
+		this.showRightHeaderButton("Post", storyListener);
 		
 		setUpWheelButton();
 		setUpScrollViewButton();
@@ -187,4 +193,32 @@ public class PostStoryFragment extends BaseMotleeFragment {
 		});
 		
 	}
+	
+	private OnClickListener storyListener = new OnClickListener(){
+
+		public void onClick(View view) {
+			
+			EventServiceBuffer.setStoryListener(updatedStoryListener);
+			
+			EventServiceBuffer.sendStoryToDatabase(mEventID, storyEditText.getText().toString());
+			
+		}
+		
+	};
+	
+	private UpdatedStoryListener updatedStoryListener = new UpdatedStoryListener(){
+
+		public void storyEvent(UpdatedStoryEvent evt) {
+			
+			
+			
+			Intent storyIntent = new Intent(getActivity(), EventItemDetailActivity.class);
+			storyIntent.putExtra("EventItem", evt.getStory());
+			getActivity().startActivity(storyIntent);
+			
+			getActivity().finish();
+			
+		}
+		
+	};
 }

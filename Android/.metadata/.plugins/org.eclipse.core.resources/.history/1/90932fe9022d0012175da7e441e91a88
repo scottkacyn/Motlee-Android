@@ -1,0 +1,68 @@
+package com.motlee.android;
+
+import java.util.ArrayList;
+
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
+import android.view.View;
+
+import com.motlee.android.fragment.CommentFragment;
+import com.motlee.android.fragment.CreateEventFragment;
+import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
+import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
+import com.motlee.android.object.EventItem;
+import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalEventList;
+
+public class CommentActivity extends BaseMotleeActivity implements OnFragmentAttachedListener {
+
+	public static String COMMENT = "comments";
+	public static String EVENT_ID = "eventID";
+	
+	private EventItem mEventItem;
+	private int mEventID;
+	
+	private CommentFragment commentFragment;
+	
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+        
+        mEventItem = getIntent().getParcelableExtra(COMMENT);
+        mEventID = getIntent().getIntExtra(EVENT_ID, -1);
+        
+        findViewById(R.id.menu_buttons).setVisibility(View.GONE);
+        
+        FragmentManager     fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        
+        ft.add(new EmptyFragmentWithCallbackOnResume(), "EmptyFragment")
+        .commit();
+    }
+    
+    public void sendComment(View view)
+    {
+    	EventServiceBuffer.addCommentToEventItem(mEventItem, commentFragment.getCommentText());
+    }
+
+	public void OnFragmentAttached() {
+		
+        FragmentManager     fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+		
+        commentFragment = new CommentFragment();
+        commentFragment.setHeaderView(findViewById(R.id.header));
+        commentFragment.setPageHeader(GlobalEventList.eventDetailMap.get(mEventID).getEventName());
+        commentFragment.setComments(mEventItem.comments);
+        
+        ft.add(R.id.fragment_content, commentFragment)
+        .commit();
+		
+	}
+	
+}

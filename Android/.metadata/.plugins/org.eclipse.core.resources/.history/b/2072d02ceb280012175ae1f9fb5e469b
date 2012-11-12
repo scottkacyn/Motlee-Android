@@ -1,0 +1,87 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+        
+	    <RelativeLayout 
+	        android:id="@+id/photo_detail_information"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" 
+	        android:paddingTop="10dp"
+	        android:paddingBottom="10dp"/> 
+	        
+    </RelativeLayout>
+    
+    <FrameLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+	    <ImageView
+	        android:id="@+id/photo_detail_picture"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:scaleType="fitCenter"
+	        android:paddingTop="20dp"
+	        android:onClick="showPictureDetail"
+	        android:adjustViewBounds="true" />
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingTop="20dp">
+		    <com.motlee.android.layouts.RatioBackgroundRelativeLayout
+		        android:id="@+id/photo_detail_story"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:visibility="gone"
+		        android:background="@drawable/story_detail_background" >
+		        
+		    	<TextView 
+		    	    android:id="@+id/photo_detail_story_text"
+		    	    android:layout_width="wrap_content"
+		    	    android:layout_height="wrap_content"
+		    	    android:paddingLeft="25dp"
+		    	    android:paddingRight="25dp"
+		    	    android:layout_centerInParent="true"/>
+		    
+		    </com.motlee.android.layouts.RatioBackgroundRelativeLayout>
+	    </LinearLayout>
+	    <com.motlee.android.layouts.HorizontalRatioLinearLayout
+	        android:id="@+id/photo_detail_touch_overlay"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="bottom"
+	        android:layout_gravity="bottom"
+	        android:visibility="gone"
+	        android:background="@drawable/photo_detail_overlay">
+		    
+	        <com.motlee.android.view.VerticalAspectImageButton
+	            android:id="@+id/photo_detail_like_button"
+	            android:layout_height="match_parent"
+	            android:layout_width="0dp"
+	            android:layout_weight="0.25"
+	            android:src="@drawable/icon_button_thumb" />
+	        
+	        <TextView
+	            android:id="@+id/photo_detail_description"
+	            android:layout_weight="0.5"
+	            android:layout_width="0dp"
+	            android:layout_height="match_parent"
+	            android:text="Nice Rack!"
+	            android:gravity="center"/>
+	        
+	        <com.motlee.android.view.VerticalAspectImageButton
+	            android:id="@+id/photo_detail_like_button"
+	            android:layout_height="match_parent"
+	            android:layout_width="0dp"
+	            android:layout_weight="0.25"
+	            android:src="@drawable/icon_button_comment" />
+	        
+	     </com.motlee.android.layouts.HorizontalRatioLinearLayout>
+     </FrameLayout>
+</FrameLayout>

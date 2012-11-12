@@ -25,7 +25,6 @@ public abstract class BaseDetailActivity extends BaseMotleeActivity {
 		}
 		else if (view.getTag().toString() == JOIN)
 		{
-			EventServiceBuffer.getInstance(this);
 			ArrayList<Integer> attendeeList = new ArrayList<Integer>();
 			attendeeList.add(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId()).uid);
 			EventServiceBuffer.setAttendeeListener(new UpdatedAttendeeListener(){

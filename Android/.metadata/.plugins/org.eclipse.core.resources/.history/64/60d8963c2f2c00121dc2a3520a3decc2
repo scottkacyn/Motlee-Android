@@ -1,0 +1,36 @@
+package com.motlee.android;
+
+import android.app.ProgressDialog;
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.util.Log;
+
+import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
+
+public class CommentActivity extends BaseMotleeActivity {
+
+	
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Log.d(this.toString(), "onCreate");
+        
+        setContentView(R.layout.main);
+        
+        getIntent();
+        
+        /*header = findViewById(R.id.header);
+        
+        progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading");
+        
+        FragmentManager fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
+        
+        ft.add(new EmptyFragmentWithCallbackOnResume(), "EmptyFragment")
+        .commit();
+        
+        mEventID = getIntent().getExtras().getInt("EventID");*/
+    }
+	
+}

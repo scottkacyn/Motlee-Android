@@ -2,23 +2,33 @@ package com.motlee.android;
 
 import java.util.ArrayList;
 
+import com.motlee.android.enums.EventItemType;
+import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
+import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
 import com.motlee.android.fragment.EventDetailFragment;
 import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.Like;
 import com.motlee.android.object.MenuFunctions;
+import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.UserInfoList;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
+import com.motlee.android.object.event.UpdatedLikeEvent;
+import com.motlee.android.object.event.UpdatedLikeListener;
 
 import android.app.ActivityManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -28,11 +38,16 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 
-public class EventDetailActivity extends BaseDetailActivity {
+public class EventDetailActivity extends BaseDetailActivity implements OnFragmentAttachedListener, UpdatedEventDetailListener, UpdatedLikeListener {
 
 	private FragmentTransaction ft;
 	private ProgressDialog progressDialog;
 	private int mEventID;
+	
+	private View header;
+	
+	private Handler handler = new Handler();
+	
 	/*
 	 * (non-Javadoc)
 	 * @see com.google.android.maps.MapActivity#onNewIntent(android.content.Intent)
@@ -50,32 +65,46 @@ public class EventDetailActivity extends BaseDetailActivity {
 		
         fragment.addEventDetail(eDetail);
 	}
+
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		if (findViewById(R.id.header) == null)
+		{
+			setContentView(R.layout.main);
+		}
+	}
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Log.d(this.toString(), "onCreate");
+        
         setContentView(R.layout.main);
+        
+        header = findViewById(R.id.header);
         
         progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading");
         
-        EventServiceBuffer.setEventDetailListener(eventListener);
+        FragmentManager fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
+        
+        ft.add(new EmptyFragmentWithCallbackOnResume(), "EmptyFragment")
+        .commit();
         
         mEventID = getIntent().getExtras().getInt("EventID");
-        
-        EventServiceBuffer.getEventsFromService(mEventID);
-        
-        //ft.add(R.id.fragment_content, setUpFragment(getIntent()))
-        //.commit();
     }
 	
 	private Fragment setUpFragment() {
-		
+
 		eDetail = GlobalEventList.eventDetailMap.get(mEventID);
         
         EventDetailFragment eventDetailFragment = new EventDetailFragment();
         
-        eventDetailFragment.setHeaderView(findViewById(R.id.header));
+        eventDetailFragment.setHeaderView(header);
         
         eventDetailFragment.addEventDetail(eDetail);
         
@@ -88,9 +117,7 @@ public class EventDetailActivity extends BaseDetailActivity {
 		
 		if (tag.equals(BaseDetailActivity.JOIN))
 		{
-			EventServiceBuffer.getInstance(this);
 			EventServiceBuffer.setAttendeeListener(attendeeListener);
-			EventServiceBuffer.setEventDetailListener(eventListener);
 			
 			progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading");
 			
@@ -121,7 +148,7 @@ public class EventDetailActivity extends BaseDetailActivity {
     {
     	EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
     	
-    	fragment.addListToTableLayout();
+    	fragment.addListToAdapter();
     }
     
     public void seeMoreDetail(View view)
@@ -136,21 +163,33 @@ public class EventDetailActivity extends BaseDetailActivity {
     	startActivity(eventDetail);
     }
 
-    private UpdatedEventDetailListener eventListener = new UpdatedEventDetailListener(){
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        //No call for super(). Bug on API Level > 11.
+    }
+    
+	public void myEventOccurred(UpdatedEventDetailEvent evt) {
+		
+		EventServiceBuffer.removeEventDetailListener(this);
+		
+        eDetail = GlobalEventList.eventDetailMap.get(mEventID); 
 
-		public void myEventOccurred(UpdatedEventDetailEvent evt) {
-
-	        FragmentManager     fm = getSupportFragmentManager();
-	        ft = fm.beginTransaction();
-			
-			ft.add(R.id.fragment_content, setUpFragment())
-			.commit();
-			
-			progressDialog.dismiss();
-			
-		}
-    	
-    };
+        FragmentManager     fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
+        
+        if (fm.findFragmentById(R.id.fragment_content) == null)
+        {
+        	ft.add(R.id.fragment_content, setUpFragment());
+        }
+        else
+        {
+        	ft.replace(R.id.fragment_content, setUpFragment());
+        }
+        
+		ft.commit();
+		
+		progressDialog.dismiss();
+	}
     
     
 	@Override
@@ -159,7 +198,59 @@ public class EventDetailActivity extends BaseDetailActivity {
 		
 		
 	}
+
+
+	public void OnFragmentAttached() {
+		
+        EventServiceBuffer.setEventDetailListener(this);
+        
+        EventServiceBuffer.getEventsFromService(mEventID);
+		
+	}
+	
+	public void onClickOpenComment(View view)
+	{
+		EventItem item = (EventItem) view.getTag();
+		
+		Intent openComment = new Intent(EventDetailActivity.this, CommentActivity.class);
+		openComment.putExtra(CommentActivity.COMMENT, item);
+		openComment.putExtra(CommentActivity.EVENT_ID, mEventID);
+		
+		startActivity(openComment);
+	}
     
+	public void onClickLikeItem(View view)
+	{
+		EventItem item = (EventItem) view.getTag();
+		
+		for (Like like : item.likes)
+		{
+			if (like.user_id == GlobalVariables.getInstance().getUserId())
+			{
+				item.likes.remove(like);
+				EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
+				fragment.notifyDataSetChanged();
+			}
+		}
+		
+		EventServiceBuffer.setLikeInfoListener(this);
+		
+		EventServiceBuffer.likeEventItem(item);
+	}
+
+	public void likeSuccess(UpdatedLikeEvent likeEvent) {
+		
+		EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
+		fragment.addLikeToListAdapter(likeEvent);
+	}
+	
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+		EventServiceBuffer.removeLikeInfoListener(this);
+	}
+	
     /*@Override
 	protected void backButtonPressed()
 	{

@@ -11,10 +11,13 @@ import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
+import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
+import com.motlee.android.object.event.UpdatedPhotoEvent;
+import com.motlee.android.object.event.UpdatedPhotoListener;
 import com.motlee.android.view.DateTimePicker;
 
 import android.app.Dialog;
@@ -40,7 +43,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class CreateEventActivity extends BaseMotleeActivity {
+public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEventDetailListener, UpdatedPhotoListener {
 	
 	public static String MAIN_FRAGMENT = "MainFragment";
 	public static String SEARCH_PEOPLE = "SearchPeople";
@@ -57,12 +60,19 @@ public class CreateEventActivity extends BaseMotleeActivity {
 	private static final String SEARCH_TEXT = "";
 	private View mCurrentDateTimePickerFocus;
 	
+	private String mPhotoUrl;
+	private String mPhotoDesc;
+	private LocationInfo mLocationInfo;
+	
 	private LocationInfo selectLocation;
 	private SearchPlacesFragment searchPlacesFragment;
 
 	private ProgressDialog progressDialog;
 
 	private Integer mEventID;
+	
+	private EventDetail mCreatedEvent;
+	private ArrayList<Integer> mEventAttendees;
 	
 	/*
 	 * get initial location of user and set up locationListener to update if 
@@ -104,13 +114,16 @@ public class CreateEventActivity extends BaseMotleeActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
  
+        mPhotoUrl = getIntent().getStringExtra("Image");
+        mPhotoDesc = getIntent().getStringExtra("Description");
+        mLocationInfo = getIntent().getParcelableExtra("Location");
+        
         searchPlacesFragment = new SearchPlacesFragment();
         
         setUpLocationListener();
         
         selectLocation = new LocationInfo("My Location", mLocation.getLatitude(), mLocation.getLongitude());
         
-        EventServiceBuffer.getInstance(this);
         findViewById(R.id.menu_buttons).setVisibility(View.GONE);
         
         FragmentManager     fm = getSupportFragmentManager();
@@ -217,51 +230,67 @@ public class CreateEventActivity extends BaseMotleeActivity {
     public void onRightHeaderButtonClick(View view)
     {
     	CreateEventFragment fragment = (CreateEventFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
-    	final ArrayList<Integer> attendees = fragment.getAttendeeList();
-    	final EventDetail eDetail = new EventDetail();
+    	mEventAttendees = fragment.getAttendeeList();
+    	mCreatedEvent = new EventDetail();
     	
-    	eDetail.setEventName(fragment.getEventName());
-    	eDetail.setStartTime(fragment.getStartTime().getTime());
-    	eDetail.setEndTime(fragment.getEndTime().getTime());
-    	eDetail.setOwnerID(GlobalVariables.getInstance().getUserId());
-    	eDetail.setLocationInfo(fragment.getLocationInfo());
+    	mCreatedEvent.setEventName(fragment.getEventName());
+    	mCreatedEvent.setStartTime(fragment.getStartTime().getTime());
+    	mCreatedEvent.setEndTime(fragment.getEndTime().getTime());
+    	mCreatedEvent.setOwnerID(GlobalVariables.getInstance().getUserId());
+    	mCreatedEvent.setLocationInfo(fragment.getLocationInfo());
     	
-    	EventServiceBuffer.setEventDetailListener(new UpdatedEventDetailListener() {
-
-			public void myEventOccurred(UpdatedEventDetailEvent evt) {
-				
-				if (evt.getEventIds().size() == 1)
-				{
-					for (Integer eventID : evt.getEventIds())
-					{
-						mEventID = eventID;
-						EventServiceBuffer.sendAttendeesForEvent(eventID, attendees);
-					}
-				}
-			}
-    	});
+    	EventServiceBuffer.setEventDetailListener(this);
     	
-    	EventServiceBuffer.setAttendeeListener(new UpdatedAttendeeListener(){
-
-			public void raised(UpdatedAttendeeEvent e) {
-
-				//GlobalEventList.eventDetailMap.get(mEventID).addAttendee(attendees);
-				
-				Intent seeDetailIntent = new Intent(CreateEventActivity.this, EventDetailActivity.class);
-				seeDetailIntent.putExtra("EventID", mEventID);
-				seeDetailIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-				progressDialog.dismiss();
-				startActivity(seeDetailIntent);
-				finish();
-			}
-    		
-    	});
+    	EventServiceBuffer.setAttendeeListener(attendeeListener);
     	
-    	EventServiceBuffer.sendNewEventToDatabase(eDetail);
+    	EventServiceBuffer.sendNewEventToDatabase(mCreatedEvent);
     	
     	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Loading");
     }
     
+    private UpdatedAttendeeListener attendeeListener = new UpdatedAttendeeListener(){
+
+		public void raised(UpdatedAttendeeEvent e) {
+			
+			Intent seeDetailIntent = new Intent(CreateEventActivity.this, EventDetailActivity.class);
+			seeDetailIntent.putExtra("EventID", mEventID);
+			seeDetailIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+			progressDialog.dismiss();
+			startActivity(seeDetailIntent);
+			finish();
+		}
+	};
+    
+	public void myEventOccurred(UpdatedEventDetailEvent evt) {
+		
+		if (evt.getEventIds().size() == 1)
+		{
+			for (Integer eventID : evt.getEventIds())
+			{
+				mEventID = eventID;
+				if (mPhotoUrl != null)
+				{
+					EventServiceBuffer.setPhotoListener(this);
+					
+					EventServiceBuffer.sendPhotoToDatabase(eventID, mPhotoUrl, mLocationInfo, mPhotoDesc);
+				}
+				else
+				{
+					EventServiceBuffer.sendAttendeesForEvent(eventID, mEventAttendees);
+				}
+			}
+		}
+	}
+    
+	public void photoEvent(UpdatedPhotoEvent e) {
+		
+		for (PhotoItem item : e.getPhotos())
+		{
+			mCreatedEvent.getImages().add(item);
+		}
+		EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees);
+	}
+	
     /*
      * opens the DateTimePicker dialog
      */

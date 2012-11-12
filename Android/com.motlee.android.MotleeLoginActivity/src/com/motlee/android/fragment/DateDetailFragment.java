@@ -3,7 +3,6 @@ package com.motlee.android.fragment;
 import java.util.Date;
 
 import com.motlee.android.R;
-import com.motlee.android.layouts.GridListTableLayout;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;

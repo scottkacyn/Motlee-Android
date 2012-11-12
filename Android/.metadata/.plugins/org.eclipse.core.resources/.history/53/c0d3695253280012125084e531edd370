@@ -1,0 +1,201 @@
+package com.motlee.android;
+
+import java.util.ArrayList;
+
+import com.motlee.android.fragment.EventDetailFragment;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalEventList;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.MenuFunctions;
+import com.motlee.android.object.UserInfoList;
+import com.motlee.android.object.event.UpdatedAttendeeEvent;
+import com.motlee.android.object.event.UpdatedAttendeeListener;
+import com.motlee.android.object.event.UpdatedEventDetailEvent;
+import com.motlee.android.object.event.UpdatedEventDetailListener;
+
+import android.app.ActivityManager;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ImageButton;
+
+public class EventDetailActivity extends BaseDetailActivity {
+
+	private FragmentTransaction ft;
+	private ProgressDialog progressDialog;
+	private int mEventID;
+	
+	private Handler handler;
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.google.android.maps.MapActivity#onNewIntent(android.content.Intent)
+	 * We override onNewIntent. This is a singleTask Activity so we need to load the 
+	 * new event data into the existing fragment
+	 */
+	@Override
+	public void onNewIntent(Intent intent)
+	{
+		EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
+		
+		mEventID = intent.getExtras().getInt("EventID");
+		
+		eDetail = GlobalEventList.eventDetailMap.get(mEventID);
+		
+        fragment.addEventDetail(eDetail);
+	}
+	
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.main);
+        
+        progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading");
+        
+        EventServiceBuffer.getInstance(this);
+        
+        EventServiceBuffer.setEventDetailListener(eventListener);
+        
+        mEventID = getIntent().getExtras().getInt("EventID");
+        
+        EventServiceBuffer.getEventsFromService(mEventID);
+    }
+	
+	private Fragment setUpFragment() {
+		
+		eDetail = GlobalEventList.eventDetailMap.get(mEventID);
+        
+        EventDetailFragment eventDetailFragment = new EventDetailFragment();
+        
+        eventDetailFragment.setHeaderView(findViewById(R.id.header));
+        
+        eventDetailFragment.addEventDetail(eDetail);
+        
+        return eventDetailFragment;
+	}
+    
+	public void onRightHeaderButtonClick(View view)
+	{
+		String tag = view.getTag().toString();
+		
+		if (tag.equals(BaseDetailActivity.JOIN))
+		{
+			EventServiceBuffer.getInstance(this);
+			EventServiceBuffer.setAttendeeListener(attendeeListener);
+			EventServiceBuffer.setEventDetailListener(eventListener);
+			
+			progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading");
+			
+			ArrayList<Integer> attendees = new ArrayList<Integer>();
+			attendees.add(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId()).uid);
+			
+			EventServiceBuffer.joinEvent(eDetail.getEventID());
+		}
+	}
+	
+	private UpdatedAttendeeListener attendeeListener = new UpdatedAttendeeListener(){
+
+		public void raised(UpdatedAttendeeEvent e) {
+			
+			EventServiceBuffer.getEventsFromService(eDetail.getEventID());
+		}
+		
+	};
+	
+    public void switchToGridView(View view)
+    {
+    	EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
+    	
+    	fragment.addGridToTableLayout();
+    }
+    
+    public void switchToListView(View view)
+    {
+    	EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
+    	
+    	fragment.addListToAdapter();
+    }
+    
+    public void seeMoreDetail(View view)
+    {
+    	String description = view.getContentDescription().toString();
+    	
+    	Intent eventDetail = new Intent(EventDetailActivity.this, MoreEventDetailActivity.class);
+    	
+    	eventDetail.putExtra("DetailDescription", description);
+    	eventDetail.putExtra("EventID", eDetail.getEventID());
+    	
+    	startActivity(eventDetail);
+    }
+
+    private UpdatedEventDetailListener eventListener = new UpdatedEventDetailListener(){
+
+		public void myEventOccurred(UpdatedEventDetailEvent evt) {
+
+			handler.post(new Runnable(){
+
+				public void run() {
+					
+			        FragmentManager     fm = getSupportFragmentManager();
+			        ft = fm.beginTransaction();
+					
+			        eDetail = GlobalEventList.eventDetailMap.get(mEventID); 
+			        
+			        if (fm.findFragmentById(R.id.fragment_content) == null)
+			        {
+			        	ft.add(R.id.fragment_content, setUpFragment());
+			        }
+			        else
+			        {
+			        	ft.replace(R.id.fragment_content, setUpFragment());
+			        }
+			        
+					ft.commit();
+					
+					progressDialog.dismiss();
+					
+				}
+				
+			});
+
+			
+		}
+    	
+    };
+    
+    
+	@Override
+	void enterEditMode() {
+		
+		
+		
+	}
+    
+    /*@Override
+	protected void backButtonPressed()
+	{
+    	ActivityManager m = (ActivityManager) this.getSystemService( Context.ACTIVITY_SERVICE );
+    	List<RunningTaskInfo> runningTaskInfoList =  m.
+    	Iterator<RunningTaskInfo> itr = runningTaskInfoList.iterator();
+    	while(itr.hasNext()){
+    	    RunningTaskInfo runningTaskInfo = (RunningTaskInfo)itr.next();
+    	    int id = runningTaskInfo.id;
+    	    CharSequence desc= runningTaskInfo.description;
+    	    int numOfActivities = runningTaskInfo.numActivities;
+    	    String topActivity = runningTaskInfo.topActivity.getShortClassName();
+    	}
+    	
+		super.onBackPressed();
+	}*/
+}

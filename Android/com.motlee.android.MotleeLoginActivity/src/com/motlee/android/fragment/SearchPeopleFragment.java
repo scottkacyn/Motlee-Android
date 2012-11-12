@@ -42,16 +42,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.motlee.android.R;
 import com.motlee.android.adapter.SearchPeopleAdapter;
+import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.FacebookPerson;
 import com.motlee.android.object.GlobalVariables;
 
 public class SearchPeopleFragment extends ListFragmentWithHeader {
 	private String tag = "SearchFragment";
-	
-	private static final String JOIN = "Join";
-	private static final String EDIT = "Edit";
-	private static final String LEAVE = "Leave";
-	private static final String FOMO = "FOMO";
 	
 	private String pageTitle = "All Events";
 	
@@ -87,6 +83,8 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
 		
 		this.inflater = inflater;
 		view = (View) this.inflater.inflate(R.layout.activity_search, null);
+		
+		view.findViewById(R.id.search_text_box_background).setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.search_text_box, GlobalVariables.DISPLAY_WIDTH).getDrawable());
 		
 		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
 		tv.setText(pageTitle);

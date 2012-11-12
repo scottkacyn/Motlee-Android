@@ -1,0 +1,41 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+   
+    <com.motlee.android.layouts.HorizontalRatioLinearLayout
+        android:id="@+id/comment_text_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:paddingLeft="15dp">
+        
+        <EditText 
+            android:id="@+id/comment_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+         	android:paddingLeft="5dp"
+         	android:paddingRight="5dp"
+	        android:background="@android:color/transparent"/>
+        
+
+        
+    </com.motlee.android.layouts.HorizontalRatioLinearLayout>
+    
+    <LinearLayout
+         android:id="@+id/comment_list"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:layout_below="@id/comment_text_background">
+	     <ListView
+	       android:id="@android:id/list"
+	       android:layout_height="fill_parent"
+	       android:layout_width="fill_parent"
+	       android:scrollbars="none" />
+	     <TextView android:id="@android:id/empty"
+	       android:layout_width="fill_parent"
+	       android:layout_height="fill_parent"
+	       android:text=""/>
+    </LinearLayout>
+    
+</RelativeLayout>

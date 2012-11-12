@@ -1,0 +1,54 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   	xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/event_detail_gridview"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:weightSum="1" >
+    
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.333" >
+        <ImageView 
+            android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/grid_image1"
+	        android:layout_alignRight="@+id/grid_image1"
+	        android:layout_alignTop="@+id/grid_image1"
+	        android:layout_alignBottom="@+id/grid_image1"
+	        android:adjustViewBounds="true" 
+	        android:src="@drawable/image_thumbnail_background" />
+        
+	    <ImageView
+	        android:id="@+id/grid_image_1"
+	        android:layout_width="0dp"
+	        android:layout_weight="0.333"
+	        android:layout_height="wrap_content"
+	        android:scaleType="fitCenter"
+	        android:padding="5dp"
+	        android:clickable="true"
+	        android:onClick="showPictureDetail" />
+    </RelativeLayout>
+    <ImageView
+        android:id="@+id/grid_image_2"
+        android:layout_width="0dp"
+        android:layout_weight="0.334"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        android:padding="5dp"
+        android:clickable="true"
+        android:onClick="showPictureDetail"
+        android:background="@drawable/image_thumbnail_background" />
+    
+    <ImageView
+        android:id="@+id/grid_image_3"
+        android:layout_width="0dp"
+        android:layout_weight="0.333"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        android:padding="5dp"
+        android:clickable="true"
+        android:onClick="showPictureDetail"
+        android:background="@drawable/image_thumbnail_background" />
+    
+</LinearLayout>

@@ -5,7 +5,8 @@ public enum EventItemType {
 	STORY(2),
 	COMMENT(3),
 	FOMO(4),
-	ATTENDEE(5);
+	ATTENDEE(5),
+	LIKE(6);
 	
 	private final int value;
 	private EventItemType(int value)

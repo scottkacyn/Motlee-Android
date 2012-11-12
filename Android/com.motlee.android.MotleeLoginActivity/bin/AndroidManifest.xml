@@ -101,7 +101,7 @@
         </activity>
         
         <activity
-            android:name=".PhotoDetailActivity"
+            android:name=".EventItemDetailActivity"
             android:label="@string/title_photo_detail_activity"
             android:theme="@style/app_theme"
             android:launchMode="singleTask"
@@ -136,6 +136,28 @@
         <activity
             android:name=".PostStoryActivity"
             android:label="@string/title_post_story_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
+        <activity
+            android:name=".CommentActivity"
+            android:label="@string/title_comment_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
+        <activity
+            android:name="com.droid4you.util.cropimage.CropImage"
+            android:label="@string/title_crop_image_activity"
             android:theme="@style/app_theme"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" >

@@ -1,17 +1,20 @@
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingTop="10dp">
-	<ImageView
-           android:id="@+id/photo_detail_thumbnail"
-           android:layout_width="wrap_content"
-           android:layout_height="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="10dp">
+        
+        <ImageView
+            android:id="@+id/photo_detail_thumbnail"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
     		android:scaleType="fitCenter"
     		android:adjustViewBounds="true"
-    		android:layout_alignParentLeft="true"
-    		android:layout_alignParentBottom="true"/>
-       
+    		android:src="@drawable/story_detail_background"/>
        <LinearLayout
            android:layout_width="wrap_content"
            android:layout_height="match_parent"
@@ -38,53 +41,58 @@
        </LinearLayout>
        
        <LinearLayout 
-           android:id="@+id/photo_detail_right_icons"
+           android:id="@+id/photo_detail_right_text"
            android:layout_width="wrap_content"
            android:layout_height="match_parent"
            android:layout_alignParentRight="true"
            android:layout_alignParentBottom="true"
            android:orientation="vertical" >
            
-           <ImageView
-               android:id="@+id/photo_detail_time_icon"
-               android:layout_width="wrap_content"
-               android:layout_height="0dp"
-               android:layout_weight="1"
-               android:scaleType="fitEnd"
-               android:adjustViewBounds="true"
-               android:src="@drawable/icon_time_normal" />
-           
-           <ImageView
-               android:id="@+id/photo_detail_location_icon"
-               android:layout_width="wrap_content"
-               android:layout_height="0dp"
-               android:layout_weight="1"
-               android:scaleType="fitEnd"
-               android:adjustViewBounds="true"
-               android:src="@drawable/icon_map_background_normal" />
-           
-       </LinearLayout>
-       
-       <LinearLayout
-           android:layout_width="wrap_content"
-           android:layout_height="match_parent"
-           android:layout_toLeftOf="@id/photo_detail_right_icons"
-           android:layout_alignParentBottom="true"
-           android:orientation="vertical">
-           
            <TextView 
-               android:id="@+id/photo_detail_time_text"
+               android:id="@+id/photo_detail_thumb_text"
                android:layout_height="0dp"
                android:layout_weight="1"
                android:layout_width="wrap_content"
                android:gravity="right|center_vertical" />
            
            <TextView 
-               android:id="@+id/photo_detail_location_text"
+               android:id="@+id/photo_detail_comment_text"
                android:layout_height="0dp"
                android:layout_weight="1"
                android:gravity="right|center_vertical"
                android:layout_width="wrap_content" />
            
        </LinearLayout>
-    </RelativeLayout>	
+       
+       <LinearLayout
+           android:layout_width="wrap_content"
+           android:layout_height="match_parent"
+           android:layout_toLeftOf="@id/photo_detail_right_text"
+           android:layout_alignParentBottom="true"
+           android:orientation="vertical">
+           
+           <ImageButton
+               android:id="@+id/photo_detail_thumb_icon"
+               android:layout_width="wrap_content"
+               android:layout_height="0dp"
+               android:layout_weight="1"
+               android:scaleType="fitCenter"
+               android:adjustViewBounds="true"
+               android:onClick="onClickLikeItem"
+               android:background="@android:color/transparent"
+               android:src="@drawable/icon_button_thumb" />
+           
+           <ImageButton
+               android:id="@+id/photo_detail_comment_icon"
+               android:layout_width="wrap_content"
+               android:layout_height="0dp"
+               android:layout_weight="1"
+               android:scaleType="fitEnd"
+               android:adjustViewBounds="true"
+               android:onClick="onClickOpenComment"
+               android:background="@android:color/transparent"
+               android:src="@drawable/icon_button_comment" />
+
+       </LinearLayout>
+    </RelativeLayout>
+ </LinearLayout>

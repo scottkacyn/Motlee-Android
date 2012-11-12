@@ -1,0 +1,172 @@
+package com.motlee.android;
+
+import java.io.File;
+
+import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalActivityFunctions;
+import com.motlee.android.object.MenuFunctions;
+import com.motlee.android.object.event.UpdatedEventDetailEvent;
+import com.motlee.android.object.event.UpdatedEventDetailListener;
+
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+
+public class BaseMotleeActivity extends FragmentActivity {
+
+	
+	final public void onClickPostStory(View view)
+	{
+		MenuFunctions.postComment(view, this);
+	}
+	
+	final public void showStoryDetail(View view)
+	{
+		GlobalActivityFunctions.showStoryDetail(view, this);
+	}
+	
+	final public void showPictureDetail(View view)
+	{
+		GlobalActivityFunctions.showPictureDetail(view, this);
+	}
+	
+	final public void onClickGetPhotoFromLibrary(View view)
+	{
+		MenuFunctions.uploadPictureFromPhone(view, this);
+	}
+	
+	final public void onClickTakePhoto(View view)
+    {
+    	MenuFunctions.takePictureOnPhone(view, this);
+    }
+    
+	final public void onClickCreateEvent(View view)
+    {
+    	MenuFunctions.showCreateEventPage(view, this);
+    }
+    
+	final public void onClickOpenPlusMenu(View view)
+    {
+    	MenuFunctions.openPlusMenu(view, this);
+    }
+    
+    //onClickMainMenu: When user clicks on main menu button
+    
+	final public void onClickOpenMainMenu(View view)
+    {
+    	MenuFunctions.openMainMenu(view, this);
+    }
+    
+	final public void onClickShowAllEvents(View view)
+	{
+		MenuFunctions.showAllEvents(view, this);
+	}
+	
+	final public void onClickShowMyEvents(View view)
+	{
+		MenuFunctions.showMyEvents(view, this);
+	}
+	
+	final public void onClickShowNearbyEvents(View view)
+	{
+		MenuFunctions.showNearbyEvents(view, this);
+	}
+	
+	final public void onClickShowSettings(View view)
+	{
+		MenuFunctions.showSettings(this);
+	}
+	
+	public UpdatedEventDetailListener eventListener = new UpdatedEventDetailListener(){
+
+		public void myEventOccurred(UpdatedEventDetailEvent evt) {
+			
+			return;
+			
+		}
+		
+	};
+	
+	@Override
+	final public boolean dispatchTouchEvent(MotionEvent ev) {
+		
+		if (MenuFunctions.onDispatchTouchOverride(ev, this))
+		{
+			return super.dispatchTouchEvent(ev);
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onDestroy()
+	 * Override onDestroy to ensure we do not have any attachments to other
+	 * objects or activities to prevent memory leaks
+	 */
+	@Override
+	public void onDestroy()
+	{
+		Log.d(this.toString(), "onDestroy");
+		EventServiceBuffer.setAttendeeListener(null);
+		EventServiceBuffer.setUserInfoListener(null);
+		EventServiceBuffer.finishContext(this);
+		showExternalCacheDir();
+		super.onDestroy();
+	}
+	
+	private void showExternalCacheDir() {
+		
+		File externalCache = getExternalCacheDir();
+		
+		File[] files = externalCache.listFiles();
+		
+		for (int i = 0; i < files.length; i++)
+		{
+			File file = files[i];
+			Log.d(this.toString(), file.getName());
+		}
+	}
+
+	private void unbindDrawables(View view) {
+	    if (view.getBackground() != null) {
+	        view.getBackground().setCallback(null);
+	    }
+	    if (view instanceof ViewGroup) {
+	        for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+	            unbindDrawables(((ViewGroup) view).getChildAt(i));
+	        }
+	        ((ViewGroup) view).removeAllViews();
+	    }
+	}
+	
+	//********************************
+	// Go Back Functions to sync phone's
+	// back button and our's
+	//********************************
+	
+	@Override
+	public void onBackPressed() {
+		backButtonPressed();
+	}
+	
+	/*
+	 * called when on page back button pressed
+	 */
+	public void goBack(View view)
+	{
+		backButtonPressed();
+	}
+	
+	/*
+	 * defaults to the system back button functionality
+	 */
+	protected void backButtonPressed()
+	{
+		super.onBackPressed();
+	}
+}

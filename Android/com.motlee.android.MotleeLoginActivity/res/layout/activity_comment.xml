@@ -1,0 +1,68 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+   
+    <com.motlee.android.layouts.HorizontalRatioLinearLayout
+        android:id="@+id/comment_text_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingLeft="15dp"
+        android:paddingRight="2dp">
+        
+        <EditText 
+            android:id="@+id/comment_text"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+         	android:paddingLeft="5dp"
+         	android:paddingRight="5dp"
+         	android:layout_weight=".75"
+	        android:background="@android:color/transparent"/>
+        
+		<FrameLayout
+		      xmlns:android="http://schemas.android.com/apk/res/android"
+		      android:layout_height="match_parent"
+		      android:layout_width="0dp"
+		      android:layout_weight=".25">
+		   <com.motlee.android.view.HorizontalAspectImageButton
+		       android:id="@+id/comment_send_button"
+		       android:layout_width="match_parent"
+		       android:layout_height="wrap_content"
+		       android:padding="5dp"
+		       android:src="@drawable/header_right_button"
+		       android:onClick="sendComment"
+		       android:layout_gravity="center"
+		       android:background="@android:color/transparent" />
+		   
+		   <TextView 
+		       android:id="@+id/header_right_text"
+		  	    android:layout_width="match_parent"
+		       android:layout_height="match_parent"
+		       android:gravity="center|center_vertical"
+		       android:padding="5dp"
+		       android:text="Send"
+		       android:background="@android:color/transparent" />
+		 </FrameLayout> 
+        
+    </com.motlee.android.layouts.HorizontalRatioLinearLayout>
+    
+    <LinearLayout
+         android:id="@+id/comment_list"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:layout_above="@id/comment_text_background">
+		
+	     <ListView
+	       android:id="@android:id/list"
+	       android:layout_height="fill_parent"
+	       android:layout_width="fill_parent"
+	       android:scrollbars="none" />
+	     <TextView android:id="@android:id/empty"
+	       android:layout_width="fill_parent"
+	       android:layout_height="fill_parent"
+	       android:text=""/>
+	     
+    </LinearLayout>
+    
+</RelativeLayout>

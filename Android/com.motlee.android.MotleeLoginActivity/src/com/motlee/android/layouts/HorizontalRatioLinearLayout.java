@@ -51,7 +51,8 @@ public class HorizontalRatioLinearLayout extends LinearLayout {
 	@Override
 	public void setBackgroundDrawable(Drawable drawable)
 	{		
-		super.setBackgroundDrawable(scaleBackgroundImage(drawable));
+		layout_height = drawable.getIntrinsicHeight();
+		super.setBackgroundDrawable(drawable);
 	}
 	
 	// Scale image preserving Aspect Ratio to the screen's width

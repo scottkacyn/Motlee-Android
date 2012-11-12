@@ -17,6 +17,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
+import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
 import com.motlee.android.fragment.LoginPageFragment;
 import com.motlee.android.fragment.SplashScreenFragment;
 import com.motlee.android.object.EventServiceBuffer;
@@ -33,9 +35,12 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 
-public class MotleeLoginActivity extends FacebookActivity {
+public class MotleeLoginActivity extends FacebookActivity implements UpdatedEventDetailListener, OnFragmentAttachedListener {
 
     Facebook facebook = new Facebook(GlobalVariables.FB_APP_ID);
     private SharedPreferences mPrefs;
@@ -52,8 +57,9 @@ public class MotleeLoginActivity extends FacebookActivity {
         FragmentTransaction ft = fm.beginTransaction();
         
         LoginPageFragment loginPageFragment = new LoginPageFragment();
-        
+
         ft.add(R.id.fragment, loginPageFragment)
+        .add(new EmptyFragmentWithCallbackOnResume(), "EmptyFragment")
         .commit();
         
         GlobalVariables instance = GlobalVariables.getInstance();
@@ -77,18 +83,9 @@ public class MotleeLoginActivity extends FacebookActivity {
         
         //access_token = session.get     
         
-        EventServiceBuffer.getInstance(this);
+        EventServiceBuffer.getInstance(getApplication());
         
-        EventServiceBuffer.setEventDetailListener(new UpdatedEventDetailListener(){
-
-			public void myEventOccurred(UpdatedEventDetailEvent evt) {
-				// TODO Auto-generated method stub
-				
-				EventServiceBuffer.setEventDetailListener(null);
-				startEventListActivity();
-			}
-        	
-        });
+        EventServiceBuffer.setEventDetailListener(this);
         
         EventServiceBuffer.setUserInfoListener(new UserInfoListener(){
 
@@ -105,23 +102,12 @@ public class MotleeLoginActivity extends FacebookActivity {
         });
     }
     
-    @Override
-    protected void onSessionStateChange(SessionState state, Exception exception) {
-      // user has either logged in or not ...
-      if (state.isOpened()) {
-    	  
-    	  FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-    	  
-    	  SplashScreenFragment splashScreenFragment = new SplashScreenFragment();
-    	  
-    	  ft.replace(R.id.fragment, splashScreenFragment)
-    	  .commit();
-    	  
-    	  String access_token = this.getSession().getAccessToken();
-          
-          EventServiceBuffer.getUserInfoFromFacebookAccessToken(access_token);
-      }
-    }
+    public void myEventOccurred(UpdatedEventDetailEvent evt) {
+		// TODO Auto-generated method stub
+		
+		EventServiceBuffer.removeEventDetailListener(this);
+		startEventListActivity();
+	}
     
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -140,4 +126,48 @@ public class MotleeLoginActivity extends FacebookActivity {
     	
     	finish();
     }
+    
+    @Override
+    public void onDestroy()
+    {
+		Log.d(this.toString(), "onDestroy");
+		EventServiceBuffer.setAttendeeListener(null);
+		EventServiceBuffer.setUserInfoListener(null);
+		EventServiceBuffer.removeEventDetailListener(this);
+		EventServiceBuffer.finishContext(this);
+		unbindDrawables(this.findViewById(android.R.id.content));
+		super.onDestroy();
+    }
+
+	private void unbindDrawables(View view) {
+	    if (view.getBackground() != null) {
+	        view.getBackground().setCallback(null);
+	    }
+	    if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
+	        for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+	            unbindDrawables(((ViewGroup) view).getChildAt(i));
+	        }
+	        ((ViewGroup) view).removeAllViews();
+	    }
+	}
+
+	public void OnFragmentAttached() {
+		
+		if (Session.getActiveSession() != null)
+		{
+			if (Session.getActiveSession().isOpened())
+			{
+				  FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+				  
+				  SplashScreenFragment splashScreenFragment = new SplashScreenFragment();
+				  
+				  ft.replace(R.id.fragment, splashScreenFragment)
+				  .commit();
+				  
+				  String access_token = this.getSession().getAccessToken();
+				  
+				  EventServiceBuffer.getUserInfoFromFacebookAccessToken(access_token);
+			}
+		}
+	}
 }

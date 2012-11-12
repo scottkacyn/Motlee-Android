@@ -52,7 +52,7 @@ public class StretchedBackgroundRelativeLayout extends RelativeLayout {
 		Log.d("StretchedBackgroundTableLayout", "left: " + leftPadding + ", top: " + topPadding + ", right: " + rightPadding + ", left: " + leftPadding);
 	}
 	
-	@Override
+	/*@Override
 	public void onLayout(boolean changed, int left, int top, int right, int bottom)
 	{
 		super.onLayout(changed, left, top, right, bottom);
@@ -87,5 +87,5 @@ public class StretchedBackgroundRelativeLayout extends RelativeLayout {
 				}
 			}
 		}
-	}
+	}*/
 }

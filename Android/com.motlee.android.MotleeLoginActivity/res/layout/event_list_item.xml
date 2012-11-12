@@ -5,16 +5,15 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@android:color/transparent">
-	<com.motlee.android.layouts.RatioBackgroundRelativeLayout
+	<RelativeLayout
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content" 
-	    android:background="@drawable/event_list_detail_background">
+	    android:id="@+id/event_list_detail_background">
 	
-		    <com.motlee.android.layouts.HorizontalRatioLinearLayout
+		    <LinearLayout
 		        android:id="@+id/event_header"
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
-		        android:background="@drawable/event_list_detail_header_background"
 		        android:weightSum="1"
 		        android:clickable="true"
 		        android:onClick="onClickGetEventDetail"
@@ -49,7 +48,7 @@
 			            android:background="@android:color/transparent"
 			            android:contentDescription="Arrow"
 						/>
-		    </com.motlee.android.layouts.HorizontalRatioLinearLayout>
+		    </LinearLayout>
 	
 		    
 		    <LinearLayout android:id="@+id/event_middle"
@@ -74,6 +73,7 @@
 			            android:scaleType="fitCenter"
 			            android:gravity="center"
 			            android:layout_weight="0.5"
+			            android:onClick="sendFomo"
 			            android:background="@android:color/transparent" /> 
 			            
 			        <TextView android:id="@+id/fomo_count"
@@ -94,11 +94,10 @@
 		            
 		    </LinearLayout>
 		    
-			<com.motlee.android.layouts.HorizontalRatioLinearLayout android:id="@+id/event_footer"
+			<LinearLayout android:id="@+id/event_footer"
 		        android:layout_width="fill_parent"
 		        android:layout_height="wrap_content"
 		        android:layout_alignParentBottom="true"
-		        android:background="@drawable/event_list_detail_footer_background"
 		        android:weightSum="1"
 		        >
 		        
@@ -130,8 +129,8 @@
 		            android:ellipsize="end"
 		            android:singleLine="true"/>
 		                    
-		    </com.motlee.android.layouts.HorizontalRatioLinearLayout>
-	</com.motlee.android.layouts.RatioBackgroundRelativeLayout>
+		    </LinearLayout>
+	</RelativeLayout>
 	<View
         android:layout_width="fill_parent"
         android:layout_height="10dp"

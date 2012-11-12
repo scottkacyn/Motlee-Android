@@ -1,16 +1,14 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/search_background">
+    android:layout_height="match_parent">
     
     <com.motlee.android.layouts.HorizontalRatioLinearLayout
         android:id="@+id/search_text_box_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:paddingLeft="15dp"
-        android:background="@drawable/search_text_box">
+        android:paddingLeft="15dp">
         
         <EditText 
             android:id="@+id/search_text_box_text"
@@ -65,7 +63,8 @@
             android:id="@+id/search_progress_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|center_horizontal">
+            android:layout_gravity="top|center_horizontal"
+            android:gravity="center">
 		    
         	<include layout="@layout/progress_bar" />
         	

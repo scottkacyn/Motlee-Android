@@ -23,12 +23,11 @@ import org.apache.http.params.HttpProtocolParams;
 import com.facebook.android.Facebook;
 import com.motlee.android.EventListActivity;
 import com.motlee.android.R;
-import com.nostra13.universalimageloader.cache.memory.impl.LRULimitedMemoryCache;
+import com.nostra13.universalimageloader.cache.disc.impl.TotalSizeLimitedDiscCache;
+import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
@@ -53,9 +52,9 @@ public class GlobalVariables {
     
     private Display display;
     
-    private int displayWidth;
+    public static int DISPLAY_WIDTH;
     
-    private int displayHeight;
+    public static int DISPLAY_HEIGHT;
     
     private Typeface helveticaNeueRegularFont;
     
@@ -71,7 +70,8 @@ public class GlobalVariables {
     
     private int menuButtonsHeight;
     
-    private ImageLoader imageDownloader;
+    private ImageLoader imageLoader = ImageLoader.getInstance();
+    private DisplayImageOptions options;
     
     private ExecutorService threadPool = Executors.newCachedThreadPool();
     
@@ -131,11 +131,18 @@ public class GlobalVariables {
 	                    // On location updates, compare the current
 	                    // location to the desired location set in the
 	                    // place picker
-	                    float distance = location.distanceTo(
-	                    		userLocation);
-	                    if (distance >= LOCATION_CHANGE_THRESHOLD) {
-	                    	userLocation = location;
-	                    }
+	                	if (location != null)
+	                	{
+	                		if (userLocation == null)
+	                		{
+	                			userLocation = location;
+	                		}
+		                    float distance = location.distanceTo(
+		                    		userLocation);
+		                    if (distance >= LOCATION_CHANGE_THRESHOLD) {
+		                    	userLocation = location;
+		                    }
+	                	}
 	                }
 	                
 	                public void onStatusChanged(String s, int i, 
@@ -208,8 +215,8 @@ public class GlobalVariables {
 	public void setDisplay(Display display)
 	{
 		this.display = display;
-		this.displayWidth = display.getWidth();
-		this.displayHeight = display.getHeight();
+		this.DISPLAY_WIDTH = display.getWidth();
+		this.DISPLAY_HEIGHT = display.getHeight();
 	}
 	
 	public String getFacebookPictureUrl(Integer facebookUserID)
@@ -219,79 +226,34 @@ public class GlobalVariables {
 	
 	public int getDisplayWidth()
 	{
-		return this.displayWidth;
+		return this.DISPLAY_WIDTH;
 	}
 	
-	public void dowloadImage(Context context, ImageView imageView, String url)
+	public void initializeImageLoader(Context context)
 	{
-  		ImageScaleType ist = ImageScaleType.EXACTLY;
-    	
-		DisplayImageOptions options = new DisplayImageOptions.Builder()
-		.showStubImage(R.drawable.stubimage)
-		.resetViewBeforeLoading()
-		.imageScaleType(ist)
-		.cacheOnDisc()
-		.displayer(new SimpleBitmapDisplayer())
+		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context.getApplicationContext())
+		.threadPriority(Thread.NORM_PRIORITY - 2)
+		.memoryCache(new WeakMemoryCache())
 		.build();
 		
-		ImageLoaderConfiguration imageConfiguration = new ImageLoaderConfiguration.Builder(context)
-		.memoryCacheExtraOptions(720, 720)
-		.memoryCache(new LRULimitedMemoryCache(4 * 1024 * 1024))
-		.defaultDisplayImageOptions(options)
-		.build();
+		imageLoader.init(config);
 		
-		imageDownloader = ImageLoader.getInstance();
-    	
-    	imageDownloader.init(imageConfiguration);
-    	
-    	imageDownloader.displayImage(url, imageView, options);
-	}
-	
-	public void downloadThumbnailImage(Context context, ImageView imageView, String url)
-	{
-  		ImageScaleType ist = ImageScaleType.EXACTLY;
-    	
-		DisplayImageOptions options = new DisplayImageOptions.Builder()
+		options = new DisplayImageOptions.Builder()
 		.showStubImage(R.drawable.placeholder)
-		.resetViewBeforeLoading()
-		.imageScaleType(ist)
+		.cacheInMemory()
 		.cacheOnDisc()
 		.displayer(new SimpleBitmapDisplayer())
 		.build();
-		
-		ImageLoaderConfiguration imageConfiguration = new ImageLoaderConfiguration.Builder(context)
-		.defaultDisplayImageOptions(options)
-		.build();
-		
-		imageDownloader = ImageLoader.getInstance();
-    	
-    	imageDownloader.init(imageConfiguration);
-    	
-    	imageDownloader.displayImage(url, imageView);
 	}
 	
-	public void dowloadImage(Context context, ImageView imageView, String url, ImageLoadingListener listener)
+	public void downloadImage(ImageView imageView, String url)
 	{
-  		ImageScaleType ist = ImageScaleType.EXACTLY;
-    	
-		DisplayImageOptions options = new DisplayImageOptions.Builder()
-		.showStubImage(R.drawable.placeholder)
-		.resetViewBeforeLoading()
-		.imageScaleType(ist)
-		.cacheOnDisc()
-		.displayer(new SimpleBitmapDisplayer())
-		.build();
-		
-		imageDownloader = ImageLoader.getInstance();
-    	
-    	imageDownloader.init(ImageLoaderConfiguration.createDefault(context));
-    	
-    	imageDownloader.displayImage(url, imageView, options, listener);
+    	imageLoader.displayImage(url, imageView, options);
 	}
 	
 	public int getDisplayHeight()
 	{
-		return this.displayHeight;
+		return this.DISPLAY_HEIGHT;
 	}
 	
 	public Display getDisplay()

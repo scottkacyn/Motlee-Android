@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import com.motlee.android.R;
+import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.PhotoItem;
@@ -117,60 +118,27 @@ public class ImageAdapter extends BaseAdapter {
     }
     
     public View getView(int position, View contentView, ViewGroup parent) {
-        
-    	ViewHolder holder = new ViewHolder();
     	
     	if (contentView == null) {
             contentView = (View) this.inflater.inflate(resource, null);
-            
-            holder.imageThumbnail = (ImageView) contentView.findViewById(R.id.imageThumbnail);
-            
-            contentView.setTag(holder);
         }
-    	else
-    	{
-    		
-    		// For some reason, the contentView is not the entire resource
-    		// but rather just imageView. Not sure what's going on, but this
-    		// snippet of code fixes the problem
-    		if (contentView instanceof ImageView)
-    		{
-    			if (contentView.getTag() == null)
-    			{
-    				holder.imageThumbnail = (ImageView) contentView;
-    				contentView.setTag(holder);
-    			}
-    			else
-    			{
-    				holder = (ViewHolder) contentView.getTag();
-    			}
-    		}
-    		else
-    		{
-    			holder = (ViewHolder) contentView.getTag();
-    		}
-    	}
     	
-    	holder.imageThumbnail.setTag(mPhotoList.get(position));
+    	ImageView imageView = (ImageView) contentView.findViewById(R.id.imageThumbnail);
     	
     	if (mPhotoList.get(position) == NO_PHOTO)
     	{
-    		holder.imageThumbnail.setClickable(false);
-    		GlobalVariables.getInstance().downloadThumbnailImage(context, holder.imageThumbnail, "nourl");
+    		imageView.setClickable(false);
+    		imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.placeholder));
     	}
     	else
     	{
-    		GlobalVariables.getInstance().downloadThumbnailImage(context, holder.imageThumbnail, GlobalVariables.getInstance().getAWSUrlThumbnail(mPhotoList.get(position)));
+    		GlobalVariables.getInstance().downloadImage(imageView, GlobalVariables.getInstance().getAWSUrlThumbnail(mPhotoList.get(position)));
     	}
 
-        holder.imageThumbnail.setVisibility(View.VISIBLE);
+        imageView.setVisibility(View.VISIBLE);
+        imageView.setTag(mPhotoList.get(position));
         
-        return holder.imageThumbnail;
-    }
-
-    private class ViewHolder
-    {
-    	public ImageView imageThumbnail;
+        return contentView;
     }
 }
 

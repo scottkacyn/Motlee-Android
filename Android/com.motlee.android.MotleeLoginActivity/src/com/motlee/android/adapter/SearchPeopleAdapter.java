@@ -3,10 +3,13 @@ package com.motlee.android.adapter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import com.facebook.GraphUser;
 import com.motlee.android.R;
+import com.motlee.android.layouts.HorizontalRatioLinearLayout;
+import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.FacebookPerson;
 import com.motlee.android.object.GlobalVariables;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -64,7 +67,7 @@ public class SearchPeopleAdapter extends ArrayAdapter<GraphUser> {
     		ImageScaleType ist = ImageScaleType.IN_SAMPLE_POWER_OF_2;
     		
     		mOptions = new DisplayImageOptions.Builder()
-    		.showStubImage(R.drawable.stubimage)
+    		.showStubImage(R.drawable.stub_image)
     		.resetViewBeforeLoading()
     		.cacheInMemory()
     		.imageScaleType(ist)
@@ -145,9 +148,15 @@ public class SearchPeopleAdapter extends ArrayAdapter<GraphUser> {
             
             GraphUser person = this.mData.get(position);
             
+            if (convertView.getBackground() == null)
+            {
+            	convertView.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH).getDrawable());
+            }
+            
             holder.search_people_text.setText(person.getName());
             holder.search_people_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
             holder.search_button.setContentDescription(person.getId());
+            holder.search_people_profile_pic.setMaxHeight(DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH).getHeight());
             
             imageDownloader.displayImage(FB_URL_PRE + person.getId() + "/picture", holder.search_people_profile_pic, mOptions);
             
@@ -159,6 +168,7 @@ public class SearchPeopleAdapter extends ArrayAdapter<GraphUser> {
         public ImageView search_people_profile_pic;
         public TextView search_people_text;
         public View search_button;
+        public HorizontalRatioLinearLayout layout;
     }
 
     @Override

@@ -1,19 +1,37 @@
 package com.motlee.android;
 
+import java.io.File;
+
+import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalActivityFunctions;
+import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.MenuFunctions;
+import com.motlee.android.object.event.UpdatedEventDetailEvent;
+import com.motlee.android.object.event.UpdatedEventDetailListener;
 
+import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
-public class BaseMotleeActivity extends FragmentActivity {
+public class BaseMotleeActivity extends FragmentActivity implements UpdatedEventDetailListener {
 
 	
 	final public void onClickPostStory(View view)
 	{
 		MenuFunctions.postComment(view, this);
+	}
+	
+	final public void showStoryDetail(View view)
+	{
+		GlobalActivityFunctions.showStoryDetail(view, this);
 	}
 	
 	final public void showPictureDetail(View view)
@@ -68,6 +86,16 @@ public class BaseMotleeActivity extends FragmentActivity {
 		MenuFunctions.showSettings(this);
 	}
 	
+	public UpdatedEventDetailListener eventListener = new UpdatedEventDetailListener(){
+
+		public void myEventOccurred(UpdatedEventDetailEvent evt) {
+			
+			return;
+			
+		}
+		
+	};
+	
 	@Override
 	final public boolean dispatchTouchEvent(MotionEvent ev) {
 		
@@ -90,10 +118,52 @@ public class BaseMotleeActivity extends FragmentActivity {
 	@Override
 	public void onDestroy()
 	{
+		Log.d(this.toString(), "onDestroy");
 		EventServiceBuffer.setAttendeeListener(null);
-		EventServiceBuffer.setEventDetailListener(null);
 		EventServiceBuffer.setUserInfoListener(null);
+		EventServiceBuffer.removeEventDetailListener(this);
+		EventServiceBuffer.setPhotoListener(null);
+		EventServiceBuffer.finishContext(this);
+		unbindDrawables(this.findViewById(android.R.id.content));
+		System.gc();
 		super.onDestroy();
+	}
+	
+	private void showExternalCacheDir() {
+		
+		File externalCache = getExternalCacheDir();
+		File[] files = externalCache.listFiles();
+		
+		for (int i = 0; i < files.length; i++)
+		{
+			File file = files[i];
+			file.delete();
+		}
+	}
+
+	private void unbindDrawables(View view) {
+	    if (view.getBackground() != null) {
+	        view.getBackground().setCallback(null);
+	        if (view instanceof ImageView)
+	        {
+	        	if (((ImageView) view).getDrawable() != null)
+	        	{
+	        		((ImageView) view).getDrawable().setCallback(null);
+	        	}
+	        }
+	    }
+	    if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
+	        for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+	            if (view.getId() != R.id.header)
+	            {
+	            	unbindDrawables(((ViewGroup) view).getChildAt(i));
+	            }
+	        }
+	        if (view.getId() != R.id.header)
+	        {
+	        	((ViewGroup) view).removeAllViews();
+	        }
+	    }
 	}
 	
 	//********************************
@@ -120,5 +190,10 @@ public class BaseMotleeActivity extends FragmentActivity {
 	protected void backButtonPressed()
 	{
 		super.onBackPressed();
+	}
+
+	public void myEventOccurred(UpdatedEventDetailEvent evt) {
+		// TODO Auto-generated method stub
+		
 	}
 }

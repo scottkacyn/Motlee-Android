@@ -1,0 +1,12 @@
+package com.motlee.android.object.event;
+
+import java.util.EventObject;
+
+public class UpdatedCommentEvent extends EventObject {
+
+	public UpdatedCommentEvent(Object source) {
+		super(source);
+		// TODO Auto-generated constructor stub
+	}
+
+}

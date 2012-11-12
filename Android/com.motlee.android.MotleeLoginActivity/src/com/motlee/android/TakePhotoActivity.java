@@ -5,10 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
+import com.droid4you.util.cropimage.CropImage;
 import com.motlee.android.adapter.CurrentEventWheelAdapter;
 import com.motlee.android.fragment.TakePhotoFragment;
+import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
@@ -60,9 +63,33 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 	private static final String TAKE_PHOTO_FRAGMENT = "TakePhotoFragment";
 	
 	private Handler mHandler;
-	private ProgressDialog progressDialog;
 	
 	private CurrentEventWheelAdapter mAdapter;
+	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		if (mCurrentCroppedPhotoPath != null)
+		{
+			File croppedPhoto = new File(mCurrentCroppedPhotoPath);
+			if (croppedPhoto.exists())
+			{
+				handleCameraPic();
+
+				System.gc();
+				
+				mHandler.post(new Runnable() {
+				    
+				    public void run() {
+				    	setUpFragmentWithPicture();
+				    	mTakenPhoto = false;
+				    }
+				});
+			}
+		}
+	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -117,6 +144,22 @@ public class TakePhotoActivity extends BaseMotleeActivity {
         	
             Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
             photoPickerIntent.setType("image/*");
+            
+			File f = null;
+			
+			try 
+			{
+				f = setUpPhotoFile();
+				mCurrentPhotoPath = f.getAbsolutePath();
+				photoPickerIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+			} 
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+				f = null;
+				mCurrentPhotoPath = null;
+			}
+			
             startActivityForResult(photoPickerIntent, ACTION_GET_PHOTO);
         }
         	
@@ -128,7 +171,10 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 		case ACTION_TAKE_PHOTO: {
 			if (resultCode == RESULT_OK) {
 				
-				picUri = data.getData();
+				if (data != null)
+				{
+					picUri = data.getData();
+				}
 				if (picUri == null)
 				{
 					picUri = Uri.fromFile(new File(mCurrentPhotoPath));
@@ -144,60 +190,26 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 		case ACTION_GET_PHOTO: {
 			if (resultCode == RESULT_OK) {
 				
-				picUri = data.getData();
-				mCurrentPhotoPath = getPath(picUri);
+				if (data != null)
+				{
+					picUri = data.getData();
+				}
+				if (picUri == null)
+				{
+					picUri = Uri.fromFile(new File(mCurrentPhotoPath));
+				}
+				else
+				{
+					mCurrentPhotoPath = getPath(picUri);
+				}
 				performCrop();
 			}
-			break;
-		}
-		case PIC_CROP :
-		{
-			handleCameraPic();
-			
-			Bundle extras = data.getExtras();
-			System.gc();
-			
-			String[] fileParts = mCurrentPhotoPath.split("/");
-			
-			String fileName = fileParts[fileParts.length - 1];
-			
-			File croppedFile = getCroppedPhotoFile(fileName);
-			
-			mCurrentCroppedPhotoPath = croppedFile.getAbsolutePath();
-			
-			FileOutputStream out = null;
-			try {
-				out = new FileOutputStream(getCroppedPhotoFile(fileName));
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			//get the cropped bitmap
-			final Bitmap thePic = extras.getParcelable("data");
-			
-			if (thePic.compress(CompressFormat.JPEG, 90, out))
-			{
-				thePic.recycle();
-			}
-			else
-			{
-				// TODO: handle destruction
-			}
-			
-			mHandler.post(new Runnable() {
-			    
-			    public void run() {
-			    	setUpFragmentWithPicture(thePic);
-			    	mTakenPhoto = false;
-			    }
-			});
 			break;
 		}
 		} // switch
 	}
 	
-	private File getCroppedPhotoFile(String fileName) {
+	private String getCroppedPhotoPath(String fileName) {
 		
 		File file = new File(Environment.getExternalStorageDirectory(), MOTLEE_PATH);
 	    if (!file.exists()) {
@@ -206,7 +218,14 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 	        }
 	    }
 		
-	    return new File(file, fileName);
+	    File croppedFile = new File(file, fileName);
+	    
+	    if (croppedFile.exists())
+	    {
+	    	croppedFile.delete();
+	    }
+	    
+	    return croppedFile.getAbsolutePath();
 	}
 
 	public void onRecropPicture(View view)
@@ -216,7 +235,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 		performCrop();
 	}
 	
-	private void setUpFragmentWithPicture(final Bitmap thePic)
+	private void setUpFragmentWithPicture()
 	{
 		if (recropping)
 		{
@@ -235,12 +254,25 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 		}
 		else
 		{
+			Date dateTimeNow = new Date();
+			
 			Integer[] eventIDs = GlobalEventList.myEventDetails.toArray(new Integer[GlobalEventList.myEventDetails.size()]);
+			ArrayList<Integer> happeningNowEvents = new ArrayList<Integer>();
+			
+			for (Integer eventID : eventIDs)
+			{
+				EventDetail eDetail = GlobalEventList.eventDetailMap.get(eventID);
+				
+				if (eDetail.getStartTime().compareTo(dateTimeNow) < 0 && eDetail.getEndTime().compareTo(dateTimeNow) > 0)
+				{
+					happeningNowEvents.add(eventID);
+				}
+			}
 			
 			FragmentManager fm = getSupportFragmentManager();
 			FragmentTransaction ft = fm.beginTransaction();
 			
-			mAdapter = new CurrentEventWheelAdapter(this, eventIDs);
+			mAdapter = new CurrentEventWheelAdapter(this, happeningNowEvents.toArray(new Integer[happeningNowEvents.size()]));
 			
 			TakePhotoFragment takePhotoFragment = new TakePhotoFragment();
 			takePhotoFragment.setHeaderView(findViewById(R.id.header));
@@ -253,8 +285,6 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 	}
 	
 	private void handleCameraPic() {
-
-		EventServiceBuffer.getInstance(this);	
 		
 		if (mCurrentPhotoPath != null) {
 			galleryAddPic();
@@ -338,21 +368,19 @@ public class TakePhotoActivity extends BaseMotleeActivity {
     	//take care of exceptions
     	try {
     		//call the standard crop action intent (the user device may not support it)
-	    	Intent cropIntent = new Intent("com.android.camera.action.CROP"); 
-	    	//indicate image type and Uri
-	    	cropIntent.setDataAndType(picUri, "image/*");
-	    	//set crop properties
-	    	cropIntent.putExtra("crop", "true");
-	    	//indicate aspect of desired crop
-	    	cropIntent.putExtra("aspectX", 1);
-	    	cropIntent.putExtra("aspectY", 1);
-	    	//indicate output X and Y
-	    	cropIntent.putExtra("outputX", GlobalVariables.getInstance().getDisplayWidth());
-	    	cropIntent.putExtra("outputY", GlobalVariables.getInstance().getDisplayWidth());
-	    	//retrieve data on return
-	    	cropIntent.putExtra("return-data", true);
-	    	//start the activity - we handle returning in onActivityResult
-	        startActivityForResult(cropIntent, PIC_CROP);  
+			Intent intent = new Intent(this, CropImage.class);
+			intent.putExtra("image-path", mCurrentPhotoPath);
+			
+			String[] splitFile = mCurrentPhotoPath.split("/");	
+			String fileName = splitFile[splitFile.length - 1];
+			mCurrentCroppedPhotoPath = getCroppedPhotoPath(fileName);
+			intent.putExtra("image-save", mCurrentCroppedPhotoPath);
+			intent.putExtra("aspectX", 1);
+			intent.putExtra("aspectY", 1);
+			intent.putExtra("outputX", GlobalVariables.getInstance().getDisplayWidth());
+			intent.putExtra("outputY", GlobalVariables.getInstance().getDisplayWidth());
+			intent.putExtra("scale", true);
+			startActivity(intent); 
     	}
     	//respond to users whose devices do not support the crop action
     	catch(ActivityNotFoundException anfe){

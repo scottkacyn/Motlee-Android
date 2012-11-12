@@ -15,6 +15,8 @@ import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
 import com.facebook.android.AsyncFacebookRunner.RequestListener;
 import com.motlee.android.fragment.CreateEventFragment;
+import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
+import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
 import com.motlee.android.fragment.ProgressBarFragment;
 import com.motlee.android.fragment.UserProfilePageFragment;
 import com.motlee.android.object.EventServiceBuffer;
@@ -40,9 +42,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 
-public class UserProfilePageActivity extends BaseMotleeActivity {
+public class UserProfilePageActivity extends BaseMotleeActivity implements UpdatedEventDetailListener, OnFragmentAttachedListener {
     
 	private int mUserID;
+	private int facebookID;
 	
 	private ProgressDialog progressDialog;
 
@@ -62,66 +65,17 @@ public class UserProfilePageActivity extends BaseMotleeActivity {
         
         mUserID = intent.getIntExtra("UserID", -1);
         
+        facebookID = intent.getIntExtra("UID", -1);
+        
         setContentView(R.layout.main);
         
-        EventServiceBuffer.getInstance(this);
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
         
-        EventServiceBuffer.setEventDetailListener(new UpdatedEventDetailListener(){
-
-			public void myEventOccurred(UpdatedEventDetailEvent evt) {
-
-				Bundle params = new Bundle();
-				
-				String[] stringArray = new String[2];
-				
-				stringArray[0] = "birthday";
-				stringArray[1] = "location";
-				
-				params.putString("fields", "birthday, location");
-				
-				Session facebookSession = Session.getActiveSession();
-				
-				Request request = Request.newGraphPathRequest(facebookSession, Integer.toString(UserInfoList.getInstance().get(mUserID).uid), new Request.Callback() {
-					
-					public void onCompleted(Response response) {
-						
-						GraphObject userDetails = response.getGraphObject();
-
-				        FragmentManager     fm = getSupportFragmentManager();
-				        FragmentTransaction ft = fm.beginTransaction();
-				        
-				        UserProfilePageFragment userProfileFragment = (UserProfilePageFragment) fm.findFragmentById(R.id.fragment_content);
-				        
-				        if (userProfileFragment == null)
-				        {
-				        	userProfileFragment = new UserProfilePageFragment();
-				    
-					        setUpProfilePageFragment(userDetails, userProfileFragment);
-				        	
-					        ft.add(R.id.fragment_content, userProfileFragment);
-					        
-					        ft.commit();
-				        }
-				        else
-				        {
-					        setUpProfilePageFragment(userDetails, userProfileFragment);
-				        }
-				        
-				        progressDialog.dismiss();
-						
-					}
-				});
-				
-				request.setParameters(params);
-				
-				Request.executeBatchAsync(request);
-			}
-        });
+        ft.add(new EmptyFragmentWithCallbackOnResume(), "EmptyFragment")
+        .commit();
+        
         progressDialog = ProgressDialog.show(UserProfilePageActivity.this, "", "Loading");
-        
-        EventServiceBuffer.getEventsFromService(EventServiceBuffer.MY_EVENTS);
-        
-		
     }
 	
 	private void setUpProfilePageFragment(GraphObject userDetails, UserProfilePageFragment userProfileFragment) 
@@ -130,6 +84,71 @@ public class UserProfilePageActivity extends BaseMotleeActivity {
 		
 		userProfileFragment.setHeaderView(findViewById(R.id.header));
 		
-		userProfileFragment.setUserId(mUserID);
+		userProfileFragment.setUserId(mUserID, facebookID);
+	}
+	
+	public void myEventOccurred(UpdatedEventDetailEvent evt) {
+
+		EventServiceBuffer.removeEventDetailListener(this);
+		
+		Bundle params = new Bundle();
+		
+		String[] stringArray = new String[2];
+		
+		stringArray[0] = "birthday";
+		stringArray[1] = "location";
+		
+		params.putString("fields", "birthday, location");
+		
+		Session facebookSession = Session.getActiveSession();
+		
+		Request request = Request.newGraphPathRequest(facebookSession, Integer.toString(facebookID), new Request.Callback() {
+			
+			public void onCompleted(Response response) {
+				
+				GraphObject userDetails = response.getGraphObject();
+
+		        FragmentManager     fm = getSupportFragmentManager();
+		        FragmentTransaction ft = fm.beginTransaction();
+		        
+		        UserProfilePageFragment userProfileFragment = (UserProfilePageFragment) fm.findFragmentById(R.id.fragment_content);
+		        
+		        if (userProfileFragment == null)
+		        {
+		        	userProfileFragment = new UserProfilePageFragment();
+		    
+			        setUpProfilePageFragment(userDetails, userProfileFragment);
+		        	
+			        ft.add(R.id.fragment_content, userProfileFragment);
+			        
+			        ft.commit();
+		        }
+		        else
+		        {
+			        setUpProfilePageFragment(userDetails, userProfileFragment);
+		        }
+		        
+		        progressDialog.dismiss();
+				
+			}
+		});
+		
+		request.setParameters(params);
+		
+		Request.executeBatchAsync(request);
+	}
+
+	public void OnFragmentAttached() {
+		
+        EventServiceBuffer.setEventDetailListener(this);
+        
+        EventServiceBuffer.getEventsFromService(EventServiceBuffer.MY_EVENTS);
+		
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+		// Do Nothing. Bug in Android. There is a work around if we eventually need this.
 	}
 }

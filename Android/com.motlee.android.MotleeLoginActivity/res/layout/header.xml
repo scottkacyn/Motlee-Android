@@ -54,7 +54,7 @@
     </FrameLayout>
                     
     </com.motlee.android.layouts.RatioBackgroundRelativeLayout>
-    <com.motlee.android.layouts.HorizontalRatioLinearLayout
+    <com.motlee.android.layouts.RatioBackgroundRelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/bottom_header"
@@ -65,6 +65,7 @@
     	    android:id="@+id/header_icon"
     	    android:layout_height="match_parent"
     	    android:layout_width="wrap_content"
+    	    android:layout_alignParentLeft="true"
     	    android:scaleType="fitCenter"
     	    android:adjustViewBounds="true"
     	    android:visibility="gone" />
@@ -72,10 +73,11 @@
         <TextView android:id="@+id/header_textView" 
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_toRightOf="@id/header_icon"
             android:gravity="center_vertical"
             style="@style/CodeFont"
             android:paddingLeft="3dp"
             />
         
-    </com.motlee.android.layouts.HorizontalRatioLinearLayout>
+    </com.motlee.android.layouts.RatioBackgroundRelativeLayout>
 </RelativeLayout>

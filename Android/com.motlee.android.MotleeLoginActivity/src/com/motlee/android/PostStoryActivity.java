@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 
 import com.motlee.android.adapter.CurrentEventWheelAdapter;
-import com.motlee.android.fragment.PhotoDetailFragment;
+import com.motlee.android.fragment.EventItemDetailFragment;
 import com.motlee.android.fragment.PostStoryFragment;
 import com.motlee.android.fragment.TakePhotoFragment;
 import com.motlee.android.object.GlobalEventList;

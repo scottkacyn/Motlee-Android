@@ -8,6 +8,7 @@ import kankan.wheel.widget.adapters.AbstractWheelAdapter;
 import kankan.wheel.widget.adapters.ArrayWheelAdapter;
 import kankan.wheel.widget.adapters.WheelViewAdapter;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,6 +18,8 @@ import android.graphics.Color;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -38,7 +41,8 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.motlee.android.CreateEventActivity;
 import com.motlee.android.EventDetailActivity;
-import com.motlee.android.PhotoDetailActivity;
+import com.motlee.android.EventItemDetailActivity;
+import com.motlee.android.EventListActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.CurrentEventWheelAdapter;
 import com.motlee.android.enums.EventItemType;
@@ -60,8 +64,12 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	
 	private Bitmap takenPhoto;
 	
+	private static ProgressDialog progressDialog;
+	
 	private StretchedBackgroundTableLayout photoDetailLayout;
 	private CurrentEventWheelAdapter mAdapter;
+	
+	private Handler handler = new Handler();
 	
 	private WheelView eventWheel;
 	
@@ -71,17 +79,12 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	
 	private EditText photoDescriptionEdit;
 	
-	// TODO: get rid of this in leue of real image URL
-	private String pictureURL = "http://mentalitymagazine.com/wp-content/uploads/2012/06/8-e1340850932512.jpg";
-	private Date pictureDate = new Date();
-	
 	private String mCurrentPhotoPath;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 	        Bundle savedInstanceState)
 	{
-	
 		this.inflater = inflater;
 		view = (View) this.inflater.inflate(R.layout.activity_take_photo, null);
 		
@@ -113,7 +116,9 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 			if (mEventID == CurrentEventWheelAdapter.CREATE_EVENT)
 			{
 				Intent createEventIntent = new Intent(getActivity(), CreateEventActivity.class);
-				createEventIntent.putExtra("Image", takenPhoto);
+				createEventIntent.putExtra("Image", mCurrentPhotoPath);
+				createEventIntent.putExtra("Description", photoDescriptionEdit.getText().toString());
+				createEventIntent.putExtra("Location", mLocation);
 				getActivity().startActivity(createEventIntent);
 			}
 			else if (mEventID == CurrentEventWheelAdapter.EVENT_NOT_SET)
@@ -131,24 +136,40 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 			}
 			else
 			{
-				EventServiceBuffer.getInstance(getActivity());
 
 				EventServiceBuffer.setPhotoListener(new UpdatedPhotoListener(){
 
 					public void photoEvent(UpdatedPhotoEvent e) {
 						
+						
+						
 						PhotoItem photo = e.getPhotos().iterator().next();
+						
+						Intent eventListIntent = new Intent(getActivity(), EventListActivity.class);
+						eventListIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+						getActivity().startActivity(eventListIntent);
 						
 						Intent eventDetailIntent = new Intent(getActivity(), EventDetailActivity.class);
 						eventDetailIntent.putExtra("EventID", photo.event_id);
-						eventDetailIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 						getActivity().startActivity(eventDetailIntent);
 						
-						Intent photoDetailIntent = new Intent(getActivity(), PhotoDetailActivity.class);
-						photoDetailIntent.putExtra("PhotoItem", photo);
+						Intent photoDetailIntent = new Intent(getActivity(), EventItemDetailActivity.class);
+						photoDetailIntent.putExtra("EventItem", photo);
 						getActivity().startActivity(photoDetailIntent);
 						
+						progressDialog.dismiss();
+						
 						getActivity().finish();
+					}
+					
+				});
+				
+				handler.post(new Runnable(){
+
+					public void run() {
+						
+						progressDialog = ProgressDialog.show(getActivity(), "", "Loading...");
+						
 					}
 					
 				});

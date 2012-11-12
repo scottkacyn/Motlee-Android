@@ -19,23 +19,44 @@ public class RatioBackgroundRelativeLayout extends RelativeLayout {
 
 	private Integer layout_height;
 	
+	private final int leftPadding;
+	private final int rightPadding;
+	private final int topPadding;
+	private final int bottomPadding;
+	
 	public RatioBackgroundRelativeLayout(Context context) {
 		super(context);
+		
+		bottomPadding = this.getPaddingBottom();
+		topPadding = this.getPaddingTop();
+		leftPadding = this.getPaddingLeft();
+		rightPadding = this.getPaddingRight();
 	}
 
 	public RatioBackgroundRelativeLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		
+		bottomPadding = this.getPaddingBottom();
+		topPadding = this.getPaddingTop();
+		leftPadding = this.getPaddingLeft();
+		rightPadding = this.getPaddingRight();
 	}
 
 	public RatioBackgroundRelativeLayout(Context context, AttributeSet attrs,
 			int defStyle) {
 		super(context, attrs, defStyle);
+		
+		bottomPadding = this.getPaddingBottom();
+		topPadding = this.getPaddingTop();
+		leftPadding = this.getPaddingLeft();
+		rightPadding = this.getPaddingRight();
 	}
 
 	@Override
 	public void setBackgroundDrawable(Drawable drawable)
 	{		
 		super.setBackgroundDrawable(scaleBackgroundImage(drawable));
+		this.setPadding(leftPadding, topPadding, rightPadding, bottomPadding);
 	}
 	
 	@Override
