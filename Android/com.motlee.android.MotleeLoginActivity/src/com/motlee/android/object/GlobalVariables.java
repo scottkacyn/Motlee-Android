@@ -28,6 +28,7 @@ import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
@@ -240,6 +241,7 @@ public class GlobalVariables {
 		
 		options = new DisplayImageOptions.Builder()
 		.showStubImage(R.drawable.placeholder)
+		.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
 		.cacheInMemory()
 		.cacheOnDisc()
 		.displayer(new SimpleBitmapDisplayer())

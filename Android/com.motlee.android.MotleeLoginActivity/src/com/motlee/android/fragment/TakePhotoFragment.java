@@ -94,6 +94,24 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 		eventWheel = (WheelView) view.findViewById(R.id.event_wheel);
 		eventWheel.setViewAdapter(mAdapter);
 		
+		int selectedIndex = -1;
+		
+		if (mEventID > 0)
+		{
+			for (int i = 0; i < mAdapter.getData().size(); i++)
+			{
+				if (mEventID == mAdapter.getData().get(i))
+				{
+					selectedIndex = i;
+				}
+			}
+		}
+		
+		if (selectedIndex > 0)
+		{
+			eventWheel.setCurrentItem(selectedIndex);
+		}
+		
 		TextView textView = (TextView) view.findViewById(R.id.scroll_view_text);
 		textView.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 		
@@ -227,7 +245,14 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 		
 		mEventName = (TextView) labelButton.findViewById(R.id.label_button_text);
 		mEventName.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-		mEventName.setText("Select Event...");
+		if (mEventID > 0)
+		{
+			mEventName.setText(GlobalEventList.eventDetailMap.get(mEventID).getEventName());
+		}
+		else
+		{
+			mEventName.setText("Select Event...");
+		}
 		
 		TableRow tr = new TableRow(getActivity());
 		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -323,5 +348,12 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	public void onDestroy()
 	{
 		super.onDestroy();
+	}
+
+	public void setDefaultEvent(int eventId) {
+		if (eventId > 0)
+		{
+			this.mEventID = eventId;
+		}
 	}
 }

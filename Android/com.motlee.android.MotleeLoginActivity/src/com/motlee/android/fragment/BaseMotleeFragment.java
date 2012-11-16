@@ -17,6 +17,7 @@ public class BaseMotleeFragment extends Fragment {
 	public static final String MY_EVENTS = "My Events";
 	public static final String ALL_EVENTS = "All Events";
 	public static final String NEARBY_EVENTS = "Nearby Events";
+	public static final String EDIT_EVENTS = "Edit Events";
 	
 	protected View mHeaderView;
 	
@@ -40,6 +41,12 @@ public class BaseMotleeFragment extends Fragment {
 			icon.setVisibility(View.VISIBLE);
 			icon.setPadding(0, 4, 0, 2);
 			icon.setImageResource(R.drawable.icon_button_map);
+		}
+		else if (headerIcon == EDIT_EVENTS)
+		{
+			icon.setVisibility(View.VISIBLE);
+			icon.setPadding(0, 0, 0, 0);
+			icon.setImageResource(R.drawable.icon_button_gear);
 		}
 	}
 	

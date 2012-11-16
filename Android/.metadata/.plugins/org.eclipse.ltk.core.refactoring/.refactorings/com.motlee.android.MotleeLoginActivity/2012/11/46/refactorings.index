@@ -1,3 +1,9 @@
 1352748586843	Rename method 'refreshListAdapter'
 1352756573068	Rename local variable 'eDetail'
 1352756588593	Rename local variable 'attendees'
+1352923569107	Delete element
+1352949765761	Rename field 'initialPeople'
+1353002067137	Delete element
+1353014346452	Extract method 'updateEventAdapter'
+1353024982666	Delete element
+1353025029909	Delete element

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import com.motlee.android.EventListActivity;
 import com.motlee.android.R;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventServiceBuffer;
@@ -43,6 +44,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class ImageAdapter extends BaseAdapter {
 
@@ -57,6 +59,8 @@ public class ImageAdapter extends BaseAdapter {
 	
     private ArrayList<PhotoItem> mPhotoList = new ArrayList<PhotoItem>();
     private ArrayList<PhotoItem> mOriginalPhotoList = new ArrayList<PhotoItem>();
+    private boolean isAttending;
+    private int eventId;
     
     public ImageAdapter(Context context, int resource)
     {
@@ -66,10 +70,22 @@ public class ImageAdapter extends BaseAdapter {
     	this.resource = resource;
     	this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     	
+    	mOriginalPhotoList.add(NO_PHOTO);
+    	
     	for (int i = 0; i < MIN_SIZE; i++)
     	{
     		mPhotoList.add(NO_PHOTO);
     	}
+    }
+    
+    public void setEventId(int eventId)
+    {
+    	this.eventId = eventId;
+    }
+    
+    public void setIsAttending(boolean isAttending)
+    {
+    	this.isAttending = isAttending;
     }
     
     public int getCount() {
@@ -107,7 +123,7 @@ public class ImageAdapter extends BaseAdapter {
 	    	}
 	    	
 	    	// Adds placeholder if photos list is not larger than MIN_SIZE
-	    	for (int j = lastPosition; j < MIN_SIZE; j++)
+	    	if (lastPosition < MIN_SIZE)
 	    	{
 	    		this.mPhotoList.add(NO_PHOTO);
 	    	}
@@ -119,26 +135,74 @@ public class ImageAdapter extends BaseAdapter {
     
     public View getView(int position, View contentView, ViewGroup parent) {
     	
+    	ViewHolder holder = new ViewHolder();
+    	
     	if (contentView == null) {
             contentView = (View) this.inflater.inflate(resource, null);
+            holder.imageView = (ImageView) contentView.findViewById(R.id.imageThumbnail);
+            holder.textView = (TextView) contentView.findViewById(R.id.imageThumbnailText);
+            contentView.setTag(holder);
         }
-    	
-    	ImageView imageView = (ImageView) contentView.findViewById(R.id.imageThumbnail);
+    	else
+    	{
+    		holder = (ViewHolder) contentView.getTag();
+    	}
+    
     	
     	if (mPhotoList.get(position) == NO_PHOTO)
     	{
-    		imageView.setClickable(false);
-    		imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.placeholder));
+    		//holder.imageView.setClickable(false);
+    		//holder.imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.event_list_add_content));
+    		holder.imageView.setVisibility(View.GONE);
+    		if (!isAttending)
+    		{
+    			holder.textView.setText("Join the event to begin adding content!");
+    			holder.textView.setTag(EventListActivity.NOT_ATTENDING);
+    		}
+    		else
+    		{
+    			holder.textView.setText("Add content to this event!");
+    			holder.textView.setTag(EventListActivity.ATTENDING);
+    		}
+    		holder.textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+    		holder.textView.setBackgroundResource(R.drawable.event_list_add_content);
+    		holder.textView.setVisibility(View.VISIBLE);
+    		holder.textView.setContentDescription(String.valueOf(eventId));
+    		
     	}
     	else
     	{
-    		GlobalVariables.getInstance().downloadImage(imageView, GlobalVariables.getInstance().getAWSUrlThumbnail(mPhotoList.get(position)));
+			String tag = "ImageAdapter";
+    		if (holder == null)
+    		{
+    			Log.d(tag, "holder is null");
+    		}
+    		else if (holder.imageView == null)
+    		{
+    			Log.d(tag, "imageView is null");
+    		}
+    		if (mPhotoList == null)
+    		{
+    			Log.d(tag, "mPhotoList is null");
+    		}
+    		else if (mPhotoList.get(position) == null)
+    		{
+    			Log.d(tag, "mPhotoList.get(position) is null");
+    		}
+    		GlobalVariables.getInstance().downloadImage(holder.imageView, GlobalVariables.getInstance().getAWSUrlThumbnail(mPhotoList.get(position)));
+        	holder.imageView.setVisibility(View.VISIBLE);
+        	holder.imageView.setTag(mPhotoList.get(position));
     	}
 
-        imageView.setVisibility(View.VISIBLE);
-        imageView.setTag(mPhotoList.get(position));
+
         
         return contentView;
+    }
+    
+    private class ViewHolder
+    {
+    	public ImageView imageView;
+    	public TextView textView;
     }
 }
 

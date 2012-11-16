@@ -1,6 +1,8 @@
 package com.motlee.android;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import com.motlee.android.enums.EventItemType;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
@@ -47,6 +49,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	private View header;
 	
 	private Handler handler = new Handler();
+	
+	private HashMap<Integer, ImageButton> likeButtons = new HashMap<Integer, ImageButton>();
 	
 	/*
 	 * (non-Javadoc)
@@ -119,6 +123,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		{
 			EventServiceBuffer.setAttendeeListener(attendeeListener);
 			
+			EventServiceBuffer.setEventDetailListener(this);
+			
 			progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading");
 			
 			ArrayList<Integer> attendees = new ArrayList<Integer>();
@@ -126,11 +132,19 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 			
 			EventServiceBuffer.joinEvent(eDetail.getEventID());
 		}
+		else if (tag.equals(BaseDetailActivity.EDIT))
+		{
+			Intent showEdit = new Intent(EventDetailActivity.this, CreateEventActivity.class);
+			showEdit.putExtra("EventID", eDetail.getEventID());
+			startActivity(showEdit);
+		}
 	}
 	
 	private UpdatedAttendeeListener attendeeListener = new UpdatedAttendeeListener(){
 
 		public void raised(UpdatedAttendeeEvent e) {
+			
+			
 			
 			EventServiceBuffer.getEventsFromService(eDetail.getEventID());
 		}
@@ -190,14 +204,6 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
 		progressDialog.dismiss();
 	}
-    
-    
-	@Override
-	void enterEditMode() {
-		
-		
-		
-	}
 
 
 	public void OnFragmentAttached() {
@@ -223,13 +229,20 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	{
 		EventItem item = (EventItem) view.getTag();
 		
-		for (Like like : item.likes)
+		likeButtons.put(item.id, (ImageButton) view);
+		
+		likeButtons.get(item.id).setEnabled(false);
+
+		for (Iterator<Like> it = item.likes.iterator(); it.hasNext(); )
 		{
+			Like like = it.next();
+			
 			if (like.user_id == GlobalVariables.getInstance().getUserId())
 			{
-				item.likes.remove(like);
+				it.remove();
 				EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
 				fragment.notifyDataSetChanged();
+				likeButtons.get(like.id).setEnabled(true);
 			}
 		}
 		
@@ -242,6 +255,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
 		EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
 		fragment.addLikeToListAdapter(likeEvent);
+		likeButtons.get(likeEvent.itemId).setEnabled(true);
 	}
 	
 	@Override

@@ -89,6 +89,15 @@ public class HorizontalAspectImageButton extends ImageButton {
 	}
 
 	@Override
+	public void setImageBitmap(Bitmap bitmap)
+	{
+		super.setImageBitmap(bitmap);
+		
+		this.bitmapHeight = bitmap.getHeight();
+		this.bitmapWidth = bitmap.getWidth();
+	}
+	
+	@Override
 	public void setImageDrawable(Drawable drawable)
 	{
 		super.setImageDrawable(drawable);
@@ -98,6 +107,11 @@ public class HorizontalAspectImageButton extends ImageButton {
 			this.bitmapHeight = ((BitmapDrawable) stateListDrawable.getCurrent()).getBitmap().getHeight();
 			this.bitmapWidth = ((BitmapDrawable) stateListDrawable.getCurrent()).getBitmap().getWidth();
 			this.setPadding(this.leftPadding, this.topPadding, this.rightPadding, this.bottomPadding);
+		}
+		else if (drawable instanceof BitmapDrawable)
+		{
+			this.bitmapHeight = ((BitmapDrawable) drawable).getBitmap().getHeight();
+			this.bitmapWidth = ((BitmapDrawable) drawable).getBitmap().getWidth();
 		}
 		else
 		{

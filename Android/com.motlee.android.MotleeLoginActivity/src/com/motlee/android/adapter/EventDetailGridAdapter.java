@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -128,11 +129,11 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
             
             if (convertView == null) {
             	Log.w(tag, "inflating resource: " + resource);
-                        convertView = this.inflater.inflate(resource, parent, false);
+                        convertView = this.inflater.inflate(resource, null);
                         
-                        holder.image1 = (ImageView) convertView.findViewById(R.id.grid_image_1);
-                        holder.image2 = (ImageView) convertView.findViewById(R.id.grid_image_2);
-                        holder.image3 = (ImageView) convertView.findViewById(R.id.grid_image_3);
+                        holder.image1 = (ImageButton) convertView.findViewById(R.id.grid_image_1);
+                        holder.image2 = (ImageButton) convertView.findViewById(R.id.grid_image_2);
+                        holder.image3 = (ImageButton) convertView.findViewById(R.id.grid_image_3);
                         convertView.setTag(holder);
             			
             } else {
@@ -159,8 +160,10 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
     	}
     	else
     	{
-    		holder.image1.setVisibility(View.GONE);
+    		holder.image1.setImageResource(R.drawable.transparent_grid_view);
     	}
+    	
+    	holder.image1.getLayoutParams().height = (GlobalVariables.DISPLAY_WIDTH / 3);
     	
     	if (!item.image2.equals(GridPictures.NO_PICTURE))
     	{
@@ -168,8 +171,10 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
     	}
     	else
     	{
-    		holder.image2.setVisibility(View.GONE);
+    		holder.image2.setImageResource(R.drawable.transparent_grid_view);
     	}
+    	
+    	holder.image2.getLayoutParams().height = (GlobalVariables.DISPLAY_WIDTH / 3);
     	
     	if (!item.image3.equals(GridPictures.NO_PICTURE))
     	{
@@ -177,14 +182,16 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
     	}
     	else
     	{
-    		holder.image3.setVisibility(View.GONE);
+    		holder.image3.setImageResource(R.drawable.transparent_grid_view);
     	}
+    	
+    	holder.image3.getLayoutParams().height = (GlobalVariables.DISPLAY_WIDTH / 3);
     }
     
     private static class ViewHolder {
-        public ImageView image1;
-        public ImageView image2;
-        public ImageView image3;
+        public ImageButton image1;
+        public ImageButton image2;
+        public ImageButton image3;
     }
 
 }

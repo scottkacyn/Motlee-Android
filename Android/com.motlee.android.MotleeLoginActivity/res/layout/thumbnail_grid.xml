@@ -9,6 +9,7 @@
         android:padding="3dp"
         android:layout_width="wrap_content"
         android:layout_gravity="center"
+        android:scaleType="fitCenter"
         android:adjustViewBounds="true" 
         android:clickable="true"
         android:onClick="showPictureDetail"

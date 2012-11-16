@@ -2,6 +2,10 @@ package com.motlee.android;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Vector;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.motlee.android.fragment.CreateEventFragment;
 import com.motlee.android.fragment.SearchPeopleFragment;
@@ -12,6 +16,7 @@ import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
@@ -74,6 +79,9 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	private EventDetail mCreatedEvent;
 	private ArrayList<Integer> mEventAttendees;
 	
+	private Vector<Integer> removedAttendees = new Vector<Integer>();
+	
+	private boolean isEditing = false;
 	/*
 	 * get initial location of user and set up locationListener to update if 
 	 * user moves by more than LOCATION_CHANGE_THRESHOLD (default=50) meters
@@ -118,6 +126,13 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
         mPhotoDesc = getIntent().getStringExtra("Description");
         mLocationInfo = getIntent().getParcelableExtra("Location");
         
+        mCreatedEvent = GlobalEventList.eventDetailMap.get(getIntent().getIntExtra("EventID", -1));
+        
+        if (mCreatedEvent != null)
+        {
+        	isEditing = true;
+        }
+        
         searchPlacesFragment = new SearchPlacesFragment();
         
         setUpLocationListener();
@@ -132,6 +147,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
         CreateEventFragment createEventFragment = new CreateEventFragment();
         createEventFragment.setHeaderView(findViewById(R.id.header));
         createEventFragment.setLocationInfo(selectLocation);
+        createEventFragment.setEventDetail(mCreatedEvent);
         
         ft.add(R.id.fragment_content, createEventFragment, MAIN_FRAGMENT)
         .addToBackStack(MAIN_FRAGMENT)
@@ -139,8 +155,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
         
     }
     
-    
-    public void goBack(View view)
+    @Override
+    protected void backButtonPressed()
     {
     	FragmentManager fm = getSupportFragmentManager();
     	Fragment fragment = fm.findFragmentById(R.id.fragment_content);
@@ -169,9 +185,12 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     {
     	CreateEventFragment fragment = (CreateEventFragment) getSupportFragmentManager().findFragmentByTag(MAIN_FRAGMENT);
     	
-    	fragment.removePersonFromEvent((View) view.getParent().getParent().getParent().getParent(), Integer.parseInt((String) view.getContentDescription()));
+    	fragment.removePersonFromEvent(Integer.parseInt((String) view.getContentDescription()));
+    
+    	removedAttendees.add(Integer.parseInt((String) view.getContentDescription()));
     }
     
+    /*
     public void addPersonToEvent(View view)
     {
     	Integer facebookID = Integer.parseInt((String) view.getContentDescription());
@@ -189,7 +208,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
         SearchPeopleFragment searchPeopleFragment = (SearchPeopleFragment) fm.findFragmentByTag(SEARCH_PEOPLE);
         ft.remove(searchPeopleFragment)
         .commit();
-    }
+    }*/
     
     /*
      * when either "Add Friend" or "Add Location" buttons were clicked
@@ -207,6 +226,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
         {
 	        SearchPeopleFragment searchPeopleFragment = new SearchPeopleFragment();
 	        searchPeopleFragment.setHeaderView(findViewById(R.id.header));
+	        searchPeopleFragment.setInitialFriendList(createEventFragment.getAttendeeList());
 	        ft.add(R.id.fragment_content, searchPeopleFragment, SEARCH_PEOPLE)
 	        .commit();
         }
@@ -229,23 +249,75 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
      */
     public void onRightHeaderButtonClick(View view)
     {
-    	CreateEventFragment fragment = (CreateEventFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
-    	mEventAttendees = fragment.getAttendeeList();
-    	mCreatedEvent = new EventDetail();
+    	SearchPeopleFragment searchPeopleFragment = (SearchPeopleFragment) getSupportFragmentManager().findFragmentByTag(SEARCH_PEOPLE);
     	
-    	mCreatedEvent.setEventName(fragment.getEventName());
-    	mCreatedEvent.setStartTime(fragment.getStartTime().getTime());
-    	mCreatedEvent.setEndTime(fragment.getEndTime().getTime());
-    	mCreatedEvent.setOwnerID(GlobalVariables.getInstance().getUserId());
-    	mCreatedEvent.setLocationInfo(fragment.getLocationInfo());
+    	if (searchPeopleFragment != null)
+    	{
+    		ArrayList<JSONObject> peopleToAdd = searchPeopleFragment.getPeopleToAdd();
+        	
+            FragmentManager     fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            
+            CreateEventFragment createEventFragment = (CreateEventFragment) fm.findFragmentByTag(MAIN_FRAGMENT);
+            ft.show(createEventFragment);
+            
+            try
+            {
+	            createEventFragment.clearPeopleFromEvent();
+            	
+	            for (JSONObject person : peopleToAdd)
+	            {
+	            	createEventFragment.addPersonToEvent(person.getInt("uid"), person.getString("name"));
+	            }
+            }
+            catch (JSONException e)
+            {
+            	Log.e(this.toString(), e.getMessage());
+            }
+            
+            ft.remove(searchPeopleFragment)
+            .commit();
+            
+            ((TextView) findViewById(R.id.header_right_text)).setText("Start!");
+    	}
+    	else if (!isEditing)
+    	{
+	    	CreateEventFragment fragment = (CreateEventFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
+	    	mEventAttendees = fragment.getAttendeeList();
+	    	mCreatedEvent = new EventDetail();
+	    	
+	    	mCreatedEvent.setEventName(fragment.getEventName());
+	    	mCreatedEvent.setStartTime(fragment.getStartTime().getTime());
+	    	mCreatedEvent.setEndTime(fragment.getEndTime().getTime());
+	    	mCreatedEvent.setOwnerID(GlobalVariables.getInstance().getUserId());
+	    	mCreatedEvent.setLocationInfo(fragment.getLocationInfo());
+	    	
+	    	EventServiceBuffer.setEventDetailListener(this);
+	    	
+	    	EventServiceBuffer.setAttendeeListener(attendeeListener);
+	    	
+	    	EventServiceBuffer.sendNewEventToDatabase(mCreatedEvent);
+	    	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Loading");
+    	}
+    	else
+    	{
+	    	CreateEventFragment fragment = (CreateEventFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
+	    	mEventAttendees = fragment.getAttendeeList();
+	    	
+	    	mCreatedEvent.setEventName(fragment.getEventName());
+	    	mCreatedEvent.setStartTime(fragment.getStartTime().getTime());
+	    	mCreatedEvent.setEndTime(fragment.getEndTime().getTime());
+	    	mCreatedEvent.setOwnerID(GlobalVariables.getInstance().getUserId());
+	    	mCreatedEvent.setLocationInfo(fragment.getLocationInfo());
+	    	
+	    	EventServiceBuffer.setEventDetailListener(this);
+	    	
+	    	EventServiceBuffer.setAttendeeListener(attendeeListener);
+	    	
+	    	EventServiceBuffer.updateEventInDatabase(mCreatedEvent);
+	    	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Loading");
+    	}
     	
-    	EventServiceBuffer.setEventDetailListener(this);
-    	
-    	EventServiceBuffer.setAttendeeListener(attendeeListener);
-    	
-    	EventServiceBuffer.sendNewEventToDatabase(mCreatedEvent);
-    	
-    	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Loading");
     }
     
     private UpdatedAttendeeListener attendeeListener = new UpdatedAttendeeListener(){
@@ -262,23 +334,41 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	};
     
 	public void myEventOccurred(UpdatedEventDetailEvent evt) {
-		
-		if (evt.getEventIds().size() == 1)
+
+		if (!isEditing)
 		{
-			for (Integer eventID : evt.getEventIds())
+			if (evt.getEventIds().size() == 1)
 			{
-				mEventID = eventID;
-				if (mPhotoUrl != null)
+				for (Integer eventID : evt.getEventIds())
 				{
-					EventServiceBuffer.setPhotoListener(this);
-					
-					EventServiceBuffer.sendPhotoToDatabase(eventID, mPhotoUrl, mLocationInfo, mPhotoDesc);
-				}
-				else
-				{
-					EventServiceBuffer.sendAttendeesForEvent(eventID, mEventAttendees);
+					mEventID = eventID;
+					if (mPhotoUrl != null)
+					{
+						EventServiceBuffer.setPhotoListener(this);
+						
+						EventServiceBuffer.sendPhotoToDatabase(eventID, mPhotoUrl, mLocationInfo, mPhotoDesc);
+					}
+					else
+					{
+						EventServiceBuffer.sendAttendeesForEvent(eventID, mEventAttendees);
+					}
 				}
 			}
+		}
+		else
+		{
+			ArrayList<Integer> oldAttendees = new ArrayList<Integer>();
+			
+			for (UserInfo user : mCreatedEvent.getAttendees())
+			{
+				if (!mEventAttendees.contains(user.uid))
+				{
+					oldAttendees.add(user.uid);
+					mEventAttendees.remove((Integer) user.uid);
+				}
+			}
+			
+			EventServiceBuffer.sendAttendeesForEvent(mCreatedEvent.getEventID(), mEventAttendees);
 		}
 	}
     

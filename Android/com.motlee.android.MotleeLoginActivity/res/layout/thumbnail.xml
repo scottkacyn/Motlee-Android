@@ -1,4 +1,5 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="90dp" >
@@ -13,4 +14,20 @@
         android:layout_width="wrap_content"
         android:adjustViewBounds="true" />
     
-</LinearLayout>
+    <TextView
+        android:id="@+id/imageThumbnailText"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/myImageView"
+        android:layout_alignTop="@+id/myImageView"
+        android:layout_alignRight="@+id/myImageView"
+        android:layout_alignBottom="@+id/myImageView"
+        android:layout_margin="1dp"
+        android:scrollHorizontally="false"
+        android:ellipsize="none"
+        android:gravity="center"
+        android:visibility="gone"
+        android:clickable="true"
+        android:onClick="joinOrAddContent" />
+    
+</RelativeLayout>

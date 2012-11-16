@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 
 public class SearchActivity extends BaseMotleeActivity {
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

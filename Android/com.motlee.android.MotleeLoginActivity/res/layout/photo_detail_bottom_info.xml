@@ -39,60 +39,52 @@
                android:layout_width="wrap_content" />
            
        </LinearLayout>
-       
-       <LinearLayout 
-           android:id="@+id/photo_detail_right_text"
-           android:layout_width="wrap_content"
-           android:layout_height="match_parent"
-           android:layout_alignParentRight="true"
-           android:layout_alignParentBottom="true"
-           android:orientation="vertical" >
-           
-           <TextView 
-               android:id="@+id/photo_detail_thumb_text"
-               android:layout_height="0dp"
-               android:layout_weight="1"
-               android:layout_width="wrap_content"
-               android:gravity="right|center_vertical" />
-           
-           <TextView 
-               android:id="@+id/photo_detail_comment_text"
-               android:layout_height="0dp"
-               android:layout_weight="1"
-               android:gravity="right|center_vertical"
-               android:layout_width="wrap_content" />
-           
-       </LinearLayout>
-       
-       <LinearLayout
-           android:layout_width="wrap_content"
-           android:layout_height="match_parent"
-           android:layout_toLeftOf="@id/photo_detail_right_text"
-           android:layout_alignParentBottom="true"
-           android:orientation="vertical">
-           
-           <ImageButton
-               android:id="@+id/photo_detail_thumb_icon"
-               android:layout_width="wrap_content"
-               android:layout_height="0dp"
-               android:layout_weight="1"
-               android:scaleType="fitCenter"
-               android:adjustViewBounds="true"
-               android:onClick="onClickLikeItem"
-               android:background="@android:color/transparent"
-               android:src="@drawable/icon_button_thumb" />
-           
-           <ImageButton
-               android:id="@+id/photo_detail_comment_icon"
-               android:layout_width="wrap_content"
-               android:layout_height="0dp"
-               android:layout_weight="1"
-               android:scaleType="fitEnd"
-               android:adjustViewBounds="true"
-               android:onClick="onClickOpenComment"
-               android:background="@android:color/transparent"
-               android:src="@drawable/icon_button_comment" />
 
-       </LinearLayout>
+           
+
+       
+       <TextView 
+           android:id="@+id/photo_detail_comment_text"
+           android:layout_height="wrap_content"
+           android:gravity="right|center_vertical"
+           android:layout_width="wrap_content"
+           android:layout_marginRight="5dp"
+           android:layout_centerVertical="true"
+           android:layout_alignParentRight="true" />
+       
+       <ImageButton
+           android:id="@+id/photo_detail_comment_icon"
+           android:layout_width="wrap_content"
+           android:layout_height="match_parent"
+           android:scaleType="fitCenter"
+           android:adjustViewBounds="true"
+           android:onClick="onClickOpenComment"
+           android:paddingTop="7dp"
+           android:paddingBottom="7dp"
+           android:background="@android:color/transparent"
+           android:src="@drawable/icon_comment" 
+           android:layout_toLeftOf="@id/photo_detail_comment_text"/>
+       
+       <TextView 
+           android:id="@+id/photo_detail_thumb_text"
+           android:layout_height="wrap_content"
+           android:layout_width="wrap_content"
+           android:layout_centerVertical="true"
+           android:layout_marginRight="2dp"
+           android:layout_toLeftOf="@id/photo_detail_comment_icon" />
+           
+       <ImageButton
+           android:id="@+id/photo_detail_thumb_icon"
+           android:layout_width="wrap_content"
+           android:layout_height="match_parent"
+           android:scaleType="fitCenter"
+           android:adjustViewBounds="true"
+           android:onClick="onClickLikeItem"
+           android:paddingTop="3dp"
+           android:paddingBottom="3dp"
+           android:background="@android:color/transparent"
+           android:src="@drawable/icon_thumb"
+           android:layout_toLeftOf="@id/photo_detail_thumb_text" />
+           
     </RelativeLayout>
  </LinearLayout>

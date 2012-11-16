@@ -136,6 +136,7 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
 	                        holder.event_footer_owner = (TextView) convertView.findViewById(R.id.event_footer_owner);
 	                        holder.event_footer_location = (TextView) convertView.findViewById(R.id.event_footer_location);
 	                        holder.imageAdapter = new ImageAdapter(mContext, R.layout.thumbnail);
+	                        holder.fomo_button = (ImageButton) convertView.findViewById(R.id.fomo_button);
 	                        convertView.setTag(holder);
                 			
                 } else {
@@ -189,8 +190,19 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
                 holder.event_header_time.setText(item.getDateString());
                 holder.event_header_time.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 
-                holder.fomo_count.setText(Integer.toString(item.getFomoCount()));
-                holder.fomo_count.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+                holder.fomo_button.setTag(item.getEventID());
+                
+                if (item.getFomoCount() > 0)
+                {
+	                holder.fomo_count.setText(Integer.toString(item.getFomoCount()));
+	                holder.fomo_count.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+                }
+                else
+                {
+                	holder.fomo_button.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1f));
+                	holder.fomo_count.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 0f));
+                	holder.fomo_count.setVisibility(View.GONE);
+                }
 
                 holder.event_footer_owner.setText(item.getEventOwnerSummaryString());
                 holder.event_footer_owner.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
@@ -202,6 +214,17 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
                 for (PhotoItem photo : item.getImages())
                 {
                 	imageURLs.add(GlobalVariables.getInstance().getAWSUrlThumbnail(photo));
+                }
+                
+                holder.imageAdapter.setEventId(item.getEventID());
+                
+                if (GlobalEventList.myEventDetails.contains(item.getEventID()))
+                {
+                	holder.imageAdapter.setIsAttending(true);
+                }
+                else
+                {
+                	holder.imageAdapter.setIsAttending(false);
                 }
                 
                 if (holder.list_view.getAdapter() != null)
@@ -226,6 +249,7 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
             public ImageAdapter imageAdapter;
             public RelativeLayout event_background;
             public LinearLayout event_footer_background;
+            public ImageButton fomo_button;
         }
 
 

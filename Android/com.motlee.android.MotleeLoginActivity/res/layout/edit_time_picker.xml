@@ -20,20 +20,30 @@
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
 	        android:weightSum="1">
+	        <ImageView
+	            android:id="@+id/edit_event_date_icon"
+	            android:layout_width="0dp"
+	            android:layout_height="match_parent"
+	            android:layout_gravity="center_vertical"
+	            android:paddingLeft="10dp"
+	            android:layout_weight=".20"
+	            android:src="@drawable/icon_time_normal" />
+	        
 	        <TextView 
 	            android:id="@+id/edit_event_date_time_label"
 	            android:layout_height="match_parent"
-	            android:layout_width="wrap_content"
+	            android:layout_width="0dp"
 	            android:gravity="left|center_vertical"
 		        android:paddingLeft="5dp"
-		        android:layout_weight=".25"/>
+		        android:layout_weight=".20"/>
+	        
 		    <TextView
 		        android:id="@+id/edit_event_date_time_text"
 		        android:layout_height="match_parent"
-		        android:layout_width="wrap_content"
+		        android:layout_width="0dp"
 		        android:gravity="left|center_vertical"
 		        android:paddingLeft="5dp"
-		        android:layout_weight=".75"/>
+		        android:layout_weight=".60"/>
 	    </LinearLayout>
 	     <ImageView 
 	        android:layout_width="match_parent"

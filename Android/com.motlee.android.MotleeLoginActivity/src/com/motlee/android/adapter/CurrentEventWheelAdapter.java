@@ -28,6 +28,11 @@ public class CurrentEventWheelAdapter extends ArrayWheelAdapter<Integer> {
 		eventItems.add(0, CREATE_EVENT);
 	}
 
+	public ArrayList<Integer> getData()
+	{
+		return this.eventItems;
+	}
+	
 	public Integer getEventItem(int index)
 	{
 		return eventItems.get(index);

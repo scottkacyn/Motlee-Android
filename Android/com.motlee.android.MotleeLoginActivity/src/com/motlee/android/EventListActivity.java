@@ -2,6 +2,9 @@ package com.motlee.android;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Set;
 
 import shared.ui.actionscontentview.ActionsContentView;
@@ -22,6 +25,9 @@ import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.UserInfoList;
+import com.motlee.android.object.event.UpdatedAttendeeEvent;
+import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 import com.motlee.android.object.event.UpdatedFomoEvent;
@@ -31,8 +37,10 @@ import com.motlee.android.object.event.UpdatedPhotoListener;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.support.v4.app.Fragment;
@@ -45,6 +53,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
@@ -52,10 +61,14 @@ public class EventListActivity extends BaseMotleeActivity implements UpdatedFomo
 
 	// Fragment Tag Strings
 	private static String EVENT_RESPONDER = "EventResponderFragment";
+	public static String ATTENDING = "attending";
+	public static String NOT_ATTENDING = "not attending";
 	
 	private EventListAdapter eAdapter;
 	private EventListParams eventListParams = new EventListParams("All Events", EventServiceBuffer.NO_EVENT_FILTER);
 
+	private HashMap<Integer, ImageButton> fomoButtons = new HashMap<Integer, ImageButton>();
+	
 	private ProgressDialog progressDialog;
 	
 	private EventListFragment mEventListFragment;
@@ -117,14 +130,7 @@ public class EventListActivity extends BaseMotleeActivity implements UpdatedFomo
     
     private void initializeListData() 
     {
-		eAdapter.clear();
-		
-		for (Integer eventID : GlobalEventList.eventDetailMap.keySet())
-		{
-			eAdapter.add(eventID);
-		}
-		
-		mEventListFragment.setListAdapter(eAdapter);
+		updateEventAdapter(GlobalEventList.eventDetailMap.keySet());
 		//mEventListFragment.getPullToRefreshListView().setSelection(1);
 		
 	}
@@ -154,14 +160,10 @@ public class EventListActivity extends BaseMotleeActivity implements UpdatedFomo
     	
 		public void myEventOccurred(UpdatedEventDetailEvent evt) {
 			
-			eAdapter.clear();
+			EventServiceBuffer.removeEventDetailListener(eventListener);
 			
-			for (Integer eventID : evt.getEventIds())
-			{
-				eAdapter.add(eventID);
-			}
+			updateEventAdapter(evt.getEventIds());
 			
-			mEventListFragment.setListAdapter(eAdapter);
 			mEventListFragment.getPullToRefreshListView().setSelection(1);
 			mEventListFragment.getPullToRefreshListView().onRefreshComplete();
 			
@@ -169,7 +171,31 @@ public class EventListActivity extends BaseMotleeActivity implements UpdatedFomo
 		}
     };
     
-
+	private void updateEventAdapter(Set<Integer> eventIds) {
+		eAdapter.clear();
+		
+		ArrayList<EventDetail> eventsToDisplay = new ArrayList<EventDetail>();
+		
+		for (Integer eventID : eventIds)
+		{
+			EventDetail eDetail = GlobalEventList.eventDetailMap.get(eventID);
+			if (eDetail.getStartTime().compareTo(new Date()) < 0)
+			{
+				eventsToDisplay.add(eDetail);
+			}
+			//eAdapter.add(eventID);
+		}
+		
+		Collections.sort(eventsToDisplay);
+		
+		for (EventDetail eDetail : eventsToDisplay)
+		{
+			eAdapter.add(eDetail.getEventID());
+		}
+		
+		mEventListFragment.setListAdapter(eAdapter);
+	}
+	
 	private UpdatedPhotoListener photoListener = new UpdatedPhotoListener(){
 
 		public void photoEvent(UpdatedPhotoEvent e) {
@@ -198,6 +224,10 @@ public class EventListActivity extends BaseMotleeActivity implements UpdatedFomo
     
     public void sendFomo(View view)
     {
+    	fomoButtons.put((Integer) view.getTag(), (ImageButton) view);
+    	
+    	fomoButtons.get((Integer) view.getTag()).setEnabled(false);
+    	
     	EventServiceBuffer.setFomoListener(this);
     	
     	EventServiceBuffer.sendFomoToDatabase((Integer) view.getTag()); 
@@ -205,8 +235,84 @@ public class EventListActivity extends BaseMotleeActivity implements UpdatedFomo
 
 	public void fomoSuccess(UpdatedFomoEvent event) {
 		
+		GlobalEventList.eventDetailMap.get(event.fomo.event_id).addFomo(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId()));
+		
+		mEventListFragment.getEventListAdapter().notifyDataSetChanged();
+		
+		fomoButtons.get(event.fomo.event_id).setEnabled(true);
+	}
+
+	public void removeFomoSuccess(boolean bool) {
+		
+		//GlobalEventList.eventDetailMap.get(even)
+		
+	}
+	
+	public void joinOrAddContent(View view)
+	{
+		final Integer eventID = Integer.parseInt(view.getContentDescription().toString());
+		
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+				this);
+ 
+		// set title
+		//alertDialogBuilder.setTitle("Your Title");
+ 
+			// set dialog message
+
 		
 		
+		if (view.getTag().toString() == ATTENDING)
+		{
+			Intent takePictureIntent = new Intent(EventListActivity.this, TakePhotoActivity.class);
+			takePictureIntent.putExtra("Action", TakePhotoActivity.TAKE_PHOTO);
+			takePictureIntent.putExtra("EventID", eventID);
+			startActivity(takePictureIntent);
+		}
+		else if (view.getTag().toString() == NOT_ATTENDING)
+		{
+			
+			alertDialogBuilder
+			.setMessage("Join Event?")
+			.setCancelable(false)
+			.setPositiveButton("Join!",new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog,int id) {
+					// if this button is clicked, close
+					// current activity
+					
+					final DialogInterface finalDialog = dialog;
+					
+					EventServiceBuffer.setAttendeeListener(new UpdatedAttendeeListener(){
+
+						public void raised(UpdatedAttendeeEvent e) {
+
+					    	Intent eventDetail = new Intent(EventListActivity.this, EventDetailActivity.class);
+					    	
+					    	eventDetail.putExtra("EventID", eventID);
+					    	
+					    	startActivity(eventDetail);
+					    	finalDialog.cancel();
+							
+						}
+					});
+					
+					EventServiceBuffer.joinEvent(eventID);
+				}
+			  })
+			.setNegativeButton("Nope",new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog,int id) {
+					// if this button is clicked, just close
+					// the dialog box and do nothing
+						dialog.cancel();
+					}
+				});
+		}
+		
+		// create alert dialog
+		AlertDialog alertDialog = alertDialogBuilder.create();
+ 
+				// show it
+		alertDialog.show();
 	}
 }
 

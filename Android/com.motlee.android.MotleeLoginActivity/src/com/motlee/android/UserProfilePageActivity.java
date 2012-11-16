@@ -145,6 +145,11 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements Updat
         EventServiceBuffer.getEventsFromService(EventServiceBuffer.MY_EVENTS);
 		
 	}
+
+	public void showMoreDetail(View view)
+	{
+		//Do nothing
+	}
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState)

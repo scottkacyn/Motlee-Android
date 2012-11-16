@@ -1,0 +1,9 @@
+package com.motlee.android.fragment;
+
+public class SearchFragment extends ListFragmentWithHeader {
+
+	public SearchFragment() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

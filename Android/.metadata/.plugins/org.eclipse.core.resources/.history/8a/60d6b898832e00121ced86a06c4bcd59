@@ -1,0 +1,227 @@
+package com.motlee.android;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Set;
+
+import shared.ui.actionscontentview.ActionsContentView;
+
+import com.facebook.android.DialogError;
+import com.facebook.android.Facebook;
+import com.facebook.android.FacebookError;
+import com.facebook.android.Util;
+import com.facebook.android.Facebook.DialogListener;
+import com.motlee.android.adapter.EventListAdapter;
+import com.motlee.android.fragment.EventListFragment;
+import com.motlee.android.fragment.MainMenuFragment;
+import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.EventListParams;
+import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalEventList;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.MenuFunctions;
+import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.UserInfoList;
+import com.motlee.android.object.event.UpdatedEventDetailEvent;
+import com.motlee.android.object.event.UpdatedEventDetailListener;
+import com.motlee.android.object.event.UpdatedFomoEvent;
+import com.motlee.android.object.event.UpdatedFomoListener;
+import com.motlee.android.object.event.UpdatedPhotoEvent;
+import com.motlee.android.object.event.UpdatedPhotoListener;
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.app.ListActivity;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.graphics.Rect;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.ListFragment;
+import android.view.Menu;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
+import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+
+public class EventListActivity extends BaseMotleeActivity implements UpdatedFomoListener {
+
+	// Fragment Tag Strings
+	private static String EVENT_RESPONDER = "EventResponderFragment";
+	
+	private EventListAdapter eAdapter;
+	private EventListParams eventListParams = new EventListParams("All Events", EventServiceBuffer.NO_EVENT_FILTER);
+
+	private ProgressDialog progressDialog;
+	
+	private EventListFragment mEventListFragment;
+	
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        
+        setContentView(R.layout.main);
+        
+        DrawableCache.getInstance(getResources());
+        
+        GlobalVariables.getInstance().setMenuButtonsHeight(findViewById(R.id.menu_buttons).getHeight());
+        
+        GlobalVariables.getInstance().setUpLocationListener(this);
+        
+        GlobalVariables.getInstance().initializeImageLoader(this);
+        
+        EventServiceBuffer.setPhotoListener(photoListener);
+        
+        for (int eventID : GlobalEventList.eventDetailMap.keySet())
+        {
+        	EventServiceBuffer.getPhotosForEventFromService(eventID);
+        }
+        
+        FragmentManager     fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        
+        mEventListFragment = new EventListFragment();
+        
+        eAdapter = new EventListAdapter(this, R.layout.event_list_item, new ArrayList<Integer>());
+        
+        mEventListFragment.addEventListAdapter(eAdapter);
+       
+        mEventListFragment.setHeaderView(findViewById(R.id.header));
+        
+        Intent intent = getIntent();
+        
+        Object listType = null;
+        if (intent.getExtras() != null)
+        {
+        	listType = intent.getExtras().get("ListType");
+        }
+        
+        if (listType != null)
+        {
+        	eventListParams.headerText = listType.toString();
+        }
+        
+        mEventListFragment.setEventListParams(eventListParams);
+        
+        initializeListData();
+        
+        //requestNewDataForList(eventListParams.dataContent, eventListParams.headerText);
+        
+        ft.add(R.id.fragment_content, mEventListFragment)
+        .commit();
+    }
+    
+    private void initializeListData() 
+    {
+		eAdapter.clear();
+		
+		for (Integer eventID : GlobalEventList.eventDetailMap.keySet())
+		{
+			eAdapter.add(eventID);
+		}
+		
+		mEventListFragment.setListAdapter(eAdapter);
+		//mEventListFragment.getPullToRefreshListView().setSelection(1);
+		
+	}
+
+	public EventListAdapter getEventListAdapter()
+    {
+    	return eAdapter;
+    }
+    
+    public void requestNewDataForList(String dataContent, String headerText)
+    {
+    	eventListParams.headerText = headerText;
+    	eventListParams.dataContent = dataContent;
+    	
+    	mEventListFragment.setEventListParams(eventListParams);
+    	
+        EventServiceBuffer.setEventDetailListener(eventListener);
+        
+        EventServiceBuffer.setPhotoListener(photoListener);
+        
+        progressDialog = ProgressDialog.show(EventListActivity.this, "", "Loading");
+        
+        EventServiceBuffer.getEventsFromService(dataContent);
+    }
+    
+    public UpdatedEventDetailListener eventListener = new UpdatedEventDetailListener(){
+    	
+		public void myEventOccurred(UpdatedEventDetailEvent evt) {
+			
+			eAdapter.clear();
+			
+			for (Integer eventID : evt.getEventIds())
+			{
+				eAdapter.add(eventID);
+			}
+			
+			mEventListFragment.setListAdapter(eAdapter);
+			mEventListFragment.getPullToRefreshListView().setSelection(1);
+			mEventListFragment.getPullToRefreshListView().onRefreshComplete();
+			
+	        progressDialog.dismiss();
+		}
+    };
+    
+
+	private UpdatedPhotoListener photoListener = new UpdatedPhotoListener(){
+
+		public void photoEvent(UpdatedPhotoEvent e) {
+			
+			eAdapter.notifyDataSetChanged();
+		}
+		
+	};
+    
+    public void onClickGetEventDetail(View view)
+    {
+    	Integer eventID = Integer.parseInt(view.getContentDescription().toString());
+    	
+    	Intent eventDetail = new Intent(EventListActivity.this, EventDetailActivity.class);
+    	
+    	eventDetail.putExtra("EventID", eventID);
+    	
+    	startActivity(eventDetail);
+    }
+    
+    @Override
+    public void onPause()
+    {
+    	super.onPause();
+    }
+    
+    public void sendFomo(View view)
+    {
+    	EventServiceBuffer.setFomoListener(this);
+    	
+    	EventServiceBuffer.sendFomoToDatabase((Integer) view.getTag()); 
+    }
+
+	public void fomoSuccess(UpdatedFomoEvent event) {
+		
+		GlobalEventList.eventDetailMap.get(event.fomo.event_id).addFomo(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId()));
+		
+		mEventListFragment.getEventListAdapter().notifyDataSetChanged();
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

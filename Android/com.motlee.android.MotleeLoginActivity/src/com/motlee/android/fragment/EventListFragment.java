@@ -125,6 +125,11 @@ public class EventListFragment extends ListFragmentWithHeader {
 		setListAdapter(mEventListAdapter);
 	}
 	
+	public EventListAdapter getEventListAdapter()
+	{
+		return mEventListAdapter;
+	}
+	
 	public void setEventListParams(EventListParams params)
 	{
 		this.pageTitle = params.headerText;

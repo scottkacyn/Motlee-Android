@@ -7,6 +7,7 @@ import java.util.List;
 import com.facebook.GraphPlace;
 import com.facebook.GraphUser;
 import com.motlee.android.R;
+import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.GlobalVariables;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -56,7 +57,7 @@ public class SearchPlacesAdapter extends ArrayAdapter<GraphPlace> {
     		ImageScaleType ist = ImageScaleType.IN_SAMPLE_POWER_OF_2;
     		
     		mOptions = new DisplayImageOptions.Builder()
-    		.showStubImage(R.drawable.stubimage)
+    		.showStubImage(R.drawable.stub_image)
     		.resetViewBeforeLoading()
     		.cacheInMemory()
     		.imageScaleType(ist)
@@ -144,9 +145,15 @@ public class SearchPlacesAdapter extends ArrayAdapter<GraphPlace> {
             
             GraphPlace person = this.mData.get(position);
             
+            if (convertView.getBackground() == null)
+            {
+            	convertView.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH).getDrawable());
+            }
+            
             holder.search_people_text.setText(person.getName());
             holder.search_people_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
             holder.search_button.setContentDescription(person.getId());
+            holder.search_people_profile_pic.setMaxHeight(DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH).getHeight());
             
             imageDownloader.displayImage(FB_URL_PRE + person.getId() + "/picture", holder.search_people_profile_pic, mOptions);
             

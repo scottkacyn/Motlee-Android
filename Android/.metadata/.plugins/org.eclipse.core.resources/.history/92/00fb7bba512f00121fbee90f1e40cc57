@@ -1,0 +1,187 @@
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.motlee.android.adapter;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
+
+import com.motlee.android.R;
+import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.event.UpdatedPhotoEvent;
+import com.motlee.android.object.event.UpdatedPhotoListener;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
+
+import android.content.Context;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+public class ImageAdapter extends BaseAdapter {
+
+	private final Context context;
+	private final int resource;
+	private final LayoutInflater inflater;
+	
+	private static final int MAX_SIZE = 6;
+	private static final int MIN_SIZE = 3;
+	
+	private static final PhotoItem NO_PHOTO = null;
+	
+    private ArrayList<PhotoItem> mPhotoList = new ArrayList<PhotoItem>();
+    private ArrayList<PhotoItem> mOriginalPhotoList = new ArrayList<PhotoItem>();
+    private boolean isAttending;
+    
+    public ImageAdapter(Context context, int resource, boolean isAttending)
+    {
+    	super();
+    	
+    	this.context = context;
+    	this.resource = resource;
+    	this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    	
+    	this.isAttending = isAttending;
+    	
+    	for (int i = 0; i < MIN_SIZE; i++)
+    	{
+    		mPhotoList.add(NO_PHOTO);
+    	}
+    }
+    
+    public void setIsAttending(boolean isAttending)
+    {
+    	this.isAttending = isAttending;
+    }
+    
+    public int getCount() {
+        return mPhotoList.size();
+    }
+
+    public PhotoItem getItem(int position) {
+        return mPhotoList.get(position);
+    }
+
+    public long getItemId(int position) {
+        return mPhotoList.get(position).hashCode();
+    }
+
+    public void setURLs(ArrayList<PhotoItem> photos)
+    {
+    	if (!photos.equals(mOriginalPhotoList))
+    	{
+	    	Collections.sort(photos);
+	    	
+	    	this.mPhotoList.clear();
+	    	
+	    	// Set last position in list we load into ImageAdapter
+	    	// Equals MAX_SIZE or total photos size whichever is smaller
+	    	int lastPosition = MAX_SIZE;
+	    	if (lastPosition > photos.size())
+	    	{
+	    		lastPosition = photos.size();
+	    	}
+	    	
+	    	// Adds all images to URLS list (starting from back, sorted by date, asceding)
+	    	for (int i = lastPosition - 1; i >= 0; i--)
+	    	{
+	    		this.mPhotoList.add(photos.get(i));
+	    	}
+	    	
+	    	// Adds placeholder if photos list is not larger than MIN_SIZE
+	    	if (lastPosition < MIN_SIZE)
+	    	{
+	    		this.mPhotoList.add(NO_PHOTO);
+	    	}
+	
+	    	this.mOriginalPhotoList = photos;
+	    	this.notifyDataSetChanged();
+    	}
+    }
+    
+    public View getView(int position, View contentView, ViewGroup parent) {
+    	
+    	ViewHolder holder = new ViewHolder();
+    	
+    	if (contentView == null) {
+            contentView = (View) this.inflater.inflate(resource, null);
+            holder.imageView = (ImageView) contentView.findViewById(R.id.imageThumbnail);
+            holder.textView = (TextView) contentView.findViewById(R.id.imageThumbnailText);
+        }
+    	
+    	if (mPhotoList.get(position) == NO_PHOTO)
+    	{
+    		//holder.imageView.setClickable(false);
+    		//holder.imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.event_list_add_content));
+    		holder.imageView.setVisibility(View.GONE);
+    		if (!isAttending)
+    		{
+    			holder.textView.setText("Join the event to begin adding content!");
+    		}
+    		else
+    		{
+    			holder.textView.setText("Add content to this event!");
+    		}
+    		holder.textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+    		holder.textView.setBackgroundResource(R.drawable.event_list_add_content);
+    		holder.textView.setVisibility(View.VISIBLE);
+    	}
+    	else
+    	{
+    		GlobalVariables.getInstance().downloadImage(holder.imageView, GlobalVariables.getInstance().getAWSUrlThumbnail(mPhotoList.get(position)));
+        	holder.imageView.setVisibility(View.VISIBLE);
+        	holder.imageView.setTag(mPhotoList.get(position));
+    	}
+
+
+        
+        return contentView;
+    }
+    
+    private class ViewHolder
+    {
+    	public ImageView imageView;
+    	public TextView textView;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -4,9 +4,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -23,13 +28,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.facebook.FacebookException;
+import com.facebook.GraphObject;
 import com.facebook.GraphUser;
+import com.facebook.HttpMethod;
 import com.facebook.Request;
+import com.facebook.Request.Callback;
 import com.facebook.Request.GraphUserListCallback;
 import com.facebook.Response;
 import com.facebook.Session;
@@ -45,6 +57,7 @@ import com.motlee.android.adapter.SearchPeopleAdapter;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.FacebookPerson;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.GraphUserComparator;
 
 public class SearchPeopleFragment extends ListFragmentWithHeader {
 	private String tag = "SearchFragment";
@@ -57,6 +70,9 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
 	
 	private EditText editText;
 	//private ArrayList<Integer> mUserIDs = new ArrayList<Integer>();
+	
+	private ArrayList<JSONObject> peopleToAdd;
+	private ArrayList<Integer> initialPeople;
 	
 	private SearchPeopleAdapter mAdapter;
 	
@@ -77,8 +93,14 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
 		
 		Log.w(tag, "onCreateView");
 		
+		String query = "select name, uid, pic_square from user where uid in (select uid2 from friend where uid1=me()) order by name";
+		Bundle params = new Bundle();
+		params.putString("q", query);
+		
+		
 		facebookSession = Session.getActiveSession();
-		request = Request.newMyFriendsRequest(facebookSession, graphUserListCallback);
+		request = new Request(facebookSession, "/fql", params, HttpMethod.GET, graphUserListCallback);              
+
 		Request.executeBatchAsync(request);
 		
 		this.inflater = inflater;
@@ -86,12 +108,18 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
 		
 		view.findViewById(R.id.search_text_box_background).setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.search_text_box, GlobalVariables.DISPLAY_WIDTH).getDrawable());
 		
+		peopleToAdd = new ArrayList<JSONObject>();
+		
 		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
 		tv.setText(pageTitle);
 		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 		
 		View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
 		headerLeftButton.setVisibility(View.VISIBLE);
+		
+		TextView headerRightButton = (TextView) mHeaderView.findViewById(R.id.header_right_text);
+		
+		headerRightButton.setText("Add");
 		
 		setEditText();
 		
@@ -110,6 +138,11 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
 		editText.setOnFocusChangeListener(focusChangeListener);
 		editText.addTextChangedListener(mOnSearchBoxTextChanged);
 		
+	}
+	
+	public ArrayList<JSONObject> getPeopleToAdd()
+	{
+		return peopleToAdd;
 	}
 	
 	private OnFocusChangeListener focusChangeListener = new OnFocusChangeListener(){
@@ -186,6 +219,7 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
                 
                 public void run() {
                     	mAdapter.getFilter().filter(mSearchText);
+                    	hasSearchTextChangedSinceLastQuery = false;
                 }
             });
         } else {
@@ -197,12 +231,37 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
     }
     
     
-    private GraphUserListCallback graphUserListCallback = new GraphUserListCallback(){
+    public void setInitialFriendList(ArrayList<Integer> attendees)
+    {
+    	this.initialPeople = attendees;
+    }
+    
+    private Callback graphUserListCallback = new Callback(){
 
-		public void onCompleted(List<GraphUser> users, Response response) {
-						
-			mAdapter = new SearchPeopleAdapter(getActivity(), R.layout.search_people_item, users);
-	    	
+		public void onCompleted(Response response) {
+			
+			
+			ArrayList<JSONObject> jsonObjectList = new ArrayList<JSONObject>();
+			
+			JSONArray users = (JSONArray) response.getGraphObject().getProperty("data");
+			try
+			{
+				for (int i = 0; i < users.length(); i++)
+				{
+					JSONObject user = users.getJSONObject(i);
+					if (initialPeople.contains(user.getInt("uid")))
+					{
+						peopleToAdd.add(user);
+					}
+					jsonObjectList.add(users.getJSONObject(i));
+				}
+			}
+			catch (JSONException e)
+			{
+				Log.e(this.toString(), e.getMessage());
+			}
+			
+			mAdapter = new SearchPeopleAdapter(getActivity(), R.layout.search_people_item, jsonObjectList, peopleToAdd);
 	    	setListAdapter(mAdapter);
 	    	
 	    	mHandler.post(new Runnable() {
@@ -216,4 +275,20 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
     	    });
 		}
     };
+
+    public void onListItemClick(ListView l, View view, int position, long id) {
+
+    	JSONObject person = (JSONObject) view.findViewById(R.id.search_button).getTag();
+    	
+    	//boolean personIsAdded = 
+    	if (peopleToAdd.contains(person))
+    	{
+    		peopleToAdd.remove(person);
+    	}
+    	else
+    	{
+    		peopleToAdd.add(person);
+    	}
+    	mAdapter.notifyDataSetChanged();
+    }
 }

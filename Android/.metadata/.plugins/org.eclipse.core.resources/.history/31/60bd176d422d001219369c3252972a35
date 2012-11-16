@@ -1,0 +1,46 @@
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/event_detail_gridview"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:weightSum="1"
+    android:orientation="horizontal" >
+        
+    <ImageButton
+        android:id="@+id/grid_image_1"
+        android:layout_width="0dp"
+        android:layout_weight="0.333"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:padding="5dp"
+        android:clickable="true"
+        android:background="@android:color/transparent"
+        android:onClick="showPictureDetail" />
+
+    
+    <ImageButton
+        android:id="@+id/grid_image_2"
+        android:layout_width="0dp"
+        android:layout_weight="0.334"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:padding="5dp"
+        android:clickable="true"
+        android:background="@android:color/transparent"
+        android:onClick="showPictureDetail" />
+    
+    <ImageButton
+        android:id="@+id/grid_image_3"
+        android:layout_width="0dp"
+        android:layout_weight="0.333"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:padding="5dp"
+        android:clickable="true"
+        android:background="@android:color/transparent"
+        android:onClick="showPictureDetail" />
+    
+</LinearLayout>

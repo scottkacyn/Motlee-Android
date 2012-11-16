@@ -1,0 +1,42 @@
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/event_detail_gridview"
+    android:layout_width="match_parent"
+    android:layout_height="90dp"
+    android:weightSum="3"
+    android:orientation="horizontal" >
+        
+    <com.motlee.android.view.HorizontalAspectImageButon
+        android:id="@+id/grid_image_1"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:padding="5dp"
+        android:clickable="true"
+        android:onClick="showPictureDetail" />
+
+    
+    <com.motlee.android.view.HorizontalAspectImageButon
+        android:id="@+id/grid_image_2"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:padding="5dp"
+        android:clickable="true"
+        android:onClick="showPictureDetail" />
+    
+    <com.motlee.android.view.HorizontalAspectImageButon
+        android:id="@+id/grid_image_3"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:padding="5dp"
+        android:clickable="true"
+        android:onClick="showPictureDetail" />
+    
+</LinearLayout>

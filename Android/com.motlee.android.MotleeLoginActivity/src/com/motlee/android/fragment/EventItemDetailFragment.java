@@ -1,11 +1,14 @@
 package com.motlee.android.fragment;
 
+import java.util.ArrayList;
+
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -19,20 +22,23 @@ import com.motlee.android.layouts.StretchedBackgroundRelativeLayout;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.DateStringFormatter;
 import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.Like;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.UserInfoList;
+import com.motlee.android.object.event.UpdatedLikeEvent;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
 public class EventItemDetailFragment extends BaseMotleeFragment {
 	
-	private View view;
+	private LinearLayout view;
 	private LayoutInflater inflater;
 	private String pageTitle = "All Events";
 	
@@ -45,6 +51,10 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 	private RelativeLayout story;
 	private View touchOverlay;
 	
+	private TextView likeText;
+	private TextView commentText;
+	private ImageButton thumbIcon;
+	
 	private LinearLayout photoDetailInfo;
 	
 	@Override
@@ -53,15 +63,18 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 	{
 	
 		this.inflater = inflater;
-		view = (View) this.inflater.inflate(R.layout.activity_photo_detail, null);
+		view = (LinearLayout) this.inflater.inflate(R.layout.activity_photo_detail, null);
 
+		view.setPadding(0, DrawableCache.convertDpToPixel(10), 0, 0);
+		
 		photoDetailInfo = (LinearLayout) view.findViewById(R.id.photo_detail_bottom);
-		photoDetailInfo.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.item_detail_bottom, GlobalVariables.DISPLAY_WIDTH - DrawableCache.convertDpToPixel(20)).getDrawable());
+		//photoDetailInfo.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.item_detail_bottom, GlobalVariables.DISPLAY_WIDTH - DrawableCache.convertDpToPixel(20)).getDrawable());
 		
 		ImageView detailTop = (ImageView) view.findViewById(R.id.photo_detail_top);
 		detailTop.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.item_detail_top, GlobalVariables.DISPLAY_WIDTH - DrawableCache.convertDpToPixel(20)).getDrawable());
 		
 		touchOverlay = view.findViewById(R.id.photo_detail_touch_overlay);
+		touchOverlay.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.photo_detail_overlay, GlobalVariables.DISPLAY_WIDTH).getDrawable());
 		
 		setPageHeader(GlobalEventList.eventDetailMap.get(eventItem.event_id).getEventName());
 		showLeftHeaderButton();
@@ -89,6 +102,26 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 			GlobalVariables.getInstance().downloadImage(photo, GlobalVariables.getInstance().getAWSUrlCompressed((PhotoItem)eventItem));
 			story.setVisibility(View.GONE);
 			location = ((PhotoItem) eventItem).location;
+			
+			TextView textView = (TextView) touchOverlay.findViewById(R.id.photo_detail_description);
+			textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+			textView.setText(((PhotoItem) eventItem).caption);
+			
+			tempView.setClickable(true);
+			tempView.setOnClickListener(new OnClickListener(){
+
+				public void onClick(View v) {
+					
+					if (touchOverlay.getVisibility() == View.GONE)
+					{
+						touchOverlay.setVisibility(View.VISIBLE);
+					}
+					else
+					{
+						touchOverlay.setVisibility(View.GONE);
+					}
+				}
+			});
 		}
 		if (isStoryDetail)
 		{
@@ -102,23 +135,19 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 			photo.setVisibility(View.GONE);
 			location = new LocationInfo();
 		}
-		tempView.setClickable(true);
-		tempView.setOnClickListener(new OnClickListener(){
 
-			public void onClick(View v) {
-				
-				if (touchOverlay.getVisibility() == View.GONE)
-				{
-					touchOverlay.setVisibility(View.VISIBLE);
-				}
-				else
-				{
-					touchOverlay.setVisibility(View.GONE);
-				}
-			}
-		});
 		
 		View bottomInfo = inflater.inflate(R.layout.photo_detail_bottom_info, null);
+		
+		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.item_detail_bottom, GlobalVariables.DISPLAY_WIDTH - DrawableCache.convertDpToPixel(20));
+		
+    	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, drawable.getHeight());
+    	params.leftMargin = DrawableCache.convertDpToPixel(10);
+    	params.rightMargin = DrawableCache.convertDpToPixel(10);
+    	
+    	bottomInfo.setLayoutParams(params);
+    	
+		bottomInfo.setBackgroundDrawable(drawable.getDrawable());
 		
 		ImageView profilePic = (ImageView) bottomInfo.findViewById(R.id.photo_detail_thumbnail);
 		
@@ -130,26 +159,37 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		userName.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		userName.setText(UserInfoList.getInstance().get(eventItem.user_id).name);
 		
-		TextView timeText = (TextView) bottomInfo.findViewById(R.id.photo_detail_thumb_text);
-		timeText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-		timeText.setText(Integer.toString(eventItem.likes.size()));
+		likeText = (TextView) bottomInfo.findViewById(R.id.photo_detail_thumb_text);
+		likeText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		likeText.setText(Integer.toString(eventItem.likes.size()));
 		
-		TextView locationText = (TextView) bottomInfo.findViewById(R.id.photo_detail_comment_text);
-		locationText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-		locationText.setText(Integer.toString(eventItem.comments.size()));
+		thumbIcon = (ImageButton) bottomInfo.findViewById(R.id.photo_detail_thumb_icon);
 		
-		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+		for (Like like : eventItem.likes)
+		{
+			if (like.user_id == GlobalVariables.getInstance().getUserId())
+			{
+				thumbIcon.setPressed(true);
+			}
+		}
+		
+		commentText = (TextView) bottomInfo.findViewById(R.id.photo_detail_comment_text);
+		commentText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		commentText.setText(Integer.toString(eventItem.comments.size()));
+		
+		/*RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
 		
 		if (isPhotoDetail)
 		{
-			lp.topMargin = GlobalVariables.getInstance().getDisplayWidth();
+			params.topMargin = GlobalVariables.getInstance().getDisplayWidth();
 		}
 		else
 		{
-			lp.topMargin = story.getLayoutParams().height;
-		}
+			params.topMargin = story.getLayoutParams().height;
+		}*/
 		
-		photoDetailInfo.addView(bottomInfo, lp);
+		photoDetailInfo.removeAllViews();
+		photoDetailInfo.addView(bottomInfo);
 	}
 
 	public void setDetailImage(PhotoItem photoItem)
@@ -164,5 +204,41 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		this.eventItem = storyItem;
 		this.isPhotoDetail = false;
 		this.isStoryDetail = true;
+	}
+
+	public void refreshLikes(int numOfLikes) {
+		
+		likeText.setText(Integer.toString(numOfLikes));
+		
+	}
+	
+	public void refreshComments(int numOfComments)
+	{
+		commentText.setText(Integer.toString(numOfComments));
+	}
+
+	public void setThumbButtonPressed(boolean b) {
+		
+		thumbIcon.setPressed(b);
+		
+	}
+
+	public void setThumbButtonEnabled(boolean b) {
+		
+		thumbIcon.setEnabled(b);
+		
+	}
+
+	public void refreshLikes(ArrayList<Like> likes) {
+		
+		likeText.setText(Integer.toString(likes.size()));
+		
+		for (Like like : likes)
+		{
+			if (like.user_id == GlobalVariables.getInstance().getUserId())
+			{
+				thumbIcon.setPressed(true);
+			}
+		}
 	}
 }

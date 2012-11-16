@@ -148,7 +148,7 @@
             android:name=".CommentActivity"
             android:label="@string/title_comment_activity"
             android:theme="@style/app_theme"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" >
             <meta-data
             	android:name="android.support.PARENT_ACTIVITY"

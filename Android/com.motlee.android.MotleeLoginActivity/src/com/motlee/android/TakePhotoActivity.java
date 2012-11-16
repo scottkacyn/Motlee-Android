@@ -58,6 +58,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 	private String mCurrentPhotoPath;
 	private String mCurrentCroppedPhotoPath;
 	private Uri picUri;
+	private int mEventId;
 	
 	private static final String CAMERA_DIR = "/dcim/";
 	private static final String TAKE_PHOTO_FRAGMENT = "TakePhotoFragment";
@@ -112,6 +113,8 @@ public class TakePhotoActivity extends BaseMotleeActivity {
         Intent intent = getIntent();
         
         int actionToTake = intent.getIntExtra("Action", TAKE_PHOTO);
+        
+        mEventId = intent.getIntExtra("EventID", -1);
         
         mHandler = new Handler();
         
@@ -185,6 +188,10 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 				}
 				performCrop();
 			}
+			else
+			{
+				finish();
+			}
 			break;
 		} // ACTION_TAKE_PHOTO_B
 		case ACTION_GET_PHOTO: {
@@ -204,7 +211,14 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 				}
 				performCrop();
 			}
+			else
+			{
+				finish();
+			}
 			break;
+		}
+		default: {
+			finish();
 		}
 		} // switch
 	}
@@ -269,6 +283,11 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 				}
 			}
 			
+			if (!happeningNowEvents.contains(this.mEventId))
+			{
+				happeningNowEvents.add(this.mEventId);
+			}
+			
 			FragmentManager fm = getSupportFragmentManager();
 			FragmentTransaction ft = fm.beginTransaction();
 			
@@ -278,6 +297,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			takePhotoFragment.setHeaderView(findViewById(R.id.header));
 			takePhotoFragment.setScrollWheelAdapter(mAdapter);
 			takePhotoFragment.setPhotoPath(mCurrentCroppedPhotoPath);
+			takePhotoFragment.setDefaultEvent(mEventId);
 			
 			ft.add(R.id.fragment_content, takePhotoFragment, TAKE_PHOTO_FRAGMENT)
 			.commit();

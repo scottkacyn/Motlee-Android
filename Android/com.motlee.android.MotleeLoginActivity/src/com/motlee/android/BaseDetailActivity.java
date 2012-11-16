@@ -21,7 +21,7 @@ public abstract class BaseDetailActivity extends BaseMotleeActivity {
 	{
 		if (view.getTag().toString() == EDIT)
 		{
-			enterEditMode();
+			
 		}
 		else if (view.getTag().toString() == JOIN)
 		{
@@ -39,11 +39,4 @@ public abstract class BaseDetailActivity extends BaseMotleeActivity {
 			EventServiceBuffer.sendAttendeesForEvent(eDetail.getEventID(), attendeeList);
 		}
 	}
-	
-	protected void switchCurrentToEditMode()
-	{
-		
-	}
-	
-	abstract void enterEditMode();
 }

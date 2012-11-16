@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 
 import com.motlee.android.fragment.CommentFragment;
 import com.motlee.android.fragment.CreateEventFragment;
@@ -30,6 +31,8 @@ public class CommentActivity extends BaseMotleeActivity implements OnFragmentAtt
 	
 	private CommentFragment commentFragment;
 	
+	private ImageButton sendCommentButton;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +52,12 @@ public class CommentActivity extends BaseMotleeActivity implements OnFragmentAtt
     
     public void sendComment(View view)
     {
+    	if (sendCommentButton == null)
+    	{
+    		sendCommentButton = (ImageButton) view;
+    	}
+    	sendCommentButton.setEnabled(false);
+    	
     	EventServiceBuffer.setCommentListener(this);
     	
     	if (!commentFragment.getCommentText().equals(""))
@@ -75,10 +84,20 @@ public class CommentActivity extends BaseMotleeActivity implements OnFragmentAtt
 	}
 
 	public void commentSuccess(UpdatedCommentEvent params) {
+		sendCommentButton.setEnabled(true);
 		
+		params.comment.event_id = mEventItem.event_id;
 		commentFragment.addCommentToListAdapter(params.comment);
-		mEventItem.comments.add(params.comment);
 		
 	}
 	
+	@Override
+	protected void backButtonPressed()
+	{
+		Intent extras = new Intent();
+		extras.putExtra("Comment", mEventItem);
+		
+		setResult(RESULT_OK, extras);
+		finish();
+	}
 }

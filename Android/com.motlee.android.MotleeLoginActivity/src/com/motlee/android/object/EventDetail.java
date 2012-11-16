@@ -20,6 +20,7 @@ public class EventDetail implements Comparable<EventDetail> {
 	private Integer location_id;
 	private int fomo_count;
 	private int attendee_count;
+	private Date created_at;
 	
 	//TODO: Change to Collection<Integer>
 	@NoExpose
@@ -310,7 +311,26 @@ public class EventDetail implements Comparable<EventDetail> {
 	
 	public int compareTo(EventDetail another) {
 		
-		return this.getStartTime().compareTo(another.getStartTime());
+		Date dateNow = new Date();
+		boolean thisIsHappeningNow = (this.getStartTime().compareTo(dateNow) < 0 && this.getEndTime().compareTo(dateNow) > 0);
+		boolean anotherIsHappeningNow = (another.getStartTime().compareTo(dateNow) < 0 && another.getEndTime().compareTo(dateNow) > 0);
+		
+		if (thisIsHappeningNow && anotherIsHappeningNow)
+		{
+			return another.created_at.compareTo(this.created_at);
+		}
+		else if (thisIsHappeningNow)
+		{
+			return -1;
+		}
+		else if (anotherIsHappeningNow)
+		{
+			return 1;
+		}
+		else
+		{
+			return another.getStartTime().compareTo(this.getStartTime());
+		}
 	}
 	
 	

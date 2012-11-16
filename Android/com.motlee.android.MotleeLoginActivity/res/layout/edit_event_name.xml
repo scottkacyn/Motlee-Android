@@ -8,15 +8,31 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-	    <EditText
-	        android:id="@+id/edit_event_name_text"
+	    <LinearLayout
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
-	        android:paddingLeft="10dp"
-	        android:paddingRight="10dp"
-	        android:capitalize="words"
-	        android:background="@android:color/transparent"
-	        />
+	        android:weightSum="1">
+	        
+	        <ImageView
+	            android:id="@+id/edit_event_date_icon"
+	            android:layout_width="0dp"
+	            android:layout_height="match_parent"
+	            android:layout_gravity="center_vertical"
+	            android:paddingLeft="10dp"
+	            android:layout_weight=".20"
+	            android:src="@drawable/icon_star_normal" />
+	        
+		    <EditText
+		        android:id="@+id/edit_event_name_text"
+		        android:layout_width="0dp"
+		        android:layout_weight=".80"
+		        android:layout_height="match_parent"
+		        android:paddingLeft="10dp"
+		        android:paddingRight="10dp"
+		        android:capitalize="words"
+		        android:background="@android:color/transparent"
+		        />
+	    </LinearLayout>
 	    <ImageView 
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"

@@ -13,7 +13,6 @@
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent" 
 	        android:layout_gravity="left|center_vertical"
-	        android:paddingLeft="10dp"
 	        android:weightSum="1">
 	        <ImageView
 	            android:id="@+id/edit_attendee_profile_pic"
@@ -35,12 +34,12 @@
 		    <com.motlee.android.view.HorizontalAspectImageButton
 		        android:id="@+id/edit_attendee_remove"
 		        android:layout_width="0dp"
-		        android:layout_weight=".15"
+		        android:layout_weight=".20"
 		        android:layout_height="match_parent"
 		        android:scaleType="fitCenter"
 		        android:adjustViewBounds="true"
 		        android:onClick="removePersonFromEvent"
-		        android:src="@drawable/icon_grid_view"/>
+		        android:src="@drawable/icon_close_normal"/>
 	    </LinearLayout>
 	        <ImageView
         android:id="@+id/divider"

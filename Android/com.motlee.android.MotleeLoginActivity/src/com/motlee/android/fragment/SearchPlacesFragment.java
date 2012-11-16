@@ -46,6 +46,7 @@ import com.facebook.Session;
 import com.motlee.android.CreateEventActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.SearchPlacesAdapter;
+import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
 
@@ -92,6 +93,8 @@ public class SearchPlacesFragment extends ListFragmentWithHeader
 		
 		this.inflater = inflater;
 		view = (View) this.inflater.inflate(R.layout.activity_search, null);
+		
+		view.findViewById(R.id.search_text_box_background).setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.search_text_box, GlobalVariables.DISPLAY_WIDTH).getDrawable());
 		
 		mAdapter = new SearchPlacesAdapter(getActivity(), R.layout.search_places_item, new ArrayList<GraphPlace>());
 		

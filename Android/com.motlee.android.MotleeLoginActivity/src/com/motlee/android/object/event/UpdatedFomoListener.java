@@ -4,4 +4,5 @@ public interface UpdatedFomoListener {
 
 	public void fomoSuccess(UpdatedFomoEvent event);
 	
+	public void removeFomoSuccess(boolean bool);
 }

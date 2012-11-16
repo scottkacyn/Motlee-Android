@@ -213,10 +213,9 @@ public class MenuFunctions {
 	{
 		Intent takePictureIntent = new Intent(activity, TakePhotoActivity.class);
 		takePictureIntent.putExtra("Action", TakePhotoActivity.TAKE_PHOTO);
-		takePictureIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		removePlusMenu(activity);
 		activity.startActivity(takePictureIntent);
-		if (!(activity instanceof EventListActivity) || !(activity instanceof EventDetailActivity))
+		if (!((activity instanceof EventListActivity) || (activity instanceof EventDetailActivity)))
 		{
 			activity.finish();
 		}
@@ -227,7 +226,7 @@ public class MenuFunctions {
 		Intent postStoryIntent = new Intent(activity, PostStoryActivity.class);
 		removePlusMenu(activity);
 		activity.startActivity(postStoryIntent);
-		if (!(activity instanceof EventListActivity) || !(activity instanceof EventDetailActivity))
+		if (!((activity instanceof EventListActivity) || (activity instanceof EventDetailActivity)))
 		{
 			activity.finish();
 		}
@@ -237,9 +236,12 @@ public class MenuFunctions {
 	{
 		Intent takePictureIntent = new Intent(activity, TakePhotoActivity.class);
 		takePictureIntent.putExtra("Action", TakePhotoActivity.GET_PHOTO_LIBRARY);
-		takePictureIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		removePlusMenu(activity);
 		activity.startActivity(takePictureIntent);
+		if (!((activity instanceof EventListActivity) || (activity instanceof EventDetailActivity)))
+		{
+			activity.finish();
+		}
 	}
 	
 	public static void showCreateEventPage(View view, FragmentActivity activity)
@@ -250,7 +252,7 @@ public class MenuFunctions {
 		
 		activity.startActivity(intent);
 		
-		if (!(activity instanceof EventListActivity) || !(activity instanceof EventDetailActivity))
+		if (!((activity instanceof EventListActivity) || (activity instanceof EventDetailActivity)))
 		{
 			activity.finish();
 		}

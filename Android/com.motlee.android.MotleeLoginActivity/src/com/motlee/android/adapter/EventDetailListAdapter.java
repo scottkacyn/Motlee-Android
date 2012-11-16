@@ -18,6 +18,7 @@ import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.Like;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.StoryItem;
@@ -197,9 +198,6 @@ public class EventDetailListAdapter extends ArrayAdapter<EventItem> {
 			holder.photo_detail_story.setVisibility(View.GONE);
 			
 			ImageView imageView = holder.photo_detail_picture;
-	    	imageView.setTag(item);
-	    	imageView.setClickable(true);
-	    	//imageView.setLayoutParams(new FrameLayout.LayoutParams(height, height));
 	    	
 	    	PhotoItem photo = (PhotoItem) item;
 	    	
@@ -257,6 +255,22 @@ public class EventDetailListAdapter extends ArrayAdapter<EventItem> {
 			if (item.likes.size() > 0)
 			{
 				holder.photo_detail_thumb_text.setText(Integer.toString(item.likes.size()));
+				boolean hasLiked = false;
+				for (Like like : item.likes)
+				{
+					if (like.user_id == GlobalVariables.getInstance().getUserId())
+					{
+						hasLiked = true;
+					}
+				}
+				if (hasLiked)
+				{
+					holder.photo_detail_thumb_icon.setPressed(true);
+				}
+				else
+				{
+					holder.photo_detail_thumb_icon.setPressed(false);
+				}
 			}
 			else
 			{
