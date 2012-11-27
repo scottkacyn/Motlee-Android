@@ -108,7 +108,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
         
         setContentView(R.layout.main);
         
-        findViewById(R.id.menu_buttons).setVisibility(View.GONE);
+        //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
         
         Intent intent = getIntent();
         
@@ -258,7 +258,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			
 			TakePhotoFragment takePhotoFragment = new TakePhotoFragment();
 			takePhotoFragment.setHeaderView(findViewById(R.id.header));
-			takePhotoFragment.setScrollWheelAdapter(mAdapter);
+			//takePhotoFragment.setScrollWheelAdapter(mAdapter);
 			takePhotoFragment.setPhotoPath(mCurrentCroppedPhotoPath);
 			
 			ft.replace(R.id.fragment_content, takePhotoFragment, TAKE_PHOTO_FRAGMENT)
@@ -268,9 +268,9 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 		}
 		else
 		{
-			Date dateTimeNow = new Date();
+			//Date dateTimeNow = new Date();
 			
-			Integer[] eventIDs = GlobalEventList.myEventDetails.toArray(new Integer[GlobalEventList.myEventDetails.size()]);
+			/*Integer[] eventIDs = GlobalEventList.myEventDetails.toArray(new Integer[GlobalEventList.myEventDetails.size()]);
 			ArrayList<Integer> happeningNowEvents = new ArrayList<Integer>();
 			
 			for (Integer eventID : eventIDs)
@@ -286,16 +286,16 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			if (!happeningNowEvents.contains(this.mEventId))
 			{
 				happeningNowEvents.add(this.mEventId);
-			}
+			}*/
 			
 			FragmentManager fm = getSupportFragmentManager();
 			FragmentTransaction ft = fm.beginTransaction();
 			
-			mAdapter = new CurrentEventWheelAdapter(this, happeningNowEvents.toArray(new Integer[happeningNowEvents.size()]));
+			//mAdapter = new CurrentEventWheelAdapter(this, happeningNowEvents.toArray(new Integer[happeningNowEvents.size()]));
 			
 			TakePhotoFragment takePhotoFragment = new TakePhotoFragment();
 			takePhotoFragment.setHeaderView(findViewById(R.id.header));
-			takePhotoFragment.setScrollWheelAdapter(mAdapter);
+			//takePhotoFragment.setScrollWheelAdapter(mAdapter);
 			takePhotoFragment.setPhotoPath(mCurrentCroppedPhotoPath);
 			takePhotoFragment.setDefaultEvent(mEventId);
 			

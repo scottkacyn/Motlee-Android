@@ -16,33 +16,51 @@ import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventItem;
+import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.GridPictures;
 import com.motlee.android.object.EventListParams;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.event.UpdatedLikeEvent;
+import com.motlee.android.object.event.UpdatedStoryEvent;
+import com.motlee.android.object.event.UpdatedStoryListener;
 import com.motlee.android.view.HorizontalAspectImageButton;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.InputType;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.View.OnFocusChangeListener;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
+import android.widget.TextView.OnEditorActionListener;
 
-public class EventDetailFragment extends BaseDetailFragment {
+public class EventDetailFragment extends BaseDetailFragment implements UpdatedStoryListener {
 	private String tag = "EventDetailFragment";
 	
 	private EventDetail mEventDetail;
@@ -55,11 +73,14 @@ public class EventDetailFragment extends BaseDetailFragment {
 	private ListView listViewLayout;
 	private TableLayout eventInfoLayout;
 	
+	private View cameraLayout;
+	private View sendLayout;
+	
 	private Boolean onCreateViewHasBeenCalled = false;
 	
-	private View view;
+	private EditText photoDescriptionEdit;
 	
-	private boolean isEditMode = false;
+	private View view;
 	
 	private LayoutInflater inflater;
 	
@@ -84,12 +105,31 @@ public class EventDetailFragment extends BaseDetailFragment {
 		gridAdapter = new EventDetailGridAdapter(getActivity(), R.layout.event_detail_page_grid, new ArrayList<GridPictures>());
 		
 		
+		
+		//RelativeLayout textBackground = (RelativeLayout) view.findViewById(R.id.event_detail_text_background);
+		//textBackground.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.comment_box, GlobalVariables.DISPLAY_WIDTH).getDrawable());
+		
+		view.findViewById(R.id.comment_send_button).setOnClickListener(postStory);
+		
+		sendLayout = view.findViewById(R.id.send_button_layout);
+		cameraLayout = view.findViewById(R.id.take_photo_layout);
+				
+		view.findViewById(R.id.event_detail_take_photo).setTag(mEventDetail.getEventID());
+		
+		
+		
+		EventServiceBuffer.setStoryListener(this);
+		
 		View eventTop = inflater.inflate(R.layout.event_detail_top, null);
 		listViewLayout.addHeaderView(eventTop);
 		listViewLayout.setAdapter(listAdapter);
 		
+		listViewLayout.setOnTouchListener(touchListener);
+		
 		eventInfoLayout = (TableLayout) eventTop.findViewById(R.id.event_detail_info);
 		eventInfoLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		
+		setPhotoDescriptionEdit();
 		
 		if (mEventDetail != null)
 		{
@@ -113,6 +153,51 @@ public class EventDetailFragment extends BaseDetailFragment {
 		
 		return view;
 	}
+	
+	private OnTouchListener touchListener = new OnTouchListener(){
+
+		public boolean onTouch(View v, MotionEvent event) {
+
+			if(v==listViewLayout)
+			{
+				InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(photoDescriptionEdit.getWindowToken(), 0);
+				
+				photoDescriptionEdit.clearFocus();
+				
+				listViewLayout.onTouchEvent(event);
+				
+				listViewLayout.requestFocus();
+				return true;
+			}
+			return false;
+		} 
+		
+	};
+	
+	private OnClickListener postStory = new OnClickListener(){
+
+		public void onClick(View v) {
+			
+			String storyText = photoDescriptionEdit.getText().toString();
+			
+			photoDescriptionEdit.setText("");
+			
+			photoDescriptionEdit.clearFocus();
+			
+			listViewLayout.requestFocus();
+			
+			EventServiceBuffer.sendStoryToDatabase(mEventDetail.getEventID(), storyText);
+			
+			InputMethodManager imm = (InputMethodManager) view.getContext()
+		            .getSystemService(Context.INPUT_METHOD_SERVICE);
+		    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+		    
+            cameraLayout.setVisibility(View.VISIBLE);
+            sendLayout.setVisibility(View.GONE);
+		}
+		
+	};
 	
 	public void addEventDetail(EventDetail eDetail) {
 		Log.w(tag, "addEventDetail");
@@ -138,9 +223,9 @@ public class EventDetailFragment extends BaseDetailFragment {
 		eventInfoLayout.removeAllViews();
 		
 		setLabelButton(mEventDetail.getDateString(), getResources().getDrawable(R.drawable.icon_time_normal), GlobalVariables.DATE);
-		setLabelButton(mEventDetail.getLocationInfo().locationDescription, getResources().getDrawable(R.drawable.icon_map_background_normal), GlobalVariables.LOCATION);
+		setLabelButton(mEventDetail.getLocationInfo().name, getResources().getDrawable(R.drawable.icon_map_background_normal), GlobalVariables.LOCATION);
 		setLabelButton(mEventDetail.getAttendeeCount() + " People", getResources().getDrawable(R.drawable.icon_friend_normal), GlobalVariables.ATTENDEES);
-		setLabelButton(mEventDetail.getFomoCount()+ " FOMOs", getResources().getDrawable(R.drawable.icon_fomo_normal), GlobalVariables.FOMOS);
+		//setLabelButton(mEventDetail.getFomoCount()+ " FOMOs", getResources().getDrawable(R.drawable.icon_fomo_normal), GlobalVariables.FOMOS);
 		disableImageButton((ImageButton) view.findViewById(R.id.label_button_list_view));
 	}
 
@@ -190,6 +275,79 @@ public class EventDetailFragment extends BaseDetailFragment {
 			imageButton.setClickable(true);
 			imageButton.setEnabled(true);
 		}
+	}
+	
+	private void setPhotoDescriptionEdit()
+	{
+		// set up EditText view. set to "final" so we can use in the editText listeners
+		photoDescriptionEdit = (EditText) view.findViewById(R.id.event_detail_text);
+		photoDescriptionEdit.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		photoDescriptionEdit.setTextColor(R.color.label_color);
+		photoDescriptionEdit.setHint("Comment on Event...");
+		photoDescriptionEdit.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES|InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
+		//mEventName = editText.getText();
+		
+		photoDescriptionEdit.setOnEditorActionListener(new OnEditorActionListener() {
+
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				
+				// if we hit enter on the keyboard, hide keyboard
+	            if (event != null&& (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+	                InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+	                // NOTE: In the author's example, he uses an identifier
+	                // called searchBar. If setting this code on your EditText
+	                // then use v.getWindowToken() as a reference to your 
+	                // EditText is passed into this callback as a TextView
+
+	                in.hideSoftInputFromWindow(photoDescriptionEdit.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+	                photoDescriptionEdit.clearFocus();
+	                
+	                listViewLayout.requestFocus();
+	                
+	               return true;
+
+	            }
+	            return false;
+			}
+		});
+		
+		photoDescriptionEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
+			
+			// if we have focus, change color for input text
+	        public void onFocusChange(View v, boolean hasFocus) {
+	            if (hasFocus) {
+	                ((EditText) v).setTextColor(Color.WHITE);
+	                ((EditText) v).setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+	                
+	                if (cameraLayout != null)
+	                {
+	                	cameraLayout.setVisibility(View.GONE);
+	                }
+	                if (sendLayout != null)
+	                {
+	                	sendLayout.setVisibility(View.VISIBLE);
+	                }
+	            } 
+	            else
+	            {
+	                if (cameraLayout != null)
+	                {
+	                	cameraLayout.setVisibility(View.VISIBLE);
+	                }
+	                if (sendLayout != null)
+	                {
+	                	sendLayout.setVisibility(View.GONE);
+	                }
+	            }
+	        }
+	    });
+	}
+	
+	public void clearEditTextFocus()
+	{
+		photoDescriptionEdit.clearFocus();
+		listViewLayout.requestFocus();
 	}
 	
 	public void switchToListView(View view)
@@ -276,5 +434,12 @@ public class EventDetailFragment extends BaseDetailFragment {
 		
 		enableImageButton((ImageButton) view.findViewById(R.id.label_button_list_view));
 		disableImageButton((ImageButton) view.findViewById(R.id.label_button_grid_view));
+	}
+
+	public void storyEvent(UpdatedStoryEvent evt) {
+		
+		mEventDetail.getStories().add(evt.getStory());
+		addListToAdapter();
+		
 	}
 }

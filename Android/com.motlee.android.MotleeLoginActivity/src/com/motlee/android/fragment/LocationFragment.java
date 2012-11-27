@@ -1,5 +1,6 @@
 package com.motlee.android.fragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.android.maps.GeoPoint;
@@ -42,6 +43,9 @@ public class LocationFragment extends BaseMotleeFragment {
 	private View view;
 	private LayoutInflater inflater;
 	private EventDetail mEventDetail;
+	
+	private ArrayList<EventDetail> mEventList = new ArrayList<EventDetail>();
+	
 	private String pageTitle = "All Events";
 	
 	LocationManager mLocationManager;
@@ -59,7 +63,11 @@ public class LocationFragment extends BaseMotleeFragment {
 		mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 		
 		setPageHeader(pageTitle);
-		showRightHeaderButton(JOIN);
+		if (pageTitle.equals(NEARBY_EVENTS))
+		{
+			setHeaderIcon(NEARBY_EVENTS);
+		}
+
 		showLeftHeaderButton();
 		
 		setMapOverlays();
@@ -71,17 +79,8 @@ public class LocationFragment extends BaseMotleeFragment {
 		
 		LocationInfo location = null;
 		
-		if (mEventDetail != null)
-		{
-			location = mEventDetail.getLocationInfo();
-		}
-		
 		GeoPoint point = null;
-		if (!location.locationDescription.equals(LocationInfo.NO_LOCATION))
-		{
-			point = new GeoPoint((int) (location.latitude * locMultiplier), (int) (location.longitude * locMultiplier));
-		}
-		else
+		if (mEventList.size() > 1)
 		{
 			Criteria criteria = new Criteria();
 			String bestProvider = mLocationManager.getBestProvider(criteria, true);
@@ -89,6 +88,24 @@ public class LocationFragment extends BaseMotleeFragment {
 			Location userLocation = mLocationManager.getLastKnownLocation(bestProvider);
 			point = new GeoPoint((int) (userLocation.getLatitude() * locMultiplier), (int) (userLocation.getLongitude() * locMultiplier));
 		}
+		else if (mEventList.size() == 1)
+		{
+			location = mEventList.get(0).getLocationInfo();
+			
+			if (!location.name.equals(LocationInfo.NO_LOCATION))
+			{
+				point = new GeoPoint((int) (location.lat * locMultiplier), (int) (location.lon * locMultiplier));
+			}
+			else
+			{
+				Criteria criteria = new Criteria();
+				String bestProvider = mLocationManager.getBestProvider(criteria, true);
+				
+				Location userLocation = mLocationManager.getLastKnownLocation(bestProvider);
+				point = new GeoPoint((int) (userLocation.getLatitude() * locMultiplier), (int) (userLocation.getLongitude() * locMultiplier));
+			}
+		}		
+
 		
 		MapView map = (MapView) view.findViewById(R.id.map_view);
 		map.setBuiltInZoomControls(true);
@@ -97,21 +114,45 @@ public class LocationFragment extends BaseMotleeFragment {
 		mMapController.animateTo(point);
 		mMapController.setZoom(17);
 		
-		OverlayItemWithEventID overlay = new OverlayItemWithEventID(point, pageTitle, location.locationDescription, mEventDetail.getEventID());
 		List<Overlay> overlays = map.getOverlays();
-		Drawable drawable = this.getResources().getDrawable(R.drawable.map_pin_for_google);
-		ClickableBalloonItemizedOverlay itemizedoverlay = new ClickableBalloonItemizedOverlay(drawable, map, this.getActivity());
-		itemizedoverlay.addOverlay(overlay);
 		overlays.clear();
-		overlays.add(itemizedoverlay);
 		
-		map.invalidate();
+		for (EventDetail item : mEventList)
+		{
+			location = item.getLocationInfo();
+			
+			if (!location.name.equals(LocationInfo.NO_LOCATION))
+			{
+				point = new GeoPoint((int) (location.lat * locMultiplier), (int) (location.lon * locMultiplier));
+			}
+			else
+			{
+				Criteria criteria = new Criteria();
+				String bestProvider = mLocationManager.getBestProvider(criteria, true);
+				
+				Location userLocation = mLocationManager.getLastKnownLocation(bestProvider);
+				point = new GeoPoint((int) (userLocation.getLatitude() * locMultiplier), (int) (userLocation.getLongitude() * locMultiplier));
+			}
+			
+			OverlayItemWithEventID overlay = new OverlayItemWithEventID(point, item.getEventName(), location.name, item.getEventID());
+
+			Drawable drawable = this.getResources().getDrawable(R.drawable.map_pin_for_google);
+			ClickableBalloonItemizedOverlay itemizedoverlay = new ClickableBalloonItemizedOverlay(drawable, map, this.getActivity());
+			itemizedoverlay.addOverlay(overlay);
+			overlays.add(itemizedoverlay);
+			
+			map.invalidate();
+		}
 	}
 	
 	public void addEventDetail(EventDetail eDetail) {
 		
-		mEventDetail = eDetail;
-		this.pageTitle = mEventDetail.getEventName();
+		mEventList.add(eDetail);
+	}
+	
+	public void setPageTitle(String pageTitle)
+	{
+		this.pageTitle = pageTitle;
 	}
 	
 	class MapOverlay extends Overlay

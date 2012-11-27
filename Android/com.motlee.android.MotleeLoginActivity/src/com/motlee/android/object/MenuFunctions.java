@@ -3,6 +3,7 @@ package com.motlee.android.object;
 import com.motlee.android.CreateEventActivity;
 import com.motlee.android.EventDetailActivity;
 import com.motlee.android.EventListActivity;
+import com.motlee.android.NearbyEventsActivity;
 import com.motlee.android.PostStoryActivity;
 import com.motlee.android.R;
 import com.motlee.android.SettingsActivity;
@@ -88,16 +89,17 @@ public class MenuFunctions {
         
         ft.add(R.id.main_menu, mainMenuFragment);
         
-        HorizontalAspectImageButton menuButton = (HorizontalAspectImageButton) activity.findViewById(R.id.menu_button);
+        /*HorizontalAspectImageButton menuButton = (HorizontalAspectImageButton) activity.findViewById(R.id.menu_button);
 		
-		menuButton.setEnabled(false);
+		menuButton.setEnabled(false);*/
         
 		menuOpen = true;
 		
         ft.commit();
 	}
 	
-	public static void openPlusMenu(View view, FragmentActivity activity)
+	// plus menu deprecated
+	/*public static void openPlusMenu(View view, FragmentActivity activity)
 	{
     	FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
         
@@ -112,7 +114,7 @@ public class MenuFunctions {
 		plusMenuOpen = true;
 		
         ft.commit();
-	}
+	}*/
 	
 	public static boolean onDispatchTouchOverride(MotionEvent ev, FragmentActivity activity)
 	{
@@ -137,7 +139,8 @@ public class MenuFunctions {
 		}
 		
 		//only check if plus menu is open
-		else if (plusMenuOpen)
+		// plus menu deprecated
+		/*else if (plusMenuOpen)
 		{
 		    Rect menuBounds = new Rect();
 		    View view = activity.findViewById(R.id.plus_menu);
@@ -164,14 +167,15 @@ public class MenuFunctions {
 		    {
 		    	return true;
 		    }
-		}
+		}*/
 		else
 		{
 			return true;
 		}
 	}
 	
-	public static void removePlusMenu(FragmentActivity activity)
+	// Plus menu deprecated
+	/*public static void removePlusMenu(FragmentActivity activity)
 	{
     	FragmentManager fm = activity.getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
@@ -188,7 +192,7 @@ public class MenuFunctions {
 	        View menuButton = activity.findViewById(R.id.plus_menu_button);
 	        menuButton.setEnabled(true);
         }
-	}
+	}*/
 	
 	public static void removeMainMenu(FragmentActivity activity)
 	{
@@ -204,16 +208,19 @@ public class MenuFunctions {
 	        
 	        menuOpen = false;
 	        
-	        View menuButton = activity.findViewById(R.id.menu_button);
-	        menuButton.setEnabled(true);
+	        /*View menuButton = activity.findViewById(R.id.menu_button);
+	        menuButton.setEnabled(true);*/
         }
 	}
 	
 	public static void takePictureOnPhone(View view, FragmentActivity activity)
 	{
+		int eventId = (Integer) view.getTag();
+		
 		Intent takePictureIntent = new Intent(activity, TakePhotoActivity.class);
 		takePictureIntent.putExtra("Action", TakePhotoActivity.TAKE_PHOTO);
-		removePlusMenu(activity);
+		takePictureIntent.putExtra("EventID", eventId);
+		//removePlusMenu(activity);
 		activity.startActivity(takePictureIntent);
 		if (!((activity instanceof EventListActivity) || (activity instanceof EventDetailActivity)))
 		{
@@ -224,7 +231,7 @@ public class MenuFunctions {
 	public static void postComment(View view, FragmentActivity activity)
 	{
 		Intent postStoryIntent = new Intent(activity, PostStoryActivity.class);
-		removePlusMenu(activity);
+		//removePlusMenu(activity);
 		activity.startActivity(postStoryIntent);
 		if (!((activity instanceof EventListActivity) || (activity instanceof EventDetailActivity)))
 		{
@@ -236,7 +243,7 @@ public class MenuFunctions {
 	{
 		Intent takePictureIntent = new Intent(activity, TakePhotoActivity.class);
 		takePictureIntent.putExtra("Action", TakePhotoActivity.GET_PHOTO_LIBRARY);
-		removePlusMenu(activity);
+		//removePlusMenu(activity);
 		activity.startActivity(takePictureIntent);
 		if (!((activity instanceof EventListActivity) || (activity instanceof EventDetailActivity)))
 		{
@@ -248,7 +255,7 @@ public class MenuFunctions {
 	{
 		Intent intent = new Intent(activity, CreateEventActivity.class);
 		
-		removePlusMenu(activity);
+		//removePlusMenu(activity);
 		
 		activity.startActivity(intent);
 		
@@ -287,9 +294,9 @@ public class MenuFunctions {
 	public static void showNearbyEvents(View view, FragmentActivity activity)
 	{
 		// TODO: add get nearby events call to database: EventServiceBuffer.NEARBY_EVENTS
-		EventListParams newParams = new EventListParams(BaseMotleeFragment.NEARBY_EVENTS, EventServiceBuffer.NO_EVENT_FILTER);
+		Intent nearbyIntent = new Intent(activity, NearbyEventsActivity.class);
 		
-		showNewListView(newParams, activity);
+		activity.startActivity(nearbyIntent);
 		
 		removeMainMenu(activity);
 	}

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="@android:color/transparent"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
+    android:clickable="true"
+    android:id="@+id/event_detail_main" >    
+    <com.motlee.android.layouts.RatioBackgroundRelativeLayout
+        android:id="@+id/event_detail_text_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/comment_box"
+        android:paddingLeft="15dp"
+        android:paddingRight="2dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+	        <EditText 
+	            android:id="@+id/event_detail_text"
+	            android:layout_width="0dp"
+	            android:layout_weight=".75"
+	            android:layout_height="match_parent"
+	            android:gravity="center_vertical"
+	         	android:paddingLeft="5dp"
+	         	android:paddingRight="5dp"
+	         	android:hint="Comment on Event..."
+		        android:background="@android:color/transparent"/>
+        
+			<FrameLayout
+			      android:id="@+id/take_photo_layout"
+			      android:layout_height="match_parent"
+			      android:layout_width="0dp"
+			      android:layout_alignParentRight="true"
+			      android:layout_weight=".25"
+			      >
+			   <com.motlee.android.view.VerticalAspectImageButton
+			       android:id="@+id/event_detail_take_photo"
+			       android:layout_width="wrap_content"
+			       android:layout_height="match_parent"
+			       android:src="@drawable/icon_button_take_picture"
+			       android:onClick="onClickTakePhoto"
+			       android:layout_gravity="center"
+			       android:background="@android:color/transparent" />
+	
+			 </FrameLayout> 
+	        
+			<FrameLayout
+			      android:id="@+id/send_button_layout"
+			      android:layout_height="match_parent"
+			      android:layout_width="0dp"
+			      android:layout_alignParentRight="true"
+			      android:layout_weight=".25"
+			      android:visibility="gone">
+			   <com.motlee.android.view.HorizontalAspectImageButton
+			       android:id="@+id/comment_send_button"
+			       android:layout_width="match_parent"
+			       android:layout_height="wrap_content"
+			       android:padding="5dp"
+			       android:src="@drawable/header_right_button"
+			       android:onClick="sendComment"
+			       android:layout_gravity="right|center_vertical"
+			       android:background="@android:color/transparent" />
+			   
+			   <TextView 
+			       android:id="@+id/header_right_text"
+			  	    android:layout_width="match_parent"
+			       android:layout_height="match_parent"
+			       android:gravity="center|center_vertical"
+			       android:padding="5dp"
+			       android:text="Send"
+			       android:background="@android:color/transparent" />
+			 </FrameLayout> 
+		</LinearLayout>
+    </com.motlee.android.layouts.RatioBackgroundRelativeLayout>
+    
+    <ListView
+        android:id="@+id/event_detail_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/event_detail_text_background"
+        android:background="@android:color/transparent" />
+    
+</RelativeLayout>

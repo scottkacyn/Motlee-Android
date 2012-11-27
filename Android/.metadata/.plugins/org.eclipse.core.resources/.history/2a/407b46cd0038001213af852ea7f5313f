@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="@android:color/transparent">
+    <ListView
+        android:id="@+id/event_detail_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent" />
+    
+    <com.motlee.android.layouts.HorizontalRatioLinearLayout
+        android:id="@+id/event_detail_text_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingLeft="15dp"
+        android:paddingRight="2dp">
+        
+        <TextView 
+            android:id="@+id/event_detail_text"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+         	android:paddingLeft="5dp"
+         	android:paddingRight="5dp"
+         	android:layout_weight=".75"
+         	android:text="Comment on Event..."
+	        android:background="@android:color/transparent"/>
+        
+		<FrameLayout
+		      xmlns:android="http://schemas.android.com/apk/res/android"
+		      android:layout_height="match_parent"
+		      android:layout_width="0dp"
+		      android:layout_weight=".25">
+		   <com.motlee.android.view.HorizontalAspectImageButton
+		       android:id="@+id/event_detail_send_button"
+		       android:layout_width="match_parent"
+		       android:layout_height="wrap_content"
+		       android:padding="5dp"
+		       android:src="@drawable/icon_button_take_picture"
+		       android:onClick="sendComment"
+		       android:layout_gravity="center"
+		       android:background="@android:color/transparent" />
+
+		 </FrameLayout> 
+        
+    </com.motlee.android.layouts.HorizontalRatioLinearLayout>
+    
+</FrameLayout>

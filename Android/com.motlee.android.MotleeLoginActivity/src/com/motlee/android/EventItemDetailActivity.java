@@ -32,7 +32,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        findViewById(R.id.menu_buttons).setVisibility(View.GONE);
+        //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
         
         mEventItem = (EventItem) getIntent().getParcelableExtra("EventItem");
         

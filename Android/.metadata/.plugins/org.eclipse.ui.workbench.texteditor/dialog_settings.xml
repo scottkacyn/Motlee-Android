@@ -13,16 +13,16 @@
 		<item value="false" key="isRegEx"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="requestNewDataForList" key="selection"/>
+		<item value="PhotoDescriptionEdit" key="selection"/>
 		<list key="findhistory">
+			<item value="photoDescriptionEdit"/>
+			<item value="getStoryFromJson"/>
+			<item value="getEvent"/>
+			<item value="fomo"/>
+			<item value="getEventDetailFromJson"/>
 			<item value="requestNewDataForList"/>
 			<item value="setScrollWheel"/>
 			<item value="eventWheel"/>
-			<item value="joinEvent"/>
-			<item value="mAttendeeListener"/>
-			<item value="getUser"/>
-			<item value="eventFriendLayout"/>
-			<item value="Start!"/>
 		</list>
 		<list key="replacehistory">
 			<item value="EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);"/>

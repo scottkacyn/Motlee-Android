@@ -57,7 +57,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-public class EventListActivity extends BaseMotleeActivity implements UpdatedFomoListener {
+public class EventListActivity extends BaseMotleeActivity {
 
 	// Fragment Tag Strings
 	private static String EVENT_RESPONDER = "EventResponderFragment";
@@ -81,18 +81,11 @@ public class EventListActivity extends BaseMotleeActivity implements UpdatedFomo
         
         DrawableCache.getInstance(getResources());
         
-        GlobalVariables.getInstance().setMenuButtonsHeight(findViewById(R.id.menu_buttons).getHeight());
+        //GlobalVariables.getInstance().setMenuButtonsHeight(findViewById(R.id.menu_buttons).getHeight());
         
         GlobalVariables.getInstance().setUpLocationListener(this);
         
         GlobalVariables.getInstance().initializeImageLoader(this);
-        
-        EventServiceBuffer.setPhotoListener(photoListener);
-        
-        for (int eventID : GlobalEventList.eventDetailMap.keySet())
-        {
-        	EventServiceBuffer.getPhotosForEventFromService(eventID);
-        }
         
         FragmentManager     fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
@@ -183,7 +176,6 @@ public class EventListActivity extends BaseMotleeActivity implements UpdatedFomo
 			{
 				eventsToDisplay.add(eDetail);
 			}
-			//eAdapter.add(eventID);
 		}
 		
 		Collections.sort(eventsToDisplay);
@@ -222,7 +214,7 @@ public class EventListActivity extends BaseMotleeActivity implements UpdatedFomo
     	super.onPause();
     }
     
-    public void sendFomo(View view)
+    /*public void sendFomo(View view)
     {
     	fomoButtons.put((Integer) view.getTag(), (ImageButton) view);
     	
@@ -246,7 +238,7 @@ public class EventListActivity extends BaseMotleeActivity implements UpdatedFomo
 		
 		//GlobalEventList.eventDetailMap.get(even)
 		
-	}
+	}*/
 	
 	public void joinOrAddContent(View view)
 	{

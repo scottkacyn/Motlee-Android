@@ -131,12 +131,10 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
 	                        holder.event_header_button = (LinearLayout) convertView.findViewById(R.id.event_header);
 	                        holder.event_header_name = (TextView) convertView.findViewById(R.id.event_header_name);
 	                        holder.event_header_time = (TextView) convertView.findViewById(R.id.event_header_time);
-	                        holder.fomo_count = (TextView) convertView.findViewById(R.id.fomo_count);
 	                        holder.list_view = (HorizontalListView) convertView.findViewById(R.id.listview);
 	                        holder.event_footer_owner = (TextView) convertView.findViewById(R.id.event_footer_owner);
 	                        holder.event_footer_location = (TextView) convertView.findViewById(R.id.event_footer_location);
 	                        holder.imageAdapter = new ImageAdapter(mContext, R.layout.thumbnail);
-	                        holder.fomo_button = (ImageButton) convertView.findViewById(R.id.fomo_button);
 	                        convertView.setTag(holder);
                 			
                 } else {
@@ -190,24 +188,10 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
                 holder.event_header_time.setText(item.getDateString());
                 holder.event_header_time.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 
-                holder.fomo_button.setTag(item.getEventID());
-                
-                if (item.getFomoCount() > 0)
-                {
-	                holder.fomo_count.setText(Integer.toString(item.getFomoCount()));
-	                holder.fomo_count.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-                }
-                else
-                {
-                	holder.fomo_button.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1f));
-                	holder.fomo_count.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 0f));
-                	holder.fomo_count.setVisibility(View.GONE);
-                }
-
                 holder.event_footer_owner.setText(item.getEventOwnerSummaryString());
                 holder.event_footer_owner.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
    
-                holder.event_footer_location.setText(item.getLocationInfo().locationDescription);
+                holder.event_footer_location.setText(item.getLocationInfo().name);
                 holder.event_footer_location.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
                 
                 ArrayList<String> imageURLs = new ArrayList<String>();
@@ -242,14 +226,12 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
             public LinearLayout event_header_button;
             public TextView event_header_name;
             public TextView event_header_time;
-            public TextView fomo_count;
             public TextView event_footer_owner;
             public TextView event_footer_location;
             public HorizontalListView list_view;
             public ImageAdapter imageAdapter;
             public RelativeLayout event_background;
             public LinearLayout event_footer_background;
-            public ImageButton fomo_button;
         }
 
 

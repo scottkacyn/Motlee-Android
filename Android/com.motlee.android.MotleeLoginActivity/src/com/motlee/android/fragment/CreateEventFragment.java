@@ -166,7 +166,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		this.mLocation = location;
 		if (locationTextView != null)
 		{
-			locationTextView.setText(location.locationDescription);
+			locationTextView.setText(location.name);
 		}
 	}
 	
@@ -186,11 +186,11 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		locationTextView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		if (mEventDetail == null)
 		{
-			locationTextView.setText(mLocation.locationDescription);
+			locationTextView.setText(mLocation.name);
 		}
 		else
 		{
-			locationTextView.setText(mEventDetail.getLocationInfo().locationDescription);
+			locationTextView.setText(mEventDetail.getLocationInfo().name);
 		}
 		
 		TableRow tr = new TableRow(getActivity());

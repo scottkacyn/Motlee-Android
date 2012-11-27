@@ -117,7 +117,7 @@ public class ImageAdapter extends BaseAdapter {
 	    	}
 	    	
 	    	// Adds all images to URLS list (starting from back, sorted by date, asceding)
-	    	for (int i = lastPosition - 1; i >= 0; i--)
+	    	for (int i = 0; i < lastPosition; i++)
 	    	{
 	    		this.mPhotoList.add(photos.get(i));
 	    	}

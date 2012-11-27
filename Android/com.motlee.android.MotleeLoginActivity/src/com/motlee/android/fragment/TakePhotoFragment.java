@@ -71,7 +71,7 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	
 	private Handler handler = new Handler();
 	
-	private WheelView eventWheel;
+	//private WheelView eventWheel;
 	
 	private TextView mEventName;
 	private Integer mEventID = CurrentEventWheelAdapter.EVENT_NOT_SET;
@@ -91,10 +91,10 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 		photoDetailLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.photo_detail_layout);
 		photoDetailLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
 		
-		eventWheel = (WheelView) view.findViewById(R.id.event_wheel);
-		eventWheel.setViewAdapter(mAdapter);
+		//eventWheel = (WheelView) view.findViewById(R.id.event_wheel);
+		//eventWheel.setViewAdapter(mAdapter);
 		
-		int selectedIndex = -1;
+		/*int selectedIndex = -1;
 		
 		if (mEventID > 0)
 		{
@@ -110,10 +110,10 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 		if (selectedIndex > 0)
 		{
 			eventWheel.setCurrentItem(selectedIndex);
-		}
+		}*/
 		
-		TextView textView = (TextView) view.findViewById(R.id.scroll_view_text);
-		textView.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		//TextView textView = (TextView) view.findViewById(R.id.scroll_view_text);
+		//textView.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 		
 		setPageHeader(pageTitle);
 		showRightHeaderButton("Upload", headerRightButtonClick);
@@ -121,8 +121,8 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 		
 		setUpPicture();
 		setUpPhotoDetailLabels();
-		setUpScrollViewButton();
-		hideScrollView();
+		//setUpScrollViewButton();
+		//hideScrollView();
 		
 		return view;
 	}
@@ -199,7 +199,7 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 		
 	};
 	
-	private void setUpScrollViewButton() 
+	/*private void setUpScrollViewButton() 
 	{
 		ImageButton scrollViewButton = (ImageButton) view.findViewById(R.id.scroll_view_button);
 		scrollViewButton.setOnClickListener(new OnClickListener(){
@@ -232,11 +232,11 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	public void hideScrollView(){
 		View scrollView = view.findViewById(R.id.scroll_view_layout_button);
 		scrollView.setVisibility(View.GONE);
-	}
+	}*/
 	
 	private void setUpPhotoDetailLabels() 
 	{
-		View labelButton = inflater.inflate(R.layout.event_detail_info_button, null);
+		/*View labelButton = inflater.inflate(R.layout.event_detail_info_button, null);
 		labelButton.findViewById(R.id.label_button_icon).setVisibility(View.GONE);
 		
 		ImageButton imageButton = (ImageButton) labelButton.findViewById(R.id.label_button);
@@ -258,21 +258,21 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		tr.setLayoutParams(lp);
 		tr.addView(labelButton);
-		photoDetailLayout.addView(tr);
+		photoDetailLayout.addView(tr);*/
 		
 		View photoDescription = inflater.inflate(R.layout.edit_photo_description, null);
 		
 		setPhotoDescriptionEdit(photoDescription);
 	}
 
-	private OnClickListener showScroolWheel = new OnClickListener(){
+	/*private OnClickListener showScroolWheel = new OnClickListener(){
 
 		public void onClick(View v) {
 			
 			showScrollView();
 		}
 		
-	};
+	};*/
 	
 	private void setPhotoDescriptionEdit(View label)
 	{
@@ -281,7 +281,7 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 		photoDescriptionEdit.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		photoDescriptionEdit.setTextColor(R.color.label_color);
 		photoDescriptionEdit.setHint("Photo Description...");
-		photoDescriptionEdit.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+		photoDescriptionEdit.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 		//mEventName = editText.getText();
 		
 		photoDescriptionEdit.setOnEditorActionListener(new OnEditorActionListener() {

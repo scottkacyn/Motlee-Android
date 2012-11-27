@@ -54,10 +54,11 @@ public class BaseMotleeActivity extends FragmentActivity implements UpdatedEvent
     	MenuFunctions.showCreateEventPage(view, this);
     }
     
-	final public void onClickOpenPlusMenu(View view)
+	// plus menu deprecated
+	/*final public void onClickOpenPlusMenu(View view)
     {
     	MenuFunctions.openPlusMenu(view, this);
-    }
+    }*/
     
     //onClickMainMenu: When user clicks on main menu button
     

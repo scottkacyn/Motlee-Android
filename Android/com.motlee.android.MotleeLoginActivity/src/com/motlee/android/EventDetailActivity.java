@@ -29,6 +29,7 @@ import android.app.ActivityManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -38,6 +39,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 
 public class EventDetailActivity extends BaseDetailActivity implements OnFragmentAttachedListener, UpdatedEventDetailListener, UpdatedLikeListener {
@@ -89,6 +92,11 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         
         setContentView(R.layout.main);
         
+        View mainLayout = findViewById(R.id.main_frame_layout);
+        mainLayout.setClickable(true);
+        mainLayout.setOnClickListener(onClick);
+        
+        
         header = findViewById(R.id.header);
         
         progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading");
@@ -102,6 +110,41 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         mEventID = getIntent().getExtras().getInt("EventID");
     }
 	
+    private OnClickListener onClick = new OnClickListener(){
+
+		public void onClick(View view) {
+			
+			InputMethodManager imm = (InputMethodManager) view.getContext()
+		            .getSystemService(Context.INPUT_METHOD_SERVICE);
+		    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+		    
+		    EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
+		    
+		    if (fragment != null)
+		    {
+		    	fragment.clearEditTextFocus();
+		    }
+		}
+    	
+    };
+    
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Checks whether a hardware keyboard is available
+        if (newConfig.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO) {
+            //Toast.makeText(this, "keyboard visible", Toast.LENGTH_SHORT).show();
+        } else if (newConfig.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_YES) {
+		    EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
+		    
+		    if (fragment != null)
+		    {
+		    	fragment.clearEditTextFocus();
+		    }
+        }
+    }
+    
 	private Fragment setUpFragment() {
 
 		eDetail = GlobalEventList.eventDetailMap.get(mEventID);
@@ -167,6 +210,10 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
     
     public void seeMoreDetail(View view)
     {
+    	EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
+    	
+    	fragment.clearEditTextFocus();
+    	
     	String description = view.getContentDescription().toString();
     	
     	Intent eventDetail = new Intent(EventDetailActivity.this, MoreEventDetailActivity.class);
@@ -265,20 +312,12 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		EventServiceBuffer.removeLikeInfoListener(this);
 	}
 	
-    /*@Override
+    @Override
 	protected void backButtonPressed()
 	{
-    	ActivityManager m = (ActivityManager) this.getSystemService( Context.ACTIVITY_SERVICE );
-    	List<RunningTaskInfo> runningTaskInfoList =  m.
-    	Iterator<RunningTaskInfo> itr = runningTaskInfoList.iterator();
-    	while(itr.hasNext()){
-    	    RunningTaskInfo runningTaskInfo = (RunningTaskInfo)itr.next();
-    	    int id = runningTaskInfo.id;
-    	    CharSequence desc= runningTaskInfo.description;
-    	    int numOfActivities = runningTaskInfo.numActivities;
-    	    String topActivity = runningTaskInfo.topActivity.getShortClassName();
-    	}
-    	
-		super.onBackPressed();
-	}*/
+		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+	    imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
+	    super.backButtonPressed();
+		//super.onBackPressed();
+	}
 }

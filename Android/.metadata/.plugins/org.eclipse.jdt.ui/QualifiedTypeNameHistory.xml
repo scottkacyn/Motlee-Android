@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="com.motlee.android.object.DrawableWithHeight"/>
-<fullyQualifiedTypeName name="com.motlee.android.R"/>
-<fullyQualifiedTypeName name="com.motlee.android.object.imageloader.ImageLoader"/>
-<fullyQualifiedTypeName name="com.emilsjolander.components.StickyListHeaders.StickyListHeadersListView"/>
-<fullyQualifiedTypeName name="com.emilsjolander.components.StickyListHeaders.StickyListHeadersBaseAdapter"/>
-<fullyQualifiedTypeName name="java.util.Enumeration"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.event.UpdatedEventDetailListener"/>
 <fullyQualifiedTypeName name="android.os.Handler"/>
 <fullyQualifiedTypeName name="android.support.v4.app.FragmentActivity"/>
@@ -22,7 +16,6 @@
 <fullyQualifiedTypeName name="java.lang.ref.WeakReference"/>
 <fullyQualifiedTypeName name="com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.EventDetail"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.PhotoItem"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.event.UpdatedPhotoListener"/>
 <fullyQualifiedTypeName name="android.os.Bundle"/>
@@ -49,7 +42,6 @@
 <fullyQualifiedTypeName name="org.json.JSONException"/>
 <fullyQualifiedTypeName name="java.lang.Integer"/>
 <fullyQualifiedTypeName name="com.motlee.android.R.layout"/>
-<fullyQualifiedTypeName name="com.motlee.android.R.id"/>
 <fullyQualifiedTypeName name="com.motlee.android.EventListActivity"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.event.UpdatedAttendeeListener"/>
 <fullyQualifiedTypeName name="android.app.AlertDialog"/>
@@ -60,4 +52,12 @@
 <fullyQualifiedTypeName name="com.motlee.android.view.PinnedHeaderListView"/>
 <fullyQualifiedTypeName name="android.widget.TextView"/>
 <fullyQualifiedTypeName name="android.view.ViewGroup"/>
+<fullyQualifiedTypeName name="android.view.inputmethod.InputMethodManager"/>
+<fullyQualifiedTypeName name="android.content.res.Configuration"/>
+<fullyQualifiedTypeName name="com.motlee.android.R.id"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="com.motlee.android.object.GlobalEventList"/>
+<fullyQualifiedTypeName name="com.motlee.android.object.event.UpdatedEventDetailEvent"/>
+<fullyQualifiedTypeName name="com.motlee.android.NearbyEventsActivity"/>
+<fullyQualifiedTypeName name="com.motlee.android.object.EventServiceBuffer"/>
 </qualifiedTypeNameHistroy>

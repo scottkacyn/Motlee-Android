@@ -17,6 +17,7 @@
     <string name="title_post_story_activity">PostStoryActivity</string>
     <string name="title_crop_image_activity">CropImage</string>
     <string name="title_comment_activity">CommentActivity</string>
+    <string name="title_nearby_events_activity">NearbyEventsActivity</string>
     <string name="app_id">283790891721595</string>
     <string name="album_name">Motlee Pictures</string>
     

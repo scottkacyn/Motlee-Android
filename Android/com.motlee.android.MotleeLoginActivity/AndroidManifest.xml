@@ -50,6 +50,7 @@
             android:label="@string/title_event_detail_activity"
             android:theme="@style/app_theme"
             android:launchMode="singleTask"
+            android:configChanges="keyboardHidden"
             android:screenOrientation="portrait" >
             <meta-data
             	android:name="android.support.PARENT_ACTIVITY"
@@ -147,6 +148,17 @@
         <activity
             android:name=".CommentActivity"
             android:label="@string/title_comment_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
+        <activity
+            android:name=".NearbyEventsActivity"
+            android:label="@string/title_nearby_events_activity"
             android:theme="@style/app_theme"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" >

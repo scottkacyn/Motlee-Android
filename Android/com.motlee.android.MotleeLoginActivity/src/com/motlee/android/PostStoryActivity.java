@@ -31,7 +31,7 @@ public class PostStoryActivity extends BaseMotleeActivity {
         fragment.setHeaderView(findViewById(R.id.header));
         fragment.setScrollWheelAdapter(adapter);
         
-        findViewById(R.id.menu_buttons).setVisibility(View.GONE);
+        //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
         
         ft.add(R.id.fragment_content, fragment)
         .commit();

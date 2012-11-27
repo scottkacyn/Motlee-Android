@@ -41,7 +41,7 @@ public class CommentActivity extends BaseMotleeActivity implements OnFragmentAtt
         mEventItem = getIntent().getParcelableExtra(COMMENT);
         mEventID = getIntent().getIntExtra(EVENT_ID, -1);
         
-        findViewById(R.id.menu_buttons).setVisibility(View.GONE);
+        //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
         
         FragmentManager     fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();

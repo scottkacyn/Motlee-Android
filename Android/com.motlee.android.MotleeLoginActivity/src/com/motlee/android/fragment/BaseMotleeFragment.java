@@ -64,14 +64,31 @@ public class BaseMotleeFragment extends Fragment {
 	
 	protected void showLeftHeaderButton()
 	{
-		View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
-		headerLeftButton.setVisibility(View.VISIBLE);
+		mHeaderView.findViewById(R.id.header_left_button).setVisibility(View.VISIBLE);
+		
+		mHeaderView.findViewById(R.id.header_menu_button).setVisibility(View.GONE);
+	}
+	
+	protected void showMenuHeaderButton()
+	{
+		mHeaderView.findViewById(R.id.header_left_button).setVisibility(View.GONE);
+		
+		mHeaderView.findViewById(R.id.header_menu_button).setVisibility(View.VISIBLE);
+	}
+	
+	protected void showCreateEventButton()
+	{
+		mHeaderView.findViewById(R.id.header_right_layout_button).setVisibility(View.GONE);
+		
+		mHeaderView.findViewById(R.id.header_create_event_button).setVisibility(View.VISIBLE);
 	}
 	
 	protected void showRightHeaderButton(String buttonText)
 	{
 		View headerRightButtonlayout = mHeaderView.findViewById(R.id.header_right_layout_button);
 		headerRightButtonlayout.setVisibility(View.VISIBLE);
+		
+		mHeaderView.findViewById(R.id.header_create_event_button).setVisibility(View.GONE);
 		
 		View headerRightButton = mHeaderView.findViewById(R.id.header_right_button);
 		headerRightButton.setTag(buttonText);

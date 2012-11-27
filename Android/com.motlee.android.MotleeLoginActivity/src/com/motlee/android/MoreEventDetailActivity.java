@@ -60,7 +60,9 @@ public class MoreEventDetailActivity extends BaseMotleeActivity {
             ft.add(R.id.fragment_content, locationFragment);
         }
         
-        if (detailDescription.equals(GlobalVariables.FOMOS))
+        //Fomos deprecated
+        
+        /*if (detailDescription.equals(GlobalVariables.FOMOS))
         {
         	PeopleListFragment fragment = new PeopleListFragment();
         	
@@ -77,7 +79,7 @@ public class MoreEventDetailActivity extends BaseMotleeActivity {
         	fragment.setUserList(users);
         	
         	ft.add(R.id.fragment_content, fragment);
-        }
+        }*/
         
         if (detailDescription.equals(GlobalVariables.ATTENDEES))
         {

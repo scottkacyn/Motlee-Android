@@ -58,37 +58,11 @@
 		        android:layout_below="@id/event_header"
 		        android:layout_above="@id/event_footer"
 		        android:weightSum="1.0">
-		        <LinearLayout android:id="@+id/fomos"
-		            android:layout_width="0dp"
-		            android:layout_weight=".20"
-		            android:layout_height="fill_parent"
-		            android:weightSum="1"
-		            android:orientation="vertical">
-			        <com.motlee.android.view.HorizontalAspectImageButton
-			            android:id="@+id/fomo_button"
-						android:layout_width="match_parent"
-			            android:layout_height="wrap_content"
-			            android:padding="15dp"
-			            android:src="@drawable/event_list_detail_button_fomo"
-			            android:scaleType="fitCenter"
-			            android:gravity="center"
-			            android:layout_weight="0.5"
-			            android:onClick="sendFomo"
-			            android:background="@android:color/transparent" /> 
-			            
-			        <TextView android:id="@+id/fomo_count"
-						android:layout_width="match_parent"
-			            android:layout_height="wrap_content"
-			            android:background="@android:color/transparent"
-			            android:padding="3dp"
-			            android:layout_weight="0.5"
-			            android:gravity="center"/>     
-		            
-		        </LinearLayout>
+
 		        <com.devsmart.android.ui.HorizontalListView
 		          	android:id="@+id/listview"
 		  			android:layout_width="0dp"
-		  			android:layout_weight=".80"
+		  			android:layout_weight="1"
 		  			android:layout_height="match_parent"
 		  			android:background="@android:color/transparent" />
 		            

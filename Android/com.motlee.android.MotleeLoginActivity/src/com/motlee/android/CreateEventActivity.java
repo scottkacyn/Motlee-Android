@@ -21,6 +21,8 @@ import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
+import com.motlee.android.object.event.UpdatedLocationEvent;
+import com.motlee.android.object.event.UpdatedLocationListener;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
 import com.motlee.android.view.DateTimePicker;
@@ -48,7 +50,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEventDetailListener, UpdatedPhotoListener {
+public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEventDetailListener, UpdatedPhotoListener, UpdatedLocationListener {
 	
 	public static String MAIN_FRAGMENT = "MainFragment";
 	public static String SEARCH_PEOPLE = "SearchPeople";
@@ -137,9 +139,9 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
         
         setUpLocationListener();
         
-        selectLocation = new LocationInfo("My Location", mLocation.getLatitude(), mLocation.getLongitude());
+        selectLocation = new LocationInfo("My Location", mLocation.getLatitude(), mLocation.getLongitude(), null);
         
-        findViewById(R.id.menu_buttons).setVisibility(View.GONE);
+        //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
         
         FragmentManager     fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
@@ -455,5 +457,15 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 		mDateTimeDialog.setContentView(mDateTimeDialogView);
 		// Display the dialog
 		mDateTimeDialog.show();
+	}
+
+	public void locationUpdated(UpdatedLocationEvent evt) {
+		
+		EventServiceBuffer.removeLocationListener(this);
+		
+		mCreatedEvent.setLocationInfo(evt.getLocationInfo());
+		
+		EventServiceBuffer.sendNewEventToDatabase(mCreatedEvent);
+		
 	}
 }

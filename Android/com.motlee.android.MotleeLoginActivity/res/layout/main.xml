@@ -32,6 +32,6 @@
          android:layout_gravity="right"
          android:background="@android:color/transparent"/>
      
-      <include layout="@layout/menu_buttons"
-          android:id="@+id/menu_buttons" />
+      <!-- <include layout="@layout/menu_buttons"
+          android:id="@+id/menu_buttons" /> -->
 </FrameLayout>

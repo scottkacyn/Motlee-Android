@@ -318,7 +318,7 @@ public class SearchPlacesFragment extends ListFragmentWithHeader
 								    
 								    Address location = address.get(0);
 
-								    setLocationAndCloseFragment(new LocationInfo(mSearchText, location.getLatitude(), location.getLongitude()));
+								    setLocationAndCloseFragment(new LocationInfo(mSearchText, location.getLatitude(), location.getLongitude(), null));
 								}
 								catch (Exception e)
 								{
@@ -356,7 +356,7 @@ public class SearchPlacesFragment extends ListFragmentWithHeader
 	    				
 	    				GraphPlace place = mAdapter.getItem(position);
 	    				
-	    				setLocationAndCloseFragment(new LocationInfo(place.getName(), place.getLocation().getLatitude(), place.getLocation().getLongitude()));
+	    				setLocationAndCloseFragment(new LocationInfo(place.getName(), place.getLocation().getLatitude(), place.getLocation().getLongitude(), Long.getLong(place.getId())));
 	    			}
 	    		});
 	    		

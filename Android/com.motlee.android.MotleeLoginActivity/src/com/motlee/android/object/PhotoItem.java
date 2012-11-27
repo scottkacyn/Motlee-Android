@@ -36,8 +36,8 @@ public class PhotoItem extends EventItem {
 		this.caption = caption;
 		this.image_file_name = imageFileName;
 		this.location = location;
-		this.lat = location.latitude;
-		this.lon = location.longitude;
+		this.lat = location.lat;
+		this.lon = location.lon;
 	}
 
 	public int describeContents() {

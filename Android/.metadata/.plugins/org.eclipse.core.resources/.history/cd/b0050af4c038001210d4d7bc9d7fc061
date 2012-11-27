@@ -1,0 +1,50 @@
+package com.motlee.android;
+
+import java.util.ArrayList;
+
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+
+import com.motlee.android.fragment.LocationFragment;
+import com.motlee.android.object.GlobalEventList;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.event.UpdatedEventDetailEvent;
+import com.motlee.android.object.event.UpdatedEventDetailListener;
+
+public class NearbyEventsActivity extends BaseMotleeActivity implements UpdatedEventDetailListener {
+
+	private ProgressDialog progressDialog;
+	
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.main);
+	    
+        progressDialog = ProgressDialog.show(NearbyEventsActivity.this, "", "Loading");
+    }
+	
+    @Override
+    public void myEventOccurred(UpdatedEventDetailEvent evt)
+    {
+        FragmentManager     fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        
+        LocationFragment locationFragment = new LocationFragment();
+        
+        locationFragment.setHeaderView(findViewById(R.id.header));
+
+        for (Integer eventId : evt.getEventIds())
+        {
+        	locationFragment.addEventDetail(GlobalEventList.eventDetailMap.get(eventId));
+        }
+        
+        ft.add(R.id.fragment_content, locationFragment)
+        .commit();
+        
+        progressDialog.dismiss();
+    }
+}
