@@ -1,0 +1,330 @@
+package com.motlee.android.adapter;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Vector;
+
+import com.devsmart.android.ui.HorizontalListView;
+import com.emilsjolander.components.StickyListHeaders.StickyListHeadersBaseAdapter;
+import com.motlee.android.R;
+import com.motlee.android.enums.EventItemType;
+import com.motlee.android.layouts.RatioBackgroundRelativeLayout;
+import com.motlee.android.layouts.StretchedBackgroundRelativeLayout;
+import com.motlee.android.object.DateStringFormatter;
+import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.DrawableWithHeight;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.EventItem;
+import com.motlee.android.object.GlobalEventList;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.Like;
+import com.motlee.android.object.LocationInfo;
+import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.StoryItem;
+import com.motlee.android.object.UserInfoList;
+
+import android.content.Context;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+public class EventDetailListAdapter extends ArrayAdapter<EventItem> {
+
+	private String tag = "EventListAdapter";
+    // store the context (as an inflated layout)
+	
+	//Default Integer to represent the "Load More Button"
+	private static final Integer LOAD_MORE_BUTTON = -9999;
+	
+	private static final Integer LOAD_MORE = 1;
+	private static final Integer EVENT_ITEM = 2;
+	
+    private LayoutInflater inflater;
+    // store the resource
+    private int resource;
+    
+    private Context mContext;
+    
+    // store (a reference to) the data
+    private Vector<EventItem> data = new Vector<EventItem>();
+    
+    /**
+     * Default constructor. Creates the new Adaptor object to
+     * provide a ListView with data.
+     * @param context
+     * @param resource
+     * @param data
+     */
+    public EventDetailListAdapter(Context context, int resource, ArrayList<EventItem> data) {
+    	    super(context, resource, data);
+        	Log.w(tag, "constructor");
+        	this.mContext = context;
+            this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            this.resource = resource;
+            this.data.addAll(data);
+    }
+
+    
+    public void replaceData(List<EventItem> newData)
+    {
+    	this.data.clear();
+    	this.data.addAll(newData);
+    	this.notifyDataSetChanged();
+    }
+    
+    public Collection<EventItem> getData()
+    {
+    	return this.data;
+    }
+    
+    /**
+     * Return the size of the data set.
+     */
+    public int getCount() {
+            return this.data.size();
+    }
+    
+    /**
+     * Return an object in the data set.
+     */
+    public EventItem getItem(int position) {
+            return this.data.get(position);
+    }
+    
+    /**
+     * Return the position provided.
+     */
+    public long getItemId(int position) {
+            return position;
+    }
+
+    public void add(EventItem eventID)
+    {
+    	Log.w(tag, "add");
+    	if (!this.data.contains(eventID))
+    	{
+        	this.data.add(eventID);
+        	this.notifyDataSetChanged();
+    	}
+    }
+    
+    public void clear()
+    {
+    	Log.w(tag, "clear");
+    	this.data.clear();
+    	
+    	this.notifyDataSetChanged();
+    }
+    
+    
+    /**
+     * Return a generated view for a position.
+     */
+    public View getView(int position, View convertView, ViewGroup parent) {
+            // reuse a given view, or inflate a new one from the xml
+             
+            ViewHolder holder = new ViewHolder();
+            
+            if (convertView == null) {
+            	Log.w(tag, "inflating resource: " + resource);
+                        convertView = this.inflater.inflate(resource, null);
+                        
+                        holder.photo_detail_thumbnail = (ImageView) convertView.findViewById(R.id.photo_detail_thumbnail);
+                        holder.photo_detail_name_text = (TextView) convertView.findViewById(R.id.photo_detail_name_text);
+                        holder.photo_detail_story = (RelativeLayout) convertView.findViewById(R.id.photo_detail_story);
+                        holder.photo_detail_picture = (ImageView) convertView.findViewById(R.id.photo_detail_picture);
+                        holder.photo_detail_story_text = (TextView) convertView.findViewById(R.id.photo_detail_story_text);
+                        holder.photo_detail_time_text = (TextView) convertView.findViewById(R.id.photo_detail_time_text);
+                        holder.photo_detail_spinner = (ProgressBar) convertView.findViewById(R.id.photo_detail_spinner);
+                        holder.photo_detail_upload_text = (TextView) convertView.findViewById(R.id.photo_detail_upload_text);
+                        holder.photo_detail_thumbnail_bg = (ImageView) convertView.findViewById(R.id.photo_detail_thumbnail_bg);
+                        holder.photo_detail_comment_bar = (RelativeLayout) convertView.findViewById(R.id.photo_detail_comment_bar);
+                        holder.photo_detail_like_text = (TextView) convertView.findViewById(R.id.photo_detail_like_text);
+                        holder.photo_detail_comments = convertView.findViewById(R.id.photo_detail_comments);
+                        holder.photo_detail_comments_text = (TextView) convertView.findViewById(R.id.photo_detail_comment_text);
+                        holder.photo_detail_likes = convertView.findViewById(R.id.photo_detail_likes);
+                        holder.photo_detail_likes_text = (TextView) convertView.findViewById(R.id.photo_detail_likes_text);
+                        
+                        
+                        convertView.setTag(holder);
+            			
+            } else {
+                    holder = (ViewHolder) convertView.getTag();
+            }
+
+            this.bindData(holder, position);
+       
+            int pixels = DrawableCache.convertDpToPixel(5);
+            
+            convertView.setPadding(0, pixels, 0, 0);
+            convertView.findViewById(R.id.photo_container).setPadding(pixels, (int) (GlobalVariables.DISPLAY_WIDTH * .075), pixels, pixels);
+            //holder.photo_detail_comment_bar.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_item_comment_bar, GlobalVariables.DISPLAY_WIDTH - 2 * pixels).getDrawable());
+            // bind the data to the view object
+            return convertView;
+    }
+    
+    /**
+     * Bind the provided data to the view.
+     * This is the only method not required by base adapter.
+     */
+    public void bindData(ViewHolder holder, int position) {
+            
+    	EventItem item = this.data.get(position);
+
+    	//holder.photo_detail_comment_icon.setTag(item);
+    	//holder.photo_detail_thumb_icon.setTag(item);
+		
+		int height = -1;
+		
+		LocationInfo location = new LocationInfo();
+		
+		if (item.type == EventItemType.PICTURE)
+		{
+			
+			holder.photo_detail_story.setVisibility(View.GONE);
+			
+			if (item.id == -1)
+			{
+				holder.photo_detail_picture.setImageDrawable(DrawableCache.getDrawable(R.drawable.watermark, GlobalVariables.DISPLAY_WIDTH).getDrawable());
+				holder.photo_detail_spinner.setVisibility(View.VISIBLE);
+				holder.photo_detail_upload_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+				holder.photo_detail_upload_text.setVisibility(View.VISIBLE);
+			}
+			else
+			{
+			
+		    	PhotoItem photo = (PhotoItem) item;
+		    	
+		    	location = photo.location;
+		    	
+		        GlobalVariables.getInstance().downloadImage(holder.photo_detail_picture, GlobalVariables.getInstance().getAWSUrlCompressed(photo));
+		        
+				holder.photo_detail_spinner.setVisibility(View.GONE);
+				holder.photo_detail_upload_text.setVisibility(View.GONE);
+			}
+			
+	        holder.photo_detail_picture.setVisibility(View.VISIBLE);
+		}
+		
+		if (item.type == EventItemType.STORY)
+		{							
+			
+			if (holder.photo_detail_story.getBackground() == null)
+			{
+				holder.photo_detail_story.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.story_detail_background, GlobalVariables.DISPLAY_WIDTH).getDrawable());
+			}
+			
+			
+			TextView textView = holder.photo_detail_story_text;
+			textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+			textView.setText(((StoryItem)item).body);
+			textView.setTag((StoryItem) item);
+			
+			holder.photo_detail_picture.setVisibility(View.GONE);
+			
+			textView.setVisibility(View.VISIBLE);
+			
+			holder.photo_detail_story.setVisibility(View.VISIBLE);
+		}
+		
+		
+		setUpStoryPictureHeader(holder, item, height, location);
+    }
+    
+	private void setUpStoryPictureHeader(ViewHolder holder, EventItem item, int height, LocationInfo location)
+	{
+		View bottomInfo = holder.photo_detail_bottom_info;
+		
+		
+		
+		holder.photo_detail_thumbnail.setTag(UserInfoList.getInstance().get(item.user_id));
+		
+		holder.photo_detail_thumbnail.setMaxHeight((int) (GlobalVariables.DISPLAY_HEIGHT * .15));
+		holder.photo_detail_thumbnail.setMaxWidth((int) (GlobalVariables.DISPLAY_WIDTH * .15));
+		
+		holder.photo_detail_thumbnail_bg.setMaxHeight((int) (GlobalVariables.DISPLAY_HEIGHT * .15));
+		holder.photo_detail_thumbnail_bg.setMaxWidth((int) (GlobalVariables.DISPLAY_WIDTH * .15));
+		
+		if (UserInfoList.getInstance().get(item.user_id) != null)
+		{
+		
+			Integer facebookID = UserInfoList.getInstance().get(item.user_id).uid;
+			
+			GlobalVariables.getInstance().downloadImage(holder.photo_detail_thumbnail, GlobalVariables.getInstance().getFacebookPictureUrlLarge(facebookID));
+
+			holder.photo_detail_name_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+			holder.photo_detail_name_text.setText(UserInfoList.getInstance().get(item.user_id).name);
+			holder.photo_detail_name_text.setTag(UserInfoList.getInstance().get(item.user_id));
+			
+			holder.photo_detail_time_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+			holder.photo_detail_time_text.setText(DateStringFormatter.getPastDateString(item.created_at));
+			
+			holder.photo_detail_thumb_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+			if (item.likes.size() > 0)
+			{
+				holder.photo_detail_thumb_text.setText(Integer.toString(item.likes.size()));
+				boolean hasLiked = false;
+				for (Like like : item.likes)
+				{
+					if (like.user_id == GlobalVariables.getInstance().getUserId())
+					{
+						hasLiked = true;
+					}
+				}
+				if (hasLiked)
+				{
+					holder.photo_detail_thumb_icon.setPressed(true);
+				}
+				else
+				{
+					holder.photo_detail_thumb_icon.setPressed(false);
+				}
+			}
+			else
+			{
+				holder.photo_detail_thumb_text.setText(" ");
+			}
+			
+			/*holder.photo_detail_comment_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+			if (item.comments.size() > 0)
+			{
+				holder.photo_detail_comment_text.setText(Integer.toString(item.comments.size()));
+			}
+			else
+			{
+				holder.photo_detail_comment_text.setText(" ");
+			}*/
+			
+			//holder.photo_detail_bottom.removeAllViews();
+			//holder.photo_detail_bottom.addView(bottomInfo);
+		}
+	}
+    
+    private static class ViewHolder {
+        public RelativeLayout photo_detail_story;
+        public ImageView photo_detail_picture;
+        public TextView photo_detail_story_text;
+        public LinearLayout photo_detail_bottom_info;
+        public ImageView photo_detail_thumbnail;
+        public TextView photo_detail_name_text;
+        public TextView photo_detail_time_text;
+        public ImageView photo_detail_thumbnail_bg;
+        public ProgressBar photo_detail_spinner;
+        public TextView photo_detail_upload_text;
+        public TextView photo_detail_like_text;
+        public View photo_detail_comments;
+        public TextView photo_detail_comments_text;
+        public View photo_detail_likes;
+        public TextView photo_detail_likes_text;
+        public RelativeLayout photo_detail_comment_bar;
+    }
+}

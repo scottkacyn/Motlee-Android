@@ -91,9 +91,7 @@ public class MoreEventDetailActivity extends BaseMotleeActivity {
         	
         	users.addAll(eDetail.getAttendees());
         	
-        	fragment.setPageLabel(users.size() + " are attending");
-        	
-        	fragment.setPageTitle(eDetail.getEventName());
+        	//fragment.setPageTitle(eDetail.getEventName());
         	
         	fragment.setUserList(users);
         	

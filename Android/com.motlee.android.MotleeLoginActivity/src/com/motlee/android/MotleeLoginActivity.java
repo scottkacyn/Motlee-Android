@@ -22,11 +22,13 @@ import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
 import com.motlee.android.fragment.LoginPageFragment;
 import com.motlee.android.fragment.SplashScreenFragment;
 import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 import com.motlee.android.object.event.UserInfoEvent;
 import com.motlee.android.object.event.UserInfoListener;
+import com.motlee.android.object.event.UserWithEventsPhotosEvent;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -91,12 +93,19 @@ public class MotleeLoginActivity extends FacebookActivity implements UpdatedEven
 
 			public void raised(UserInfoEvent e) {
 				
+
+	        	
+			}
+
+			public void userWithEventsPhotos(UserWithEventsPhotosEvent e) {
+
 				GlobalVariables.getInstance().setUserId(e.getUserInfo().id);
+				
+				GlobalEventList.myEventDetails.addAll(e.getEventIds());
 				
 	        	EventServiceBuffer.setUserInfoListener(null);
 	        	
 	        	EventServiceBuffer.getEventsFromService();
-	        	
 			}
         	
         });

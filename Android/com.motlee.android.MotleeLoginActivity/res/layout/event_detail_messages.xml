@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:id="@+id/event_detail_main"
+    android:orientation="vertical" >    
+    
+    <include layout="@layout/comment_text_bar"
+        android:id="@+id/comment_text_bar"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone" />
+    
+    <ListView
+        android:id="@+id/event_detail_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+	    android:scrollbars="none"
+	    android:focusableInTouchMode="true"
+        android:focusable="true"
+	    android:layout_above="@id/comment_text_bar"
+        android:background="@android:color/transparent" />
+    
+</RelativeLayout>

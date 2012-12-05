@@ -1,0 +1,7 @@
+1354128302139	Extract method 'setEventViewHolder'
+1354128385057	Extract method 'setPeopleViewHolder'
+1354130206328	Rename local variable 'eventHolder'
+1354131478760	Rename field 'mListItems'
+1354131529265	Rename field 'mSplitSection'
+1354138609020	Rename method 'setBirthdayLocationObject'
+1354151670310	Rename type 'UserProfileAdpater'

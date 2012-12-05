@@ -22,7 +22,7 @@
         <item name="android:textSize">13sp</item>
     </style>
     <style name="CodeFont.Tiny">
-        <item name="android:textSize">8sp</item>
+        <item name="android:textSize">10sp</item>
     </style>
     <style name="CodeFont.Label">
         <item name="android:textColor">#968f87</item>

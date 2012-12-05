@@ -1,0 +1,203 @@
+package com.motlee.android.fragment;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapController;
+import com.google.android.maps.MapView;
+import com.google.android.maps.Overlay;
+import com.google.android.maps.OverlayItem;
+import com.motlee.android.R;
+import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.LocationInfo;
+import com.motlee.android.object.ClickableBalloonItemizedOverlay;
+import com.motlee.android.object.OverlayItemWithEventID;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Point;
+import android.graphics.drawable.Drawable;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+public class LocationFragment extends BaseMotleeFragment {
+
+	private static final String JOIN = "Join";
+	private static final String EDIT = "Edit";
+	private static final String LEAVE = "Leave";
+	
+	private static final int locMultiplier = 1000000;
+	
+	private View view;
+	private LayoutInflater inflater;
+	private EventDetail mEventDetail;
+	
+	private ArrayList<EventDetail> mEventList = new ArrayList<EventDetail>();
+	
+	private String pageTitle = "All Events";
+	
+	LocationManager mLocationManager;
+	
+	private MapController mMapController;
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+	
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.event_detail_location, null);
+		
+		mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+		
+		view.findViewById(R.id.event_detail_header).setVisibility(View.GONE);
+		
+		setPageHeader(pageTitle);
+		if (pageTitle.equals(NEARBY_EVENTS))
+		{
+			setHeaderIcon(NEARBY_EVENTS);
+		}
+
+		showLeftHeaderButton();
+		
+		setMapOverlays();
+		
+		return view;
+	}
+
+	private void setMapOverlays() {
+		
+		LocationInfo location = null;
+		
+		GeoPoint point = null;
+		if (mEventList.size() > 1)
+		{
+			Criteria criteria = new Criteria();
+			String bestProvider = mLocationManager.getBestProvider(criteria, true);
+			
+			Location userLocation = mLocationManager.getLastKnownLocation(bestProvider);
+			point = new GeoPoint((int) (userLocation.getLatitude() * locMultiplier), (int) (userLocation.getLongitude() * locMultiplier));
+		}
+		else if (mEventList.size() == 1)
+		{
+			location = mEventList.get(0).getLocationInfo();
+			
+			if (!location.name.equals(LocationInfo.NO_LOCATION))
+			{
+				point = new GeoPoint((int) (location.lat * locMultiplier), (int) (location.lon * locMultiplier));
+			}
+			else
+			{
+				Criteria criteria = new Criteria();
+				String bestProvider = mLocationManager.getBestProvider(criteria, true);
+				
+				Location userLocation = mLocationManager.getLastKnownLocation(bestProvider);
+				point = new GeoPoint((int) (userLocation.getLatitude() * locMultiplier), (int) (userLocation.getLongitude() * locMultiplier));
+			}
+		}		
+
+		
+		MapView map = (MapView) view.findViewById(R.id.map_view);
+		map.setBuiltInZoomControls(true);
+		
+		mMapController = map.getController();
+		mMapController.animateTo(point);
+		mMapController.setZoom(17);
+		
+		List<Overlay> overlays = map.getOverlays();
+		overlays.clear();
+		
+		for (EventDetail item : mEventList)
+		{
+			location = item.getLocationInfo();
+			
+			if (!location.name.equals(LocationInfo.NO_LOCATION))
+			{
+				point = new GeoPoint((int) (location.lat * locMultiplier), (int) (location.lon * locMultiplier));
+			}
+			else
+			{
+				Criteria criteria = new Criteria();
+				String bestProvider = mLocationManager.getBestProvider(criteria, true);
+				
+				Location userLocation = mLocationManager.getLastKnownLocation(bestProvider);
+				point = new GeoPoint((int) (userLocation.getLatitude() * locMultiplier), (int) (userLocation.getLongitude() * locMultiplier));
+			}
+			
+			OverlayItemWithEventID overlay = new OverlayItemWithEventID(point, item.getEventName(), location.name, item.getEventID());
+
+			Drawable drawable = this.getResources().getDrawable(R.drawable.map_pin_for_google);
+			ClickableBalloonItemizedOverlay itemizedoverlay = new ClickableBalloonItemizedOverlay(drawable, map, this.getActivity());
+			itemizedoverlay.addOverlay(overlay);
+			overlays.add(itemizedoverlay);
+			
+			map.invalidate();
+		}
+	}
+	
+	public void addEventDetail(EventDetail eDetail) {
+		
+		mEventList.add(eDetail);
+	}
+	
+	public void setPageTitle(String pageTitle)
+	{
+		this.pageTitle = pageTitle;
+	}
+	
+	class MapOverlay extends Overlay
+    {
+		private GeoPoint geoPoint = null;
+		
+		public void addGeoPoint(GeoPoint geoPoint)
+		{
+			this.geoPoint = geoPoint;
+		}
+		
+		public MapOverlay(GeoPoint geoPoint)
+		{
+			super();
+			this.geoPoint = geoPoint;
+		}
+		
+        @Override
+        public boolean draw(Canvas canvas, MapView mapView, 
+        boolean shadow, long when) 
+        {
+            super.draw(canvas, mapView, shadow);                   
+            
+            if (geoPoint != null)
+            {
+	            //---translate the GeoPoint to screen pixels---
+	            Point screenPts = new Point();
+	            mapView.getProjection().toPixels(this.geoPoint, screenPts);
+	 
+	            //---add the marker---
+	            Bitmap bmp = BitmapFactory.decodeResource(
+	                getResources(), R.drawable.map_pin_for_google);   
+	            
+	            int height = bmp.getHeight();
+	            int width = bmp.getWidth();
+	            
+	            canvas.drawBitmap(bmp, screenPts.x - (int) (width * .5), screenPts.y-height, null);         
+	            return true;
+            }
+            else
+            {
+            	return false;
+            }
+        }
+    } 
+}

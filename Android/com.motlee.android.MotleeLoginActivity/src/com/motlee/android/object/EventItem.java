@@ -23,7 +23,7 @@ public class EventItem implements Comparable<EventItem>, Parcelable {
 	/*
 	 * Event Item's id
 	 */
-	public Integer id;
+	public Integer id = -1;
 	
 	public ArrayList<Comment> comments = new ArrayList<Comment>();
 	public ArrayList<Like> likes = new ArrayList<Like>();
@@ -39,7 +39,7 @@ public class EventItem implements Comparable<EventItem>, Parcelable {
 	}
 
 	public int compareTo(EventItem item) {
-		
+
 		return item.created_at.compareTo(this.created_at);
 	}
 
@@ -69,6 +69,10 @@ public class EventItem implements Comparable<EventItem>, Parcelable {
 		out.writeInt(event_id);
 		out.writeString((type == null) ? "" : type.name());
 		out.writeInt(user_id);
+		if (created_at == null)
+		{
+			created_at = new Date();
+		}
 		out.writeLong(created_at.getTime());
 		out.writeTypedList(comments);
 		out.writeTypedList(likes);
@@ -90,21 +94,6 @@ public class EventItem implements Comparable<EventItem>, Parcelable {
         hashCode = hashCode + user_id;
         hashCode = hashCode + id;
         hashCode = hashCode + type.getValue();
-        hashCode = created_at.hashCode();
-        if (comments != null)
-        {
-	        for (EventItem comment : comments)
-	        {
-	        	hashCode = hashCode + comment.hashCode();
-	        }
-        }
-        if (likes != null)
-        {
-	        for (EventItem like : likes)
-	        {
-	        	hashCode = hashCode + like.hashCode();
-	        }
-        }
         return hashCode;
     }
 
@@ -120,13 +109,10 @@ public class EventItem implements Comparable<EventItem>, Parcelable {
         EventItem that = (EventItem) obj;
         
         return
-			( this.id == that.id ) &&
-	        ( this.event_id == that.event_id )&&
-	        ( this.user_id == that.user_id )&&
-	        ( this.comments.equals(that.comments )) &&
-	        ( this.likes.equals(that.likes )) &&
-	        ( this.created_at.equals(that.created_at )) &&
-	        ( this.type.equals(that.type )) ;
+			( this.id.equals(that.id) ) &&
+	        ( this.event_id.equals(that.event_id) )&&
+	        ( this.user_id.equals(that.user_id) )&&
+	        ( this.type.equals(that.type)) ;
     }
     
 }

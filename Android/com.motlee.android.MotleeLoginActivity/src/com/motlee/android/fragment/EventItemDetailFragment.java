@@ -1,25 +1,45 @@
 package com.motlee.android.fragment;
 
-import java.util.ArrayList;
+import greendroid.widget.PagedView;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.InputType;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
+import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.TextView;
 
 import com.motlee.android.R;
+import com.motlee.android.adapter.CommentAdapter;
+import com.motlee.android.adapter.PhotoDetailPagedViewAdapter;
+import com.motlee.android.enums.EventItemType;
 import com.motlee.android.layouts.RatioBackgroundRelativeLayout;
 import com.motlee.android.layouts.StretchedBackgroundLinearLayout;
 import com.motlee.android.layouts.StretchedBackgroundRelativeLayout;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.Comment;
 import com.motlee.android.object.DateStringFormatter;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
@@ -38,11 +58,14 @@ import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
 public class EventItemDetailFragment extends BaseMotleeFragment {
 	
-	private LinearLayout view;
+	private LinearLayout headerView;
+	private View view;
 	private LayoutInflater inflater;
 	private String pageTitle = "All Events";
 	
 	private EventItem eventItem;
+	
+	private EditText editText;
 	
 	private boolean isPhotoDetail = false;
 	private boolean isStoryDetail = false;
@@ -54,8 +77,8 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 	private TextView likeText;
 	private TextView commentText;
 	private ImageButton thumbIcon;
-	
-	private LinearLayout photoDetailInfo;
+	private ListView commentList;
+	private CommentAdapter adapter;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
@@ -63,17 +86,49 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 	{
 	
 		this.inflater = inflater;
-		view = (LinearLayout) this.inflater.inflate(R.layout.activity_photo_detail, null);
 
-		view.setPadding(0, DrawableCache.convertDpToPixel(10), 0, 0);
+		view = this.inflater.inflate(R.layout.paged_view_layout, null);
 		
-		photoDetailInfo = (LinearLayout) view.findViewById(R.id.photo_detail_bottom);
-		//photoDetailInfo.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.item_detail_bottom, GlobalVariables.DISPLAY_WIDTH - DrawableCache.convertDpToPixel(20)).getDrawable());
+		PagedView pagedView = (PagedView) view.findViewById(R.id.comment_paged_view);
 		
-		ImageView detailTop = (ImageView) view.findViewById(R.id.photo_detail_top);
-		detailTop.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.item_detail_top, GlobalVariables.DISPLAY_WIDTH - DrawableCache.convertDpToPixel(20)).getDrawable());
+		ArrayList<PhotoItem> photos = GlobalEventList.eventDetailMap.get(eventItem.event_id).getImages();
 		
-		touchOverlay = view.findViewById(R.id.photo_detail_touch_overlay);
+		Collections.sort(photos);
+		
+		int index = photos.indexOf(eventItem);
+		
+		PhotoDetailPagedViewAdapter adapter = new PhotoDetailPagedViewAdapter(getActivity(), photos);
+		
+		pagedView.setAdapter(adapter);
+		
+		pagedView.scrollToPage(index);
+		
+		setPageHeader(GlobalEventList.eventDetailMap.get(eventItem.event_id).getEventName());
+		showLeftHeaderButton();
+		
+		return view;
+	}
+	
+	/*@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+	
+		this.inflater = inflater;
+		headerView = (LinearLayout) this.inflater.inflate(R.layout.event_item_detail, null);
+
+		view = this.inflater.inflate(R.layout.activity_photo_detail, null);
+		
+		//int pixels = DrawableCache.convertDpToPixel(5);
+		
+		//headerView.setPadding(0, pixels, 0, 0);
+		
+		/*FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+		params.setMargins(0, (int) (GlobalVariables.DISPLAY_WIDTH * .15), 0, 0);
+		
+		//headerView.findViewById(R.id.photo_container).setPadding(pixels, (int) (GlobalVariables.DISPLAY_WIDTH * .075), pixels, pixels);
+		
+		touchOverlay = headerView.findViewById(R.id.photo_detail_touch_overlay);
 		touchOverlay.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.photo_detail_overlay, GlobalVariables.DISPLAY_WIDTH).getDrawable());
 		
 		setPageHeader(GlobalEventList.eventDetailMap.get(eventItem.event_id).getEventName());
@@ -81,13 +136,27 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		
 		setUpPage();
 		
+		setEditText();
+		
+		commentList = (ListView) view.findViewById(R.id.comment_list_view);
+		
+		commentList.addHeaderView(headerView);
+		
+		//commentList.setPadding(pixels, (int) (GlobalVariables.DISPLAY_WIDTH * .075), pixels, pixels);
+		
+		Collections.sort(eventItem.comments);
+		
+		adapter = new CommentAdapter(getActivity(), R.layout.comment_list_item, eventItem.comments);
+		
+		commentList.setAdapter(adapter);
+		
 		return view;
-	}
+	}*/
 	
 	private void setUpPage() {
 		
-		photo = (ImageView) view.findViewById(R.id.photo_detail_picture);
-		story = (RelativeLayout) view.findViewById(R.id.photo_detail_story);
+		photo = (ImageView) headerView.findViewById(R.id.photo_detail_picture);
+		story = (RelativeLayout) headerView.findViewById(R.id.photo_detail_story);
 		
 		story.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.story_detail_background, GlobalVariables.DISPLAY_WIDTH).getDrawable());
 		
@@ -136,62 +205,155 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 			location = new LocationInfo();
 		}
 
+		DrawableWithHeight background = DrawableCache.getDrawable(R.drawable.photo_detail_rect, GlobalVariables.DISPLAY_WIDTH);
 		
-		View bottomInfo = inflater.inflate(R.layout.photo_detail_bottom_info, null);
+		//((RelativeLayout) headerView.findViewById(R.id.photo_detail_user_row)).setBackgroundDrawable(background.getDrawable());
 		
-		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.item_detail_bottom, GlobalVariables.DISPLAY_WIDTH - DrawableCache.convertDpToPixel(20));
+		ImageView profilePic = (ImageView) headerView.findViewById(R.id.photo_detail_thumbnail);
+		profilePic.setTag(UserInfoList.getInstance().get(eventItem.user_id));
 		
-    	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, drawable.getHeight());
-    	params.leftMargin = DrawableCache.convertDpToPixel(10);
-    	params.rightMargin = DrawableCache.convertDpToPixel(10);
-    	
-    	bottomInfo.setLayoutParams(params);
-    	
-		bottomInfo.setBackgroundDrawable(drawable.getDrawable());
+		profilePic.setMaxHeight((int) background.getHeight());
+		profilePic.setMaxWidth((int) background.getWidth());
 		
-		ImageView profilePic = (ImageView) bottomInfo.findViewById(R.id.photo_detail_thumbnail);
+		ImageView profileBg = (ImageView) headerView.findViewById(R.id.photo_detail_thumbnail_bg);
+		profileBg.setMaxHeight((int) background.getHeight());
+		profileBg.setMaxWidth((int) background.getWidth());
 		
 		Integer facebookID = UserInfoList.getInstance().get(eventItem.user_id).uid;
 		
-		GlobalVariables.getInstance().downloadImage(profilePic, GlobalVariables.getInstance().getFacebookPictureUrl(facebookID));
+		GlobalVariables.getInstance().downloadImage(profilePic, GlobalVariables.getInstance().getFacebookPictureUrlLarge(facebookID));
 		
-		TextView userName = (TextView) bottomInfo.findViewById(R.id.photo_detail_name_text);
+		TextView userName = (TextView) headerView.findViewById(R.id.photo_detail_name_text);
 		userName.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		userName.setText(UserInfoList.getInstance().get(eventItem.user_id).name);
+		userName.setTag(UserInfoList.getInstance().get(eventItem.user_id));
 		
-		likeText = (TextView) bottomInfo.findViewById(R.id.photo_detail_thumb_text);
-		likeText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-		likeText.setText(Integer.toString(eventItem.likes.size()));
+		TextView time = (TextView) headerView.findViewById(R.id.photo_detail_time_text);
+		time.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		time.setText(DateStringFormatter.getPastDateString(eventItem.created_at));
 		
-		thumbIcon = (ImageButton) bottomInfo.findViewById(R.id.photo_detail_thumb_icon);
+		setUpLikeInfo();
 		
-		for (Like like : eventItem.likes)
-		{
-			if (like.user_id == GlobalVariables.getInstance().getUserId())
-			{
-				thumbIcon.setPressed(true);
-			}
+		//headerView.findViewById(R.id.photo_detail_comment_bar).setVisibility(View.GONE);
+	}
+	
+	public String getCommentText()
+	{
+		return editText.getText().toString();
+	}
+	
+	private void setEditText()
+	{
+		editText = (EditText) view.findViewById(R.id.comment_text);
+		editText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		editText.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES|InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
+		InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        in.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+		
+		editText.clearFocus();
+		
+		editText.setOnEditorActionListener(editorActionListener);
+		editText.setOnFocusChangeListener(focusChangeListener);
+		
+	}
+	
+	private OnFocusChangeListener focusChangeListener = new OnFocusChangeListener(){
+		// if we have focus, change color for input text
+        public void onFocusChange(View v, boolean hasFocus) {
+            if (hasFocus) {
+                ((EditText) v).setTextColor(Color.WHITE);
+                ((EditText) v).setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+            } 
+        }
+	};
+	
+	private OnEditorActionListener editorActionListener = new OnEditorActionListener(){
+		
+		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+			
+			// if we hit enter on the keyboard, hide keyboard
+            if (event != null&& (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                // NOTE: In the author's example, he uses an identifier
+                // called searchBar. If setting this code on your EditText
+                // then use v.getWindowToken() as a reference to your 
+                // EditText is passed into this callback as a TextView
+
+                in.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                editText.clearFocus();
+                
+               return true;
+
+            }
+            return false;
 		}
 		
-		commentText = (TextView) bottomInfo.findViewById(R.id.photo_detail_comment_text);
-		commentText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-		commentText.setText(Integer.toString(eventItem.comments.size()));
+	};
+
+	public void removeTextAndKeyboard() {
 		
-		/*RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        in.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 		
-		if (isPhotoDetail)
+        editText.setText("");
+	}
+	public void setUpLikeInfo()
+	{
+		TextView text = (TextView) headerView.findViewById(R.id.photo_detail_like_button_text);
+		text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		
+		text = (TextView) headerView.findViewById(R.id.photo_detail_likes_text);
+		text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		if (eventItem.likes.size() > 0)
 		{
-			params.topMargin = GlobalVariables.getInstance().getDisplayWidth();
+			headerView.findViewById(R.id.photo_detail_likes).setVisibility(View.VISIBLE);
+			text.setText(Integer.toString(eventItem.likes.size()));
+			boolean hasLiked = false;
+			for (Like like : eventItem.likes)
+			{
+				if (like.user_id == GlobalVariables.getInstance().getUserId())
+				{
+					hasLiked = true;
+				}
+			}
+			if (hasLiked)
+			{
+				((ImageView) headerView.findViewById(R.id.photo_detail_thumb_image)).setPressed(true);
+				text = (TextView) headerView.findViewById(R.id.photo_detail_like_button_text);
+				text.setText("Unlike");
+				headerView.findViewById(R.id.photo_detail_like_button).setTag(true);
+			}
+			else
+			{
+				((ImageView) headerView.findViewById(R.id.photo_detail_thumb_image)).setPressed(false);
+				text = (TextView) headerView.findViewById(R.id.photo_detail_like_button_text);
+				text.setText("Like");
+				headerView.findViewById(R.id.photo_detail_like_button).setTag(false);
+			}
 		}
 		else
 		{
-			params.topMargin = story.getLayoutParams().height;
-		}*/
+			headerView.findViewById(R.id.photo_detail_likes).setVisibility(View.GONE);
+			text = (TextView) headerView.findViewById(R.id.photo_detail_like_button_text);
+			text.setText("Like");
+			headerView.findViewById(R.id.photo_detail_like_button).setTag(false);
+		}
 		
-		photoDetailInfo.removeAllViews();
-		photoDetailInfo.addView(bottomInfo);
+		/*text = (TextView) headerView.findViewById(R.id.photo_detail_comment_text);
+		text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		if (eventItem.comments.size() > 0)
+		{
+			headerView.findViewById(R.id.photo_detail_comments).setVisibility(View.VISIBLE);
+			text.setText(Integer.toString(eventItem.comments.size()));
+		}
+		else
+		{
+			headerView.findViewById(R.id.photo_detail_comments).setVisibility(View.GONE);
+		}*/
 	}
-
+	
 	public void setDetailImage(PhotoItem photoItem)
 	{
 		this.eventItem = photoItem;
@@ -240,5 +402,46 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 				thumbIcon.setPressed(true);
 			}
 		}
+	}
+
+	public void unlike() {
+
+		TextView buttonText = (TextView) headerView.findViewById(R.id.photo_detail_like_button_text);
+		buttonText.setText("Like");
+		headerView.findViewById(R.id.photo_detail_like_button).setTag(false);
+		
+		if (eventItem.likes.size() == 0)
+		{
+			headerView.findViewById(R.id.photo_detail_likes).setVisibility(View.GONE);
+		}
+		else
+		{
+			headerView.findViewById(R.id.photo_detail_likes).setVisibility(View.VISIBLE);
+			TextView likeText = (TextView) headerView.findViewById(R.id.photo_detail_likes_text);
+			likeText.setText(Integer.toString(eventItem.likes.size()));
+		}
+	}
+
+	public void like() {
+		
+		TextView buttonText = (TextView) headerView.findViewById(R.id.photo_detail_like_button_text);
+		buttonText.setText("Unlike");
+		headerView.findViewById(R.id.photo_detail_like_button).setTag(true);
+
+		headerView.findViewById(R.id.photo_detail_likes).setVisibility(View.VISIBLE);
+		TextView likeText = (TextView) headerView.findViewById(R.id.photo_detail_likes_text);
+		likeText.setText(Integer.toString(eventItem.likes.size()));
+		
+	}
+
+	public void addComment(Comment comment) {
+		
+		eventItem.comments.add(comment);
+		
+		Collections.sort(eventItem.comments);
+		
+		adapter = new CommentAdapter(getActivity(), R.layout.comment_list_item, eventItem.comments);
+		
+		commentList.setAdapter(adapter);
 	}
 }

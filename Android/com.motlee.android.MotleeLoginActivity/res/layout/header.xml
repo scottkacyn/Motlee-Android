@@ -25,9 +25,9 @@
             android:id="@+id/header_menu_button"
         	android:visibility="gone"
         	android:layout_height="match_parent"
-        	android:padding="5dp"
+        	android:padding="10dp"
         	android:layout_width="wrap_content"
-        	android:src="@drawable/icon_button_menu"
+        	android:src="@drawable/icon_button_list_view"
         	android:onClick="onClickOpenMainMenu"
         	android:layout_alignParentLeft="true" />
         

@@ -356,7 +356,7 @@ public class SearchPlacesFragment extends ListFragmentWithHeader
 	    				
 	    				GraphPlace place = mAdapter.getItem(position);
 	    				
-	    				setLocationAndCloseFragment(new LocationInfo(place.getName(), place.getLocation().getLatitude(), place.getLocation().getLongitude(), Long.getLong(place.getId())));
+	    				setLocationAndCloseFragment(new LocationInfo(place.getName(), place.getLocation().getLatitude(), place.getLocation().getLongitude(), Long.parseLong(place.getId())));
 	    			}
 	    		});
 	    		

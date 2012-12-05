@@ -6,6 +6,7 @@ import com.motlee.android.EventListActivity;
 import com.motlee.android.NearbyEventsActivity;
 import com.motlee.android.PostStoryActivity;
 import com.motlee.android.R;
+import com.motlee.android.SearchActivity;
 import com.motlee.android.SettingsActivity;
 import com.motlee.android.TakePhotoActivity;
 import com.motlee.android.adapter.EventListAdapter;
@@ -13,9 +14,13 @@ import com.motlee.android.fragment.BaseMotleeFragment;
 import com.motlee.android.fragment.EventListFragment;
 import com.motlee.android.fragment.MainMenuFragment;
 import com.motlee.android.fragment.PlusMenuFragment;
+import com.motlee.android.object.event.UpdatedAttendeeEvent;
+import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.view.HorizontalAspectImageButton;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.provider.MediaStore;
@@ -213,19 +218,62 @@ public class MenuFunctions {
         }
 	}
 	
-	public static void takePictureOnPhone(View view, FragmentActivity activity)
+	public static void takePictureOnPhone(final int eventId, final FragmentActivity activity)
 	{
-		int eventId = (Integer) view.getTag();
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+				activity);
 		
-		Intent takePictureIntent = new Intent(activity, TakePhotoActivity.class);
-		takePictureIntent.putExtra("Action", TakePhotoActivity.TAKE_PHOTO);
-		takePictureIntent.putExtra("EventID", eventId);
-		//removePlusMenu(activity);
-		activity.startActivity(takePictureIntent);
-		if (!((activity instanceof EventListActivity) || (activity instanceof EventDetailActivity)))
-		{
-			activity.finish();
-		}
+		alertDialogBuilder
+		.setMessage("Select Photo Source")
+		.setCancelable(true)
+		.setPositiveButton("Camera",new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				// if this button is clicked, close
+				// current activity
+				
+				Intent takePictureIntent = new Intent(activity, TakePhotoActivity.class);
+				takePictureIntent.putExtra("Action", TakePhotoActivity.TAKE_PHOTO);
+				takePictureIntent.putExtra("EventID", eventId);
+				//removePlusMenu(activity);
+				activity.startActivity(takePictureIntent);
+				if (!((activity instanceof EventListActivity) || (activity instanceof EventDetailActivity)))
+				{
+					activity.finish();
+				}
+				
+				dialog.cancel();
+			}
+		  })
+		.setNegativeButton("Gallery",new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				// if this button is clicked, just close
+				// the dialog box and do nothing
+				Intent takePictureIntent = new Intent(activity, TakePhotoActivity.class);
+				takePictureIntent.putExtra("Action", TakePhotoActivity.GET_PHOTO_LIBRARY);
+				takePictureIntent.putExtra("EventID", eventId);
+				//removePlusMenu(activity);
+				activity.startActivity(takePictureIntent);
+				if (!((activity instanceof EventListActivity) || (activity instanceof EventDetailActivity)))
+				{
+					activity.finish();
+				}
+				
+				dialog.cancel();
+			}
+		});
+		
+		// create alert dialog
+		AlertDialog alertDialog = alertDialogBuilder.create();
+ 
+				// show it
+		alertDialog.show();
+	}
+	
+	public static void takePictureOnPhone(View view, final FragmentActivity activity)
+	{
+		final int eventId = (Integer) view.getTag();
+		
+		takePictureOnPhone(eventId, activity);
 	}
 	
 	public static void postComment(View view, FragmentActivity activity)
@@ -263,6 +311,14 @@ public class MenuFunctions {
 		{
 			activity.finish();
 		}
+	}
+	
+	public static void showSearchPage(FragmentActivity activity)
+	{
+		Intent intent = new Intent(activity, SearchActivity.class);
+		activity.startActivity(intent);
+		
+		removeMainMenu(activity);
 	}
 	
 	public static void showSettings(FragmentActivity activity)

@@ -48,4 +48,10 @@ public class StoryItem extends EventItem {
             return new StoryItem[size];
         }
     };
+    
+    @Override
+	public int compareTo(EventItem item) {
+
+		return this.created_at.compareTo(item.created_at);
+	}
 }

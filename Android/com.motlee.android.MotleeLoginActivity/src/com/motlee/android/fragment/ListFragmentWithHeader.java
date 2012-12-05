@@ -49,7 +49,7 @@ public class ListFragmentWithHeader extends ListFragment {
 	{
 		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
 		tv.setText(headerText);
-		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		tv.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 	}
 	
 	protected void showLeftHeaderButton()

@@ -1,0 +1,44 @@
+package com.motlee.android.adapter;
+
+import java.util.ArrayList;
+
+import com.motlee.android.object.PhotoItem;
+
+import android.view.View;
+import android.view.ViewGroup;
+import greendroid.widget.PagedAdapter;
+
+public class PhotoDetailPagedViewAdapter extends PagedAdapter {
+
+	private ArrayList<PhotoItem> mData = new ArrayList<PhotoItem>();
+	
+	public PhotoDetailPagedViewAdapter(ArrayList<PhotoItem> data) {
+		
+		this.mData = new ArrayList<PhotoItem>(data);
+	}
+
+	@Override
+	public int getCount() {
+		
+		return mData.size();
+	}
+
+	@Override
+	public Object getItem(int position) {
+		
+		return mData.get(position);
+	}
+
+	@Override
+	public long getItemId(int position) {
+		
+		return position;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		
+		return null;
+	}
+
+}

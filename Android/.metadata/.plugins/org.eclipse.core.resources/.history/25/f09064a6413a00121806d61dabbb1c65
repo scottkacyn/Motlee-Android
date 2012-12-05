@@ -1,0 +1,291 @@
+package com.motlee.android.fragment;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.facebook.GraphObject;
+import com.facebook.GraphUser;
+import com.facebook.android.AsyncFacebookRunner;
+import com.facebook.android.AsyncFacebookRunner.RequestListener;
+import com.facebook.android.Facebook;
+import com.facebook.android.FacebookError;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.motlee.android.R;
+import com.motlee.android.adapter.EventDetailGridAdapter;
+import com.motlee.android.adapter.UserProfileAdapter;
+import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.GlobalEventList;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.GridPictures;
+import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.UserInfo;
+import com.motlee.android.object.UserInfoList;
+import com.motlee.android.object.event.UserInfoEvent;
+import com.motlee.android.object.event.UserInfoListener;
+import com.motlee.android.object.event.UserWithEventsPhotosEvent;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
+
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TableRow;
+import android.widget.TextView;
+
+public class UserProfilePageFragment extends BaseMotleeFragment {
+	
+	private View view;
+	private LayoutInflater inflater;
+	private String pageTitle = "Create Event";
+	private int mUserID;
+	
+	private ListView userInfoList;
+	
+	private EventDetailGridAdapter photoGridAdapter;
+	private UserProfileAdapter eventAdapter;
+	
+	private StretchedBackgroundTableLayout profileEvents;
+	private StretchedBackgroundTableLayout profilePictures;
+    
+	private int facebookID;
+	
+    private String pictureURL;
+	
+    private String birthDate;
+    
+    private String gender;
+    
+    private String location;
+    
+    private UserInfo user;
+    
+    private ArrayList<PhotoItem> photos;
+    
+    private ArrayList<Integer> eventIds;
+    
+    private View headerView;
+	
+    
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+	
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.activity_user_profile, null);
+		
+		headerView = this.inflater.inflate(R.layout.profile_page_top, null);
+		
+		userInfoList = (ListView) view.findViewById(R.id.user_profile_list_view);
+
+		photoGridAdapter = new EventDetailGridAdapter(getActivity(), R.layout.event_detail_page_grid, new ArrayList<GridPictures>());
+		eventAdapter = new UserProfileAdapter(getActivity(), R.layout.search_event_item, eventIds);
+		
+		profilePictures = (StretchedBackgroundTableLayout) headerView.findViewById(R.id.profile_pictures);
+		profileEvents = (StretchedBackgroundTableLayout) headerView.findViewById(R.id.profile_events_text);
+		
+		profilePictures.setOnClickListener(showPictureGrid);
+		profileEvents.setOnClickListener(showEvents);
+		
+		setPageHeader(UserInfoList.getInstance().get(mUserID).name);
+		showLeftHeaderButton();
+
+		this.setPageLayout();
+		
+		return view;
+	}
+	
+	
+	public void setLocationObject(GraphObject object)
+	{
+		JSONObject location = (JSONObject) object.getProperty("location");
+		try {
+			this.location = location.getString("name");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		this.birthDate = object.getProperty("birthday").toString();
+	}
+	
+	public void setUserId(int userID, int facebookID)
+	{
+		this.mUserID = userID;
+		this.user = UserInfoList.getInstance().get(mUserID);
+		this.facebookID = facebookID;
+		if (view != null)
+		{
+			setPageLayout();
+		}
+	}
+	
+	private void setPageLayout()
+	{
+		setPictureURL();
+		
+		setProfilePicture();
+		
+		setProfileInformation();
+		
+		setAttendeePictureCount();
+		
+		userInfoList.addHeaderView(headerView);
+		
+		setGridAdapter();
+		
+		userInfoList.setAdapter(eventAdapter);
+	}
+
+	private void setProfileInformation() {
+		
+		TextView textView = (TextView) headerView.findViewById(R.id.profile_text_top);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(this.birthDate);
+		
+		textView = (TextView) headerView.findViewById(R.id.profile_text_middle);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(this.location);
+	}
+
+	private void setAttendeePictureCount()
+	{
+		TextView textView = (TextView) headerView.findViewById(R.id.profile_part_of_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		
+		textView = (TextView) headerView.findViewById(R.id.profile_number_events_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(Integer.toString(this.eventIds.size()));
+		
+		textView = (TextView) headerView.findViewById(R.id.profile_events_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		
+		textView = (TextView) headerView.findViewById(R.id.profile_added_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		
+		textView = (TextView) headerView.findViewById(R.id.profile_number_photos_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(Integer.toString(this.photos.size()));
+		
+		textView = (TextView) headerView.findViewById(R.id.profile_photos_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		
+		/*textView = (TextView) headerView.findViewById(R.id.profile_has_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		
+		textView = (TextView) headerView.findViewById(R.id.profile_number_friends_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(Integer.toString(this.photos.size()));
+		
+		textView = (TextView) headerView.findViewById(R.id.profile_friends_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());*/
+		
+	}
+	
+	private void setProfilePicture() {
+		final ImageView imageView = (ImageView) headerView.findViewById(R.id.profile_picture);
+		
+		GlobalVariables.getInstance().downloadImage(imageView, pictureURL);
+		//TableRow tr = new TableRow(getActivity());
+		//LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		//tr.setLayoutParams(lp);
+		//tr.addView(thumbnailView);
+		//profileImageBackground.addView(tr);
+	}
+	
+	private void setPictureURL() {
+		
+		pictureURL = "https://graph.facebook.com/" + facebookID + "/picture?type=large";
+		
+	}
+
+	private void setGridAdapter()
+	{
+		GridPictures gridPictures = new GridPictures();
+		
+		ArrayList<GridPictures> gridList = new ArrayList<GridPictures>();
+		
+		int imageCount = photos.size();
+		
+		PhotoItem[] imageArray = (PhotoItem[])photos.toArray(new PhotoItem[imageCount]);
+		
+		for (int i = 0; i < imageCount; i++)
+		{
+			if (i%3 == 0)
+			{
+				gridPictures = new GridPictures();
+				gridPictures.image1 = GlobalVariables.getInstance().getAWSUrlThumbnail(imageArray[i]);
+			}
+			
+			if (i%3 == 1)
+			{
+				gridPictures.image2 = GlobalVariables.getInstance().getAWSUrlThumbnail(imageArray[i]);
+			}
+			
+			if (i%3 == 2)
+			{
+				gridPictures.image3 = GlobalVariables.getInstance().getAWSUrlThumbnail(imageArray[i]);
+			}
+			
+			if (i%3 == 2 || imageCount - 1 == i)
+			{
+				gridList.add(gridPictures);
+			}
+		}	
+		
+		photoGridAdapter.replaceData(gridList);
+	}
+
+	public void setPhotos(ArrayList<PhotoItem> photos) {
+		
+		this.photos = photos;
+		
+	}
+
+	private OnClickListener showPictureGrid = new OnClickListener(){
+
+		public void onClick(View v) {
+
+			userInfoList.setAdapter(photoGridAdapter);
+		}
+		
+	};
+
+	private OnClickListener showEvents = new OnClickListener(){
+
+		public void onClick(View v) {
+			
+			userInfoList.setAdapter(eventAdapter);
+			
+		}
+		
+	};
+	
+	public void setEventIds(ArrayList<Integer> eventIds) {
+		
+		this.eventIds = eventIds;
+		
+	}
+}

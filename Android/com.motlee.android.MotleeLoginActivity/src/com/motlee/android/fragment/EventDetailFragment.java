@@ -12,6 +12,7 @@ import com.motlee.android.adapter.EventDetailGridAdapter;
 import com.motlee.android.adapter.EventDetailListAdapter;
 import com.motlee.android.adapter.EventListAdapter;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.DateStringFormatter;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
@@ -22,7 +23,10 @@ import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.GridPictures;
 import com.motlee.android.object.EventListParams;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.UserInfoList;
 import com.motlee.android.object.event.UpdatedLikeEvent;
+import com.motlee.android.object.event.UpdatedPhotoEvent;
+import com.motlee.android.object.event.UpdatedPhotoListener;
 import com.motlee.android.object.event.UpdatedStoryEvent;
 import com.motlee.android.object.event.UpdatedStoryListener;
 import com.motlee.android.view.HorizontalAspectImageButton;
@@ -34,6 +38,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -52,6 +58,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
@@ -60,7 +67,7 @@ import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
 import android.widget.TextView.OnEditorActionListener;
 
-public class EventDetailFragment extends BaseDetailFragment implements UpdatedStoryListener {
+public class EventDetailFragment extends BaseDetailFragment implements UpdatedStoryListener, UpdatedPhotoListener {
 	private String tag = "EventDetailFragment";
 	
 	private EventDetail mEventDetail;
@@ -84,6 +91,10 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 	
 	private LayoutInflater inflater;
 	
+	private LinearLayout eventHeader;
+
+	protected MyGestureListener myGestureListener;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -97,41 +108,54 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		
 		Log.w(tag, "onCreateView");
 		
+		EventServiceBuffer.setPhotoListener(this);
+		
 		this.inflater = inflater;
-		view = (View) this.inflater.inflate(R.layout.activity_event_detail, null);
+		view = (View) this.inflater.inflate(R.layout.event_detail_photos, null);
 		
 		listViewLayout = (ListView) view.findViewById(R.id.event_detail_list_view);
-		listAdapter = new EventDetailListAdapter(getActivity(), R.layout.activity_photo_detail, new ArrayList<EventItem>());
+		//listAdapter = new EventDetailListAdapter(getActivity(), R.layout.event_item_detail_photo, new ArrayList<EventItem>());
 		gridAdapter = new EventDetailGridAdapter(getActivity(), R.layout.event_detail_page_grid, new ArrayList<GridPictures>());
 		
 		
+		setUpPageHeader();
+		
+		 myGestureListener = new MyGestureListener(getActivity());
+	        // or if you have already created a Gesture Detector.
+	        //   myGestureListener = new MyGestureListener(this, getExistingGestureDetector());
+
+
+	        // Example of setting listener. The onTouchEvent will now be called on your listener
+        listViewLayout.setOnTouchListener(myGestureListener);
 		
 		//RelativeLayout textBackground = (RelativeLayout) view.findViewById(R.id.event_detail_text_background);
 		//textBackground.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.comment_box, GlobalVariables.DISPLAY_WIDTH).getDrawable());
 		
-		view.findViewById(R.id.comment_send_button).setOnClickListener(postStory);
+		//view.findViewById(R.id.comment_send_button).setOnClickListener(postStory);
 		
-		sendLayout = view.findViewById(R.id.send_button_layout);
-		cameraLayout = view.findViewById(R.id.take_photo_layout);
+		//sendLayout = view.findViewById(R.id.send_button_layout);
+		//cameraLayout = view.findViewById(R.id.take_photo_layout);
 				
-		view.findViewById(R.id.event_detail_take_photo).setTag(mEventDetail.getEventID());
+		//view.findViewById(R.id.event_detail_take_photo).setTag(mEventDetail.getEventID());
 		
 		
 		
 		EventServiceBuffer.setStoryListener(this);
 		
-		View eventTop = inflater.inflate(R.layout.event_detail_top, null);
-		listViewLayout.addHeaderView(eventTop);
-		listViewLayout.setAdapter(listAdapter);
+		//View eventTop = inflater.inflate(R.layout.event_detail_top, null);
+		//listViewLayout.addHeaderView(eventTop);
+		setListAdapter();
+		setGridAdapter();
+		listViewLayout.setAdapter(gridAdapter);
 		
-		listViewLayout.setOnTouchListener(touchListener);
+		//listViewLayout.setOnTouchListener(touchListener);
 		
-		eventInfoLayout = (TableLayout) eventTop.findViewById(R.id.event_detail_info);
-		eventInfoLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		//eventInfoLayout = (TableLayout) eventTop.findViewById(R.id.event_detail_info);
+		//eventInfoLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
 		
-		setPhotoDescriptionEdit();
+		//setPhotoDescriptionEdit();
 		
-		if (mEventDetail != null)
+		/*if (mEventDetail != null)
 		{
 			addListToAdapter();
 		}
@@ -139,13 +163,15 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		if (mEventDetail != null)
 		{
 			setNavigationButtons();
-		}
+		}*/
 		
 		setPageHeader(pageTitle);
 		if (mEventDetail != null)
 		{
 			showRightHeaderButton(mEventDetail);
 		}
+		
+		//checkBottomCommentBar();
 		
 		showLeftHeaderButton();
 		
@@ -154,6 +180,34 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		return view;
 	}
 	
+	/*private void checkBottomCommentBar()
+	{
+		if (mEventDetail.getOwnerID() == GlobalVariables.getInstance().getUserId())
+		{
+			view.findViewById(R.id.event_detail_text_background).setVisibility(View.VISIBLE);
+		}
+		else if (!mEventDetail.getAttendees().contains(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId())))
+		{
+			view.findViewById(R.id.event_detail_text_background).setVisibility(View.GONE);
+		}
+		else
+		{
+			view.findViewById(R.id.event_detail_text_background).setVisibility(View.VISIBLE);
+		}
+	}*/
+	
+	private void setUpPageHeader() 
+	{
+		eventHeader = (LinearLayout) this.inflater.inflate(R.layout.event_detail_header, null);
+		eventHeader.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getDrawable());
+		
+		eventHeader.setLayoutParams(new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT, DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getHeight()));
+		
+		((ImageButton) eventHeader.findViewById(R.id.event_detail_photos)).setEnabled(false);
+		
+		listViewLayout.addHeaderView(eventHeader);
+	}
+
 	private OnTouchListener touchListener = new OnTouchListener(){
 
 		public boolean onTouch(View v, MotionEvent event) {
@@ -206,23 +260,23 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		setPageHeader(pageTitle);
 		
 		if (mEventDetail != null)
-		{
+		{ 
 			showRightHeaderButton(mEventDetail);
 		}
 		
-		addListToAdapter();
+		//addListToAdapter();
 		
-		if (view != null)
+		/*if (view != null)
 		{
 			setNavigationButtons();
-		}
+		}*/
 	}
 	
-	private void setNavigationButtons()
+	/*private void setNavigationButtons()
 	{
 		eventInfoLayout.removeAllViews();
 		
-		setLabelButton(mEventDetail.getDateString(), getResources().getDrawable(R.drawable.icon_time_normal), GlobalVariables.DATE);
+		setLabelButton(DateStringFormatter.getEventDateString(mEventDetail.getStartTime(), mEventDetail.getEndTime()), getResources().getDrawable(R.drawable.icon_time_normal), GlobalVariables.DATE);
 		setLabelButton(mEventDetail.getLocationInfo().name, getResources().getDrawable(R.drawable.icon_map_background_normal), GlobalVariables.LOCATION);
 		setLabelButton(mEventDetail.getAttendeeCount() + " People", getResources().getDrawable(R.drawable.icon_friend_normal), GlobalVariables.ATTENDEES);
 		//setLabelButton(mEventDetail.getFomoCount()+ " FOMOs", getResources().getDrawable(R.drawable.icon_fomo_normal), GlobalVariables.FOMOS);
@@ -257,27 +311,9 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		tr.setLayoutParams(lp);
 		tr.addView(labelButton);
 		eventInfoLayout.addView(tr);
-	}
+	}*/
 	
-	private void disableImageButton(ImageButton imageButton)
-	{
-		if (imageButton != null)
-		{
-			imageButton.setClickable(false);
-			imageButton.setEnabled(false);
-		}
-	}
-	
-	private void enableImageButton(ImageButton imageButton)
-	{
-		if (imageButton != null)
-		{
-			imageButton.setClickable(true);
-			imageButton.setEnabled(true);
-		}
-	}
-	
-	private void setPhotoDescriptionEdit()
+	/*private void setPhotoDescriptionEdit()
 	{
 		// set up EditText view. set to "final" so we can use in the editText listeners
 		photoDescriptionEdit = (EditText) view.findViewById(R.id.event_detail_text);
@@ -342,7 +378,7 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 	            }
 	        }
 	    });
-	}
+	}*/
 	
 	public void clearEditTextFocus()
 	{
@@ -352,7 +388,7 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 	
 	public void switchToListView(View view)
 	{
-		addListToAdapter();
+		addGridToTableLayout();
 	}
 	
 	public void switchToGridView(View view)
@@ -378,7 +414,7 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		listAdapter.notifyDataSetChanged();
 	}
 	
-	public void addListToAdapter()
+	public void setListAdapter()
 	{
 		if (mEventDetail != null && listAdapter != null)
 		{
@@ -388,14 +424,18 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 			Collections.sort(storyPhotoList);
 			
 			listAdapter.replaceData(storyPhotoList);
-			listViewLayout.setAdapter(listAdapter);
-			
-			enableImageButton((ImageButton) view.findViewById(R.id.label_button_grid_view));
-			disableImageButton((ImageButton) view.findViewById(R.id.label_button_list_view));
 		}
 	}
 	
-	public void addGridToTableLayout()
+	/*public void addListToAdapter()
+	{
+		listViewLayout.setAdapter(listAdapter);
+		
+		enableImageButton((ImageButton) view.findViewById(R.id.label_button_grid_view));
+		disableImageButton((ImageButton) view.findViewById(R.id.label_button_list_view));
+	}*/
+	
+	public void setGridAdapter()
 	{
 		GridPictures gridPictures = new GridPictures();
 		
@@ -403,24 +443,30 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		
 		int imageCount = mEventDetail.getImages().size();
 		
-		PhotoItem[] imageArray = (PhotoItem[])mEventDetail.getImages().toArray(new PhotoItem[imageCount]);
+		List<EventItem> storyPhotoList = new ArrayList<EventItem>();
+		
+		storyPhotoList.addAll(mEventDetail.getImages());
+		
+		Collections.sort(storyPhotoList);
+		
+		PhotoItem[] imageArray = (PhotoItem[])storyPhotoList.toArray(new PhotoItem[imageCount]);
 		
 		for (int i = 0; i < imageCount; i++)
 		{
 			if (i%3 == 0)
 			{
 				gridPictures = new GridPictures();
-				gridPictures.image1 = GlobalVariables.getInstance().getAWSUrlThumbnail(imageArray[i]);
+				gridPictures.image1 = imageArray[i];
 			}
 			
 			if (i%3 == 1)
 			{
-				gridPictures.image2 = GlobalVariables.getInstance().getAWSUrlThumbnail(imageArray[i]);
+				gridPictures.image2 = imageArray[i];
 			}
 			
 			if (i%3 == 2)
 			{
-				gridPictures.image3 = GlobalVariables.getInstance().getAWSUrlThumbnail(imageArray[i]);
+				gridPictures.image3 = imageArray[i];
 			}
 			
 			if (i%3 == 2 || imageCount - 1 == i)
@@ -430,16 +476,101 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		}
 		
 		gridAdapter.replaceData(gridList);
+	}
+	
+	public void addGridToTableLayout()
+	{
 		listViewLayout.setAdapter(gridAdapter);
 		
-		enableImageButton((ImageButton) view.findViewById(R.id.label_button_list_view));
-		disableImageButton((ImageButton) view.findViewById(R.id.label_button_grid_view));
+		//enableImageButton((ImageButton) view.findViewById(R.id.label_button_list_view));
+		//disableImageButton((ImageButton) view.findViewById(R.id.label_button_grid_view));
 	}
 
 	public void storyEvent(UpdatedStoryEvent evt) {
 		
 		mEventDetail.getStories().add(evt.getStory());
-		addListToAdapter();
+		//addListToAdapter();
 		
 	}
+
+	public void photoEvent(UpdatedPhotoEvent e) {
+		
+		setListAdapter();
+		setGridAdapter();
+		
+		gridAdapter.notifyDataSetChanged();
+		
+		listAdapter.notifyDataSetChanged();
+	}
+	
+	
+    public boolean onTouchEvent(MotionEvent event) {
+        // or implement in activity or component. When your not assigning to a child component.
+        return myGestureListener.getDetector().onTouchEvent(event); 
+    }
+	
+	class MyGestureListener extends SimpleOnGestureListener implements OnTouchListener
+    {
+        Context context;
+        GestureDetector gDetector;
+
+        public MyGestureListener()
+        {
+            super();
+        }
+
+        public MyGestureListener(Context context) {
+            this(context, null);
+        }
+
+        public MyGestureListener(Context context, GestureDetector gDetector) {
+
+            if(gDetector == null)
+                gDetector = new GestureDetector(context, this);
+
+            this.context = context;
+            this.gDetector = gDetector;
+        }
+
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+        	if (velocityY > 1000)
+        	{
+		    	if (gridAdapter.getCount() > 0)
+		    	{
+		    		listViewLayout.smoothScrollToPosition(0);
+		    		return true;
+		    	}
+        	}
+        	
+            return super.onFling(e1, e2, velocityX, velocityY);
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+
+            return super.onSingleTapConfirmed(e);
+        }
+
+
+
+
+
+        public boolean onTouch(View v, MotionEvent event) {
+
+            // Within the MyGestureListener class you can now manage the event.getAction() codes.
+
+            // Note that we are now calling the gesture Detectors onTouchEvent. And given we've set this class as the GestureDetectors listener 
+            // the onFling, onSingleTap etc methods will be executed.
+            return gDetector.onTouchEvent(event);
+        }
+
+
+        public GestureDetector getDetector()
+        {
+            return gDetector;
+        }       
+    }
 }

@@ -18,7 +18,9 @@
     <string name="title_crop_image_activity">CropImage</string>
     <string name="title_comment_activity">CommentActivity</string>
     <string name="title_nearby_events_activity">NearbyEventsActivity</string>
+    <string name="title_search_activity">SearchActivity</string>
     <string name="app_id">283790891721595</string>
     <string name="album_name">Motlee Pictures</string>
+    <string name="map_key">0oE1cuDjQWjAeMp6PSnXQ2-zp6QB_nyPeeQEEQA</string>
     
 </resources>

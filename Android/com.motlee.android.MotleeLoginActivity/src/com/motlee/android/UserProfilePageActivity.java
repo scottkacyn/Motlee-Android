@@ -3,6 +3,7 @@ package com.motlee.android;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 
 import com.facebook.GraphObject;
 import com.facebook.GraphUser;
@@ -19,12 +20,17 @@ import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentA
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
 import com.motlee.android.fragment.ProgressBarFragment;
 import com.motlee.android.fragment.UserProfilePageFragment;
+import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.MenuFunctions;
+import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.UserInfoList;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
+import com.motlee.android.object.event.UserInfoEvent;
+import com.motlee.android.object.event.UserInfoListener;
+import com.motlee.android.object.event.UserWithEventsPhotosEvent;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -42,7 +48,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 
-public class UserProfilePageActivity extends BaseMotleeActivity implements UpdatedEventDetailListener, OnFragmentAttachedListener {
+public class UserProfilePageActivity extends BaseMotleeActivity implements UserInfoListener, OnFragmentAttachedListener {
     
 	private int mUserID;
 	private int facebookID;
@@ -78,9 +84,13 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements Updat
         progressDialog = ProgressDialog.show(UserProfilePageActivity.this, "", "Loading");
     }
 	
-	private void setUpProfilePageFragment(GraphObject userDetails, UserProfilePageFragment userProfileFragment) 
+	private void setUpProfilePageFragment(GraphObject userDetails, UserProfilePageFragment userProfileFragment, ArrayList<PhotoItem> photos, ArrayList<Integer> eventIds) 
 	{
-		userProfileFragment.setBirthdayLocationObject(userDetails);
+		userProfileFragment.setLocationObject(userDetails);
+		
+		userProfileFragment.setPhotos(photos);
+		
+		userProfileFragment.setEventIds(eventIds);
 		
 		userProfileFragment.setHeaderView(findViewById(R.id.header));
 		
@@ -89,7 +99,40 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements Updat
 	
 	public void myEventOccurred(UpdatedEventDetailEvent evt) {
 
-		EventServiceBuffer.removeEventDetailListener(this);
+
+	}
+
+	public void OnFragmentAttached() {
+		
+        EventServiceBuffer.setUserInfoListener(this);
+        
+        EventServiceBuffer.getUserInfoFromService(mUserID, true);
+		
+	}
+
+	public void showMoreDetail(View view)
+	{
+		//Do nothing
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+		// Do Nothing. Bug in Android. There is a work around if we eventually need this.
+	}
+
+	public void raised(UserInfoEvent e) {
+		
+		// Do Nothing
+		
+	}
+
+	public void userWithEventsPhotos(UserWithEventsPhotosEvent e) {
+		
+		final ArrayList<PhotoItem> photos = e.getPhotos();
+		final ArrayList<Integer> eventIds = e.getEventIds();
+		
+		EventServiceBuffer.removeUserInfoListener();
 		
 		Bundle params = new Bundle();
 		
@@ -117,7 +160,7 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements Updat
 		        {
 		        	userProfileFragment = new UserProfilePageFragment();
 		    
-			        setUpProfilePageFragment(userDetails, userProfileFragment);
+			        setUpProfilePageFragment(userDetails, userProfileFragment, photos, eventIds);
 		        	
 			        ft.add(R.id.fragment_content, userProfileFragment);
 			        
@@ -125,7 +168,7 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements Updat
 		        }
 		        else
 		        {
-			        setUpProfilePageFragment(userDetails, userProfileFragment);
+			        setUpProfilePageFragment(userDetails, userProfileFragment, photos, eventIds);
 		        }
 		        
 		        progressDialog.dismiss();
@@ -136,24 +179,17 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements Updat
 		request.setParameters(params);
 		
 		Request.executeBatchAsync(request);
-	}
-
-	public void OnFragmentAttached() {
 		
-        EventServiceBuffer.setEventDetailListener(this);
-        
-        EventServiceBuffer.getEventsFromService(EventServiceBuffer.MY_EVENTS);
-		
-	}
-
-	public void showMoreDetail(View view)
-	{
-		//Do nothing
 	}
 	
-	@Override
-	public void onSaveInstanceState(Bundle outState)
+	public void showEventPeopleDetail(View view)
 	{
-		// Do Nothing. Bug in Android. There is a work around if we eventually need this.
+		EventDetail eDetail = (EventDetail) view.getTag();
+    	
+    	Intent eventDetail = new Intent(UserProfilePageActivity.this, EventDetailActivity.class);
+    	
+    	eventDetail.putExtra("EventID", eDetail.getEventID());
+    	
+    	startActivity(eventDetail);
 	}
 }

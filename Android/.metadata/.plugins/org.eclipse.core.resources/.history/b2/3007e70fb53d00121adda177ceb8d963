@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.motlee.android.layouts.HorizontalRatioLinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/event_list_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+	
+    <ImageButton 
+        android:layout_width="0dp"
+        android:layout_weight=".2"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:id="@+id/event_detail_photos"
+        android:src="@drawable/event_detail_photos" />
+    
+    <ImageButton 
+        android:layout_width="0dp"
+        android:layout_weight=".2"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:id="@+id/event_detail_photos"
+        android:src="@drawable/event_detail_comment" />
+    
+    <ImageButton 
+        android:layout_width="0dp"
+        android:layout_weight=".2"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:id="@+id/event_detail_photos"
+        android:src="@drawable/event_detail_friends" />
+    
+    <ImageButton 
+        android:layout_width="0dp"
+        android:layout_weight=".2"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:id="@+id/event_detail_photos"
+        android:src="@drawable/event_detail_map" />
+    
+    <ImageButton 
+        android:layout_width="0dp"
+        android:layout_weight=".2"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:id="@+id/event_detail_photos"
+        android:src="@drawable/event_detail_time" />
+    
+</com.motlee.android.layouts.HorizontalRatioLinearLayout >

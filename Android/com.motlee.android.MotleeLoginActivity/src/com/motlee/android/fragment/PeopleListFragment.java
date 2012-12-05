@@ -3,13 +3,16 @@ package com.motlee.android.fragment;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import com.facebook.android.Facebook;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.motlee.android.R;
 import com.motlee.android.adapter.ImageAdapter;
+import com.motlee.android.adapter.PeopleListAdapter;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.UserInfo;
@@ -28,13 +31,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
 
-public class PeopleListFragment extends BaseMotleeFragment {
+public class PeopleListFragment extends BaseDetailFragment {
 	
 	private String tag = "PeopleListFragment";
 	
@@ -47,19 +53,23 @@ public class PeopleListFragment extends BaseMotleeFragment {
 	
 	private String facebookPrefix = "https://graph.facebook.com/";
 	
-	private StretchedBackgroundTableLayout eventDetailPeopleList;
-	private StretchedBackgroundTableLayout eventDetailPeopleLabel;
+	private ListView eventDetailPeopleList;
 	
 	private View view;
 	
 	private LayoutInflater inflater;
+	
+	private PeopleListAdapter mAdapter;
 	
 	private ArrayList<UserInfo> mUsers = new ArrayList<UserInfo>();
 	
 	private Facebook facebook = new Facebook(GlobalVariables.FB_APP_ID);
     private ImageLoader imageDownloader;
     private DisplayImageOptions mOptions;
+    private EventDetail mEventDetail;
 
+    private LinearLayout eventHeader;
+    
 	private String pageLabel;
     
 	/*@Override
@@ -80,122 +90,52 @@ public class PeopleListFragment extends BaseMotleeFragment {
 		Log.w(tag, "onCreateView");
 		
 		this.inflater = inflater;
-		view = (View) this.inflater.inflate(R.layout.activity_event_detail_people_list, null);
+		view = (View) this.inflater.inflate(R.layout.event_detail_people_list, null);
 
-		eventDetailPeopleList = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_detail_people_list);
-		eventDetailPeopleList.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
-		
-		eventDetailPeopleLabel = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_detail_people_title);
-		eventDetailPeopleLabel.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		eventDetailPeopleList = (ListView) view.findViewById(R.id.event_detail_people_list);
+		//eventDetailPeopleList.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
 		
 		setPageHeader(pageTitle);
-		showRightHeaderButton(JOIN);
+		if (mEventDetail != null)
+		{
+			showRightHeaderButton(mEventDetail);
+		}
 		showLeftHeaderButton();
-		
-		ImageScaleType ist = ImageScaleType.IN_SAMPLE_POWER_OF_2;
-		
-		mOptions = new DisplayImageOptions.Builder()
-		.showStubImage(R.drawable.stubimage)
-		.resetViewBeforeLoading()
-		.cacheInMemory()
-		.imageScaleType(ist)
-		.cacheOnDisc()
-		.displayer(new SimpleBitmapDisplayer())
-		.build();
-		
-		imageDownloader = ImageLoader.getInstance();
     	
-    	imageDownloader.init(ImageLoaderConfiguration.createDefault(getActivity()));
+		setUpPageHeader();
 		
-    	setUpPeopleLabel();
-    	
 		setUpPeopleList();
 		
 		return view;
 	}
 	
-	private void setUpPeopleLabel() {
-		
-		View label = this.inflater.inflate(R.layout.event_detail_info_label, null);
-		
-		TextView labelTitle = (TextView) label.findViewById(R.id.label_text);
-		labelTitle.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-		labelTitle.setText(this.pageLabel);
-		
-		TableRow tr = new TableRow(getActivity());
-		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		tr.setLayoutParams(lp);
-		tr.addView(label);
-		this.eventDetailPeopleLabel.addView(tr);
-	}
-
-	public void setPageTitle(String pageTitle)
+	private void setUpPageHeader() 
 	{
-		this.pageTitle = pageTitle;
-	}
-	
-	public void setPageLabel(String pageLabel)
-	{
-		this.pageLabel = pageLabel;
+		eventHeader = (LinearLayout) this.inflater.inflate(R.layout.event_detail_header, null);
+		eventHeader.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getDrawable());
+		
+		((ImageButton) eventHeader.findViewById(R.id.event_detail_friends)).setEnabled(false);
+		
+		eventDetailPeopleList.addHeaderView(eventHeader);
 	}
 	
 	private void setUpPeopleList() 
 	{
-
 		if (mUsers.size() > 0)
 		{
-			for (int i = 0; i < mUsers.size(); i++)
-			{
-				UserInfo user = mUsers.get(i);
-				
-				int facebookID = user.uid;
-				
-				String picture = facebookPrefix + Integer.toString(facebookID) + "/picture";
-				
-				String name = user.name;
-				
-				if (i == mUsers.size() - 1)
-				{
-					setLabelButton(name, picture, user, true);
-				}
-				else
-				{
-					setLabelButton(name, picture, user, false);
-				}
-			}
+			Collections.sort(mUsers);
 		}
-		else
-		{
-			eventDetailPeopleList.setVisibility(View.GONE);
-		}
+		
+		mAdapter = new PeopleListAdapter(getActivity(), R.layout.search_people_item, mUsers);
+		
+		eventDetailPeopleList.setAdapter(mAdapter);
+
 	}
 
-	private void setLabelButton(String labelText, String imageURL, UserInfo user, boolean isLast) {
-		
-		View labelButton = this.inflater.inflate(R.layout.event_detail_info_button, null);
-		
-		View imageButton = labelButton.findViewById(R.id.label_button);
-		imageButton.setTag(user);
-		
-		ImageView imageView = (ImageView) labelButton.findViewById(R.id.label_button_icon);
-		imageView.setPadding(0, 3, 0, 3);
-		imageDownloader.displayImage(imageURL, imageView, mOptions);
-		
-		TextView textView = (TextView) labelButton.findViewById(R.id.label_button_text);
-		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-		textView.setText(labelText);
-		
-		if (isLast)
-		{
-			imageView = (ImageView) labelButton.findViewById(R.id.divider);
-			imageView.setVisibility(View.GONE);
-		}
-		
-		TableRow tr = new TableRow(getActivity());
-		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		tr.setLayoutParams(lp);
-		tr.addView(labelButton);
-		eventDetailPeopleList.addView(tr);
+	public void setEventDetail(EventDetail eventDetail)
+	{
+		mEventDetail = eventDetail;
+		this.pageTitle = mEventDetail.getEventName();
 	}
 	
 	public void setUserList(ArrayList<UserInfo> users)

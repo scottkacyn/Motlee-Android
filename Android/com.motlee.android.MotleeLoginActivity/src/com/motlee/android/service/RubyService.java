@@ -64,12 +64,13 @@ public class RubyService extends IntentService {
 	public static final int EVENT_SINGLE = 90000;
 	public static final int LIKE = 100000;
 	public static final int ADD_COMMENT = 110000;
-	public static final int ADD_LOCATION = 120000;
+	public static final int FRIENDS = 120000;
     
     public static final String EXTRA_HTTP_VERB       = "com.motlee.android.EXTRA_HTTP_VERB";
     public static final String EXTRA_PARAMS          = "com.motlee.android.EXTRA_PARAMS";
     public static final String EXTRA_RESULT_RECEIVER = "com.motlee.android.EXTRA_RESULT_RECEIVER";
     public static final String EXTRA_DATA_CONTENT	 = "com.motlee.android.EXTRA_DATA_CONTENT";
+    public static final String EXTRA_PHOTO_ITEM 	 = "com.motlee.android.EXTRA_PHOTO_ITEM";
     
     public static final String REST_RESULT = "com.motlee.android.REST_RESULT";
     
@@ -87,7 +88,7 @@ public class RubyService extends IntentService {
     	Log.d(TAG, "Running on Thread: " + Thread.currentThread().getName());
     	
         Uri    action = intent.getData();
-        Bundle extras = intent.getExtras();
+        final Bundle extras = intent.getExtras();
         
         if (extras == null || action == null || !extras.containsKey(EXTRA_RESULT_RECEIVER)) {
             // Extras contain our ResultReceiver and data is our REST action.  
@@ -214,6 +215,10 @@ public class RubyService extends IntentService {
 	                        if (responseEntity != null) {
 	                            Bundle resultData = new Bundle();
 	                            resultData.putString(REST_RESULT, EntityUtils.toString(responseEntity));
+	                            if (dataContent == PHOTO)
+	                            {
+	                            	resultData.putParcelable(EXTRA_PHOTO_ITEM, extras.getParcelable(EXTRA_PHOTO_ITEM));
+	                            }
 	                            receiver.send(statusCode, resultData);
 	                        }
 	                        else {

@@ -50,7 +50,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEventDetailListener, UpdatedPhotoListener, UpdatedLocationListener {
+public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEventDetailListener, UpdatedPhotoListener {
 	
 	public static String MAIN_FRAGMENT = "MainFragment";
 	public static String SEARCH_PEOPLE = "SearchPeople";
@@ -70,6 +70,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	private String mPhotoUrl;
 	private String mPhotoDesc;
 	private LocationInfo mLocationInfo;
+	private PhotoItem mPhoto;
 	
 	private LocationInfo selectLocation;
 	private SearchPlacesFragment searchPlacesFragment;
@@ -125,6 +126,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
         setContentView(R.layout.main);
  
         mPhotoUrl = getIntent().getStringExtra("Image");
+        mPhoto = getIntent().getParcelableExtra("PhotoItem");
         mPhotoDesc = getIntent().getStringExtra("Description");
         mLocationInfo = getIntent().getParcelableExtra("Location");
         
@@ -344,13 +346,15 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 				for (Integer eventID : evt.getEventIds())
 				{
 					mEventID = eventID;
-					if (mPhotoUrl != null)
+					
+					// Deprecate starting event from photo
+					/*if (mPhotoUrl != null)
 					{
 						EventServiceBuffer.setPhotoListener(this);
 						
 						EventServiceBuffer.sendPhotoToDatabase(eventID, mPhotoUrl, mLocationInfo, mPhotoDesc);
 					}
-					else
+					else*/
 					{
 						EventServiceBuffer.sendAttendeesForEvent(eventID, mEventAttendees);
 					}
@@ -376,10 +380,10 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     
 	public void photoEvent(UpdatedPhotoEvent e) {
 		
-		for (PhotoItem item : e.getPhotos())
+		/*for (PhotoItem item : e.getPhotos())
 		{
 			mCreatedEvent.getImages().add(item);
-		}
+		}*/
 		EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees);
 	}
 	
@@ -457,15 +461,5 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 		mDateTimeDialog.setContentView(mDateTimeDialogView);
 		// Display the dialog
 		mDateTimeDialog.show();
-	}
-
-	public void locationUpdated(UpdatedLocationEvent evt) {
-		
-		EventServiceBuffer.removeLocationListener(this);
-		
-		mCreatedEvent.setLocationInfo(evt.getLocationInfo());
-		
-		EventServiceBuffer.sendNewEventToDatabase(mCreatedEvent);
-		
 	}
 }

@@ -7,17 +7,17 @@ import com.motlee.android.object.PhotoItem;
 
 public class UpdatedPhotoEvent extends EventObject {
 	
-	Set<PhotoItem> photos;
+	PhotoItem photo;
 	
-	public UpdatedPhotoEvent(Object source, Set<PhotoItem> set) {
+	public UpdatedPhotoEvent(Object source, PhotoItem set) {
 		super(source);
 		
-		photos = set;
+		photo = set;
 	}
 
-	public Set<PhotoItem> getPhotos()
+	public PhotoItem getPhoto()
 	{
-		return photos;
+		return photo;
 	}
 
 }

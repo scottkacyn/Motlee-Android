@@ -1,6 +1,8 @@
 package com.motlee.android.object;
 
 import com.motlee.android.EventItemDetailActivity;
+import com.motlee.android.SearchActivity;
+import com.motlee.android.UserProfilePageActivity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -29,5 +31,17 @@ public class GlobalActivityFunctions {
 		Intent showStoryIntent = new Intent(activity, EventItemDetailActivity.class);
 		showStoryIntent.putExtra("EventItem", story);
 		activity.startActivity(showStoryIntent);
+	}
+	
+	public static void showProfileDetail(View view, Activity activity)
+	{
+    	UserInfo user = (UserInfo) view.getTag();
+    	
+    	Intent userProfile = new Intent(activity, UserProfilePageActivity.class);
+    	
+    	userProfile.putExtra("UserID", user.id);
+    	userProfile.putExtra("UID", user.uid);
+    	
+    	activity.startActivity(userProfile);
 	}
 }

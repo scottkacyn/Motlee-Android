@@ -10,6 +10,7 @@ import com.motlee.android.enums.EventItemType;
 import com.motlee.android.layouts.RatioBackgroundRelativeLayout;
 import com.motlee.android.layouts.StretchedBackgroundRelativeLayout;
 import com.motlee.android.object.DateStringFormatter;
+import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.GridPictures;
@@ -27,6 +28,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -134,6 +136,12 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
                         holder.image1 = (ImageButton) convertView.findViewById(R.id.grid_image_1);
                         holder.image2 = (ImageButton) convertView.findViewById(R.id.grid_image_2);
                         holder.image3 = (ImageButton) convertView.findViewById(R.id.grid_image_3);
+                        holder.grid_spinner_1 = (ProgressBar) convertView.findViewById(R.id.grid_spinner_1);
+                        holder.grid_spinner_2 = (ProgressBar) convertView.findViewById(R.id.grid_spinner_2);
+                        holder.grid_spinner_3 = (ProgressBar) convertView.findViewById(R.id.grid_spinner_3);
+                        holder.grid_upload_text_1 = (TextView) convertView.findViewById(R.id.grid_upload_text_1);
+                        holder.grid_upload_text_2 = (TextView) convertView.findViewById(R.id.grid_upload_text_2);
+                        holder.grid_upload_text_3 = (TextView) convertView.findViewById(R.id.grid_upload_text_3);
                         convertView.setTag(holder);
             			
             } else {
@@ -154,44 +162,113 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
             
     	GridPictures item = this.data.get(position);
     	
-    	if (!item.image1.equals(GridPictures.NO_PICTURE))
+    	if (!(item.image1 == GridPictures.NO_PICTURE))
     	{
-    		GlobalVariables.getInstance().downloadImage(holder.image1, item.image1);
+	    	if (item.image1.id == -1)
+	    	{
+				holder.image1.setImageDrawable(DrawableCache.getDrawable(R.drawable.watermark, GlobalVariables.DISPLAY_WIDTH / 3).getDrawable());
+				holder.grid_spinner_1.setVisibility(View.VISIBLE);
+				holder.grid_upload_text_1.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+				holder.grid_upload_text_1.setVisibility(View.VISIBLE);
+				holder.image1.setClickable(false);
+	    	}
+	    	else
+	    	{
+	    		GlobalVariables.getInstance().downloadImage(holder.image1, GlobalVariables.getInstance().getAWSUrlThumbnail(item.image1));
+		    	
+		    	holder.image1.getLayoutParams().height = (GlobalVariables.DISPLAY_WIDTH / 3);
+		    	
+		    	holder.image1.setTag(item.image1);
+		    	holder.image1.setClickable(true);
+		    	
+				holder.grid_spinner_1.setVisibility(View.GONE);
+				holder.grid_upload_text_1.setVisibility(View.GONE);
+	    	}
     	}
     	else
-    	{
+    	{		    		
     		holder.image1.setImageResource(R.drawable.transparent_grid_view);
+    	
+	    	holder.image1.getLayoutParams().height = (GlobalVariables.DISPLAY_WIDTH / 3);
+	    	
+	    	holder.image1.setClickable(false);
     	}
     	
-    	holder.image1.getLayoutParams().height = (GlobalVariables.DISPLAY_WIDTH / 3);
-    	
-    	if (!item.image2.equals(GridPictures.NO_PICTURE))
+    	if (!(item.image2 == GridPictures.NO_PICTURE))
     	{
-    		GlobalVariables.getInstance().downloadImage(holder.image2, item.image2);
+	    	if (item.image2.id == -1)
+	    	{
+				holder.image2.setImageDrawable(DrawableCache.getDrawable(R.drawable.watermark, GlobalVariables.DISPLAY_WIDTH / 3).getDrawable());
+				holder.grid_spinner_2.setVisibility(View.VISIBLE);
+				holder.grid_upload_text_2.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+				holder.grid_upload_text_2.setVisibility(View.VISIBLE);
+				holder.image2.setClickable(false);
+	    	}
+	    	else
+	    	{
+	    		GlobalVariables.getInstance().downloadImage(holder.image2, GlobalVariables.getInstance().getAWSUrlThumbnail(item.image2));
+		    	
+		    	holder.image2.getLayoutParams().height = (GlobalVariables.DISPLAY_WIDTH / 3);
+		    	
+		    	holder.image2.setTag(item.image2);
+		    	holder.image2.setClickable(true);
+		    	
+				holder.grid_spinner_2.setVisibility(View.GONE);
+				holder.grid_upload_text_2.setVisibility(View.GONE);
+	    	}
     	}
     	else
-    	{
+    	{		    		
     		holder.image2.setImageResource(R.drawable.transparent_grid_view);
+    	
+	    	holder.image2.getLayoutParams().height = (GlobalVariables.DISPLAY_WIDTH / 3);
+	    	
+	    	holder.image2.setClickable(false);
     	}
     	
-    	holder.image2.getLayoutParams().height = (GlobalVariables.DISPLAY_WIDTH / 3);
-    	
-    	if (!item.image3.equals(GridPictures.NO_PICTURE))
+    	if (!(item.image3 == GridPictures.NO_PICTURE))
     	{
-    		GlobalVariables.getInstance().downloadImage(holder.image3, item.image3);
+	    	if (item.image3.id == -1)
+	    	{
+				holder.image3.setImageDrawable(DrawableCache.getDrawable(R.drawable.watermark, GlobalVariables.DISPLAY_WIDTH / 3).getDrawable());
+				holder.grid_spinner_3.setVisibility(View.VISIBLE);
+				holder.grid_upload_text_3.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+				holder.grid_upload_text_3.setVisibility(View.VISIBLE);
+				holder.image3.setClickable(false);
+	    	}
+	    	else
+	    	{
+	    		GlobalVariables.getInstance().downloadImage(holder.image3, GlobalVariables.getInstance().getAWSUrlThumbnail(item.image3));
+		    	
+		    	holder.image3.getLayoutParams().height = (GlobalVariables.DISPLAY_WIDTH / 3);
+		    	
+		    	holder.image3.setTag(item.image3);
+		    	holder.image3.setClickable(true);
+		    	
+				holder.grid_spinner_3.setVisibility(View.GONE);
+				holder.grid_upload_text_3.setVisibility(View.GONE);
+	    	}
     	}
     	else
-    	{
+    	{		    		
     		holder.image3.setImageResource(R.drawable.transparent_grid_view);
-    	}
     	
-    	holder.image3.getLayoutParams().height = (GlobalVariables.DISPLAY_WIDTH / 3);
+	    	holder.image3.getLayoutParams().height = (GlobalVariables.DISPLAY_WIDTH / 3);
+	    	
+	    	holder.image3.setClickable(false);
+    	}
     }
     
     private static class ViewHolder {
         public ImageButton image1;
         public ImageButton image2;
         public ImageButton image3;
+        public ProgressBar grid_spinner_1;
+        public ProgressBar grid_spinner_2;
+        public ProgressBar grid_spinner_3;
+        public TextView grid_upload_text_1;
+        public TextView grid_upload_text_2;
+        public TextView grid_upload_text_3;
     }
 
 }

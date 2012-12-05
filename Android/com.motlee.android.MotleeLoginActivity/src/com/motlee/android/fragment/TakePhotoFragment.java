@@ -155,44 +155,24 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 			else
 			{
 
-				EventServiceBuffer.setPhotoListener(new UpdatedPhotoListener(){
-
-					public void photoEvent(UpdatedPhotoEvent e) {
-						
-						
-						
-						PhotoItem photo = e.getPhotos().iterator().next();
-						
-						Intent eventListIntent = new Intent(getActivity(), EventListActivity.class);
-						eventListIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-						getActivity().startActivity(eventListIntent);
-						
-						Intent eventDetailIntent = new Intent(getActivity(), EventDetailActivity.class);
-						eventDetailIntent.putExtra("EventID", photo.event_id);
-						getActivity().startActivity(eventDetailIntent);
-						
-						Intent photoDetailIntent = new Intent(getActivity(), EventItemDetailActivity.class);
-						photoDetailIntent.putExtra("EventItem", photo);
-						getActivity().startActivity(photoDetailIntent);
-						
-						progressDialog.dismiss();
-						
-						getActivity().finish();
-					}
-					
-				});
+				PhotoItem photo = new PhotoItem(mEventID, EventItemType.PICTURE, GlobalVariables.getInstance().getUserId(), 
+						new Date(), photoDescriptionEdit.getText().toString(), "");
 				
-				handler.post(new Runnable(){
-
-					public void run() {
-						
-						progressDialog = ProgressDialog.show(getActivity(), "", "Loading...");
-						
-					}
-					
-				});
+				GlobalEventList.eventDetailMap.get(mEventID).getImages().add(photo);
 				
-				EventServiceBuffer.sendPhotoToDatabase(mEventID, mCurrentPhotoPath, mLocation, photoDescriptionEdit.getText().toString());
+				EventServiceBuffer.sendPhotoToDatabase(mEventID, mCurrentPhotoPath, mLocation, photoDescriptionEdit.getText().toString(), photo);
+				
+				Intent eventListIntent = new Intent(getActivity(), EventListActivity.class);
+				eventListIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+				getActivity().startActivity(eventListIntent);
+				
+				Intent eventDetailIntent = new Intent(getActivity(), EventDetailActivity.class);
+				eventDetailIntent.putExtra("EventID", photo.event_id);
+				eventDetailIntent.putExtra("NewPhoto", photo);
+				getActivity().startActivity(eventDetailIntent);
+				
+				getActivity().finish();
+				
 			}
 			
 		}

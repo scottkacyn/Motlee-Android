@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="@android:color/transparent"
+    android:id="@+id/event_detail_main" >    
+
+    <include layout="@layout/event_detail_header"
+        android:id="@+id/event_detail_header" />
+    
+    <ListView
+        android:id="@+id/event_detail_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusableInTouchMode="true"
+        android:focusable="true"
+        android:background="@android:color/transparent" />
+    
+</RelativeLayout>

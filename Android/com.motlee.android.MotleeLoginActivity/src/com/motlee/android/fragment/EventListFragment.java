@@ -83,16 +83,16 @@ public class EventListFragment extends ListFragmentWithHeader {
 		
 		mHeaderView.findViewById(R.id.header_right_layout_button).setVisibility(View.GONE);
 		
-		mHeaderView.findViewById(R.id.header_create_event_button).setVisibility(View.VISIBLE);
+		//mHeaderView.findViewById(R.id.header_create_event_button).setVisibility(View.VISIBLE);
 		
 		mHeaderView.findViewById(R.id.header_left_button).setVisibility(View.GONE);
 		
-		mHeaderView.findViewById(R.id.header_menu_button).setVisibility(View.VISIBLE);
+		//mHeaderView.findViewById(R.id.header_menu_button).setVisibility(View.VISIBLE);
 		
 		ListView listView = (ListView) view.findViewById(android.R.id.list);
 		
 		setRefreshListener(listView);
-		listView.addFooterView(inflater.inflate(R.layout.event_list_load_more, null));
+		//listView.addFooterView(inflater.inflate(R.layout.event_list_load_more, null));
 		
 		return view;
 	}

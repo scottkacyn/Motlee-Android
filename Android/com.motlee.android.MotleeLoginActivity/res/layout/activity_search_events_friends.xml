@@ -1,7 +1,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res/com.motlee.android">
     
     <com.motlee.android.layouts.HorizontalRatioLinearLayout
         android:id="@+id/search_text_box_background"
@@ -48,11 +48,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone">
-		    <com.motlee.android.view.PinnedHeaderListView
+		    <com.emilsjolander.components.StickyListHeaders.StickyListHeadersListView
 		        android:id="@android:id/list"
 		        android:layout_height="fill_parent"
 		        android:layout_width="fill_parent"
-		        android:fastScrollEnabled="true"
+		        android:clipToPadding="false"
 		        android:scrollbars="none" />
 		    <TextView android:id="@android:id/empty"
 		        android:layout_width="fill_parent"

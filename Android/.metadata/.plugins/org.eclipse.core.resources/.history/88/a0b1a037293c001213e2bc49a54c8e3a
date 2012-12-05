@@ -1,0 +1,119 @@
+package com.motlee.android;
+
+import java.util.Iterator;
+
+import com.motlee.android.fragment.EventDetailFragment;
+import com.motlee.android.fragment.EventItemDetailFragment;
+import com.motlee.android.object.EventItem;
+import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.Like;
+import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.StoryItem;
+import com.motlee.android.object.event.UpdatedLikeEvent;
+import com.motlee.android.object.event.UpdatedLikeListener;
+
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.view.View;
+import android.widget.ImageButton;
+
+public class EventItemDetailActivity extends BaseMotleeActivity implements UpdatedLikeListener {
+	
+	private EventItem mEventItem;
+	private EventItemDetailFragment fragment;
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+        
+        //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
+        
+        mEventItem = (EventItem) getIntent().getParcelableExtra("EventItem");
+        
+        if (mEventItem instanceof PhotoItem)
+        {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            
+            fragment = new EventItemDetailFragment();
+            fragment.setHeaderView(findViewById(R.id.header));
+            
+            fragment.setDetailImage((PhotoItem)mEventItem);
+            
+            ft.add(R.id.fragment_content, fragment)
+            .commit();
+        }
+        
+        if (mEventItem instanceof StoryItem)
+        {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            
+            fragment = new EventItemDetailFragment();
+            fragment.setHeaderView(findViewById(R.id.header));
+            
+            fragment.setDetailStory((StoryItem)mEventItem);
+            
+            ft.add(R.id.fragment_content, fragment)
+            .commit();
+        }
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent)
+	{
+		if (requestCode == 0 && resultCode == RESULT_OK)
+		{
+			mEventItem = intent.getParcelableExtra("Comment");
+			fragment.refreshComments(mEventItem.comments.size());
+			fragment.refreshLikes(mEventItem.likes);
+		}
+	}
+	
+	public void onClickOpenComment(View view)
+	{
+		Intent openComment = new Intent(EventItemDetailActivity.this, CommentActivity.class);
+		openComment.putExtra(CommentActivity.COMMENT, mEventItem);
+		openComment.putExtra(CommentActivity.EVENT_ID, mEventItem.event_id);
+		
+		startActivityForResult(openComment, 0);
+	}
+    
+	public void onLikeClick(View view)
+	{
+
+		if (Boolean.parseBoolean(view.getTag().toString()))
+		{
+			for (Iterator<Like> it = mEventItem.likes.iterator(); it.hasNext(); )
+			{
+				Like like = it.next();
+				
+				if (like.user_id == GlobalVariables.getInstance().getUserId())
+				{
+					it.remove();
+				}
+			}
+			
+			fragment.unlike();
+		}
+		else
+		{
+			fragment.like();
+		}
+	}
+
+	public void likeSuccess(UpdatedLikeEvent likeEvent) {
+		
+		likeEvent.like.event_id = mEventItem.event_id;
+		
+		mEventItem.likes.add(likeEvent.like);
+		fragment.refreshLikes(mEventItem.likes);
+		fragment.setThumbButtonEnabled(true);
+	}
+}

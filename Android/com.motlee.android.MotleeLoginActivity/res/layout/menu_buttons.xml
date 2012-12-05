@@ -19,9 +19,22 @@
   <LinearLayout
       android:layout_width="0dp"
       android:layout_height="match_parent"
-      android:layout_weight="0.6"/>
+      android:layout_weight="0.6"
+      android:id="@+id/menu_middle_space" >
+      
+      <TextView
+          android:id="@+id/message_post_text"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_gravity="center_vertical"
+          android:gravity="center_vertical"
+          android:paddingLeft="15dp"
+          android:text="Post Message..." 
+          android:visibility="gone"/>
+      
+  </LinearLayout>
   
-  <!-- <com.motlee.android.view.HorizontalAspectImageButton
+  <com.motlee.android.view.HorizontalAspectImageButton
       android:id="@+id/plus_menu_button"
       android:layout_width="0dp"
       android:layout_weight="0.2"
@@ -30,5 +43,5 @@
       android:background="@android:color/transparent"
       android:scaleType="fitCenter"
       android:onClick="onClickOpenPlusMenu"
-      android:gravity="right" /> -->
+      android:gravity="right" />
 </LinearLayout>

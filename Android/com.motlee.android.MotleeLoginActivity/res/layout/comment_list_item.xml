@@ -29,6 +29,8 @@
 			        android:layout_height="wrap_content"
 			        android:gravity="left|center_vertical"
 			        android:paddingLeft="15dp"
+			        style="@style/CodeFont"
+			        android:textColor="@color/gray"
 			        android:background="@android:color/transparent" />
 			    
 			    <TextView
@@ -36,6 +38,16 @@
 			        android:layout_width="match_parent"
 			        android:layout_height="wrap_content"
 			        android:paddingLeft="15dp"
+			        style="@style/CodeFont"
+			        android:background="@android:color/transparent" />
+			    
+			    <TextView
+			        android:id="@+id/comment_time_text"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			        android:paddingLeft="15dp"
+			        style="@style/CodeFont.Tiny"
+			        android:textColor="@color/gray"
 			        android:background="@android:color/transparent" />
 			    
 		    </LinearLayout>

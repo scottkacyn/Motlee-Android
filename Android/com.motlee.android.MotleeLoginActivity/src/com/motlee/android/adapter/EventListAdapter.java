@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import com.motlee.android.R;
 import com.motlee.android.layouts.HorizontalRatioLinearLayout;
+import com.motlee.android.object.DateStringFormatter;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
@@ -141,7 +142,7 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
                         holder = (ViewHolder) convertView.getTag();
                 }
 
-                this.bindData(holder, position);
+                this.bindData(holder, position, convertView);
            
                 // bind the data to the view object
                 return convertView;
@@ -151,74 +152,91 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
          * Bind the provided data to the view.
          * This is the only method not required by base adapter.
          */
-        public void bindData(ViewHolder holder, int position) {
+        public void bindData(ViewHolder holder, int position, View convertView) {
                 
                 // pull out the object
                 EventDetail item = GlobalEventList.eventDetailMap.get(this.data.get(position));
 
+                String dateString = DateStringFormatter.getEventDateString(item.getStartTime(), item.getEndTime());
                 
-                if (holder.event_background.getBackground() == null)
+                if (dateString.equals(DateStringFormatter.UPCOMING))
                 {
-                	DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.event_list_detail_background, GlobalVariables.DISPLAY_WIDTH);
-                	holder.event_background.setBackgroundDrawable(drawable.getDrawable());
-                	//holder.event_background.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, drawable.getHeight()));
-                }
-                
-                if (holder.event_header_button.getBackground() == null)
-                {
-                	DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.event_list_detail_header_background, GlobalVariables.DISPLAY_WIDTH);
-                	holder.event_header_button.setBackgroundDrawable(drawable.getDrawable());
-                	holder.event_header_button.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, drawable.getHeight()));
-                }
-                
-                if (holder.event_footer_background.getBackground() == null)
-                {
-                	DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.event_list_detail_footer_background, GlobalVariables.DISPLAY_WIDTH);
-                	holder.event_footer_background.setBackgroundDrawable(drawable.getDrawable());
-                	//holder.event_footer_background.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, drawable.getHeight()));
-                }
-                
-                CharSequence charSequence = Integer.toString(item.getEventID());
-                holder.event_header_button.setContentDescription(charSequence);
-                
-                // set the value
-                holder.event_header_name.setText(item.getEventName());
-                holder.event_header_name.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-
-                holder.event_header_time.setText(item.getDateString());
-                holder.event_header_time.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-
-                holder.event_footer_owner.setText(item.getEventOwnerSummaryString());
-                holder.event_footer_owner.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-   
-                holder.event_footer_location.setText(item.getLocationInfo().name);
-                holder.event_footer_location.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-                
-                ArrayList<String> imageURLs = new ArrayList<String>();
-                for (PhotoItem photo : item.getImages())
-                {
-                	imageURLs.add(GlobalVariables.getInstance().getAWSUrlThumbnail(photo));
-                }
-                
-                holder.imageAdapter.setEventId(item.getEventID());
-                
-                if (GlobalEventList.myEventDetails.contains(item.getEventID()))
-                {
-                	holder.imageAdapter.setIsAttending(true);
+                	convertView.setVisibility(View.GONE);
                 }
                 else
                 {
-                	holder.imageAdapter.setIsAttending(false);
-                }
-                
-                if (holder.list_view.getAdapter() != null)
-                {
-                	holder.imageAdapter.setURLs(item.getImages());
-                }
-                else
-                {
-                	holder.imageAdapter.setURLs(item.getImages());
-                	holder.list_view.setAdapter(holder.imageAdapter);
+	                if (holder.event_background.getBackground() == null)
+	                {
+	                	DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.event_list_detail_background, GlobalVariables.DISPLAY_WIDTH);
+	                	holder.event_background.setBackgroundDrawable(drawable.getDrawable());
+	                	//holder.event_background.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, drawable.getHeight()));
+	                }
+	                
+	                if (holder.event_header_button.getBackground() == null)
+	                {
+	                	DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.event_list_detail_header_background, GlobalVariables.DISPLAY_WIDTH);
+	                	holder.event_header_button.setBackgroundDrawable(drawable.getDrawable());
+	                	holder.event_header_button.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, drawable.getHeight()));
+	                }
+	                
+	                if (holder.event_footer_background.getBackground() == null)
+	                {
+	                	DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.event_list_detail_footer_background, GlobalVariables.DISPLAY_WIDTH);
+	                	holder.event_footer_background.setBackgroundDrawable(drawable.getDrawable());
+	                	//holder.event_footer_background.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, drawable.getHeight()));
+	                }
+	                
+	                CharSequence charSequence = Integer.toString(item.getEventID());
+	                holder.event_header_button.setContentDescription(charSequence);
+	                
+	                // set the value
+	                holder.event_header_name.setText(item.getEventName());
+	                holder.event_header_name.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+	
+	                holder.event_header_time.setText(dateString);
+	                holder.event_header_time.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+	
+	                String attendeeText = "";
+	                if (item.getAttendeeCount() == 1)
+	                {
+	                	holder.event_footer_owner.setText("1 person going");
+	                }
+	                else
+	                {
+	                	holder.event_footer_owner.setText(item.getAttendeeCount() + " people going");
+	                }
+	                
+	                holder.event_footer_owner.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+	   
+	                holder.event_footer_location.setText(item.getLocationInfo().name);
+	                holder.event_footer_location.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+	                
+	                ArrayList<String> imageURLs = new ArrayList<String>();
+	                for (PhotoItem photo : item.getImages())
+	                {
+	                	imageURLs.add(GlobalVariables.getInstance().getAWSUrlThumbnail(photo));
+	                }
+	                
+	                holder.imageAdapter.setEventId(item.getEventID());
+	                
+	                if (GlobalEventList.myEventDetails.contains(item.getEventID()))
+	                {
+	                	holder.imageAdapter.setIsAttending(true);
+	                }
+	                else
+	                {
+	                	holder.imageAdapter.setIsAttending(false);
+	                }
+	                
+	                if (holder.list_view.getAdapter() != null)
+	                {
+	                	holder.imageAdapter.setURLs(item.getImages());
+	                }
+	                else
+	                {
+	                	holder.imageAdapter.setURLs(item.getImages());
+	                	holder.list_view.setAdapter(holder.imageAdapter);
+	                }
                 }
         }
         

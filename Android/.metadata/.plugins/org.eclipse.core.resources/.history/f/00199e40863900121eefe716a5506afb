@@ -1,0 +1,207 @@
+package com.motlee.android.adapter;
+
+import java.util.ArrayList;
+
+import android.content.Context;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.emilsjolander.components.StickyListHeaders.StickyListHeadersBaseAdapter;
+import com.motlee.android.R;
+import com.motlee.android.layouts.HorizontalRatioLinearLayout;
+import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.GlobalEventList;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.UserInfo;
+import com.motlee.android.object.UserInfoList;
+
+public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
+
+	private ArrayList<Integer> mListItems;
+	private Integer mSplitSection;
+	private LayoutInflater inflater;
+	
+	public SearchAllAdapter(Context context, LayoutInflater inflater, ArrayList<Integer> listItems, int splitSection) {
+		super(context);
+		
+		mListItems = listItems;
+		mSplitSection = splitSection;
+		
+		this.inflater = inflater;
+	}
+
+	public int getCount() {
+		return mListItems.size();
+	}
+
+	public Object getItem(int position) {
+		
+		return mListItems.get(position);
+	}
+
+	public long getItemId(int position) {
+		return position;
+	}
+
+	@Override
+	public View getHeaderView(int position, View convertView) {
+		
+		HeaderViewHolder holder = new HeaderViewHolder();
+    	
+    	if (convertView == null) {
+    		convertView = (View) this.inflater.inflate(R.layout.search_category_bar, null);
+            holder.category_title = (TextView) convertView.findViewById(R.id.category_text);
+            convertView.setTag(holder);
+        }
+    	else
+    	{
+    		holder = (HeaderViewHolder) convertView.getTag();
+    	}
+    	
+    	holder.category_title.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+    	if (position < mSplitSection)
+    	{
+    		holder.category_title.setText("Events");
+    	}
+    	else
+    	{
+    		holder.category_title.setText("People");
+    	}
+    	
+    	return convertView;
+	}
+
+	private class HeaderViewHolder
+	{
+		TextView category_title;
+	}
+	
+	@Override
+	public long getHeaderId(int position) {
+
+		if (position < mSplitSection)
+		{
+			return 0;
+		}
+		else
+		{
+			return 1;
+		}
+	}
+
+	@Override
+	protected View getView(int position, View convertView) {
+		
+		if (position < mSplitSection)
+		{
+			EventViewHolder eventHolder = new EventViewHolder();
+			
+            if (convertView == null) 
+            {
+            	Log.w(this.toString(), "inflating resource: " + R.layout.search_event_item);
+            	
+                convertView = this.inflater.inflate(R.layout.search_event_item, null);
+                
+                eventHolder.search_event_picture = (ImageView) convertView.findViewById(R.id.search_event_picture);
+                eventHolder.search_event_name = (TextView) convertView.findViewById(R.id.search_event_name);
+                eventHolder.search_attendee_count = (TextView) convertView.findViewById(R.id.search_attendee_count);
+                eventHolder.search_button = convertView.findViewById(R.id.search_button);
+                
+                convertView.setTag(eventHolder);
+            } 
+            else 
+            {
+            	eventHolder = (EventViewHolder) convertView.getTag();
+            }
+            
+            if (convertView.getBackground() == null)
+            {
+            	convertView.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH).getDrawable());
+            }
+            
+            EventDetail event = GlobalEventList.eventDetailMap.get(this.mListItems.get(position));
+            
+            convertView.setContentDescription(event.getEventID().toString());
+            
+            eventHolder.search_button.setContentDescription(event.getEventID().toString());
+            eventHolder.search_button.setTag(event);
+            
+            if (event.getImages().size() > 0)
+            {
+            	GlobalVariables.getInstance().downloadImage(eventHolder.search_event_picture, event.getImages().get(0).image_file_name);
+            }
+            else
+            {
+            	eventHolder.search_event_picture.setImageDrawable(getContext().getResources().getDrawable(R.drawable.watermark));
+            }
+            
+            eventHolder.search_event_name.setText(event.getEventName());
+            eventHolder.search_event_name.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+            
+            eventHolder.search_attendee_count.setText(event.getAttendeeCount() + " Attendees");
+            eventHolder.search_attendee_count.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		}
+		else
+		{
+			PeopleViewHolder holder = new PeopleViewHolder();
+            
+            if (convertView == null) 
+            {
+            	Log.w(this.toString(), "inflating resource: " + R.layout.search_people_item);
+            	
+                convertView = this.inflater.inflate(R.layout.search_people_item, null);
+                
+                holder.search_people_profile_pic = (ImageView) convertView.findViewById(R.id.search_button_profile_pic);
+                holder.search_people_text = (TextView) convertView.findViewById(R.id.search_button_name);
+                holder.search_button = convertView.findViewById(R.id.search_button);
+                holder.check_mark = (ImageView) convertView.findViewById(R.id.check_mark);
+                
+                convertView.setTag(holder);
+            } 
+            else 
+            {
+                holder = (PeopleViewHolder) convertView.getTag();
+            }
+            
+            if (convertView.getBackground() == null)
+            {
+            	convertView.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH).getDrawable());
+            }
+            
+            UserInfo userInfo = UserInfoList.getInstance().get(this.mListItems.get(position));
+            
+            convertView.setContentDescription(Integer.toString(userInfo.uid));
+            
+            holder.search_people_text.setText(userInfo.name);
+            holder.search_people_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+            holder.search_button.setContentDescription(Integer.toString(userInfo.uid));
+            holder.search_button.setTag(userInfo);
+            holder.search_people_profile_pic.setMaxHeight(DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH).getHeight());
+            
+            GlobalVariables.getInstance().downloadImage(holder.search_people_profile_pic, GlobalVariables.getInstance().getFacebookPictureUrl(userInfo.uid));
+		}
+		
+		return convertView;
+	}
+
+	private class PeopleViewHolder
+	{
+        public ImageView search_people_profile_pic;
+        public ImageView check_mark;
+        public TextView search_people_text;
+        public View search_button;
+        public HorizontalRatioLinearLayout layout;
+	}
+	
+	private class EventViewHolder
+	{
+		public ImageView search_event_picture;
+		public TextView search_event_name;
+		public TextView search_attendee_count;
+		public View search_button;
+	}
+}

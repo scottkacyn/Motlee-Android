@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.motlee.android.enums.Gender;
 
-public class UserInfo {
+public class UserInfo implements Comparable<UserInfo> {
 	
 	public int id;
 	public int uid;
@@ -15,7 +15,7 @@ public class UserInfo {
 	public String gender;
 	private LocationInfo locationInfo;
 	public String picture;
-	public Date birthday;
+	public String birthday;
 	
 	public UserInfo(int userID, int facebookID, String name, String email, Gender gender, String profilePicture, Date birthDate, LocationInfo locationInfo)
 	{
@@ -26,7 +26,7 @@ public class UserInfo {
 		this.gender = gender.toString();
 		this.locationInfo = locationInfo;
 		this.picture = profilePicture;
-		this.birthday = birthDate;
+		this.birthday = birthDate.toString();
 		this.first_name = "";
 		this.last_name = "";
 	}
@@ -45,7 +45,7 @@ public class UserInfo {
 		this.gender = gender.toString();
 		this.locationInfo = null;
 		this.picture = profilePicture;
-		this.birthday = birthDate;
+		this.birthday = birthDate.toString();
 		this.first_name = "";
 		this.last_name = "";
 	}
@@ -82,5 +82,10 @@ public class UserInfo {
         return
 	        ( this.uid == that.uid ) ;
     }
+
+	public int compareTo(UserInfo another) {
+		
+		return this.name.compareTo(another.name);
+	}
 }
 

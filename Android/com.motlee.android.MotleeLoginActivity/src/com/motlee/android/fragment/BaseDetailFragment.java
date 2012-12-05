@@ -18,10 +18,6 @@ public class BaseDetailFragment extends BaseMotleeFragment {
 		{
 			super.showRightHeaderButton(BaseDetailActivity.EDIT);
 		}
-		else if (!eDetail.getAttendees().contains(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId())))
-		{
-			super.showRightHeaderButton(BaseDetailActivity.JOIN);
-		}
 		else
 		{
 			mHeaderView.findViewById(R.id.header_right_layout_button).setVisibility(View.GONE);

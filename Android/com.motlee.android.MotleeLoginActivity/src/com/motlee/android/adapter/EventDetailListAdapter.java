@@ -33,6 +33,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -137,18 +138,20 @@ public class EventDetailListAdapter extends ArrayAdapter<EventItem> {
             	Log.w(tag, "inflating resource: " + resource);
                         convertView = this.inflater.inflate(resource, null);
                         
-                        holder.photo_detail_bottom_info = (LinearLayout) this.inflater.inflate(R.layout.photo_detail_bottom_info, null);
-                        holder.photo_detail_thumbnail = (ImageView) holder.photo_detail_bottom_info.findViewById(R.id.photo_detail_thumbnail);
-                        holder.photo_detail_name_text = (TextView) holder.photo_detail_bottom_info.findViewById(R.id.photo_detail_name_text);
-                        holder.photo_detail_thumb_text = (TextView) holder.photo_detail_bottom_info.findViewById(R.id.photo_detail_thumb_text);
-                        holder.photo_detail_comment_text = (TextView) holder.photo_detail_bottom_info.findViewById(R.id.photo_detail_comment_text);
-                        holder.photo_detail_bottom = (LinearLayout) convertView.findViewById(R.id.photo_detail_bottom);
-                        holder.photo_detail_top = (ImageView) convertView.findViewById(R.id.photo_detail_top);
+                        holder.photo_detail_thumbnail = (ImageView) convertView.findViewById(R.id.photo_detail_thumbnail);
+                        holder.photo_detail_name_text = (TextView) convertView.findViewById(R.id.photo_detail_name_text);
                         holder.photo_detail_story = (RelativeLayout) convertView.findViewById(R.id.photo_detail_story);
                         holder.photo_detail_picture = (ImageView) convertView.findViewById(R.id.photo_detail_picture);
                         holder.photo_detail_story_text = (TextView) convertView.findViewById(R.id.photo_detail_story_text);
-                        holder.photo_detail_thumb_icon = (ImageButton) holder.photo_detail_bottom_info.findViewById(R.id.photo_detail_thumb_icon);
-                        holder.photo_detail_comment_icon = (ImageButton) holder.photo_detail_bottom_info.findViewById(R.id.photo_detail_comment_icon);
+                        holder.photo_detail_time_text = (TextView) convertView.findViewById(R.id.photo_detail_time_text);
+                        holder.photo_detail_spinner = (ProgressBar) convertView.findViewById(R.id.photo_detail_spinner);
+                        holder.photo_detail_upload_text = (TextView) convertView.findViewById(R.id.photo_detail_upload_text);
+                        holder.photo_detail_thumbnail_bg = (ImageView) convertView.findViewById(R.id.photo_detail_thumbnail_bg);
+                        holder.photo_detail_likes = convertView.findViewById(R.id.photo_detail_likes);
+                        holder.photo_detail_likes_text = (TextView) convertView.findViewById(R.id.photo_detail_likes_text);
+                        holder.photo_detail_thumb_image = (ImageView) convertView.findViewById(R.id.photo_detail_thumb_image);
+                        holder.photo_detail_like_button_text = (TextView) convertView.findViewById(R.id.photo_detail_like_button_text);
+                        
                         convertView.setTag(holder);
             			
             } else {
@@ -157,6 +160,11 @@ public class EventDetailListAdapter extends ArrayAdapter<EventItem> {
 
             this.bindData(holder, position);
        
+            int pixels = DrawableCache.convertDpToPixel(5);
+            
+            convertView.setPadding(0, pixels, 0, 0);
+            convertView.findViewById(R.id.photo_container).setPadding(pixels, (int) (GlobalVariables.DISPLAY_WIDTH * .075), pixels, pixels);
+            //holder.photo_detail_comment_bar.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_item_comment_bar, GlobalVariables.DISPLAY_WIDTH - 2 * pixels).getDrawable());
             // bind the data to the view object
             return convertView;
     }
@@ -169,24 +177,8 @@ public class EventDetailListAdapter extends ArrayAdapter<EventItem> {
             
     	EventItem item = this.data.get(position);
 
-    	holder.photo_detail_comment_icon.setTag(item);
-    	holder.photo_detail_thumb_icon.setTag(item);
-    	
-    	if (holder.photo_detail_bottom.getBackground() == null)
-    	{
-    		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.item_detail_bottom, GlobalVariables.DISPLAY_WIDTH - DrawableCache.convertDpToPixel(20));
-    		
-	    	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, drawable.getHeight());
-	    	params.leftMargin = DrawableCache.convertDpToPixel(10);
-	    	params.rightMargin = DrawableCache.convertDpToPixel(10);
-	    	
-	    	holder.photo_detail_bottom.setLayoutParams(params);
-			holder.photo_detail_bottom.setBackgroundDrawable(drawable.getDrawable());
-    	}
-    	else
-    	{
-    		holder.photo_detail_top.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.item_detail_top, GlobalVariables.DISPLAY_WIDTH - DrawableCache.convertDpToPixel(20)).getDrawable());
-    	}
+    	//holder.photo_detail_comment_icon.setTag(item);
+    	//holder.photo_detail_thumb_icon.setTag(item);
 		
 		int height = -1;
 		
@@ -197,17 +189,27 @@ public class EventDetailListAdapter extends ArrayAdapter<EventItem> {
 			
 			holder.photo_detail_story.setVisibility(View.GONE);
 			
-			ImageView imageView = holder.photo_detail_picture;
-	    	
-	    	PhotoItem photo = (PhotoItem) item;
-	    	
-	    	location = photo.location;
-	    	
-	        GlobalVariables.getInstance().downloadImage(imageView, GlobalVariables.getInstance().getAWSUrlCompressed(photo));
-	        
-	        imageView.setVisibility(View.VISIBLE);
-	        
-	        
+			if (item.id == -1)
+			{
+				holder.photo_detail_picture.setImageDrawable(DrawableCache.getDrawable(R.drawable.watermark, GlobalVariables.DISPLAY_WIDTH).getDrawable());
+				holder.photo_detail_spinner.setVisibility(View.VISIBLE);
+				holder.photo_detail_upload_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+				holder.photo_detail_upload_text.setVisibility(View.VISIBLE);
+			}
+			else
+			{
+			
+		    	PhotoItem photo = (PhotoItem) item;
+		    	
+		    	location = photo.location;
+		    	
+		        GlobalVariables.getInstance().downloadImage(holder.photo_detail_picture, GlobalVariables.getInstance().getAWSUrlCompressed(photo));
+		        
+				holder.photo_detail_spinner.setVisibility(View.GONE);
+				holder.photo_detail_upload_text.setVisibility(View.GONE);
+			}
+			
+	        holder.photo_detail_picture.setVisibility(View.VISIBLE);
 		}
 		
 		if (item.type == EventItemType.STORY)
@@ -239,22 +241,37 @@ public class EventDetailListAdapter extends ArrayAdapter<EventItem> {
 	{
 		View bottomInfo = holder.photo_detail_bottom_info;
 		
-		ImageView profilePic = holder.photo_detail_thumbnail;
+		
+		
+		holder.photo_detail_thumbnail.setTag(UserInfoList.getInstance().get(item.user_id));
+		
+		holder.photo_detail_thumbnail.setMaxHeight((int) (GlobalVariables.DISPLAY_HEIGHT * .15));
+		holder.photo_detail_thumbnail.setMaxWidth((int) (GlobalVariables.DISPLAY_WIDTH * .15));
+		
+		holder.photo_detail_thumbnail_bg.setMaxHeight((int) (GlobalVariables.DISPLAY_HEIGHT * .15));
+		holder.photo_detail_thumbnail_bg.setMaxWidth((int) (GlobalVariables.DISPLAY_WIDTH * .15));
 		
 		if (UserInfoList.getInstance().get(item.user_id) != null)
 		{
 		
 			Integer facebookID = UserInfoList.getInstance().get(item.user_id).uid;
 			
-			GlobalVariables.getInstance().downloadImage(profilePic, GlobalVariables.getInstance().getFacebookPictureUrl(facebookID));
+			GlobalVariables.getInstance().downloadImage(holder.photo_detail_thumbnail, GlobalVariables.getInstance().getFacebookPictureUrlLarge(facebookID));
 
 			holder.photo_detail_name_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 			holder.photo_detail_name_text.setText(UserInfoList.getInstance().get(item.user_id).name);
+			holder.photo_detail_name_text.setTag(UserInfoList.getInstance().get(item.user_id));
 			
-			holder.photo_detail_thumb_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+			holder.photo_detail_time_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+			holder.photo_detail_time_text.setText(DateStringFormatter.getPastDateString(item.created_at));
+			
+			holder.photo_detail_like_button_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+			
+			holder.photo_detail_likes_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 			if (item.likes.size() > 0)
 			{
-				holder.photo_detail_thumb_text.setText(Integer.toString(item.likes.size()));
+				holder.photo_detail_likes.setVisibility(View.VISIBLE);
+				holder.photo_detail_likes_text.setText(Integer.toString(item.likes.size()));
 				boolean hasLiked = false;
 				for (Like like : item.likes)
 				{
@@ -265,45 +282,51 @@ public class EventDetailListAdapter extends ArrayAdapter<EventItem> {
 				}
 				if (hasLiked)
 				{
-					holder.photo_detail_thumb_icon.setPressed(true);
+					holder.photo_detail_thumb_image.setPressed(true);
+					holder.photo_detail_like_button_text.setText("Unlike");
 				}
 				else
 				{
-					holder.photo_detail_thumb_icon.setPressed(false);
+					holder.photo_detail_thumb_image.setPressed(false);
+					holder.photo_detail_like_button_text.setText("Like");
 				}
 			}
 			else
 			{
-				holder.photo_detail_thumb_text.setText(" ");
+				holder.photo_detail_likes.setVisibility(View.GONE);
+				holder.photo_detail_like_button_text.setText("Like");
 			}
 			
-			holder.photo_detail_comment_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+			/*holder.photo_detail_comments_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 			if (item.comments.size() > 0)
 			{
-				holder.photo_detail_comment_text.setText(Integer.toString(item.comments.size()));
+				holder.photo_detail_comments.setVisibility(View.VISIBLE);
+				holder.photo_detail_comments_text.setText(Integer.toString(item.comments.size()));
 			}
 			else
 			{
-				holder.photo_detail_comment_text.setText(" ");
-			}
+				holder.photo_detail_comments.setVisibility(View.GONE);
+			}*/
 			
-			holder.photo_detail_bottom.removeAllViews();
-			holder.photo_detail_bottom.addView(bottomInfo);
+			//holder.photo_detail_bottom.removeAllViews();
+			//holder.photo_detail_bottom.addView(bottomInfo);
 		}
 	}
     
     private static class ViewHolder {
-        public LinearLayout photo_detail_bottom;
-        public ImageView photo_detail_top;
         public RelativeLayout photo_detail_story;
         public ImageView photo_detail_picture;
         public TextView photo_detail_story_text;
         public LinearLayout photo_detail_bottom_info;
         public ImageView photo_detail_thumbnail;
         public TextView photo_detail_name_text;
-        public TextView photo_detail_thumb_text;
-        public TextView photo_detail_comment_text;
-        public ImageButton photo_detail_thumb_icon;
-        public ImageButton photo_detail_comment_icon;
+        public TextView photo_detail_time_text;
+        public ImageView photo_detail_thumbnail_bg;
+        public ProgressBar photo_detail_spinner;
+        public ImageView photo_detail_thumb_image;
+        public TextView photo_detail_upload_text;
+        public View photo_detail_likes;
+        public TextView photo_detail_likes_text;
+        public TextView photo_detail_like_button_text;
     }
 }

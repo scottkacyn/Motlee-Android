@@ -1,9 +1,13 @@
 package com.motlee.android;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
+import com.motlee.android.enums.EventItemType;
 import com.motlee.android.fragment.EventDetailFragment;
 import com.motlee.android.fragment.EventItemDetailFragment;
+import com.motlee.android.object.Comment;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
@@ -21,10 +25,14 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.ImageButton;
 
-public class EventItemDetailActivity extends BaseMotleeActivity implements UpdatedLikeListener {
+public class EventItemDetailActivity extends BaseMotleeActivity {
 	
 	private EventItem mEventItem;
 	private EventItemDetailFragment fragment;
+	
+	private boolean likeChanged = false;
+	
+	private ArrayList<Comment> newComments = new ArrayList<Comment>();
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -64,55 +72,68 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
             .commit();
         }
 	}
+    
+    public void sendComment(View view)
+    {
+    	
+    	
+    	if (!fragment.getCommentText().equals(""))
+    	{
+	    	//EventServiceBuffer.addCommentToEventItem(mEventItem, fragment.getCommentText());
+	    	
+    		Comment comment = new Comment(mEventItem.event_id, EventItemType.COMMENT, GlobalVariables.getInstance().getUserId(), new Date(), fragment.getCommentText());
+    		
+    		newComments.add(comment);
+    		
+    		fragment.addComment(comment);
+    		
+	    	fragment.removeTextAndKeyboard();
+    	}
+    }
+	
+	public void onLikeClick(View view)
+	{
+
+		// toggle if we changed user's like status
+		likeChanged = !likeChanged;
+		
+		if (Boolean.parseBoolean(view.getTag().toString()))
+		{
+			for (Iterator<Like> it = mEventItem.likes.iterator(); it.hasNext(); )
+			{
+				Like like = it.next();
+				
+				if (like.user_id == GlobalVariables.getInstance().getUserId())
+				{
+					it.remove();
+				}
+			}
+			
+			fragment.unlike();
+		}
+		else
+		{
+			Like newLike = new Like(mEventItem.event_id, EventItemType.LIKE, GlobalVariables.getInstance().getUserId(), new Date());
+			
+			mEventItem.likes.add(newLike);
+			
+			fragment.like();
+		}
+	}
 	
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent intent)
+	public void onDestroy()
 	{
-		if (requestCode == 0 && resultCode == RESULT_OK)
+		for (Comment comment : newComments)
 		{
-			mEventItem = intent.getParcelableExtra("Comment");
-			fragment.refreshComments(mEventItem.comments.size());
-			fragment.refreshLikes(mEventItem.likes);
-		}
-	}
-	
-	public void onClickOpenComment(View view)
-	{
-		Intent openComment = new Intent(EventItemDetailActivity.this, CommentActivity.class);
-		openComment.putExtra(CommentActivity.COMMENT, mEventItem);
-		openComment.putExtra(CommentActivity.EVENT_ID, mEventItem.event_id);
-		
-		startActivityForResult(openComment, 0);
-	}
-    
-	public void onClickLikeItem(View view)
-	{
-		
-		((ImageButton) view).setEnabled(false);
-
-		for (Iterator<Like> it = mEventItem.likes.iterator(); it.hasNext(); )
-		{
-			Like like = it.next();
-			
-			if (like.user_id == GlobalVariables.getInstance().getUserId())
-			{
-				it.remove();
-				fragment.refreshLikes(mEventItem.likes);
-				fragment.setThumbButtonEnabled(true);
-			}
+			EventServiceBuffer.addCommentToEventItem(mEventItem, comment.body);
 		}
 		
-		EventServiceBuffer.setLikeInfoListener(this);
+		if (likeChanged)
+		{
+			EventServiceBuffer.likeEventItem(mEventItem);
+		}
 		
-		EventServiceBuffer.likeEventItem(mEventItem);
-	}
-
-	public void likeSuccess(UpdatedLikeEvent likeEvent) {
-		
-		likeEvent.like.event_id = mEventItem.event_id;
-		
-		mEventItem.likes.add(likeEvent.like);
-		fragment.refreshLikes(mEventItem.likes);
-		fragment.setThumbButtonEnabled(true);
+		super.onDestroy();
 	}
 }

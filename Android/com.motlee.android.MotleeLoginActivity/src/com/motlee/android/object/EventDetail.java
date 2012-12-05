@@ -22,16 +22,17 @@ public class EventDetail implements Comparable<EventDetail> {
 	private Date created_at;
 	private double lat;
 	private double lon;
+	public Date updated;
 
 	@NoExpose
-	private final ArrayList<PhotoItem> photos;
+	private ArrayList<PhotoItem> photos;
 
 	//TODO: Change to Collection<Integer>
 	@NoExpose
-	private final Collection<UserInfo> people_attending;
+	private Collection<UserInfo> people_attending;
 	
 	@NoExpose
-	private final Collection<StoryItem> stories;
+	private Collection<StoryItem> stories;
 	
 	// @NoExpose is a way to stop the json parser from including them
 	// when we convert EventDetail to a json.
@@ -81,6 +82,29 @@ public class EventDetail implements Comparable<EventDetail> {
 		this.start_time = eDetail.getStartTime();
 		this.end_time = eDetail.getEndTime();
 		this.attendee_count = eDetail.getAttendeeCount();
+		this.created_at = eDetail.created_at;
+		if (this.location == null || eDetail.getLocationInfo() != null)
+		{
+			this.location = eDetail.getLocationInfo();
+		}
+	}
+	
+	public void UpdateWholeEventDetail(EventDetail eDetail)
+	{
+		this.name = eDetail.getEventName();
+		this.description = eDetail.getDescription();
+		this.start_time = eDetail.getStartTime();
+		this.end_time = eDetail.getEndTime();
+		this.attendee_count = eDetail.getAttendeeCount();
+		this.created_at = eDetail.created_at;
+		if (this.location == null || eDetail.getLocationInfo() != null)
+		{
+			this.location = eDetail.getLocationInfo();
+		}
+		
+		this.people_attending = eDetail.people_attending;
+		this.photos = eDetail.photos;
+		this.stories = eDetail.stories;
 	}
 	
 	/*public void checkUserInfoList()
@@ -320,7 +344,7 @@ public class EventDetail implements Comparable<EventDetail> {
 		}
 		else
 		{
-			return another.getStartTime().compareTo(this.getStartTime());
+			return another.getEndTime().compareTo(this.getEndTime());
 		}
 	}
 	

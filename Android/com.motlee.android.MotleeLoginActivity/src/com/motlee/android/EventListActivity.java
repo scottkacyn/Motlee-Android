@@ -48,9 +48,11 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
@@ -73,6 +75,17 @@ public class EventListActivity extends BaseMotleeActivity {
 	
 	private EventListFragment mEventListFragment;
 	
+	private FragmentActivity mActivity;
+	
+	@Override
+	public void onResume()
+	{
+		Log.d(this.toString(), "onResume");
+		super.onResume();
+		
+		//requestNewDataForList(eventListParams.dataContent, eventListParams.headerText);
+	}
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,6 +100,8 @@ public class EventListActivity extends BaseMotleeActivity {
         
         GlobalVariables.getInstance().initializeImageLoader(this);
         
+        mActivity = this;
+        
         FragmentManager     fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         
@@ -97,6 +112,11 @@ public class EventListActivity extends BaseMotleeActivity {
         mEventListFragment.addEventListAdapter(eAdapter);
        
         mEventListFragment.setHeaderView(findViewById(R.id.header));
+        
+        
+        showMenuButtons();
+        
+        setActionForRightMenu(plusMenuClick);
         
         Intent intent = getIntent();
         
@@ -120,6 +140,16 @@ public class EventListActivity extends BaseMotleeActivity {
         ft.add(R.id.fragment_content, mEventListFragment)
         .commit();
     }
+    
+	private OnClickListener plusMenuClick = new OnClickListener(){
+
+		public void onClick(View v) {
+			
+			MenuFunctions.showCreateEventPage(v, mActivity);
+			
+		}
+		
+	};
     
     private void initializeListData() 
     {
@@ -242,69 +272,7 @@ public class EventListActivity extends BaseMotleeActivity {
 	
 	public void joinOrAddContent(View view)
 	{
-		final Integer eventID = Integer.parseInt(view.getContentDescription().toString());
-		
-		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-				this);
- 
-		// set title
-		//alertDialogBuilder.setTitle("Your Title");
- 
-			// set dialog message
-
-		
-		
-		if (view.getTag().toString() == ATTENDING)
-		{
-			Intent takePictureIntent = new Intent(EventListActivity.this, TakePhotoActivity.class);
-			takePictureIntent.putExtra("Action", TakePhotoActivity.TAKE_PHOTO);
-			takePictureIntent.putExtra("EventID", eventID);
-			startActivity(takePictureIntent);
-		}
-		else if (view.getTag().toString() == NOT_ATTENDING)
-		{
-			
-			alertDialogBuilder
-			.setMessage("Join Event?")
-			.setCancelable(false)
-			.setPositiveButton("Join!",new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog,int id) {
-					// if this button is clicked, close
-					// current activity
-					
-					final DialogInterface finalDialog = dialog;
-					
-					EventServiceBuffer.setAttendeeListener(new UpdatedAttendeeListener(){
-
-						public void raised(UpdatedAttendeeEvent e) {
-
-					    	Intent eventDetail = new Intent(EventListActivity.this, EventDetailActivity.class);
-					    	
-					    	eventDetail.putExtra("EventID", eventID);
-					    	
-					    	startActivity(eventDetail);
-					    	finalDialog.cancel();
-							
-						}
-					});
-					
-					EventServiceBuffer.joinEvent(eventID);
-				}
-			  })
-			.setNegativeButton("Nope",new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog,int id) {
-					// if this button is clicked, just close
-					// the dialog box and do nothing
-						dialog.cancel();
-					}
-				});
-		}
-		
-		// create alert dialog
-		AlertDialog alertDialog = alertDialogBuilder.create();
- 
-				// show it
-		alertDialog.show();
+		MenuFunctions.takePictureOnPhone(view, this);
 	}
 }
 

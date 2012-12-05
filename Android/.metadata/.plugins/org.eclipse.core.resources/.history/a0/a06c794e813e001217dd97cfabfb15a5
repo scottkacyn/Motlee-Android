@@ -1,0 +1,91 @@
+package com.motlee.android.adapter;
+
+import java.util.ArrayList;
+import java.util.Collections;
+
+import com.motlee.android.R;
+import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.GlobalEventList;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.PhotoItem;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import greendroid.widget.PagedAdapter;
+
+public class PhotoDetailPagedViewAdapter extends PagedAdapter {
+
+	
+	private LayoutInflater inflater;
+	private ArrayList<PhotoItem> mData = new ArrayList<PhotoItem>();
+	
+	public PhotoDetailPagedViewAdapter(Context context, ArrayList<PhotoItem> data) {
+		
+		this.inflater = LayoutInflater.from(context);
+		this.mData = new ArrayList<PhotoItem>(data);
+	}
+
+	@Override
+	public int getCount() {
+		
+		return mData.size();
+	}
+
+	@Override
+	public Object getItem(int position) {
+		
+		return mData.get(position);
+	}
+
+	@Override
+	public long getItemId(int position) {
+		
+		return position;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		
+		headerView = (LinearLayout) this.inflater.inflate(R.layout.event_item_detail, null);
+
+		view = this.inflater.inflate(R.layout.activity_photo_detail, null);
+		
+		//int pixels = DrawableCache.convertDpToPixel(5);
+		
+		//headerView.setPadding(0, pixels, 0, 0);
+		
+		/*FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+		params.setMargins(0, (int) (GlobalVariables.DISPLAY_WIDTH * .15), 0, 0);*/
+		
+		//headerView.findViewById(R.id.photo_container).setPadding(pixels, (int) (GlobalVariables.DISPLAY_WIDTH * .075), pixels, pixels);
+		
+		touchOverlay = headerView.findViewById(R.id.photo_detail_touch_overlay);
+		touchOverlay.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.photo_detail_overlay, GlobalVariables.DISPLAY_WIDTH).getDrawable());
+		
+		setPageHeader(GlobalEventList.eventDetailMap.get(eventItem.event_id).getEventName());
+		showLeftHeaderButton();
+		
+		setUpPage();
+		
+		setEditText();
+		
+		commentList = (ListView) view.findViewById(R.id.comment_list_view);
+		
+		commentList.addHeaderView(headerView);
+		
+		//commentList.setPadding(pixels, (int) (GlobalVariables.DISPLAY_WIDTH * .075), pixels, pixels);
+		
+		Collections.sort(eventItem.comments);
+		
+		adapter = new CommentAdapter(getActivity(), R.layout.comment_list_item, eventItem.comments);
+		
+		commentList.setAdapter(adapter);
+		
+		return view;
+	}
+
+}

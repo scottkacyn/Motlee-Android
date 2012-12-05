@@ -6,7 +6,7 @@
     android:orientation="vertical" 
     android:background="@android:color/transparent"
     android:id="@+id/event_detail_main" >    
-    <com.motlee.android.layouts.RatioBackgroundRelativeLayout
+    <!--<com.motlee.android.layouts.RatioBackgroundRelativeLayout
         android:id="@+id/event_detail_text_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -72,7 +72,7 @@
 			       android:background="@android:color/transparent" />
 			 </FrameLayout> 
 		</LinearLayout>
-    </com.motlee.android.layouts.RatioBackgroundRelativeLayout>
+    </com.motlee.android.layouts.RatioBackgroundRelativeLayout>   -->
     
     <ListView
         android:id="@+id/event_detail_list_view"
@@ -80,7 +80,6 @@
         android:layout_height="match_parent"
         android:focusableInTouchMode="true"
         android:focusable="true"
-        android:layout_above="@id/event_detail_text_background"
         android:background="@android:color/transparent" />
     
 </RelativeLayout>

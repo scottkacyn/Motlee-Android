@@ -1,0 +1,201 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:id="@+id/photo_container">
+        
+   	    <com.motlee.android.layouts.HorizontalRatioLinearLayout 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:background="@drawable/event_list_detail_header_background"
+	        android:id="@+id/photo_detail_user_row" >
+	        
+	        <FrameLayout
+	            android:layout_width="0dp"
+	            android:layout_weight=".15"
+	            android:layout_height="match_parent" >
+	            
+	            <ImageView
+	                android:id="@+id/photo_detail_thumbnail_bg"
+	   	            android:layout_width="match_parent"
+		            android:layout_height="match_parent"
+		            android:scaleType="fitCenter"
+		    		android:adjustViewBounds="true"
+		    		android:src="@drawable/image_thumbnail_background" 
+		    		android:background="@drawable/app_background"/>
+	            
+				<ImageView
+		            android:id="@+id/photo_detail_thumbnail"
+		            android:layout_width="match_parent"
+		            android:layout_height="wrap_content"
+		    		android:padding="2dp"
+		    		android:clickable="true"
+		    		android:scaleType="fitCenter"
+		    		android:adjustViewBounds="true"
+		    		android:onClick="onClickShowProfile"/>
+				
+	        </FrameLayout>
+			<LinearLayout
+			    android:layout_width="0dp"
+			    android:layout_weight=".85"
+			    android:layout_height="match_parent" 
+			    android:orientation="vertical">
+			    
+			    <RelativeLayout
+			        android:layout_height="0dp"
+			        android:layout_width="match_parent"
+			        android:layout_weight=".50" >
+			        
+			        <TextView
+			            android:layout_width="match_parent"
+			            android:layout_height="match_parent"
+			            android:layout_alignParentLeft="true"
+			            android:paddingLeft="5dp"
+			            android:id="@+id/photo_detail_name_text" />
+			        
+			        <TextView
+			            android:layout_width="match_parent"
+			            android:layout_height="match_parent"
+			            android:layout_toRightOf="@id/photo_detail_name_text"
+			            android:layout_alignParentRight="true"
+			            android:paddingRight="5dp"
+			            android:id="@+id/photo_detail_time_text" />
+			        
+			    </RelativeLayout>
+			    
+			</LinearLayout>
+			
+	    </com.motlee.android.layouts.HorizontalRatioLinearLayout>
+        
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/photo"
+            android:layout_below="@id/photo_detail_user_row" >       
+	        <FrameLayout 
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content">
+			    <ImageView
+			        android:id="@+id/photo_detail_picture"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			        android:scaleType="fitCenter"
+			        android:adjustViewBounds="true" />
+			    
+			    <ProgressBar 
+			        android:layout_width="40dp"
+			        android:layout_height="40dp"
+			        android:layout_gravity="center"
+			        android:id="@+id/photo_detail_spinner"
+			        android:visibility="gone"/>
+			    
+			    <TextView
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_gravity="center"
+			        android:id="@+id/photo_detail_upload_text"
+			        android:text="Uploading..."
+			        android:layout_marginTop="45dp"
+			        android:visibility="gone" />
+			    
+		    </FrameLayout>
+		    <LinearLayout
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content">
+			    <RelativeLayout
+			        android:id="@+id/photo_detail_story"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			        android:visibility="gone" >
+			        
+			    	<TextView 
+			    	    android:id="@+id/photo_detail_story_text"
+			    	    android:layout_width="wrap_content"
+			    	    android:layout_height="wrap_content"
+			    	    android:paddingLeft="25dp"
+			    	    android:paddingRight="25dp"
+			    	    android:layout_centerInParent="true"/>
+			    
+			    </RelativeLayout>
+		    </LinearLayout>
+		    <FrameLayout
+		        android:id="@+id/photo_detail_touch_overlay"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_gravity="bottom" >
+			    
+		        <TextView
+		            android:id="@+id/photo_detail_description"
+		            android:layout_width="wrap_content"
+		            android:layout_height="match_parent"
+		        	android:layout_gravity="center"
+		            android:gravity="center"/>
+		        
+		     </FrameLayout>
+	     </FrameLayout>
+	    <com.motlee.android.layouts.RatioBackgroundRelativeLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:id="@+id/photo_detail_comment_bar"
+	        android:background="@drawable/header_background"
+	        android:layout_below="@id/photo">
+	        
+	   	    <FrameLayout
+		        android:layout_height="match_parent"
+		        android:layout_width="wrap_content"
+		        android:layout_alignParentLeft="true"
+		        android:id="@+id/photo_detail_like_layout" >
+		        
+			    <com.motlee.android.view.VerticalAspectImageButton 
+			        android:id="@+id/photo_detail_like_button"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			        android:padding="5dp"
+			        android:src="@drawable/header_right_button"
+			        android:onClick="onLikeClick"
+			        android:background="@android:color/transparent" />
+			    
+			    <TextView 
+			        android:id="@+id/photo_detail_like_button_text"
+		    	    android:layout_width="match_parent"
+			        android:layout_height="match_parent"
+			        android:gravity="center|center_vertical"
+			        android:padding="5dp"
+			        android:background="@android:color/transparent" />
+		    </FrameLayout>
+	        
+	   	    
+	   	    <LinearLayout 
+	   	        android:layout_width="wrap_content"
+	   	        android:layout_height="match_parent"
+	   	        android:layout_alignParentRight="true"
+	   	        android:paddingRight="5dp"
+	   	        android:id="@+id/photo_detail_likes" >
+	   	        
+	   	        <ImageView
+	   	            android:layout_width="wrap_content"
+	   	            android:layout_height="match_parent"
+	   	            android:padding="3dp"
+	   	            android:scaleType="fitCenter"
+	   	            android:adjustViewBounds="true"
+	   	            android:src="@drawable/icon_button_thumb"
+	   	            android:background="@android:color/transparent" 
+	   	            android:id="@+id/photo_detail_thumb_image"/>
+	   	        
+	   	        <TextView
+	   	            android:layout_width="wrap_content"
+	   	            android:layout_height="match_parent"
+	   	            android:id="@+id/photo_detail_likes_text"
+	   	            android:gravity="center"
+	   	            android:padding="3dp" />
+	   	        
+	   	    </LinearLayout>
+	   	    
+    	</com.motlee.android.layouts.RatioBackgroundRelativeLayout>
+	    
+    </RelativeLayout>
+    
+</FrameLayout>

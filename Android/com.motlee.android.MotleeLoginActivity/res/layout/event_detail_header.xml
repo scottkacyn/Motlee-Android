@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.motlee.android.layouts.HorizontalRatioLinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/event_list_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+	
+    <ImageButton 
+        android:layout_width="0dp"
+        android:layout_weight=".2"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:id="@+id/event_detail_photos"
+        android:src="@drawable/event_detail_photos" 
+        android:background="@android:color/transparent"
+        android:padding="5dp"
+        android:onClick="showPhotos"/>
+    
+    <ImageButton 
+        android:layout_width="0dp"
+        android:layout_weight=".2"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:id="@+id/event_detail_comment"
+        android:src="@drawable/event_detail_comment"
+        android:background="@android:color/transparent"
+        android:padding="5dp"
+        android:onClick="showComments" />
+    
+    <ImageButton 
+        android:layout_width="0dp"
+        android:layout_weight=".2"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:id="@+id/event_detail_friends"
+        android:src="@drawable/event_detail_friends"
+        android:background="@android:color/transparent" 
+        android:padding="5dp"
+        android:onClick="showFriends"/>
+    
+    <ImageButton 
+        android:layout_width="0dp"
+        android:layout_weight=".2"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:id="@+id/event_detail_map"
+        android:src="@drawable/event_detail_map" 
+        android:background="@android:color/transparent"
+        android:padding="5dp"
+        android:onClick="showMap"/>
+    
+    <ImageButton 
+        android:layout_width="0dp"
+        android:layout_weight=".2"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:id="@+id/event_detail_time"
+        android:src="@drawable/event_detail_time" 
+        android:background="@android:color/transparent"
+        android:padding="5dp"
+        android:onClick="showTime"/>
+    
+</com.motlee.android.layouts.HorizontalRatioLinearLayout >

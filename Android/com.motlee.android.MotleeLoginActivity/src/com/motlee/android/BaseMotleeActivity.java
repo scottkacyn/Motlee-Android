@@ -16,13 +16,19 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 public class BaseMotleeActivity extends FragmentActivity implements UpdatedEventDetailListener {
 
+	final public void onClickShowProfile(View view)
+	{
+		GlobalActivityFunctions.showProfileDetail(view, this);
+	}
 	
 	final public void onClickPostStory(View view)
 	{
@@ -87,6 +93,21 @@ public class BaseMotleeActivity extends FragmentActivity implements UpdatedEvent
 		MenuFunctions.showSettings(this);
 	}
 	
+	final public void onClickShowSearch(View view)
+	{
+		MenuFunctions.showSearchPage(this);
+	}
+	
+	final public void showMenuButtons()
+	{
+		findViewById(R.id.menu_buttons).setVisibility(View.VISIBLE);
+	}
+	
+	final public void setActionForRightMenu(OnClickListener listener)
+	{
+		((ImageButton) findViewById(R.id.plus_menu_button)).setOnClickListener(listener);
+	}
+	
 	public UpdatedEventDetailListener eventListener = new UpdatedEventDetailListener(){
 
 		public void myEventOccurred(UpdatedEventDetailEvent evt) {
@@ -123,7 +144,6 @@ public class BaseMotleeActivity extends FragmentActivity implements UpdatedEvent
 		EventServiceBuffer.setAttendeeListener(null);
 		EventServiceBuffer.setUserInfoListener(null);
 		EventServiceBuffer.removeEventDetailListener(this);
-		EventServiceBuffer.setPhotoListener(null);
 		EventServiceBuffer.finishContext(this);
 		unbindDrawables(this.findViewById(android.R.id.content));
 		System.gc();

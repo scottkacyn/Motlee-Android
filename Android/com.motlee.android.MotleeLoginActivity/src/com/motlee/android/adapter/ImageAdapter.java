@@ -52,8 +52,8 @@ public class ImageAdapter extends BaseAdapter {
 	private final int resource;
 	private final LayoutInflater inflater;
 	
-	private static final int MAX_SIZE = 6;
-	private static final int MIN_SIZE = 3;
+	private static final int MAX_SIZE = 10;
+	private static final int MIN_SIZE = 4;
 	
 	private static final PhotoItem NO_PHOTO = null;
 	
@@ -154,15 +154,10 @@ public class ImageAdapter extends BaseAdapter {
     		//holder.imageView.setClickable(false);
     		//holder.imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.event_list_add_content));
     		holder.imageView.setVisibility(View.GONE);
-    		if (!isAttending)
-    		{
-    			holder.textView.setText("Join the event to begin adding content!");
-    			holder.textView.setTag(EventListActivity.NOT_ATTENDING);
-    		}
-    		else
+    		if (isAttending)
     		{
     			holder.textView.setText("Add content to this event!");
-    			holder.textView.setTag(EventListActivity.ATTENDING);
+    			holder.textView.setTag(eventId);
     		}
     		holder.textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
     		holder.textView.setBackgroundResource(R.drawable.event_list_add_content);

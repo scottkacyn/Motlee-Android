@@ -1,0 +1,6 @@
+1354410240122	Rename field 'view'
+1354589417073	Rename method 'setUpFragment'
+1354638054751	Rename local variable 'map'
+1354641079231	Extract method 'showFragment'
+1354646529010	Rename local variable 'eventDetailFragment'
+1354653715373	Rename field 'plusMenuListener'

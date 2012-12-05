@@ -4,10 +4,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.google.android.maps.MapView;
 import com.motlee.android.enums.EventItemType;
+import com.motlee.android.fragment.DateDetailFragment;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
 import com.motlee.android.fragment.EventDetailFragment;
+import com.motlee.android.fragment.LocationFragment;
+import com.motlee.android.fragment.MessageDetailFragment;
+import com.motlee.android.fragment.PeopleListFragment;
+import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventServiceBuffer;
@@ -17,6 +23,7 @@ import com.motlee.android.object.Like;
 import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.StoryItem;
+import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.UserInfoList;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
@@ -25,9 +32,12 @@ import com.motlee.android.object.event.UpdatedEventDetailListener;
 import com.motlee.android.object.event.UpdatedLikeEvent;
 import com.motlee.android.object.event.UpdatedLikeListener;
 
+import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -37,23 +47,42 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 
-public class EventDetailActivity extends BaseDetailActivity implements OnFragmentAttachedListener, UpdatedEventDetailListener, UpdatedLikeListener {
+public class EventDetailActivity extends BaseDetailActivity implements OnFragmentAttachedListener, UpdatedEventDetailListener {
 
 	private FragmentTransaction ft;
 	private ProgressDialog progressDialog;
 	private int mEventID;
+	
+	private EventDetailFragment photosFragment;
+	private PeopleListFragment peopleListFragment;
+	private LocationFragment locationFragment;
+	private DateDetailFragment dateFragment;
+	private MessageDetailFragment messageFragment;
+	
+	private boolean hasShownLocation = false;
+	
+	private MapView mapView;
 	
 	private View header;
 	
 	private Handler handler = new Handler();
 	
 	private HashMap<Integer, ImageButton> likeButtons = new HashMap<Integer, ImageButton>();
+	
+	private PhotoItem mNewPhoto;
+	
+	private AlertDialog alertDialog;
 	
 	/*
 	 * (non-Javadoc)
@@ -64,13 +93,13 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	@Override
 	public void onNewIntent(Intent intent)
 	{
-		EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
 		
 		mEventID = intent.getExtras().getInt("EventID");
+		mNewPhoto = intent.getParcelableExtra("NewPhoto");
 		
 		eDetail = GlobalEventList.eventDetailMap.get(mEventID);
 		
-        fragment.addEventDetail(eDetail);
+		setUpFragments();
 	}
 
 	@Override
@@ -94,12 +123,20 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         
         View mainLayout = findViewById(R.id.main_frame_layout);
         mainLayout.setClickable(true);
-        mainLayout.setOnClickListener(onClick);
+        //mainLayout.setOnClickListener(onClick);
         
+        mEventID = getIntent().getExtras().getInt("EventID");
+        
+        eDetail = GlobalEventList.eventDetailMap.get(mEventID);
         
         header = findViewById(R.id.header);
+        mNewPhoto = getIntent().getParcelableExtra("NewPhoto");
         
         progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading");
+        
+        setUpFragments();
+        
+        showMenuButtons();
         
         FragmentManager fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
@@ -107,10 +144,64 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         ft.add(new EmptyFragmentWithCallbackOnResume(), "EmptyFragment")
         .commit();
         
-        mEventID = getIntent().getExtras().getInt("EventID");
     }
+
+	private void setUpFragments() {
+		
+    	photosFragment = setUpPhotosFragment();
+		
+    	peopleListFragment = setUpFriendsFragment();
+    	
+    	locationFragment = setUpLocationFragment();
+    	
+    	dateFragment = setUpDateFragment();
+    	
+    	messageFragment = setUpMessageFragment();
+	}
+
+	private OnClickListener takePhotoListener = new OnClickListener(){
+
+		public void onClick(View v) {
+			
+			MenuFunctions.takePictureOnPhone(mEventID, EventDetailActivity.this);
+			
+		}
+		
+	};
 	
-    private OnClickListener onClick = new OnClickListener(){
+	private OnClickListener joinMenuListener = new OnClickListener(){
+
+		public void onClick(View v) {
+			
+			AlertDialog.Builder builder = new AlertDialog.Builder(EventDetailActivity.this);
+			builder.setMessage("Join This Event?")
+			.setCancelable(true)
+			.setPositiveButton("Join!", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					
+					EventServiceBuffer.setAttendeeListener(attendeeListener);
+					
+					progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading");
+					
+					ArrayList<Integer> attendees = new ArrayList<Integer>();
+					attendees.add(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId()).uid);
+					
+					EventServiceBuffer.joinEvent(eDetail.getEventID());
+				}
+			})
+			.setNegativeButton("Nope", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+				}
+			});
+			
+			builder.create().show();
+			
+		}
+		
+	};
+	
+	/*private OnClickListener onClick = new OnClickListener(){
 
 		public void onClick(View view) {
 			
@@ -126,7 +217,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		    }
 		}
     	
-    };
+    };*/
     
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -145,7 +236,50 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         }
     }
     
-	private Fragment setUpFragment() {
+	private MessageDetailFragment setUpMessageFragment() {
+
+		eDetail = GlobalEventList.eventDetailMap.get(mEventID);
+        
+        MessageDetailFragment messageFragment = new MessageDetailFragment();
+        
+        messageFragment.setHeaderView(header);
+        
+        messageFragment.addEventDetail(eDetail);
+        
+        messageFragment.setMessageButton(findViewById(R.id.menu_buttons));
+        
+        return messageFragment;
+	}
+    
+    private DateDetailFragment setUpDateFragment()
+    {
+    	DateDetailFragment dateDetailFragment = new DateDetailFragment();
+
+        dateDetailFragment.setHeaderView(findViewById(R.id.header));
+        
+        dateDetailFragment.addEventDetail(eDetail);
+        
+        return dateDetailFragment;
+    }
+    
+    private LocationFragment setUpLocationFragment()
+    {
+    	eDetail = GlobalEventList.eventDetailMap.get(mEventID);
+    	
+        LocationFragment locationFragment = new LocationFragment();
+        
+        locationFragment.setHeaderView(findViewById(R.id.header));
+
+        locationFragment.addEventDetail(eDetail);
+        
+        locationFragment.showPageHeader();
+        
+        //locationFragment.setMapView(mapView);
+        
+        return locationFragment;
+    }
+    
+	private EventDetailFragment setUpPhotosFragment() {
 
 		eDetail = GlobalEventList.eventDetailMap.get(mEventID);
         
@@ -158,22 +292,32 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         return eventDetailFragment;
 	}
     
+	private PeopleListFragment setUpFriendsFragment() {
+
+		eDetail = GlobalEventList.eventDetailMap.get(mEventID);
+        
+		PeopleListFragment fragment = new PeopleListFragment();
+        
+    	fragment.setHeaderView(findViewById(R.id.header));
+    	
+    	ArrayList<UserInfo> users = new ArrayList<UserInfo>();
+    	
+    	users.addAll(eDetail.getAttendees());
+    	
+    	fragment.setEventDetail(eDetail);
+    	
+    	fragment.setUserList(users);
+        
+        return fragment;
+	}
+	
 	public void onRightHeaderButtonClick(View view)
 	{
 		String tag = view.getTag().toString();
 		
 		if (tag.equals(BaseDetailActivity.JOIN))
 		{
-			EventServiceBuffer.setAttendeeListener(attendeeListener);
 			
-			EventServiceBuffer.setEventDetailListener(this);
-			
-			progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading");
-			
-			ArrayList<Integer> attendees = new ArrayList<Integer>();
-			attendees.add(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId()).uid);
-			
-			EventServiceBuffer.joinEvent(eDetail.getEventID());
 		}
 		else if (tag.equals(BaseDetailActivity.EDIT))
 		{
@@ -187,14 +331,14 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 
 		public void raised(UpdatedAttendeeEvent e) {
 			
-			
+			EventServiceBuffer.setEventDetailListener(EventDetailActivity.this);
 			
 			EventServiceBuffer.getEventsFromService(eDetail.getEventID());
 		}
 		
 	};
 	
-    public void switchToGridView(View view)
+    /*public void switchToGridView(View view)
     {
     	EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
     	
@@ -205,10 +349,10 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
     {
     	EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
     	
-    	fragment.addListToAdapter();
-    }
+    	//fragment.addListToAdapter();
+    }*/
     
-    public void seeMoreDetail(View view)
+    /*public void seeMoreDetail(View view)
     {
     	EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
     	
@@ -222,8 +366,114 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
     	eventDetail.putExtra("EventID", eDetail.getEventID());
     	
     	startActivity(eventDetail);
-    }
+    }*/
+	
+	public void showMap(View view)
+	{
+		removeMessageText();
+		FragmentManager     fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
+        
+        if (fm.findFragmentById(R.id.fragment_content) == null)
+        {
+        	ft.add(R.id.fragment_content, locationFragment, "Location");
+        }
+        else if (!hasShownLocation)
+        {
+        	ft.replace(R.id.fragment_content, locationFragment, "Location");
+        }
+        else
+        {
+        	Fragment fragment = fm.findFragmentById(R.id.fragment_content);
+    		ft.remove(fragment);
+    		ft.show(locationFragment);
+        }
+        
+        hasShownLocation = true;
+        
+		ft.commit();
+	}
+	
+	public void showPhotos(View view)
+	{
+		removeMessageText();
+		showFragment(photosFragment);
+	}
+	
+	public void showFriends(View view)
+	{
+		removeMessageText();
+        showFragment(peopleListFragment);
+	}
 
+	public void showTime(View view)
+	{
+		removeMessageText();
+		showFragment(dateFragment);
+	}
+	
+	public void showComments(View view)
+	{
+		setUpMessageText();
+		showFragment(messageFragment);
+	}
+
+	private void removeMessageText()
+	{
+		LinearLayout menuButton = ((LinearLayout) findViewById(R.id.menu_buttons));
+		
+		if (menuButton.getBackground() != null)
+		{
+			menuButton.setBackgroundDrawable(null);
+		}
+		
+		menuButton.findViewById(R.id.message_post_text).setVisibility(View.GONE);
+		
+		findViewById(R.id.menu_buttons).setVisibility(View.VISIBLE);
+	}
+	
+	private void setUpMessageText() {
+
+		LinearLayout menuButton = ((LinearLayout) findViewById(R.id.menu_buttons));
+		
+		menuButton.findViewById(R.id.message_post_text).setVisibility(View.VISIBLE);
+		
+		findViewById(R.id.menu_buttons).setVisibility(View.VISIBLE);
+		
+		menuButton.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_message_button, GlobalVariables.DISPLAY_WIDTH - DrawableCache.convertDpToPixel(20)).getDrawable());
+
+	}
+	
+	private void showFragment(Fragment showFragment) {
+		FragmentManager     fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
+        
+        if (fm.findFragmentById(R.id.fragment_content) == null)
+        {
+        	ft.add(R.id.fragment_content, showFragment);
+        }
+        else if (!hasShownLocation)
+        {
+        	ft.replace(R.id.fragment_content, showFragment);
+        }
+        else
+        {
+        	Fragment fragment = fm.findFragmentById(R.id.fragment_content);
+        	if (fragment == locationFragment)
+        	{
+        		ft.hide(locationFragment);
+        		ft.add(R.id.fragment_content, showFragment);
+        	}
+        	else
+        	{
+        		ft.remove(fragment);
+            	ft.add(R.id.fragment_content, showFragment);
+        	}
+        }
+        
+		ft.commit();
+	}
+	
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         //No call for super(). Bug on API Level > 11.
@@ -235,19 +485,21 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
         eDetail = GlobalEventList.eventDetailMap.get(mEventID); 
 
-        FragmentManager     fm = getSupportFragmentManager();
-        ft = fm.beginTransaction();
-        
-        if (fm.findFragmentById(R.id.fragment_content) == null)
+        if (eDetail.getAttendees().contains(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId())))
         {
-        	ft.add(R.id.fragment_content, setUpFragment());
+            setActionForRightMenu(takePhotoListener);
         }
         else
         {
-        	ft.replace(R.id.fragment_content, setUpFragment());
+        	setActionForRightMenu(joinMenuListener);
         }
         
-		ft.commit();
+        if (mNewPhoto != null)
+        {
+        	eDetail.getImages().add(mNewPhoto);
+        }
+        
+        showPhotos(null);
 		
 		progressDialog.dismiss();
 	}
@@ -272,7 +524,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		startActivity(openComment);
 	}
     
-	public void onClickLikeItem(View view)
+	/*public void onLikeClick(View view)
 	{
 		EventItem item = (EventItem) view.getTag();
 		
@@ -303,20 +555,14 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
 		fragment.addLikeToListAdapter(likeEvent);
 		likeButtons.get(likeEvent.itemId).setEnabled(true);
-	}
-	
-	@Override
-	public void onDestroy()
-	{
-		super.onDestroy();
-		EventServiceBuffer.removeLikeInfoListener(this);
-	}
+	}*/
 	
     @Override
 	protected void backButtonPressed()
 	{
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 	    imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
+	    findViewById(R.id.menu_buttons).setVisibility(View.VISIBLE);
 	    super.backButtonPressed();
 		//super.onBackPressed();
 	}

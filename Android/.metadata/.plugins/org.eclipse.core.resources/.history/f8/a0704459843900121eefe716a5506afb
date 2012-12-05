@@ -1,0 +1,75 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <com.motlee.android.layouts.HorizontalRatioLinearLayout
+        android:id="@+id/search_text_box_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:paddingLeft="15dp">
+        
+        <EditText 
+            android:id="@+id/search_text_box_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+         	android:paddingLeft="25dp"
+	        android:background="@android:color/transparent"/>
+        
+    </com.motlee.android.layouts.HorizontalRatioLinearLayout>
+    
+    <com.motlee.android.layouts.RatioBackgroundRelativeLayout
+        android:id="@+id/search_list_items"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/search_text_box_background">
+        
+        <FrameLayout
+            android:id="@+id/search_could_not_find"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+            
+	        <com.motlee.android.view.HorizontalAspectImageButton
+	            android:id="@+id/search_could_not_find_button"
+	            android:layout_height="wrap_content"
+	            android:layout_width="match_parent"
+	            android:src="@drawable/label_button"/>
+	        
+	        <TextView
+	            android:id="@+id/search_could_not_find_text"
+	            android:layout_width="wrap_content"
+	            android:layout_height="match_parent"/>
+	        
+        </FrameLayout>
+        <LinearLayout
+            android:id="@+id/search_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+		    <com.emilsjolander.components.StickyListHeaders.StickyListHeadersListView
+		        android:id="@android:id/list"
+		        android:layout_height="fill_parent"
+		        android:layout_width="fill_parent"
+		        android:fastScrollEnabled="true"
+		        android:scrollbars="none" />
+		    <TextView android:id="@android:id/empty"
+		        android:layout_width="fill_parent"
+		        android:layout_height="fill_parent"
+		        android:text=""/>
+        </LinearLayout>
+        
+        <LinearLayout
+            android:id="@+id/search_progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center_horizontal"
+            android:gravity="center">
+		    
+        	<include layout="@layout/progress_bar" />
+        	
+        </LinearLayout>
+    </com.motlee.android.layouts.RatioBackgroundRelativeLayout>
+    
+</RelativeLayout>
