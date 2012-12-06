@@ -41,15 +41,23 @@ public class DateDetailFragment extends BaseDetailFragment {
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM dd h:mm aa");
 	
 	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		eventInfoLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_detail_info);
+		eventInfoLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		
+		setDateLabels();
+	}
+	
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	        Bundle savedInstanceState)
 	{
 	
 		this.inflater = inflater;
 		view = (View) this.inflater.inflate(R.layout.event_detail_date, null);
-		
-		eventInfoLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_detail_info);
-		eventInfoLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
 		
 		setPageHeader(pageTitle);
 		if (mEventDetail != null)
@@ -59,8 +67,6 @@ public class DateDetailFragment extends BaseDetailFragment {
 		showLeftHeaderButton();
 		
 		setUpPageHeader();
-		
-		setDateLabels();
 		
 		return view;
 	}
@@ -83,7 +89,7 @@ public class DateDetailFragment extends BaseDetailFragment {
 		this.pageTitle = mEventDetail.getEventName();
 	}
 
-	private void setDateLabels() {
+	public void setDateLabels() {
 		eventInfoLayout.removeAllViews();
 		
 		View label = this.inflater.inflate(R.layout.event_detail_info_date, null);

@@ -8,5 +8,6 @@
 	    android:layout_height="fill_parent"
 	    android:layout_width="fill_parent"
 	    android:fastScrollEnabled="true"
-	    android:scrollbars="none" />
+	    android:scrollbars="none" 
+	    android:divider="@null" />
 </LinearLayout>

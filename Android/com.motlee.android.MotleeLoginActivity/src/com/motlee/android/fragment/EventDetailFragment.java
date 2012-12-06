@@ -67,7 +67,7 @@ import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
 import android.widget.TextView.OnEditorActionListener;
 
-public class EventDetailFragment extends BaseDetailFragment implements UpdatedStoryListener, UpdatedPhotoListener {
+public class EventDetailFragment extends BaseDetailFragment implements UpdatedStoryListener {
 	private String tag = "EventDetailFragment";
 	
 	private EventDetail mEventDetail;
@@ -102,23 +102,13 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 	}
 	
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
-	        Bundle savedInstanceState)
+	public void onResume()
 	{
-		
-		Log.w(tag, "onCreateView");
-		
-		EventServiceBuffer.setPhotoListener(this);
-		
-		this.inflater = inflater;
-		view = (View) this.inflater.inflate(R.layout.event_detail_photos, null);
+		super.onResume();
 		
 		listViewLayout = (ListView) view.findViewById(R.id.event_detail_list_view);
 		//listAdapter = new EventDetailListAdapter(getActivity(), R.layout.event_item_detail_photo, new ArrayList<EventItem>());
 		gridAdapter = new EventDetailGridAdapter(getActivity(), R.layout.event_detail_page_grid, new ArrayList<GridPictures>());
-		
-		
-		setUpPageHeader();
 		
 		 myGestureListener = new MyGestureListener(getActivity());
 	        // or if you have already created a Gesture Detector.
@@ -142,11 +132,29 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		
 		EventServiceBuffer.setStoryListener(this);
 		
+		if (listViewLayout.getHeaderViewsCount() == 0)
+		{
+			listViewLayout.addHeaderView(eventHeader);
+		}
 		//View eventTop = inflater.inflate(R.layout.event_detail_top, null);
 		//listViewLayout.addHeaderView(eventTop);
 		setListAdapter();
 		setGridAdapter();
 		listViewLayout.setAdapter(gridAdapter);
+
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+		
+		Log.w(tag, "onCreateView");
+		
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.event_detail_photos, null);
+		
+
 		
 		//listViewLayout.setOnTouchListener(touchListener);
 		
@@ -172,6 +180,9 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		}
 		
 		//checkBottomCommentBar();
+		
+		
+		setUpPageHeader();
 		
 		showLeftHeaderButton();
 		
@@ -205,7 +216,6 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		
 		((ImageButton) eventHeader.findViewById(R.id.event_detail_photos)).setEnabled(false);
 		
-		listViewLayout.addHeaderView(eventHeader);
 	}
 
 	private OnTouchListener touchListener = new OnTouchListener(){
@@ -475,7 +485,10 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 			}
 		}
 		
-		gridAdapter.replaceData(gridList);
+		if (gridAdapter != null)
+		{
+			gridAdapter.replaceData(gridList);
+		}
 	}
 	
 	public void addGridToTableLayout()
@@ -493,14 +506,11 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		
 	}
 
-	public void photoEvent(UpdatedPhotoEvent e) {
+	public void photoEvent() {
 		
-		setListAdapter();
 		setGridAdapter();
 		
 		gridAdapter.notifyDataSetChanged();
-		
-		listAdapter.notifyDataSetChanged();
 	}
 	
 	

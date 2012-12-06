@@ -77,8 +77,9 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 	private TextView likeText;
 	private TextView commentText;
 	private ImageButton thumbIcon;
-	private ListView commentList;
-	private CommentAdapter adapter;
+	
+	private PagedView pagedView;
+	private PhotoDetailPagedViewAdapter adapter;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
@@ -89,7 +90,7 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 
 		view = this.inflater.inflate(R.layout.paged_view_layout, null);
 		
-		PagedView pagedView = (PagedView) view.findViewById(R.id.comment_paged_view);
+		pagedView = (PagedView) view.findViewById(R.id.comment_paged_view);
 		
 		ArrayList<PhotoItem> photos = GlobalEventList.eventDetailMap.get(eventItem.event_id).getImages();
 		
@@ -97,7 +98,7 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		
 		int index = photos.indexOf(eventItem);
 		
-		PhotoDetailPagedViewAdapter adapter = new PhotoDetailPagedViewAdapter(getActivity(), photos);
+		adapter = new PhotoDetailPagedViewAdapter(getActivity(), photos);
 		
 		pagedView.setAdapter(adapter);
 		
@@ -106,7 +107,19 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		setPageHeader(GlobalEventList.eventDetailMap.get(eventItem.event_id).getEventName());
 		showLeftHeaderButton();
 		
+		setEditText();
+		
 		return view;
+	}
+	
+	public PagedView getPagedView()
+	{
+		return this.pagedView;
+	}
+	
+	public PhotoDetailPagedViewAdapter getAdapter()
+	{
+		return this.adapter;
 	}
 	
 	/*@Override
@@ -153,7 +166,7 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		return view;
 	}*/
 	
-	private void setUpPage() {
+	/*private void setUpPage() {
 		
 		photo = (ImageView) headerView.findViewById(R.id.photo_detail_picture);
 		story = (RelativeLayout) headerView.findViewById(R.id.photo_detail_story);
@@ -235,7 +248,7 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		setUpLikeInfo();
 		
 		//headerView.findViewById(R.id.photo_detail_comment_bar).setVisibility(View.GONE);
-	}
+	}*/
 	
 	public String getCommentText()
 	{
@@ -436,12 +449,12 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 
 	public void addComment(Comment comment) {
 		
-		eventItem.comments.add(comment);
+		//eventItem.comments.add(comment);
 		
-		Collections.sort(eventItem.comments);
+		//Collections.sort(eventItem.comments);
 		
-		adapter = new CommentAdapter(getActivity(), R.layout.comment_list_item, eventItem.comments);
+		//adapter = new CommentAdapter(getActivity(), R.layout.comment_list_item, eventItem.comments);
 		
-		commentList.setAdapter(adapter);
+		//commentList.setAdapter(adapter);
 	}
 }

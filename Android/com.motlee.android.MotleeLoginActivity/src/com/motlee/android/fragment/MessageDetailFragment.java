@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
@@ -15,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
+import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.View.OnClickListener;
@@ -28,6 +32,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.motlee.android.EventDetailActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.EventDetailGridAdapter;
 import com.motlee.android.adapter.EventDetailListAdapter;
@@ -41,10 +46,12 @@ import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.GridPictures;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.StoryItem;
+import com.motlee.android.object.UserInfoList;
 import com.motlee.android.object.event.UpdatedLikeEvent;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedStoryEvent;
 import com.motlee.android.object.event.UpdatedStoryListener;
+import com.motlee.android.view.EditTextWithBackFunctionality;
 
 public class MessageDetailFragment extends BaseDetailFragment implements UpdatedStoryListener {
 	
@@ -66,7 +73,7 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 	
 	private Boolean onCreateViewHasBeenCalled = false;
 	
-	private EditText photoDescriptionEdit;
+	private EditTextWithBackFunctionality photoDescriptionEdit;
 	
 	private View view;
 	
@@ -77,21 +84,13 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 	protected MyGestureListener myGestureListener;
 	
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
-	        Bundle savedInstanceState)
+	public void onResume()
 	{
-		
-		Log.w(tag, "onCreateView");
-		
-		this.inflater = inflater;
-		view = (View) this.inflater.inflate(R.layout.event_detail_messages, null);
+		super.onResume();
 		
 		listViewLayout = (ListView) view.findViewById(R.id.event_detail_list_view);
 		//listAdapter = new EventDetailListAdapter(getActivity(), R.layout.event_item_detail_photo, new ArrayList<EventItem>());
 		messageAdapter = new MessageAdapter(getActivity(), R.layout.message_list_item, new ArrayList<StoryItem>(mEventDetail.getStories()));
-		
-		
-		setUpPageHeader();
 		
 		 myGestureListener = new MyGestureListener(getActivity());
 	        // or if you have already created a Gesture Detector.
@@ -115,14 +114,35 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 		
         setPhotoDescriptionEdit();
         
+		if (listViewLayout.getHeaderViewsCount() == 0)
+		{
+			listViewLayout.addHeaderView(eventHeader);
+		}
+
         view.findViewById(R.id.comment_send_button).setOnClickListener(postStory);
 		
+		view.findViewById(R.id.comment_text_bar).setVisibility(View.VISIBLE);
+        
 		EventServiceBuffer.setStoryListener(this);
 		
 		listViewLayout.setAdapter(messageAdapter);
 		
 		listViewLayout.setSelection(messageAdapter.getCount() - 1);
+
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
 		
+		Log.w(tag, "onCreateView");
+		
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.event_detail_messages, null);
+		
+		
+		setUpPageHeader();
 		//listViewLayout.setOnTouchListener(touchListener);
 		
 		//eventInfoLayout = (TableLayout) eventTop.findViewById(R.id.event_detail_info);
@@ -155,6 +175,15 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 		return view;
 	}
 	
+	public void refreshMessageAdapter()
+	{
+		messageAdapter = new MessageAdapter(getActivity(), R.layout.message_list_item, new ArrayList<StoryItem>(mEventDetail.getStories()));
+		
+		listViewLayout.setAdapter(messageAdapter);
+		
+		listViewLayout.setSelection(messageAdapter.getCount() - 1);
+	}
+	
 	/*private void checkBottomCommentBar()
 	{
 		if (mEventDetail.getOwnerID() == GlobalVariables.getInstance().getUserId())
@@ -180,22 +209,38 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 		
 		((ImageButton) eventHeader.findViewById(R.id.event_detail_comment)).setEnabled(false);
 		
-		listViewLayout.addHeaderView(eventHeader);
+
 	}
 
 	private OnClickListener openMessageTextBox = new OnClickListener(){
 		
 		public void onClick(View v)
 		{
-			view.findViewById(R.id.comment_text_bar).setVisibility(View.VISIBLE);
-			
-			menuButtons.setVisibility(View.GONE);
-			
-			photoDescriptionEdit.requestFocus();
-			
-			InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.showSoftInput(photoDescriptionEdit, InputMethodManager.SHOW_IMPLICIT);
-
+			if (mEventDetail.getAttendees().contains(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId())))
+			{
+				menuButtons.setVisibility(View.GONE);
+				
+				listViewLayout.setSelection(messageAdapter.getCount() - 1);
+				
+				photoDescriptionEdit.requestFocus();
+				
+				InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.showSoftInput(photoDescriptionEdit, InputMethodManager.SHOW_IMPLICIT);
+			}
+			else
+			{
+				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+				builder.setMessage("Join This Event To Message?")
+				.setCancelable(true)
+				.setPositiveButton("Join!", ((EventDetailActivity) getActivity()).joinListener)
+				.setNegativeButton("Nope", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+				
+				builder.create().show();
+			}
 		}
 	};
 	
@@ -306,11 +351,12 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 	private void setPhotoDescriptionEdit()
 	{
 		// set up EditText view. set to "final" so we can use in the editText listeners
-		photoDescriptionEdit = (EditText) view.findViewById(R.id.comment_text);
+		photoDescriptionEdit = (EditTextWithBackFunctionality) view.findViewById(R.id.comment_text);
 		photoDescriptionEdit.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		photoDescriptionEdit.setTextColor(R.color.label_color);
 		photoDescriptionEdit.setHint("Post Message...");
 		photoDescriptionEdit.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES|InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
+		photoDescriptionEdit.setViewToMakeVisible(menuButtons);
 		
 		InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 

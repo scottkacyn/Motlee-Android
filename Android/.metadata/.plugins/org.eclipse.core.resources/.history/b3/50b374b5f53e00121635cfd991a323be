@@ -1,0 +1,53 @@
+   <com.motlee.android.layouts.RatioBackgroundRelativeLayout
+       xmlns:android="http://schemas.android.com/apk/res/android"
+       android:id="@+id/comment_text_background"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_alignParentBottom="true"
+       android:background="@drawable/comment_box"
+       android:paddingLeft="15dp"
+       android:paddingRight="2dp">
+     <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="match_parent">
+       <com.motlee.android.view.EditTextWithBackFunctionality 
+           android:id="@+id/comment_text"
+           android:layout_width="0dp"
+           android:layout_weight=".75"
+           android:layout_height="match_parent"
+           android:gravity="center_vertical"
+           android:paddingLeft="5dp"
+           android:paddingRight="5dp"
+           android:hint="Comment..."
+           android:maxLength="140"
+           android:background="@android:color/transparent"/>
+      
+
+       
+	<FrameLayout
+	      android:id="@+id/comment_send_button_layout"
+	      android:layout_height="match_parent"
+	      android:layout_width="0dp"
+	      android:layout_alignParentRight="true"
+	      android:layout_weight=".25">
+	   <com.motlee.android.view.HorizontalAspectImageButton
+	       android:id="@+id/comment_send_button"
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:padding="5dp"
+	       android:src="@drawable/header_right_button"
+	       android:layout_gravity="right|center_vertical"
+	       android:onClick="sendComment"
+	       android:background="@android:color/transparent" />
+	   
+	   <TextView 
+	       android:id="@+id/comment_send_text"
+	  	    android:layout_width="match_parent"
+	       android:layout_height="match_parent"
+	       android:gravity="center|center_vertical"
+	       android:padding="5dp"
+	       android:text="Send"
+	       android:background="@android:color/transparent" />
+	 </FrameLayout> 
+</LinearLayout>
+  </com.motlee.android.layouts.RatioBackgroundRelativeLayout>

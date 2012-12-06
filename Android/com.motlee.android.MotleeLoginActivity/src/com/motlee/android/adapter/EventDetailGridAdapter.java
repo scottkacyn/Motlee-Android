@@ -136,6 +136,9 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
                         holder.image1 = (ImageButton) convertView.findViewById(R.id.grid_image_1);
                         holder.image2 = (ImageButton) convertView.findViewById(R.id.grid_image_2);
                         holder.image3 = (ImageButton) convertView.findViewById(R.id.grid_image_3);
+                        holder.imageBg1 = (ImageView) convertView.findViewById(R.id.grid_image_bg_1);
+                        holder.imageBg2 = (ImageView) convertView.findViewById(R.id.grid_image_bg_2);
+                        holder.imageBg3 = (ImageView) convertView.findViewById(R.id.grid_image_bg_3);
                         holder.grid_spinner_1 = (ProgressBar) convertView.findViewById(R.id.grid_spinner_1);
                         holder.grid_spinner_2 = (ProgressBar) convertView.findViewById(R.id.grid_spinner_2);
                         holder.grid_spinner_3 = (ProgressBar) convertView.findViewById(R.id.grid_spinner_3);
@@ -184,12 +187,15 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
 				holder.grid_spinner_1.setVisibility(View.GONE);
 				holder.grid_upload_text_1.setVisibility(View.GONE);
 	    	}
+	    	holder.imageBg1.setVisibility(View.VISIBLE);
     	}
     	else
     	{		    		
     		holder.image1.setImageResource(R.drawable.transparent_grid_view);
     	
 	    	holder.image1.getLayoutParams().height = (GlobalVariables.DISPLAY_WIDTH / 3);
+	    	
+	    	holder.imageBg1.setVisibility(View.GONE);
 	    	
 	    	holder.image1.setClickable(false);
     	}
@@ -216,12 +222,15 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
 				holder.grid_spinner_2.setVisibility(View.GONE);
 				holder.grid_upload_text_2.setVisibility(View.GONE);
 	    	}
+	    	holder.imageBg2.setVisibility(View.VISIBLE);
     	}
     	else
     	{		    		
     		holder.image2.setImageResource(R.drawable.transparent_grid_view);
     	
 	    	holder.image2.getLayoutParams().height = (GlobalVariables.DISPLAY_WIDTH / 3);
+	    	
+	    	holder.imageBg2.setVisibility(View.GONE);
 	    	
 	    	holder.image2.setClickable(false);
     	}
@@ -248,6 +257,7 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
 				holder.grid_spinner_3.setVisibility(View.GONE);
 				holder.grid_upload_text_3.setVisibility(View.GONE);
 	    	}
+	    	holder.imageBg3.setVisibility(View.VISIBLE);
     	}
     	else
     	{		    		
@@ -255,14 +265,19 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
     	
 	    	holder.image3.getLayoutParams().height = (GlobalVariables.DISPLAY_WIDTH / 3);
 	    	
+	    	holder.imageBg3.setVisibility(View.GONE);
+	    	
 	    	holder.image3.setClickable(false);
     	}
     }
     
     private static class ViewHolder {
         public ImageButton image1;
+        public ImageView imageBg1;
         public ImageButton image2;
+        public ImageView imageBg2;
         public ImageButton image3;
+        public ImageView imageBg3;
         public ProgressBar grid_spinner_1;
         public ProgressBar grid_spinner_2;
         public ProgressBar grid_spinner_3;

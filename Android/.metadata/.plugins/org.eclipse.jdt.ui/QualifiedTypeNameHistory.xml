@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="com.motlee.android.object.event.UserWithEventsPhotosEvent"/>
-<fullyQualifiedTypeName name="com.motlee.android.object.event.UserInfoListener"/>
-<fullyQualifiedTypeName name="com.motlee.android.object.PhotoItem"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.GlobalEventList"/>
 <fullyQualifiedTypeName name="com.motlee.android.adapter.EventDetailGridAdapter"/>
 <fullyQualifiedTypeName name="android.view.ViewGroup"/>
@@ -19,7 +16,6 @@
 <fullyQualifiedTypeName name="com.motlee.android.adapter.CommentAdapter"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.DateStringFormatter"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.Comment"/>
-<fullyQualifiedTypeName name="com.motlee.android.enums.EventItemType"/>
 <fullyQualifiedTypeName name="java.util.Date"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="android.graphics.drawable.Drawable"/>
@@ -27,11 +23,8 @@
 <fullyQualifiedTypeName name="android.view.GestureDetector"/>
 <fullyQualifiedTypeName name="com.motlee.android.fragment.PeopleListFragment"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.UserInfo"/>
-<fullyQualifiedTypeName name="java.util.Collections"/>
 <fullyQualifiedTypeName name="com.motlee.android.adapter.PeopleListAdapter"/>
 <fullyQualifiedTypeName name="android.widget.ListView"/>
-<fullyQualifiedTypeName name="com.motlee.android.object.DrawableWithHeight"/>
-<fullyQualifiedTypeName name="android.widget.ImageButton"/>
 <fullyQualifiedTypeName name="com.google.android.maps.MapView"/>
 <fullyQualifiedTypeName name="com.motlee.android.R.string"/>
 <fullyQualifiedTypeName name="android.widget.RelativeLayout"/>
@@ -48,10 +41,7 @@
 <fullyQualifiedTypeName name="com.motlee.android.EventDetailActivity"/>
 <fullyQualifiedTypeName name="android.view.LayoutInflater"/>
 <fullyQualifiedTypeName name="com.motlee.android.R.layout"/>
-<fullyQualifiedTypeName name="android.widget.LinearLayout"/>
-<fullyQualifiedTypeName name="com.motlee.android.object.DrawableCache"/>
 <fullyQualifiedTypeName name="android.widget.FrameLayout"/>
-<fullyQualifiedTypeName name="com.motlee.android.R.drawable"/>
 <fullyQualifiedTypeName name="android.view.View.OnFocusChangeListener"/>
 <fullyQualifiedTypeName name="android.graphics.Color"/>
 <fullyQualifiedTypeName name="android.view.KeyEvent"/>
@@ -59,5 +49,15 @@
 <fullyQualifiedTypeName name="android.widget.TextView.OnEditorActionListener"/>
 <fullyQualifiedTypeName name="android.text.InputType"/>
 <fullyQualifiedTypeName name="com.motlee.android.fragment.MessageDetailFragment"/>
+<fullyQualifiedTypeName name="com.motlee.android.object.UserInfoList"/>
+<fullyQualifiedTypeName name="android.widget.ImageButton"/>
 <fullyQualifiedTypeName name="com.motlee.android.R.id"/>
+<fullyQualifiedTypeName name="java.util.HashMap"/>
+<fullyQualifiedTypeName name="com.motlee.android.adapter.PhotoDetailPagedViewAdapter"/>
+<fullyQualifiedTypeName name="java.util.Collections"/>
+<fullyQualifiedTypeName name="com.motlee.android.object.DrawableCache"/>
+<fullyQualifiedTypeName name="android.widget.LinearLayout"/>
+<fullyQualifiedTypeName name="com.motlee.android.object.DrawableWithHeight"/>
+<fullyQualifiedTypeName name="com.motlee.android.R.drawable"/>
+<fullyQualifiedTypeName name="com.motlee.android.enums.EventItemType"/>
 </qualifiedTypeNameHistroy>

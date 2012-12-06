@@ -17,9 +17,19 @@
 	        android:layout_height="wrap_content"
 	        android:scaleType="fitCenter"
 	        android:adjustViewBounds="true"
-	        android:padding="5dp"
+	        android:padding="8dp"
 	        android:background="@android:color/transparent"
 	        android:onClick="showPictureDetail" />
+	    
+	    <ImageView
+            android:id="@+id/grid_image_bg_1"
+	        android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+    		android:adjustViewBounds="true"
+    		android:padding="5dp"
+    		android:src="@drawable/image_thumbnail_background" 
+    		android:background="@android:color/transparent"/>
 	    
 	    <ProgressBar 
 	        android:layout_width="25dp"
@@ -50,9 +60,19 @@
 	        android:layout_height="wrap_content"
 	        android:scaleType="fitCenter"
 	        android:adjustViewBounds="true"
-	        android:padding="5dp"
+	        android:padding="8dp"
 	        android:background="@android:color/transparent"
 	        android:onClick="showPictureDetail" />
+	    
+	    <ImageView
+            android:id="@+id/grid_image_bg_2"
+	        android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+    		android:adjustViewBounds="true"
+    		android:padding="5dp"
+    		android:src="@drawable/image_thumbnail_background" 
+    		android:background="@android:color/transparent"/>
 	    
 	    <ProgressBar 
 	        android:layout_width="25dp"
@@ -83,9 +103,19 @@
 	        android:layout_height="wrap_content"
 	        android:scaleType="fitCenter"
 	        android:adjustViewBounds="true"
-	        android:padding="5dp"
+	        android:padding="8dp"
 	        android:background="@android:color/transparent"
 	        android:onClick="showPictureDetail" />
+	    
+	    <ImageView
+            android:id="@+id/grid_image_bg_3"
+	        android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+    		android:adjustViewBounds="true"
+    		android:padding="5dp"
+    		android:src="@drawable/image_thumbnail_background" 
+    		android:background="@android:color/transparent"/>
 	    
 	    <ProgressBar 
 	        android:layout_width="25dp"

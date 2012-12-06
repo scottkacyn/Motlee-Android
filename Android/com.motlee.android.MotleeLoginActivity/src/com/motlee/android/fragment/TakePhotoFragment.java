@@ -81,6 +81,8 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	
 	private String mCurrentPhotoPath;
 	
+	private boolean cameFromEventDetail;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 	        Bundle savedInstanceState)
@@ -162,14 +164,17 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 				
 				EventServiceBuffer.sendPhotoToDatabase(mEventID, mCurrentPhotoPath, mLocation, photoDescriptionEdit.getText().toString(), photo);
 				
-				Intent eventListIntent = new Intent(getActivity(), EventListActivity.class);
-				eventListIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-				getActivity().startActivity(eventListIntent);
-				
-				Intent eventDetailIntent = new Intent(getActivity(), EventDetailActivity.class);
-				eventDetailIntent.putExtra("EventID", photo.event_id);
-				eventDetailIntent.putExtra("NewPhoto", photo);
-				getActivity().startActivity(eventDetailIntent);
+				if (!cameFromEventDetail)
+				{
+					Intent eventListIntent = new Intent(getActivity(), EventListActivity.class);
+					eventListIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+					getActivity().startActivity(eventListIntent);
+					
+					Intent eventDetailIntent = new Intent(getActivity(), EventDetailActivity.class);
+					eventDetailIntent.putExtra("EventID", photo.event_id);
+					eventDetailIntent.putExtra("NewPhoto", photo);
+					getActivity().startActivity(eventDetailIntent);
+				}
 				
 				getActivity().finish();
 				
@@ -335,5 +340,11 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 		{
 			this.mEventID = eventId;
 		}
+	}
+
+	public void setCameFromEventDetail(boolean cameFromEventDetail) {
+		
+		this.cameFromEventDetail = cameFromEventDetail;
+		
 	}
 }

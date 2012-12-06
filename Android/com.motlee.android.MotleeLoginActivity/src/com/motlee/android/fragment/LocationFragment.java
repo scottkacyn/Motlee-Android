@@ -64,6 +64,14 @@ public class LocationFragment extends BaseDetailFragment {
 	private MapController mMapController;
 	
 	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		setMapOverlays();
+	}
+	
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 	        Bundle savedInstanceState)
 	{
@@ -73,6 +81,12 @@ public class LocationFragment extends BaseDetailFragment {
 		
 		mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 		
+		setPageHeader(pageTitle);
+		if (pageTitle.equals(NEARBY_EVENTS))
+		{
+			setHeaderIcon(NEARBY_EVENTS);
+		}
+
 		eventHeader = (LinearLayout) view.findViewById(R.id.event_detail_header);
 		
 		if (!mShowHeader)
@@ -94,25 +108,22 @@ public class LocationFragment extends BaseDetailFragment {
 			}
 		}
 		
-		setPageHeader(pageTitle);
-		if (pageTitle.equals(NEARBY_EVENTS))
-		{
-			setHeaderIcon(NEARBY_EVENTS);
-		}
-		
 		showLeftHeaderButton();
-		
-		setMapOverlays();
 		
 		return view;
 	}
 
+	public void clearEventList()
+	{
+		this.mEventList.clear();
+	}
+	
 	public void showPageHeader()
 	{
 		mShowHeader = true;
 	}
 	
-	private void setMapOverlays() {
+	public void setMapOverlays() {
 		
 		LocationInfo location = null;
 		
@@ -239,6 +250,11 @@ public class LocationFragment extends BaseDetailFragment {
 	public void setMapView(MapView mapView) {
 		
 		this.mapView = mapView;
+		
+	}
+
+	public void refreshLocation() {
+		// TODO Auto-generated method stub
 		
 	} 
 }

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.motlee.android.layouts.HorizontalRatioLinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent">
+		    
+    <ImageView
+        android:id="@+id/profile_picture"
+        android:layout_width="0dp"
+        android:layout_weight=".25"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:padding="3dp" />
+    
+     <LinearLayout
+         android:id="@+id/profile_photos"
+         android:layout_width="0dp"
+         android:layout_height="match_parent"
+         android:layout_weight=".25" 
+         android:padding="5dp"
+         android:orientation="vertical"
+         android:clickable="true">
+         
+         <TextView
+             android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_weight=".6667"
+             android:paddingTop="5dp"
+             android:id="@+id/profile_number_photos_text"
+             android:gravity="center"
+             style="@style/ProfileNumbers"/>
+         
+         <TextView
+             android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_weight=".3333"
+             android:id="@+id/profile_photos_text"
+        	 android:gravity="center"
+        	 android:text="photos"
+        	 style="@style/CodeFont" />        
+     </LinearLayout>
+     
+     <LinearLayout
+         android:id="@+id/profile_events"
+         android:layout_width="0dp"
+         android:layout_height="match_parent"
+         android:layout_weight=".25" 
+         android:padding="5dp"
+         android:orientation="vertical"
+         android:clickable="true">
+         
+         <TextView
+             android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_weight=".6667"
+             android:paddingTop="5dp"
+             android:id="@+id/profile_number_events_text"
+             android:gravity="center"
+             style="@style/ProfileNumbers"/>
+         
+         <TextView
+             android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_weight=".3333"
+             android:id="@+id/profile_events_text"
+        	 android:gravity="center"
+        	 android:text="events"
+        	 style="@style/CodeFont" />
+         
+     </LinearLayout>
+     
+     <LinearLayout
+         android:id="@+id/profile_friends"
+         android:layout_width="0dp"
+         android:layout_height="match_parent"
+         android:layout_weight=".25" 
+         android:padding="5dp"
+         android:orientation="vertical"
+         android:clickable="true">
+         
+         <TextView
+             android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_weight=".6667"
+             android:paddingTop="5dp"
+             android:id="@+id/profile_number_friends_text"
+             android:gravity="center"
+             style="@style/ProfileNumbers"/>
+         
+         <TextView
+             android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_weight=".3333"
+             android:id="@+id/profile_friends_text"
+        	 android:gravity="center"
+        	 android:text="friends"
+        	 style="@style/CodeFont" />
+                 
+     </LinearLayout>
+</com.motlee.android.layouts.HorizontalRatioLinearLayout>

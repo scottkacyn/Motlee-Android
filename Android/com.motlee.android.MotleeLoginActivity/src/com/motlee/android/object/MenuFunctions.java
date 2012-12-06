@@ -235,6 +235,14 @@ public class MenuFunctions {
 				takePictureIntent.putExtra("Action", TakePhotoActivity.TAKE_PHOTO);
 				takePictureIntent.putExtra("EventID", eventId);
 				//removePlusMenu(activity);
+				if (activity instanceof EventDetailActivity)
+				{
+					takePictureIntent.putExtra("EventDetail", true);
+				}
+				else
+				{
+					takePictureIntent.putExtra("EventDetail", false);
+				}
 				activity.startActivity(takePictureIntent);
 				if (!((activity instanceof EventListActivity) || (activity instanceof EventDetailActivity)))
 				{
@@ -252,6 +260,15 @@ public class MenuFunctions {
 				takePictureIntent.putExtra("Action", TakePhotoActivity.GET_PHOTO_LIBRARY);
 				takePictureIntent.putExtra("EventID", eventId);
 				//removePlusMenu(activity);
+				if (activity instanceof EventDetailActivity)
+				{
+					takePictureIntent.putExtra("EventDetail", true);
+				}
+				else
+				{
+					takePictureIntent.putExtra("EventDetail", false);
+				}
+				
 				activity.startActivity(takePictureIntent);
 				if (!((activity instanceof EventListActivity) || (activity instanceof EventDetailActivity)))
 				{

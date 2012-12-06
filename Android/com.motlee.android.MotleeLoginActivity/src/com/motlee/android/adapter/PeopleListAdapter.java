@@ -117,7 +117,7 @@ public class PeopleListAdapter extends ArrayAdapter<UserInfo> {
             
             holder.search_people_text.setText(person.name);
             holder.search_people_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-            holder.search_button.setContentDescription(String.valueOf(person.id));
+            holder.search_button.setTag(person);
             holder.search_people_profile_pic.setMaxHeight(background.getHeight());
             holder.search_people_profile_pic.setMaxWidth(background.getHeight());
             

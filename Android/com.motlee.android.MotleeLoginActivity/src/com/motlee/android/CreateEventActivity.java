@@ -282,7 +282,14 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
             ft.remove(searchPeopleFragment)
             .commit();
             
-            ((TextView) findViewById(R.id.header_right_text)).setText("Start!");
+            if (isEditing)
+            {
+            	((TextView) findViewById(R.id.header_right_text)).setText("Save");
+            }
+            else
+            {
+            	((TextView) findViewById(R.id.header_right_text)).setText("Start!");
+            }
     	}
     	else if (!isEditing)
     	{
@@ -301,7 +308,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	    	EventServiceBuffer.setAttendeeListener(attendeeListener);
 	    	
 	    	EventServiceBuffer.sendNewEventToDatabase(mCreatedEvent);
-	    	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Loading");
+	    	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Creating Event");
     	}
     	else
     	{
@@ -319,7 +326,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	    	EventServiceBuffer.setAttendeeListener(attendeeListener);
 	    	
 	    	EventServiceBuffer.updateEventInDatabase(mCreatedEvent);
-	    	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Loading");
+	    	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Updating Event");
     	}
     	
     }
@@ -328,11 +335,14 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 
 		public void raised(UpdatedAttendeeEvent e) {
 			
+			Intent eventListIntent = new Intent(CreateEventActivity.this, EventListActivity.class);
+			eventListIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+			startActivity(eventListIntent);
+			
 			Intent seeDetailIntent = new Intent(CreateEventActivity.this, EventDetailActivity.class);
 			seeDetailIntent.putExtra("EventID", mEventID);
-			seeDetailIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-			progressDialog.dismiss();
 			startActivity(seeDetailIntent);
+			progressDialog.dismiss();
 			finish();
 		}
 	};
@@ -373,6 +383,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 					mEventAttendees.remove((Integer) user.uid);
 				}
 			}
+			
+			mEventID = mCreatedEvent.getEventID();
 			
 			EventServiceBuffer.sendAttendeesForEvent(mCreatedEvent.getEventID(), mEventAttendees);
 		}

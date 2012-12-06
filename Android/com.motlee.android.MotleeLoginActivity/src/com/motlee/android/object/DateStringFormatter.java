@@ -89,6 +89,11 @@ public class DateStringFormatter {
 		
 		String dateString = "";
 		
+		if (dateParam.compareTo(currentTime) >= 0)
+		{
+			return "Just Now";
+		}
+		
 		Interval timeInterval = new Interval(dateParam, currentTime);
 		long timeInMs = timeInterval.toDurationMillis();
 		

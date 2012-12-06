@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -82,6 +83,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
         public TextView photo_detail_like_button_text;
         public ListView comment_list;
         public TextView photo_detail_caption;
+        public ImageButton photo_detail_like_button;
 	}
 	
 		@Override
@@ -110,6 +112,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	                     holder.photo_detail_like_button_text = (TextView) holder.header_view.findViewById(R.id.photo_detail_like_button_text);
 	                     holder.touch_overlay = holder.header_view.findViewById(R.id.photo_detail_touch_overlay);
 	                     holder.photo_detail_caption = (TextView) holder.touch_overlay.findViewById(R.id.photo_detail_description);
+	                     holder.photo_detail_like_button = (ImageButton) holder.header_view.findViewById(R.id.photo_detail_like_button);
 	                     
 	                     convertView.setTag(holder);
 	         			
@@ -140,6 +143,8 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	
 	 	Collections.sort(photo.comments);
 	 	
+	 	holder.photo_detail_like_button.setTag(photo);
+	 	
 	 	CommentAdapter adapter = new CommentAdapter(context, R.layout.comment_list_item, photo.comments);
 	 	
 	 	if (holder.comment_list.getHeaderViewsCount() == 0)
@@ -168,6 +173,12 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 			{
 		    	
 		    	location = photo.location;
+		    	
+		    	if (!photo.caption.equals(""))
+		    	{
+		    		holder.touch_overlay.setVisibility(View.VISIBLE);
+		    		holder.touch_overlay.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.photo_detail_overlay, GlobalVariables.DISPLAY_WIDTH).getDrawable());
+		    	}
 		    	
 		    	final View touchOverlay = holder.touch_overlay;
 		    	

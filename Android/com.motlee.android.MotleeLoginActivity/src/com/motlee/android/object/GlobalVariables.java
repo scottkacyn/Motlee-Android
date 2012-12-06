@@ -174,6 +174,12 @@ public class GlobalVariables {
 		return AWS_URL + photo.id + "/compressed/" + photo.image_file_name;
 	}
 	
+	public LocationInfo getLocationInfo()
+	{
+		LocationInfo location = new LocationInfo("Current Location", userLocation.getLatitude(), userLocation.getLongitude(), null);
+		return location;
+	}
+	
 	public HttpClient setUpHttpClient()
 	{
 		DefaultHttpClient ret = null;

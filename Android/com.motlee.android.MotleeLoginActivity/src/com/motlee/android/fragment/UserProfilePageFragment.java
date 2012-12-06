@@ -25,6 +25,8 @@ import com.motlee.android.adapter.EventDetailGridAdapter;
 import com.motlee.android.adapter.UserProfileAdapter;
 import com.motlee.android.layouts.StretchedBackgroundLinearLayout;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
@@ -53,6 +55,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -69,8 +72,8 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 	private EventDetailGridAdapter photoGridAdapter;
 	private UserProfileAdapter eventAdapter;
 	
-	private StretchedBackgroundLinearLayout profileEvents;
-	private StretchedBackgroundLinearLayout profilePictures;
+	private LinearLayout profileEvents;
+	private LinearLayout profilePictures;
     
 	private int facebookID;
 	
@@ -90,6 +93,7 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
     
     private View headerView;
 	
+    private int maxHeightPic;
     
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
@@ -103,11 +107,17 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 		
 		userInfoList = (ListView) view.findViewById(R.id.user_profile_list_view);
 
+		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.user_profile_header_background, GlobalVariables.DISPLAY_WIDTH);
+		
+		maxHeightPic = drawable.getHeight();
+		
+		headerView.setBackgroundDrawable(drawable.getDrawable());
+		
 		photoGridAdapter = new EventDetailGridAdapter(getActivity(), R.layout.event_detail_page_grid, new ArrayList<GridPictures>());
 		eventAdapter = new UserProfileAdapter(getActivity(), R.layout.search_event_item, eventIds);
 		
-		profilePictures = (StretchedBackgroundLinearLayout) headerView.findViewById(R.id.profile_pictures);
-		profileEvents = (StretchedBackgroundLinearLayout) headerView.findViewById(R.id.profile_events);
+		profilePictures = (LinearLayout) headerView.findViewById(R.id.profile_photos);
+		profileEvents = (LinearLayout) headerView.findViewById(R.id.profile_events);
 		
 		profilePictures.setOnClickListener(showPictureGrid);
 		profileEvents.setOnClickListener(showEvents);
@@ -121,7 +131,7 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 	}
 	
 	
-	public void setLocationObject(GraphObject object)
+	/*public void setLocationObject(GraphObject object)
 	{
 		JSONObject location = (JSONObject) object.getProperty("location");
 		try {
@@ -130,7 +140,7 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 			e.printStackTrace();
 		}
 		this.birthDate = object.getProperty("birthday").toString();
-	}
+	}*/
 	
 	public void setUserId(int userID, int facebookID)
 	{
@@ -149,7 +159,7 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 		
 		setProfilePicture();
 		
-		setProfileInformation();
+		//setProfileInformation();
 		
 		setAttendeePictureCount();
 		
@@ -157,10 +167,10 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 		
 		setGridAdapter();
 		
-		userInfoList.setAdapter(eventAdapter);
+		userInfoList.setAdapter(photoGridAdapter);
 	}
 
-	private void setProfileInformation() {
+	/*private void setProfileInformation() {
 		
 		TextView textView = (TextView) headerView.findViewById(R.id.profile_text_top);
 		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
@@ -169,21 +179,15 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 		textView = (TextView) headerView.findViewById(R.id.profile_text_middle);
 		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		textView.setText(this.location);
-	}
+	}*/
 
 	private void setAttendeePictureCount()
 	{
-		TextView textView = (TextView) headerView.findViewById(R.id.profile_part_of_text);
-		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-		
-		textView = (TextView) headerView.findViewById(R.id.profile_number_events_text);
+		TextView textView = (TextView) headerView.findViewById(R.id.profile_number_events_text);
 		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		textView.setText(Integer.toString(this.eventIds.size()));
 		
 		textView = (TextView) headerView.findViewById(R.id.profile_events_text);
-		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-		
-		textView = (TextView) headerView.findViewById(R.id.profile_added_text);
 		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		
 		textView = (TextView) headerView.findViewById(R.id.profile_number_photos_text);
@@ -193,22 +197,22 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 		textView = (TextView) headerView.findViewById(R.id.profile_photos_text);
 		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		
-		/*textView = (TextView) headerView.findViewById(R.id.profile_has_text);
-		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-		
 		textView = (TextView) headerView.findViewById(R.id.profile_number_friends_text);
 		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		textView.setText(Integer.toString(this.photos.size()));
 		
 		textView = (TextView) headerView.findViewById(R.id.profile_friends_text);
-		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());*/
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		
 	}
 	
 	private void setProfilePicture() {
 		final ImageView imageView = (ImageView) headerView.findViewById(R.id.profile_picture);
 		
-		GlobalVariables.getInstance().downloadImage(imageView, pictureURL);
+		imageView.setMaxHeight(maxHeightPic);
+		imageView.setMaxWidth(maxHeightPic);
+		
+		GlobalVariables.getInstance().downloadImage(imageView, GlobalVariables.getInstance().getFacebookPictureUrlLarge(facebookID));
 		//TableRow tr = new TableRow(getActivity());
 		//LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		//tr.setLayoutParams(lp);

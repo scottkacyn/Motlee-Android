@@ -10,7 +10,7 @@
      <LinearLayout
           android:layout_width="match_parent"
           android:layout_height="match_parent">
-       <EditText 
+       <com.motlee.android.view.EditTextWithBackFunctionality 
            android:id="@+id/comment_text"
            android:layout_width="0dp"
            android:layout_weight=".75"
@@ -19,6 +19,7 @@
            android:paddingLeft="5dp"
            android:paddingRight="5dp"
            android:hint="Comment..."
+           android:singleLine="true"
            android:maxLength="140"
            android:background="@android:color/transparent"/>
       

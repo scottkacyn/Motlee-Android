@@ -1,9 +1,12 @@
 package com.motlee.android;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 
+import com.motlee.android.adapter.PhotoDetailPagedViewAdapter;
 import com.motlee.android.enums.EventItemType;
 import com.motlee.android.fragment.EventDetailFragment;
 import com.motlee.android.fragment.EventItemDetailFragment;
@@ -17,13 +20,22 @@ import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.event.UpdatedLikeEvent;
 import com.motlee.android.object.event.UpdatedLikeListener;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.InputType;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 public class EventItemDetailActivity extends BaseMotleeActivity {
 	
@@ -32,7 +44,10 @@ public class EventItemDetailActivity extends BaseMotleeActivity {
 	
 	private boolean likeChanged = false;
 	
-	private ArrayList<Comment> newComments = new ArrayList<Comment>();
+	private HashMap<PhotoItem, ArrayList<Comment>> newComments = new HashMap<PhotoItem, ArrayList<Comment>>();
+	private HashMap<PhotoItem, Boolean> likeMap = new HashMap<PhotoItem, Boolean>();
+	
+	private EditText editText;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -43,6 +58,8 @@ public class EventItemDetailActivity extends BaseMotleeActivity {
         //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
         
         mEventItem = (EventItem) getIntent().getParcelableExtra("EventItem");
+        
+        //setEditText();
         
         if (mEventItem instanceof PhotoItem)
         {
@@ -72,34 +89,63 @@ public class EventItemDetailActivity extends BaseMotleeActivity {
             .commit();
         }
 	}
-    
+	
     public void sendComment(View view)
     {
-    	
+    	PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+		PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
     	
     	if (!fragment.getCommentText().equals(""))
     	{
 	    	//EventServiceBuffer.addCommentToEventItem(mEventItem, fragment.getCommentText());
 	    	
-    		Comment comment = new Comment(mEventItem.event_id, EventItemType.COMMENT, GlobalVariables.getInstance().getUserId(), new Date(), fragment.getCommentText());
+    		Comment comment = new Comment(currentPhoto.event_id, EventItemType.COMMENT, GlobalVariables.getInstance().getUserId(), new Date(), fragment.getCommentText());
     		
-    		newComments.add(comment);
+    		if (newComments.containsKey(currentPhoto))
+    		{
+    			newComments.get(currentPhoto).add(comment);
+    		}
+    		else
+    		{
+    			newComments.put(currentPhoto, new ArrayList<Comment>());
+    			newComments.get(currentPhoto).add(comment);
+    		}
     		
-    		fragment.addComment(comment);
+    		currentPhoto.comments.add(comment);
     		
 	    	fragment.removeTextAndKeyboard();
+	    	
+	    	adapter.notifyDataSetChanged();
     	}
     }
 	
 	public void onLikeClick(View view)
 	{
-
+		PhotoItem photo = (PhotoItem) view.getTag();
 		// toggle if we changed user's like status
-		likeChanged = !likeChanged;
-		
-		if (Boolean.parseBoolean(view.getTag().toString()))
+		if (likeMap.containsKey(photo))
 		{
-			for (Iterator<Like> it = mEventItem.likes.iterator(); it.hasNext(); )
+			likeMap.put(photo, !likeMap.get(photo));
+		}
+		else
+		{
+			likeMap.put(photo, true);
+		}
+		
+		boolean hasLiked = false;
+		
+		for (Like like : photo.likes)
+		{
+			if (like.user_id.equals(GlobalVariables.getInstance().getUserId()))
+			{
+				hasLiked = true;
+				break;
+			}
+		}
+		
+		if (hasLiked)
+		{
+			for (Iterator<Like> it = photo.likes.iterator(); it.hasNext(); )
 			{
 				Like like = it.next();
 				
@@ -109,29 +155,41 @@ public class EventItemDetailActivity extends BaseMotleeActivity {
 				}
 			}
 			
-			fragment.unlike();
+			PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+			PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
+			currentPhoto = photo;
+			adapter.notifyDataSetChanged();
 		}
 		else
 		{
-			Like newLike = new Like(mEventItem.event_id, EventItemType.LIKE, GlobalVariables.getInstance().getUserId(), new Date());
+			Like newLike = new Like(photo.event_id, EventItemType.LIKE, GlobalVariables.getInstance().getUserId(), new Date());
 			
-			mEventItem.likes.add(newLike);
+			photo.likes.add(newLike);
 			
-			fragment.like();
+			PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+			PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
+			currentPhoto = photo;
+			adapter.notifyDataSetChanged();
 		}
 	}
 	
 	@Override
 	public void onDestroy()
 	{
-		for (Comment comment : newComments)
+		for (PhotoItem photo : newComments.keySet())
 		{
-			EventServiceBuffer.addCommentToEventItem(mEventItem, comment.body);
+			for (Comment comment : newComments.get(photo))
+			{
+				EventServiceBuffer.addCommentToEventItem(photo, comment.body);
+			}
 		}
 		
-		if (likeChanged)
+		for (PhotoItem photo : likeMap.keySet())
 		{
-			EventServiceBuffer.likeEventItem(mEventItem);
+			if (likeMap.get(photo))
+			{
+				EventServiceBuffer.likeEventItem(photo);
+			}
 		}
 		
 		super.onDestroy();

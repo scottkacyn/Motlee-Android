@@ -93,8 +93,6 @@ public class MoreEventDetailActivity extends BaseMotleeActivity {
         	
         	//fragment.setPageTitle(eDetail.getEventName());
         	
-        	fragment.setUserList(users);
-        	
         	ft.add(R.id.fragment_content, fragment);
         }
         ft.commit();

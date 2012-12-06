@@ -83,6 +83,23 @@ public class PeopleListFragment extends BaseDetailFragment {
 	}*/
 	
 	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		eventDetailPeopleList = (ListView) view.findViewById(R.id.event_detail_people_list);
+		//eventDetailPeopleList.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		
+		if (eventDetailPeopleList.getHeaderViewsCount() == 0)
+		{
+			eventDetailPeopleList.addHeaderView(eventHeader);
+		}
+		
+		setUpPeopleList();
+
+	}
+	
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 	        Bundle savedInstanceState)
 	{
@@ -92,8 +109,8 @@ public class PeopleListFragment extends BaseDetailFragment {
 		this.inflater = inflater;
 		view = (View) this.inflater.inflate(R.layout.event_detail_people_list, null);
 
-		eventDetailPeopleList = (ListView) view.findViewById(R.id.event_detail_people_list);
-		//eventDetailPeopleList.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		
+		setUpPageHeader();
 		
 		setPageHeader(pageTitle);
 		if (mEventDetail != null)
@@ -101,10 +118,6 @@ public class PeopleListFragment extends BaseDetailFragment {
 			showRightHeaderButton(mEventDetail);
 		}
 		showLeftHeaderButton();
-    	
-		setUpPageHeader();
-		
-		setUpPeopleList();
 		
 		return view;
 	}
@@ -116,17 +129,19 @@ public class PeopleListFragment extends BaseDetailFragment {
 		
 		((ImageButton) eventHeader.findViewById(R.id.event_detail_friends)).setEnabled(false);
 		
-		eventDetailPeopleList.addHeaderView(eventHeader);
+
 	}
 	
-	private void setUpPeopleList() 
+	public void setUpPeopleList() 
 	{
+		mUsers = new ArrayList<UserInfo>(mEventDetail.getAttendees());
+		
 		if (mUsers.size() > 0)
 		{
 			Collections.sort(mUsers);
 		}
 		
-		mAdapter = new PeopleListAdapter(getActivity(), R.layout.search_people_item, mUsers);
+		mAdapter = new PeopleListAdapter(getActivity(), R.layout.people_list_item, mUsers);
 		
 		eventDetailPeopleList.setAdapter(mAdapter);
 
@@ -136,10 +151,5 @@ public class PeopleListFragment extends BaseDetailFragment {
 	{
 		mEventDetail = eventDetail;
 		this.pageTitle = mEventDetail.getEventName();
-	}
-	
-	public void setUserList(ArrayList<UserInfo> users)
-	{
-		mUsers = users;
 	}
 }

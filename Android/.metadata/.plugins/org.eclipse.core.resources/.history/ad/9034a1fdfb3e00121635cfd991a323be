@@ -1,0 +1,166 @@
+package com.motlee.android;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import com.motlee.android.adapter.PhotoDetailPagedViewAdapter;
+import com.motlee.android.enums.EventItemType;
+import com.motlee.android.fragment.EventDetailFragment;
+import com.motlee.android.fragment.EventItemDetailFragment;
+import com.motlee.android.object.Comment;
+import com.motlee.android.object.EventItem;
+import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.Like;
+import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.StoryItem;
+import com.motlee.android.object.event.UpdatedLikeEvent;
+import com.motlee.android.object.event.UpdatedLikeListener;
+
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.view.View;
+import android.widget.ImageButton;
+
+public class EventItemDetailActivity extends BaseMotleeActivity {
+	
+	private EventItem mEventItem;
+	private EventItemDetailFragment fragment;
+	
+	private boolean likeChanged = false;
+	
+	private HashMap<Integer, ArrayList<Comment>> newComments = new HashMap<Integer, ArrayList<Comment>>();
+	private HashMap<Integer, Boolean> likeMap = new HashMap<Integer, Boolean>();
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+        
+        //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
+        
+        mEventItem = (EventItem) getIntent().getParcelableExtra("EventItem");
+        
+        if (mEventItem instanceof PhotoItem)
+        {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            
+            fragment = new EventItemDetailFragment();
+            fragment.setHeaderView(findViewById(R.id.header));
+            
+            fragment.setDetailImage((PhotoItem)mEventItem);
+            
+            ft.add(R.id.fragment_content, fragment)
+            .commit();
+        }
+        
+        if (mEventItem instanceof StoryItem)
+        {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            
+            fragment = new EventItemDetailFragment();
+            fragment.setHeaderView(findViewById(R.id.header));
+            
+            fragment.setDetailStory((StoryItem)mEventItem);
+            
+            ft.add(R.id.fragment_content, fragment)
+            .commit();
+        }
+	}
+    
+    public void sendComment(View view)
+    {
+    	
+    	
+    	if (!fragment.getCommentText().equals(""))
+    	{
+	    	//EventServiceBuffer.addCommentToEventItem(mEventItem, fragment.getCommentText());
+	    	
+    		Comment comment = new Comment(mEventItem.event_id, EventItemType.COMMENT, GlobalVariables.getInstance().getUserId(), new Date(), fragment.getCommentText());
+    		
+    		//newComments.add(comment);
+    		
+    		fragment.addComment(comment);
+    		
+	    	fragment.removeTextAndKeyboard();
+    	}
+    }
+	
+	public void onLikeClick(View view)
+	{
+		PhotoItem photo = (PhotoItem) view.getTag();
+		// toggle if we changed user's like status
+		if (likeMap.containsKey(photo.id))
+		{
+			likeMap.put(photo.id, !likeMap.get(photo.id));
+		}
+		else
+		{
+			likeMap.put(photo.id, true);
+		}
+		
+		boolean hasLiked = false;
+		
+		for (Like like : photo.likes)
+		{
+			if (like.user_id.equals(GlobalVariables.getInstance().getUserId()))
+			{
+				hasLiked = true;
+				break;
+			}
+		}
+		
+		if (hasLiked)
+		{
+			for (Iterator<Like> it = photo.likes.iterator(); it.hasNext(); )
+			{
+				Like like = it.next();
+				
+				if (like.user_id == GlobalVariables.getInstance().getUserId())
+				{
+					it.remove();
+				}
+			}
+			
+			PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+			PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
+			currentPhoto = photo;
+			adapter.notifyDataSetChanged();
+		}
+		else
+		{
+			Like newLike = new Like(photo.event_id, EventItemType.LIKE, GlobalVariables.getInstance().getUserId(), new Date());
+			
+			photo.likes.add(newLike);
+			
+			PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+			PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
+			currentPhoto = photo;
+			adapter.notifyDataSetChanged();
+		}
+	}
+	
+	@Override
+	public void onDestroy()
+	{
+		/*for (Comment comment : newComments)
+		{
+			EventServiceBuffer.addCommentToEventItem(mEventItem, comment.body);
+		}*/
+		
+		if (likeChanged)
+		{
+			EventServiceBuffer.likeEventItem(mEventItem);
+		}
+		
+		super.onDestroy();
+	}
+}

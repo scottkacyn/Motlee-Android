@@ -76,7 +76,7 @@ public class EventServiceBuffer extends Object {
 	private static Context mContext;
 	private static ResultReceiver mReceiver;
 	
-    private static final String WEB_SERVICE_URL = "http://dev.motleeapp.com/api/";
+    private static final String WEB_SERVICE_URL = "http://www.motleeapp.com/api/";
     private static String AUTH_TOK = "auth_token";
     
     public static final String MY_EVENTS = "me";
@@ -912,6 +912,18 @@ public class EventServiceBuffer extends Object {
 		
 		int itemId = element.getAsJsonObject().get("commentable_id").getAsInt();
 		
+		if (GlobalEventList.eventDetailMap.containsKey(comment.event_id))
+		{
+			EventDetail event = GlobalEventList.eventDetailMap.get(comment.event_id);
+			for (PhotoItem photo : event.getImages())
+			{
+				if (itemId == photo.id)
+				{
+					photo.comments.add(comment);
+				}
+			}
+		}
+		
 		UpdatedCommentEvent params = new UpdatedCommentEvent(this, comment, itemType, itemId);
 		
 		if (mCommentListener != null)
@@ -956,6 +968,18 @@ public class EventServiceBuffer extends Object {
 		}
 		
 		int itemId = element.getAsJsonObject().get("likeable_id").getAsInt();
+		
+		if (GlobalEventList.eventDetailMap.containsKey(like.event_id))
+		{
+			EventDetail event = GlobalEventList.eventDetailMap.get(like.event_id);
+			for (PhotoItem photo : event.getImages())
+			{
+				if (itemId == photo.id)
+				{
+					photo.likes.add(like);
+				}
+			}
+		}
 		
 		UpdatedLikeEvent params = new UpdatedLikeEvent(this, like, itemType, itemId);
 		
@@ -1325,9 +1349,14 @@ public class EventServiceBuffer extends Object {
    		    {
    		    	GlobalEventList.eventDetailMap.put(eDetail.getEventID(), eDetail);
    		    }
-    		
+   		    
     		eventIds.add(eDetail.getEventID());
     	}
+    	
+	    if (GlobalVariables.getInstance().getUserId() == userInfo.id)
+	    {
+   		    GlobalEventList.myEventDetails.addAll(eventIds);
+	    }
     	
     	JsonArray photoJson = parseJson.getAsJsonObject("user").getAsJsonArray("photos");
     	

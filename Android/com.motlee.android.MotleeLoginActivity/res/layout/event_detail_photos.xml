@@ -12,6 +12,7 @@
         android:layout_height="match_parent"
 		android:fastScrollEnabled="true"
 	    android:scrollbars="none"
-        android:background="@android:color/transparent" />
+        android:background="@android:color/transparent"
+        android:divider="@null" />
     
 </RelativeLayout>

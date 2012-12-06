@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:padding="10dp"
+    android:background="@android:color/transparent">
+		    
+    <com.motlee.android.layouts.StretchedBackgroundLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:padding="10dp"
+        android:id="@+id/profile_image_background"
+        android:background="@drawable/label_button_background" >
+        
+        <ImageView
+            android:id="@+id/profile_picture"
+            android:layout_width="0dp"
+            android:layout_weight=".3333"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter" />
+        
+  	        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight=".66666" 
+            android:paddingLeft="5dp"
+            android:paddingTop="5dp" 
+            android:orientation="vertical">
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight=".3333"
+                android:paddingTop="5dp"
+                android:id="@+id/profile_text_top"
+                android:gravity="center_vertical"/>
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight=".3333"
+                android:id="@+id/profile_text_middle"
+           	    android:gravity="center_vertical"/>
+            	         
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight=".3333"
+                android:id="@+id/profile_text_bottom"
+                android:paddingBottom="5dp"
+                android:gravity="center_vertical"/>
+            
+        </LinearLayout>
+	        
+    </com.motlee.android.layouts.StretchedBackgroundLinearLayout>    
+	
+	<LinearLayout
+            android:layout_height="10dp"
+            android:layout_width="match_parent"
+            android:background="@android:color/transparent" />
+	    
+	  <RelativeLayout
+	        android:layout_height="100dp"
+	        android:layout_width="match_parent" >
+	
+	       <LinearLayout
+	           android:layout_width="wrap_content"
+	           android:layout_height="match_parent"
+	           android:layout_centerInParent="true" >
+
+	           <com.motlee.android.layouts.StretchedBackgroundLinearLayout
+	               android:id="@+id/profile_events"
+	               android:layout_width="100dp"
+	               android:layout_height="100dp"
+	               android:layout_gravity="center"
+	               android:background="@drawable/label_button_background"
+	               android:orientation="vertical" 
+	               android:clickable="true">
+
+	               <TextView
+	                   android:id="@+id/profile_part_of_text"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="0dp"
+	                   android:layout_gravity="center"
+	                   android:layout_weight=".3333"
+	                   android:paddingTop="5dp"
+	                   android:text="part of" />
+
+	               <TextView
+	                   android:id="@+id/profile_number_events_text"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="0dp"
+	                   android:layout_gravity="center"
+	                   android:layout_weight=".3333" />
+
+	               <TextView
+	                   android:id="@+id/profile_events_text"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="0dp"
+	                   android:layout_gravity="center"
+	                   android:layout_weight=".3333"
+	                   android:paddingBottom="5dp"
+	                   android:text="events" />
+	           </com.motlee.android.layouts.StretchedBackgroundLinearLayout>
+
+	           <LinearLayout
+	               android:layout_height="100dp"
+	               android:layout_width="10dp"
+	               android:background="@android:color/transparent" />
+	           
+	           <com.motlee.android.layouts.StretchedBackgroundLinearLayout
+	               android:id="@+id/profile_pictures"
+	               android:layout_width="100dp"
+	               android:layout_height="100dp"
+	               android:layout_gravity="center"
+	               android:background="@drawable/label_button_background"
+	               android:orientation="vertical"
+	               android:clickable="true" >
+
+	               <TextView
+	                   android:id="@+id/profile_added_text"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="0dp"
+	                   android:layout_gravity="center"
+	                   android:layout_weight=".3333"
+	                   android:paddingTop="5dp"
+	                   android:text="added" />
+
+	               <TextView
+	                   android:id="@+id/profile_number_photos_text"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="0dp"
+	                   android:layout_gravity="center"
+	                   android:layout_weight=".3333" />
+
+	               <TextView
+	                   android:id="@+id/profile_photos_text"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="0dp"
+	                   android:layout_gravity="center"
+	                   android:layout_weight=".3333"
+	                   android:paddingBottom="5dp"
+	                   android:text="photos" />
+	           </com.motlee.android.layouts.StretchedBackgroundLinearLayout>
+	       </LinearLayout>
+
+		</RelativeLayout>
+		
+</LinearLayout>

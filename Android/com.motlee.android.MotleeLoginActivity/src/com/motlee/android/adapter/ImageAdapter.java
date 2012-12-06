@@ -25,6 +25,7 @@ import java.util.Vector;
 
 import com.motlee.android.EventListActivity;
 import com.motlee.android.R;
+import com.motlee.android.enums.EventItemType;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
@@ -56,6 +57,7 @@ public class ImageAdapter extends BaseAdapter {
 	private static final int MIN_SIZE = 4;
 	
 	private static final PhotoItem NO_PHOTO = null;
+	private static final PhotoItem FIRST_PHOTO = new PhotoItem(-5, EventItemType.PICTURE, -5, null, null, null);
 	
     private ArrayList<PhotoItem> mPhotoList = new ArrayList<PhotoItem>();
     private ArrayList<PhotoItem> mOriginalPhotoList = new ArrayList<PhotoItem>();
@@ -122,8 +124,14 @@ public class ImageAdapter extends BaseAdapter {
 	    		this.mPhotoList.add(photos.get(i));
 	    	}
 	    	
-	    	// Adds placeholder if photos list is not larger than MIN_SIZE
 	    	if (lastPosition < MIN_SIZE)
+	    	{
+	    		lastPosition++;
+	    		this.mPhotoList.add(FIRST_PHOTO);
+	    	}
+	    	
+	    	// Adds placeholder if photos list is not larger than MIN_SIZE
+	    	for (int i = lastPosition; i < MIN_SIZE; i++)
 	    	{
 	    		this.mPhotoList.add(NO_PHOTO);
 	    	}
@@ -140,7 +148,7 @@ public class ImageAdapter extends BaseAdapter {
     	if (contentView == null) {
             contentView = (View) this.inflater.inflate(resource, null);
             holder.imageView = (ImageView) contentView.findViewById(R.id.imageThumbnail);
-            holder.textView = (TextView) contentView.findViewById(R.id.imageThumbnailText);
+            holder.imagePlaceHolder = (ImageView) contentView.findViewById(R.id.imagePlaceHolder);
             contentView.setTag(holder);
         }
     	else
@@ -154,19 +162,31 @@ public class ImageAdapter extends BaseAdapter {
     		//holder.imageView.setClickable(false);
     		//holder.imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.event_list_add_content));
     		holder.imageView.setVisibility(View.GONE);
+			holder.imagePlaceHolder.setImageDrawable(context.getResources().getDrawable(R.drawable.watermark));
+			holder.imagePlaceHolder.setClickable(false);
+    		holder.imagePlaceHolder.setVisibility(View.VISIBLE);
+    		holder.imagePlaceHolder.setTag(eventId);
+    		
+    	}
+    	else if (mPhotoList.get(position).equals(FIRST_PHOTO))
+    	{
+    		holder.imageView.setVisibility(View.GONE);
     		if (isAttending)
     		{
-    			holder.textView.setText("Add content to this event!");
-    			holder.textView.setTag(eventId);
+    			holder.imagePlaceHolder.setImageDrawable(context.getResources().getDrawable(R.drawable.watermark_camera));
+    			holder.imagePlaceHolder.setClickable(true);
     		}
-    		holder.textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-    		holder.textView.setBackgroundResource(R.drawable.event_list_add_content);
-    		holder.textView.setVisibility(View.VISIBLE);
-    		holder.textView.setContentDescription(String.valueOf(eventId));
-    		
+    		else
+    		{
+    			holder.imagePlaceHolder.setImageDrawable(context.getResources().getDrawable(R.drawable.watermark));
+    			holder.imagePlaceHolder.setClickable(false);
+    		}
+    		holder.imagePlaceHolder.setVisibility(View.VISIBLE);
+    		holder.imagePlaceHolder.setTag(eventId);
     	}
     	else
     	{
+    		holder.imagePlaceHolder.setVisibility(View.GONE);
 			String tag = "ImageAdapter";
     		if (holder == null)
     		{
@@ -197,7 +217,7 @@ public class ImageAdapter extends BaseAdapter {
     private class ViewHolder
     {
     	public ImageView imageView;
-    	public TextView textView;
+    	public ImageView imagePlaceHolder;
     }
 }
 

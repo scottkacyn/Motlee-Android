@@ -54,14 +54,6 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements UserI
 	private int facebookID;
 	
 	private ProgressDialog progressDialog;
-
-	private AsyncFacebookRunner facebookRunner = new AsyncFacebookRunner(GlobalVariables.getInstance().getFacebook());
-
-	private ImageLoader imageDownloader;
-
-	private DisplayImageOptions mOptions;
-
-	private String pictureURL;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,10 +76,8 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements UserI
         progressDialog = ProgressDialog.show(UserProfilePageActivity.this, "", "Loading");
     }
 	
-	private void setUpProfilePageFragment(GraphObject userDetails, UserProfilePageFragment userProfileFragment, ArrayList<PhotoItem> photos, ArrayList<Integer> eventIds) 
+	private void setUpProfilePageFragment(UserProfilePageFragment userProfileFragment, ArrayList<PhotoItem> photos, ArrayList<Integer> eventIds) 
 	{
-		userProfileFragment.setLocationObject(userDetails);
-		
 		userProfileFragment.setPhotos(photos);
 		
 		userProfileFragment.setEventIds(eventIds);
@@ -134,51 +124,27 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements UserI
 		
 		EventServiceBuffer.removeUserInfoListener();
 		
-		Bundle params = new Bundle();
-		
-		String[] stringArray = new String[2];
-		
-		stringArray[0] = "birthday";
-		stringArray[1] = "location";
-		
-		params.putString("fields", "birthday, location");
-		
-		Session facebookSession = Session.getActiveSession();
-		
-		Request request = Request.newGraphPathRequest(facebookSession, Integer.toString(facebookID), new Request.Callback() {
-			
-			public void onCompleted(Response response) {
-				
-				GraphObject userDetails = response.getGraphObject();
-
-		        FragmentManager     fm = getSupportFragmentManager();
-		        FragmentTransaction ft = fm.beginTransaction();
-		        
-		        UserProfilePageFragment userProfileFragment = (UserProfilePageFragment) fm.findFragmentById(R.id.fragment_content);
-		        
-		        if (userProfileFragment == null)
-		        {
-		        	userProfileFragment = new UserProfilePageFragment();
-		    
-			        setUpProfilePageFragment(userDetails, userProfileFragment, photos, eventIds);
-		        	
-			        ft.add(R.id.fragment_content, userProfileFragment);
-			        
-			        ft.commit();
-		        }
-		        else
-		        {
-			        setUpProfilePageFragment(userDetails, userProfileFragment, photos, eventIds);
-		        }
-		        
-		        progressDialog.dismiss();
-				
-			}
-		});
-		
-		request.setParameters(params);
-		
-		Request.executeBatchAsync(request);
+        FragmentManager     fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        
+        UserProfilePageFragment userProfileFragment = (UserProfilePageFragment) fm.findFragmentById(R.id.fragment_content);
+        
+        if (userProfileFragment == null)
+        {
+        	userProfileFragment = new UserProfilePageFragment();
+    
+	        setUpProfilePageFragment(userProfileFragment, photos, eventIds);
+        	
+	        ft.add(R.id.fragment_content, userProfileFragment);
+	        
+	        ft.commit();
+        }
+        else
+        {
+	        setUpProfilePageFragment(userProfileFragment, photos, eventIds);
+        }
+        
+        progressDialog.dismiss();
 		
 	}
 	

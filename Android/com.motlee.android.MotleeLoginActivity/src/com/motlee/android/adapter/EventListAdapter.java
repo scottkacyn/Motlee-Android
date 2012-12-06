@@ -14,6 +14,7 @@ import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.UserInfo;
+import com.motlee.android.object.UserInfoList;
 import com.devsmart.android.ui.HorizontalListView;
 import com.emilsjolander.components.StickyListHeaders.StickyListHeadersBaseAdapter;
 
