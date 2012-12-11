@@ -22,6 +22,7 @@ import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentA
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
 import com.motlee.android.fragment.LoginPageFragment;
 import com.motlee.android.fragment.SplashScreenFragment;
+import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
@@ -69,23 +70,17 @@ public class MotleeLoginActivity extends FacebookActivity implements UpdatedEven
         
         GlobalVariables instance = GlobalVariables.getInstance();
         
+        
+        DrawableCache.getInstance(getResources());
+        
         // Create dummy file to see if it is first time
-        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "test.txt");
+        File file = GlobalVariables.file;
         
 		boolean exists = file.exists();
 		
 		if (!exists) 
 		{
 			GlobalVariables.getInstance().firstUse = true;  
-			try 
-			{
-				file.createNewFile();
-			} 
-			catch (IOException e1) 
-			{
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
 		}
 		else 
 		{
@@ -96,6 +91,7 @@ public class MotleeLoginActivity extends FacebookActivity implements UpdatedEven
         instance.setHelveticaNeueRegularFont(Typeface.createFromAsset(getAssets(), "fonts/helvetica_neue_bold.ttf"));
         instance.setHelveticaNeueRegularFont(Typeface.createFromAsset(getAssets(), "fonts/helvetica_neue_regular.ttf"));
         instance.setFacebook(facebook);
+        instance.calculateEventListImageSize();
         
         //this.openSession();
         
@@ -169,7 +165,6 @@ public class MotleeLoginActivity extends FacebookActivity implements UpdatedEven
 		EventServiceBuffer.setAttendeeListener(null);
 		EventServiceBuffer.setUserInfoListener(null);
 		EventServiceBuffer.removeEventDetailListener(this);
-		EventServiceBuffer.finishContext(this);
 		unbindDrawables(this.findViewById(android.R.id.content));
 		super.onDestroy();
     }

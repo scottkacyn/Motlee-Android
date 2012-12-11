@@ -13,16 +13,16 @@
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="" key="selection"/>
+		<item value="sendPhoto" key="selection"/>
 		<list key="findhistory">
+			<item value="sendPhoto"/>
+			<item value="eventHeader"/>
 			<item value="hideFirstUseHeader"/>
 			<item value="getPhoto"/>
 			<item value="seeMoreDetail"/>
 			<item value="mNewPhoto"/>
 			<item value="touchOverlay"/>
 			<item value="mShowHeader"/>
-			<item value="eventHeader"/>
-			<item value="disableImageButton"/>
 		</list>
 		<list key="replacehistory">
 			<item value="EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);"/>

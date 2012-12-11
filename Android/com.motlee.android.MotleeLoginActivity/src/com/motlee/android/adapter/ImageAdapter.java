@@ -187,6 +187,10 @@ public class ImageAdapter extends BaseAdapter {
     		{
     			Log.d(tag, "mPhotoList.get(position) is null");
     		}
+    		
+    		holder.imageView.setMaxHeight(GlobalVariables.getInstance().getMaxEventListImageHeight());
+    		holder.imageView.setMaxWidth(GlobalVariables.getInstance().getMaxEventListImageHeight());
+    		
     		GlobalVariables.getInstance().downloadImage(holder.imageView, GlobalVariables.getInstance().getAWSUrlThumbnail(mPhotoList.get(position)));
         	holder.imageView.setVisibility(View.VISIBLE);
         	holder.imageView.setTag(mPhotoList.get(position));

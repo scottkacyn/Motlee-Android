@@ -234,11 +234,11 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
 	                String attendeeText = "";
 	                if (item.getAttendeeCount() == 1)
 	                {
-	                	holder.event_footer_owner.setText("1 person going");
+	                	holder.event_footer_owner.setText("1 person");
 	                }
 	                else
 	                {
-	                	holder.event_footer_owner.setText(item.getAttendeeCount() + " people going");
+	                	holder.event_footer_owner.setText(item.getAttendeeCount() + " people");
 	                }
 	                
 	                holder.event_footer_owner.setTypeface(GlobalVariables.getInstance().getGothamLightFont());

@@ -1,5 +1,6 @@
 package com.motlee.android.object;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Vector;
@@ -45,10 +46,12 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Looper;
 import android.support.v4.util.LruCache;
 import android.view.Display;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 public class GlobalVariables {
 	
@@ -82,6 +85,8 @@ public class GlobalVariables {
     
     public boolean firstUse = true;
     
+    private int maxEventListImageHeight;
+    
     private Location userLocation;
     
     private String AWS_URL = "http://s3.amazonaws.com/motlee-development-photos/images/";
@@ -91,6 +96,8 @@ public class GlobalVariables {
     public static String DATE = "date";
     public static String LOCATION = "location";
     public static String FB_APP_ID = "283790891721595";
+    
+    public static File file = new File(Environment.getExternalStorageDirectory() + File.separator + "test1.txt");
     
 	private static GlobalVariables instance;
 	
@@ -331,6 +338,22 @@ public class GlobalVariables {
 		.cacheOnDisc()
 		.displayer(new SimpleBitmapDisplayer())
 		.build();
+	}
+	
+	public void calculateEventListImageSize()
+	{
+    	DrawableWithHeight whole = DrawableCache.getDrawable(R.drawable.event_list_detail_background, GlobalVariables.DISPLAY_WIDTH);
+    	
+    	DrawableWithHeight header = DrawableCache.getDrawable(R.drawable.event_list_detail_header_background, GlobalVariables.DISPLAY_WIDTH);
+    	
+    	DrawableWithHeight footer = DrawableCache.getDrawable(R.drawable.event_list_detail_footer_background, GlobalVariables.DISPLAY_WIDTH);
+	
+    	this.maxEventListImageHeight = whole.getHeight() - header.getHeight() - footer.getHeight();
+	}
+	
+	public int getMaxEventListImageHeight()
+	{
+		return this.maxEventListImageHeight;
 	}
 	
 	public void downloadImage(ImageView imageView, String url)

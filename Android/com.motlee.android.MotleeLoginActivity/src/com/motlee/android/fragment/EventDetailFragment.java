@@ -120,7 +120,7 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 
 
 	        // Example of setting listener. The onTouchEvent will now be called on your listener
-        listViewLayout.setOnTouchListener(myGestureListener);
+        //listViewLayout.setOnTouchListener(myGestureListener);
 		
 		//RelativeLayout textBackground = (RelativeLayout) view.findViewById(R.id.event_detail_text_background);
 		//textBackground.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.comment_box, GlobalVariables.DISPLAY_WIDTH).getDrawable());
@@ -136,16 +136,16 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		
 		EventServiceBuffer.setStoryListener(this);
 		
-		if (listViewLayout.getHeaderViewsCount() == 0)
+		/*if (listViewLayout.getHeaderViewsCount() == 0)
 		{
 			listViewLayout.addHeaderView(eventHeader);
-		}
+		}*/
 		//View eventTop = inflater.inflate(R.layout.event_detail_top, null);
 		//listViewLayout.addHeaderView(eventTop);
 		setListAdapter();
 		setGridAdapter();
 		
-		if (gridAdapter.getCount() == 0)
+		if (gridAdapter.getCount() == 0 && listViewLayout.getHeaderViewsCount() == 0)
 		{
 			View headerView = inflater.inflate(R.layout.event_detail_no_photo_header, null);
 			headerView.findViewById(R.id.event_detail_no_photo_button).setOnClickListener(takePhotoListener);
@@ -221,10 +221,10 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 	
 	private void setUpPageHeader() 
 	{
-		eventHeader = (LinearLayout) this.inflater.inflate(R.layout.event_detail_header, null);
+		eventHeader = (LinearLayout) view.findViewById(R.id.event_detail_header);
 		eventHeader.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getDrawable());
 		
-		eventHeader.setLayoutParams(new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT, DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getHeight()));
+		eventHeader.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getHeight()));
 		
 		((ImageButton) eventHeader.findViewById(R.id.event_detail_photos)).setEnabled(false);
 		

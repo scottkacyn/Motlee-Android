@@ -67,6 +67,8 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
         mEventItem = (EventItem) getIntent().getParcelableExtra("EventItem");
         getPhotoInformation = getIntent().getBooleanExtra("GetPhotoInfo", true);
         
+        getPhotoInformation = true;
+        
         //setEditText();
         if (getPhotoInformation)
         {

@@ -138,6 +138,9 @@ public class MessageAdapter extends ArrayAdapter<StoryItem> {
                 holder.owner_comment_name.setText(UserInfoList.getInstance().get(story.user_id).name);
                 holder.owner_comment_time.setText(DateStringFormatter.getPastDateString(story.created_at));
                 
+                holder.owner_profile_pic.setTag(UserInfoList.getInstance().get(story.user_id));
+                holder.owner_comment_name.setTag(UserInfoList.getInstance().get(story.user_id));
+                
                 imageDownloader.displayImage(GlobalVariables.getInstance().getFacebookPictureUrlLarge(UserInfoList.getInstance().get(story.user_id).uid), holder.owner_profile_pic, mOptions);
             }
             else
@@ -150,6 +153,9 @@ public class MessageAdapter extends ArrayAdapter<StoryItem> {
             	holder.friend_comment_body.setText(story.body);
                 holder.friend_comment_name.setText(UserInfoList.getInstance().get(story.user_id).name);
                 holder.friend_comment_time.setText(DateStringFormatter.getPastDateString(story.created_at));
+                
+                holder.friend_profile_pic.setTag(UserInfoList.getInstance().get(story.user_id));
+                holder.friend_comment_name.setTag(UserInfoList.getInstance().get(story.user_id));
                 
                 imageDownloader.displayImage(GlobalVariables.getInstance().getFacebookPictureUrlLarge(UserInfoList.getInstance().get(story.user_id).uid), holder.friend_profile_pic, mOptions);
             }

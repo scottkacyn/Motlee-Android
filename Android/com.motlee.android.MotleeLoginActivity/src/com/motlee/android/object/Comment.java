@@ -47,4 +47,10 @@ public class Comment extends EventItem {
             return new Comment[size];
         }
     };
+    
+    @Override
+	public int compareTo(EventItem item) {
+
+		return this.created_at.compareTo(item.created_at);
+	}
 }

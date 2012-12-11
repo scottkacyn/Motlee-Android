@@ -527,6 +527,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         
         if (eDetail.getAttendees().contains(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId())))
         {
+        	GlobalEventList.myEventDetails.add(eDetail.getEventID());
             setActionForRightMenu(takePhotoListener);
             showMenuButtons(BaseMotleeActivity.TAKE_PICTURE);
         }
@@ -706,5 +707,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	        	((EventDetailFragment) fragment).photoEvent();
 	        }
         }
+        
+        mNewPhoto = null;
 	}
 }

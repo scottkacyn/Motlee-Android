@@ -1,5 +1,6 @@
 package com.motlee.android.fragment;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import com.markupartist.android.widget.PullToRefreshListView;
@@ -154,6 +155,15 @@ public class EventListFragment extends ListFragmentWithHeader {
 		public void onClick(View v) {
 			
 			hideFirstUseHeader();
+			
+			// Create dummy file to indicate someon closed first message
+			// so we can end the first message
+			try {
+				GlobalVariables.file.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 		}
 		

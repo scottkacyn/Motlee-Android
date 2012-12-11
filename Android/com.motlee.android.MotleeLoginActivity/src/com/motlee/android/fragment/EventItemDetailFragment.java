@@ -259,7 +259,7 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 	{
 		editText = (EditText) view.findViewById(R.id.comment_text);
 		editText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-		editText.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES|InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
+		//editText.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES|InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
 		InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
         in.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);

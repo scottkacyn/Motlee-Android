@@ -472,6 +472,18 @@ public class EventServiceBuffer extends Object {
 		eventDetailBundle.putString("event[name]", eDetail.getEventName());
 		eventDetailBundle.putDouble("event[lat]", eDetail.getLocationInfo().lat);
 		eventDetailBundle.putDouble("event[lon]", eDetail.getLocationInfo().lon);
+		eventDetailBundle.putString("location[name]", eDetail.getLocationInfo().name);
+		eventDetailBundle.putDouble("location[lat]", eDetail.getLocationInfo().lat);
+		eventDetailBundle.putDouble("location[lon]", eDetail.getLocationInfo().lon);
+		if (eDetail.getLocationInfo().uid != null)
+		{
+			eventDetailBundle.putString("location[uid]", eDetail.getLocationInfo().uid.toString());
+		}
+		else
+		{
+			eventDetailBundle.putString("location[uid]", "0");
+		}
+		eventDetailBundle.putString("location[fsid]", "0");
 		eventDetailBundle.putString(AUTH_TOK, GlobalVariables.getInstance().getAuthoToken());
 		
         Intent intent = new Intent(mContext, RubyService.class);
@@ -504,6 +516,11 @@ public class EventServiceBuffer extends Object {
 		{
 			eventDetailBundle.putString("location[uid]", eDetail.getLocationInfo().uid.toString());
 		}
+		else
+		{
+			eventDetailBundle.putString("location[uid]", "0");
+		}
+		eventDetailBundle.putString("location[fsid]", "0");
 		eventDetailBundle.putString(AUTH_TOK, GlobalVariables.getInstance().getAuthoToken());
 		
         Intent intent = new Intent(mContext, RubyService.class);

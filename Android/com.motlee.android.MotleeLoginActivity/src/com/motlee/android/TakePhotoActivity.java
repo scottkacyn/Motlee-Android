@@ -237,10 +237,10 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 		
 	    File croppedFile = new File(file, fileName);
 	    
-	    if (croppedFile.exists())
+	    /*if (croppedFile.exists())
 	    {
 	    	croppedFile.delete();
-	    }
+	    }*/
 	    
 	    return croppedFile.getAbsolutePath();
 	}
@@ -278,7 +278,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			ArrayList<Integer> happeningNowEvents = new ArrayList<Integer>();
 			
 			for (Integer eventID : eventIDs)
-			{
+			{{
 				EventDetail eDetail = GlobalEventList.eventDetailMap.get(eventID);
 				
 				if (eDetail.getStartTime().compareTo(dateTimeNow) < 0 && eDetail.getEndTime().compareTo(dateTimeNow) > 0)

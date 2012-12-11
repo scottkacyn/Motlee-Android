@@ -11,7 +11,6 @@
 <fullyQualifiedTypeName name="com.motlee.android.object.UserInfo"/>
 <fullyQualifiedTypeName name="com.motlee.android.adapter.PeopleListAdapter"/>
 <fullyQualifiedTypeName name="com.google.android.maps.MapView"/>
-<fullyQualifiedTypeName name="android.widget.RelativeLayout"/>
 <fullyQualifiedTypeName name="com.motlee.android.fragment.DateDetailFragment"/>
 <fullyQualifiedTypeName name="java.text.SimpleDateFormat"/>
 <fullyQualifiedTypeName name="com.motlee.android.adapter.MessageAdapter"/>
@@ -60,4 +59,5 @@
 <fullyQualifiedTypeName name="android.widget.ProgressBar"/>
 <fullyQualifiedTypeName name="android.widget.RelativeLayout.LayoutParams"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.DrawableCache"/>
+<fullyQualifiedTypeName name="android.widget.RelativeLayout"/>
 </qualifiedTypeNameHistroy>

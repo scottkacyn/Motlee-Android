@@ -85,6 +85,11 @@ public class EventListActivity extends BaseMotleeActivity {
 		Log.d(this.toString(), "onResume");
 		super.onResume();
 		
+		if (eAdapter != null)
+		{
+			eAdapter.notifyDataSetChanged();
+		}
+		
 		//mEventListFragment.setPageHeader(eventListParams.headerText);
 		//requestNewDataForList(eventListParams.dataContent, eventListParams.headerText);
 	}
@@ -122,7 +127,7 @@ public class EventListActivity extends BaseMotleeActivity {
         
         setContentView(R.layout.main);
         
-        DrawableCache.getInstance(getResources());
+        Log.d("EventListAcitivity", getIntent().toString());
         
         //GlobalVariables.getInstance().setMenuButtonsHeight(findViewById(R.id.menu_buttons).getHeight());
         

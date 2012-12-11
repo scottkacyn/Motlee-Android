@@ -161,7 +161,6 @@ public class BaseMotleeActivity extends FragmentActivity implements UpdatedEvent
 		EventServiceBuffer.setAttendeeListener(null);
 		EventServiceBuffer.setUserInfoListener(null);
 		EventServiceBuffer.removeEventDetailListener(this);
-		EventServiceBuffer.finishContext(this);
 		unbindDrawables(this.findViewById(android.R.id.content));
 		System.gc();
 		super.onDestroy();

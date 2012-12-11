@@ -16,11 +16,13 @@
            android:layout_gravity="bottom"
            android:paddingLeft="10dp"
            android:paddingTop="2dp"
-           android:layout_weight=".13" />
+           android:clickable="true"
+           android:onClick="onClickShowProfile"
+           android:layout_weight=".17" />
        
        <LinearLayout
            android:layout_width="0dp"
-           android:layout_weight=".87"
+           android:layout_weight=".83"
            android:layout_height="wrap_content"
            android:orientation="vertical"
            android:padding="10dp" >
@@ -33,6 +35,8 @@
 		        android:paddingLeft="15dp"
 		        style="@style/CodeFont"
 		        android:textColor="@color/gray"
+		        android:clickable="true"
+		        android:onClick="onClickShowProfile"
 		        android:background="@android:color/transparent" />
 		    
    		    <LinearLayout 
@@ -71,7 +75,7 @@
        
        <LinearLayout
            android:layout_width="0dp"
-           android:layout_weight=".87"
+           android:layout_weight=".83"
            android:layout_height="wrap_content"
            android:orientation="vertical"
            android:padding="10dp">
@@ -116,6 +120,6 @@
            android:layout_gravity="bottom|left"
            android:paddingLeft="10dp"
            android:paddingTop="2dp"
-           android:layout_weight=".13" />
+           android:layout_weight=".17" />
    </LinearLayout>
 </LinearLayout>

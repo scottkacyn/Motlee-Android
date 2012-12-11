@@ -168,7 +168,7 @@ public class LocationFragment extends BaseDetailFragment {
 		
 		mMapController = mapView.getController();
 		mMapController.animateTo(point);
-		mMapController.setZoom(17);
+		mMapController.setZoom(15);
 		
 		List<Overlay> overlays = mapView.getOverlays();
 		overlays.clear();

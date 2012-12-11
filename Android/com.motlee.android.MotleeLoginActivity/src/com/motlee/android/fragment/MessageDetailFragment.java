@@ -28,6 +28,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -98,7 +99,7 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 
 
 	        // Example of setting listener. The onTouchEvent will now be called on your listener
-        listViewLayout.setOnTouchListener(myGestureListener);
+        //listViewLayout.setOnTouchListener(myGestureListener);
 		
 		//RelativeLayout textBackground = (RelativeLayout) view.findViewById(R.id.event_detail_text_background);
 		//textBackground.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.comment_box, GlobalVariables.DISPLAY_WIDTH).getDrawable());
@@ -114,10 +115,10 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 		
         setPhotoDescriptionEdit();
         
-		if (listViewLayout.getHeaderViewsCount() == 0)
+		/*if (listViewLayout.getHeaderViewsCount() == 0)
 		{
 			listViewLayout.addHeaderView(eventHeader);
-		}
+		}*/
 
         view.findViewById(R.id.comment_send_button).setOnClickListener(postStory);
 		
@@ -202,10 +203,10 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 	
 	private void setUpPageHeader() 
 	{
-		eventHeader = (LinearLayout) this.inflater.inflate(R.layout.event_detail_header, null);
+		eventHeader = (LinearLayout) view.findViewById(R.id.event_detail_header);
 		eventHeader.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getDrawable());
 		
-		eventHeader.setLayoutParams(new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT, DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getHeight()));
+		eventHeader.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getHeight()));
 		
 		((ImageButton) eventHeader.findViewById(R.id.event_detail_comment)).setEnabled(false);
 		
@@ -355,7 +356,7 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 		photoDescriptionEdit.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		photoDescriptionEdit.setTextColor(R.color.label_color);
 		photoDescriptionEdit.setHint("Post Message...");
-		photoDescriptionEdit.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES|InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
+		//photoDescriptionEdit.setInputType(InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE|InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 		photoDescriptionEdit.setViewToMakeVisible(menuButtons);
 		
 		InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
