@@ -1,0 +1,47 @@
+package com.motlee.android.view;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+import android.app.ProgressDialog;
+import android.content.Context;
+
+public class ProgressDialogWithTimeout extends ProgressDialog {
+
+	private static Timer mTimer = new Timer();
+	
+	public ProgressDialogWithTimeout(Context context) {
+		super(context);
+		// TODO Auto-generated constructor stub
+	}
+
+	public ProgressDialogWithTimeout(Context context, int theme) {
+		super(context, theme);
+		// TODO Auto-generated constructor stub
+	}
+
+	public static ProgressDialog show (Context context, CharSequence title, CharSequence message)
+	{
+		MyTask task = ProgressDialogWithTimeout.new MyTask();
+		mTimer.schedule(task, 0, 10000);
+		return ProgressDialog.show(context, title, message);
+	}
+	
+	class MyTask extends TimerTask {
+	    //times member represent calling times.
+	    private int times = 0;
+	 
+	 
+	    public void run() {
+	        times++;
+	        if (times <= 5) {
+	            System.out.println("I'm alive...");
+	        } else {
+	            System.out.println("Timer stops now...");
+	 
+	            //Stop Timer.
+	            this.cancel();
+	        }
+	    }
+	}
+}

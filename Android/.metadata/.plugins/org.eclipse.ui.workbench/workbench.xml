@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<workbench progressCount="16" version="2.0">
+<workbench progressCount="19" version="2.0">
 <workbenchAdvisor/>
 <window height="843" maximized="true" width="798" x="-1" y="29">
 <fastViewData fastViewLocation="1024">
@@ -19,7 +19,7 @@
 <coolItem id="org.eclipse.jdt.ui.JavaElementCreationActionSet" itemType="typeToolBarContribution" x="76" y="30"/>
 <coolItem id="org.eclipse.search.searchActionSet" itemType="typeToolBarContribution" x="76" y="30"/>
 <coolItem id="org.eclipse.wst.xml.ui.perspective.NewFileToolBar" itemType="typeToolBarContribution" x="-1" y="-1"/>
-<coolItem id="org.eclipse.wst.xml.ui.design.DesignToolBar" itemType="typeToolBarContribution" x="-1" y="-1"/>
+<coolItem id="org.eclipse.wst.xml.ui.design.DesignToolBar" itemType="typeToolBarContribution" x="68" y="30"/>
 <coolItem id="group.nav" itemType="typeGroupMarker"/>
 <coolItem id="group.editor" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.mat.ui.editors.HeapEditor" itemType="typePlaceholder" x="-1" y="-1"/>
@@ -27,7 +27,7 @@
 <coolItem id="org.eclipse.ui.browser.editor" itemType="typePlaceholder" x="-1" y="-1"/>
 <coolItem id="org.eclipse.ui.DefaultTextEditor" itemType="typePlaceholder" x="-1" y="-1"/>
 <coolItem id="com.android.ide.eclipse.editors.CommonXmlEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
-<coolItem id="org.eclipse.jdt.ui.ClassFileEditor" itemType="typePlaceholder" x="-1" y="-1"/>
+<coolItem id="org.eclipse.jdt.ui.ClassFileEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="org.eclipse.jdt.ui.CompilationUnitEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="group.help" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.help" itemType="typeToolBarContribution" x="-1" y="-1"/>
@@ -49,64 +49,90 @@
 <part id="5"/>
 <part id="6"/>
 <part id="7"/>
+<part id="8"/>
+<part id="9"/>
+<part id="10"/>
+<part id="11"/>
+<part id="12"/>
+<part id="13"/>
+<part id="14"/>
+<part id="15"/>
+<part id="16"/>
 </presentation>
 </folder>
 </info>
 </editorArea>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="UserProfilePageActivity.java" partName="UserProfilePageActivity.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/UserProfilePageActivity.java" title="UserProfilePageActivity.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/UserProfilePageActivity.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/UserProfilePageActivity.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="2502" selectionTopPixel="0"/>
+<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="first_use_header.xml" partName="first_use_header.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/layout/first_use_header.xml" title="first_use_header.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/first_use_header.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/layout/first_use_header.xml"/>
 </editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="UserProfilePageFragment.java" partName="UserProfilePageFragment.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/UserProfilePageFragment.java" title="UserProfilePageFragment.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/UserProfilePageFragment.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/UserProfilePageFragment.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="5305" selectionTopPixel="1539"/>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EventListFragment.java" partName="EventListFragment.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/EventListFragment.java" title="EventListFragment.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/EventListFragment.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/EventListFragment.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="4866" selectionTopPixel="1955"/>
 </editor>
-<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="activity_user_profile.xml" partName="activity_user_profile.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/layout/activity_user_profile.xml" title="activity_user_profile.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/activity_user_profile.xml" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/layout/activity_user_profile.xml"/>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EventServiceBuffer.java" partName="EventServiceBuffer.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/EventServiceBuffer.java" title="EventServiceBuffer.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/EventServiceBuffer.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/EventServiceBuffer.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="5759" selectionTopPixel="803"/>
 </editor>
-<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="profile_page_top.xml" partName="profile_page_top.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/layout/profile_page_top.xml" title="profile_page_top.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/profile_page_top.xml" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/layout/profile_page_top.xml"/>
+<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="progress_bar.xml" partName="progress_bar.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/layout/progress_bar.xml" title="progress_bar.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/progress_bar.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/layout/progress_bar.xml"/>
 </editor>
-<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="styles.xml" partName="styles.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/values/styles.xml" title="styles.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/values/styles.xml" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/values/styles.xml"/>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="MotleeLoginActivity.java" partName="MotleeLoginActivity.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/MotleeLoginActivity.java" title="MotleeLoginActivity.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/MotleeLoginActivity.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/MotleeLoginActivity.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="3075" selectionTopPixel="493"/>
 </editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="ImageAdapter.java" partName="ImageAdapter.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/ImageAdapter.java" title="ImageAdapter.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/ImageAdapter.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/ImageAdapter.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="5468" selectionTopPixel="1925"/>
+<editor activePart="true" focus="true" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EventListActivity.java" partName="EventListActivity.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventListActivity.java" title="EventListActivity.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventListActivity.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventListActivity.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="7577" selectionTopPixel="2695"/>
 </editor>
-<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="thumbnail.xml" partName="thumbnail.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/layout/thumbnail.xml" title="thumbnail.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/thumbnail.xml" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/layout/thumbnail.xml"/>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EventListAdapter.java" partName="EventListAdapter.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/EventListAdapter.java" title="EventListAdapter.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/EventListAdapter.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/EventListAdapter.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="6385" selectionTopPixel="2223"/>
 </editor>
-<editor activePart="true" focus="true" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EventDetailActivity.java" partName="EventDetailActivity.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventDetailActivity.java" title="EventDetailActivity.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventDetailActivity.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventDetailActivity.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="5068" selectionTopPixel="2372"/>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BaseMotleeActivity.java" partName="BaseMotleeActivity.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/BaseMotleeActivity.java" title="BaseMotleeActivity.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/BaseMotleeActivity.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/BaseMotleeActivity.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="5805" selectionTopPixel="3065"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="PullToRefreshListView.java" partName="PullToRefreshListView.java" path="/home/zackmartinsek/Motlee/Android/pulltorefresh/src/com/markupartist/android/widget/PullToRefreshListView.java" title="PullToRefreshListView.java" tooltip="pulltorefresh/src/com/markupartist/android/widget/PullToRefreshListView.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/pulltorefresh/src/com/markupartist/android/widget/PullToRefreshListView.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="6803" selectionTopPixel="2918"/>
+</editor>
+<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="blank_space.xml" partName="blank_space.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/layout/blank_space.xml" title="blank_space.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/blank_space.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/layout/blank_space.xml"/>
+</editor>
+<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="event_list_item.xml" partName="event_list_item.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/layout/event_list_item.xml" title="event_list_item.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/event_list_item.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/layout/event_list_item.xml"/>
+</editor>
+<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="activity_event_list.xml" partName="activity_event_list.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/layout/activity_event_list.xml" title="activity_event_list.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/activity_event_list.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/layout/activity_event_list.xml"/>
+</editor>
+<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="event_detail_photos.xml" partName="event_detail_photos.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/layout/event_detail_photos.xml" title="event_detail_photos.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/event_detail_photos.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/layout/event_detail_photos.xml"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="GlobalVariables.java" partName="GlobalVariables.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/GlobalVariables.java" title="GlobalVariables.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/GlobalVariables.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/GlobalVariables.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="2832" selectionTopPixel="443"/>
+</editor>
+<editor id="com.android.ide.eclipse.editors.CommonXmlEditor" name="message_list_item.xml" partName="message_list_item.xml" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/res/layout/message_list_item.xml" title="message_list_item.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/message_list_item.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/res/layout/message_list_item.xml"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="MessageDetailFragment.java" partName="MessageDetailFragment.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/MessageDetailFragment.java" title="MessageDetailFragment.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/MessageDetailFragment.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/MessageDetailFragment.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="5433" selectionTopPixel="1606"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="MessageAdapter.java" partName="MessageAdapter.java" path="/home/zackmartinsek/Motlee/Android/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/MessageAdapter.java" title="MessageAdapter.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/MessageAdapter.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/MessageAdapter.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="4646" selectionTopPixel="1679"/>
 </editor>
 </editors>
 <views>
-<view id="org.eclipse.mat.ui.views.InspectorView" partName="Inspector">
-<viewState/>
-</view>
-<view id="com.android.ide.eclipse.ddms.views.DeviceView" partName="Devices">
-<viewState/>
-</view>
-<view id="org.eclipse.jdt.callhierarchy.view" partName="Call Hierarchy"/>
-<view id="org.eclipse.debug.ui.DebugView" partName="Debug">
-<viewState/>
-</view>
 <view id="com.android.ide.eclipse.ddms.views.ThreadView" partName="Threads">
 <viewState/>
 </view>
-<view id="org.eclipse.ui.views.TaskList" partName="Tasks">
-<viewState PRIMARY_SORT_FIELD="org.eclipse.ui.ide.completionField" categoryGroup="none" markerContentGenerator="org.eclipse.ui.ide.tasksGenerator" partName="Tasks">
-<columnWidths org.eclipse.ui.ide.completionField="40" org.eclipse.ui.ide.descriptionField="350" org.eclipse.ui.ide.locationField="105" org.eclipse.ui.ide.markerType="811" org.eclipse.ui.ide.pathField="140" org.eclipse.ui.ide.priorityField="35" org.eclipse.ui.ide.resourceField="105"/>
-<visible IMemento.internal.id="org.eclipse.ui.ide.completionField"/>
-<visible IMemento.internal.id="org.eclipse.ui.ide.priorityField"/>
-<visible IMemento.internal.id="org.eclipse.ui.ide.descriptionField"/>
-<visible IMemento.internal.id="org.eclipse.ui.ide.resourceField"/>
-<visible IMemento.internal.id="org.eclipse.ui.ide.pathField"/>
-<visible IMemento.internal.id="org.eclipse.ui.ide.locationField"/>
-<visible IMemento.internal.id="org.eclipse.ui.ide.markerType"/>
-</viewState>
+<view id="org.eclipse.debug.ui.VariableView" partName="Variables">
+<viewState/>
+</view>
+<view id="org.eclipse.debug.ui.BreakpointView" partName="Breakpoints">
+<viewState/>
 </view>
 <view id="org.eclipse.ui.views.ContentOutline" partName="Outline">
 <viewState/>
@@ -114,10 +140,7 @@
 <view id="org.eclipse.mat.ui.views.TextEditorView" partName="Notes">
 <viewState/>
 </view>
-<view id="org.eclipse.ui.navigator.ProjectExplorer" partName="Project Explorer">
-<viewState CommonNavigator.LINKING_ENABLED="0"/>
-</view>
-<view id="com.android.ide.eclipse.ddms.views.HeapView" partName="Heap">
+<view id="org.eclipse.debug.ui.ExpressionView" partName="Expressions">
 <viewState/>
 </view>
 <view id="com.android.ide.eclipse.ddms.views.LogCatView" partName="LogCat">
@@ -127,9 +150,6 @@
 <viewState/>
 </view>
 <view id="org.eclipse.mat.ui.views.NavigatorView" partName="Navigation History">
-<viewState/>
-</view>
-<view id="com.android.ide.eclipse.ddms.views.NetworkStatsView" partName="Network Statistics">
 <viewState/>
 </view>
 <view id="org.eclipse.ui.views.ProblemView" partName="Problems">
@@ -143,6 +163,9 @@
 <visible IMemento.internal.id="org.eclipse.ui.ide.locationField"/>
 <visible IMemento.internal.id="org.eclipse.ui.ide.markerType"/>
 </viewState>
+</view>
+<view id="org.eclipse.ui.console.ConsoleView" partName="Console">
+<viewState/>
 </view>
 <view id="org.eclipse.jdt.ui.PackageExplorer" partName="Package Explorer">
 <viewState group_libraries="1" layout="2" linkWithEditor="0" rootMode="1" workingSetName="">
@@ -171,19 +194,49 @@
 </customFilters>
 </viewState>
 </view>
-<view id="org.eclipse.ui.console.ConsoleView" partName="Console">
+<view id="com.android.ide.eclipse.ddms.views.AllocTrackerView" partName="Allocation Tracker">
+<viewState/>
+</view>
+<view id="org.eclipse.jdt.ui.JavadocView" partName="Javadoc">
+<viewState/>
+</view>
+<view id="org.eclipse.team.ui.GenericHistoryView" partName="History"/>
+<view id="org.eclipse.mat.ui.views.InspectorView" partName="Inspector">
+<viewState/>
+</view>
+<view id="com.android.ide.eclipse.ddms.views.DeviceView" partName="Devices">
+<viewState/>
+</view>
+<view id="org.eclipse.jdt.callhierarchy.view" partName="Call Hierarchy"/>
+<view id="org.eclipse.debug.ui.DebugView" partName="Debug">
+<viewState/>
+</view>
+<view id="org.eclipse.ui.views.TaskList" partName="Tasks">
+<viewState PRIMARY_SORT_FIELD="org.eclipse.ui.ide.completionField" categoryGroup="none" markerContentGenerator="org.eclipse.ui.ide.tasksGenerator" partName="Tasks">
+<columnWidths org.eclipse.ui.ide.completionField="40" org.eclipse.ui.ide.descriptionField="350" org.eclipse.ui.ide.locationField="105" org.eclipse.ui.ide.markerType="811" org.eclipse.ui.ide.pathField="140" org.eclipse.ui.ide.priorityField="35" org.eclipse.ui.ide.resourceField="105"/>
+<visible IMemento.internal.id="org.eclipse.ui.ide.completionField"/>
+<visible IMemento.internal.id="org.eclipse.ui.ide.priorityField"/>
+<visible IMemento.internal.id="org.eclipse.ui.ide.descriptionField"/>
+<visible IMemento.internal.id="org.eclipse.ui.ide.resourceField"/>
+<visible IMemento.internal.id="org.eclipse.ui.ide.pathField"/>
+<visible IMemento.internal.id="org.eclipse.ui.ide.locationField"/>
+<visible IMemento.internal.id="org.eclipse.ui.ide.markerType"/>
+</viewState>
+</view>
+<view id="com.android.ide.eclipse.ddms.views.HeapView" partName="Heap">
+<viewState/>
+</view>
+<view id="org.eclipse.ui.navigator.ProjectExplorer" partName="Project Explorer">
+<viewState CommonNavigator.LINKING_ENABLED="0" org.eclipse.ui.navigator.resources.workingSets.showTopLevelWorkingSets="1"/>
+</view>
+<view id="net.sourceforge.keytool.views.KeyStoreView" partName="Keytool"/>
+<view id="com.android.ide.eclipse.ddms.views.NetworkStatsView" partName="Network Statistics">
 <viewState/>
 </view>
 <view id="com.android.ide.eclipse.ddms.views.EmulatorControlView" partName="Emulator Control">
 <viewState/>
 </view>
 <view id="org.eclipse.jdt.ui.SourceView" partName="Declaration">
-<viewState/>
-</view>
-<view id="org.eclipse.jdt.ui.JavadocView" partName="Javadoc">
-<viewState/>
-</view>
-<view id="com.android.ide.eclipse.ddms.views.AllocTrackerView" partName="Allocation Tracker">
 <viewState/>
 </view>
 </views>
@@ -228,12 +281,12 @@
 <view id="org.eclipse.ui.views.ContentOutline" ratio="0.29913294"/>
 </fastViews>
 </fastViewBar>
-<fastViewBar fastViewLocation="1024" id="org.eclipse.ui.internal.ViewStack@11c3ec45" orientation="256" selectedTabId="org.eclipse.ui.console.ConsoleView" style="1">
+<fastViewBar fastViewLocation="1024" id="org.eclipse.ui.internal.ViewStack@11c3ec45" orientation="256" selectedTabId="com.android.ide.eclipse.ddms.views.LogCatView" style="1">
 <fastViews>
 <view id="org.eclipse.ui.views.TaskList" ratio="0.3"/>
 <view id="org.eclipse.ui.console.ConsoleView" ratio="0.15317918"/>
 <view id="org.eclipse.jdt.callhierarchy.view" ratio="0.29913294"/>
-<view id="com.android.ide.eclipse.ddms.views.LogCatView" ratio="0.18930636"/>
+<view id="com.android.ide.eclipse.ddms.views.LogCatView" ratio="0.15317918"/>
 </fastViews>
 </fastViewBar>
 </fastViewBars>
@@ -247,7 +300,7 @@
 </presentation>
 </folder>
 </info>
-<info folder="true" part="topLeft" ratio="0.2" ratioLeft="311" ratioRight="1244" relationship="2" relative="org.eclipse.ui.internal.ViewStack@43e0d4b4">
+<info folder="true" part="topLeft" ratio="0.32025725" ratioLeft="498" ratioRight="1057" relationship="2" relative="org.eclipse.ui.internal.ViewStack@43e0d4b4">
 <folder appearance="2" expanded="2">
 <page content="org.eclipse.ui.views.BookmarkView" label="LabelNotFound"/>
 <page content="org.eclipse.ui.views.ResourceNavigator" label="LabelNotFound"/>
@@ -438,33 +491,48 @@
 <hide_toolbar_item_id id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
 <view id="org.eclipse.debug.ui.DebugView"/>
 <view id="com.android.ide.eclipse.ddms.views.LogCatView"/>
-<fastViewBars>&#x0A;<fastViewBar fastViewLocation="16384" id="org.eclipse.ui.internal.ViewStack@30c93360" orientation="256" selectedTabId="org.eclipse.debug.ui.ExpressionView" style="1">&#x0A;<fastViews>&#x0A;<view id="org.eclipse.debug.ui.VariableView" ratio="0.3"/>
+<fastViewBars>
+<fastViewBar fastViewLocation="16384" id="org.eclipse.ui.internal.ViewStack@30c93360" orientation="256" selectedTabId="org.eclipse.debug.ui.ExpressionView" style="1">
+<fastViews>
+<view id="org.eclipse.debug.ui.VariableView" ratio="0.3"/>
 <view id="org.eclipse.debug.ui.BreakpointView" ratio="0.3"/>
 <view id="org.eclipse.debug.ui.ExpressionView" ratio="0.29913294"/>
 </fastViews>
 </fastViewBar>
-<fastViewBar fastViewLocation="131072" id="org.eclipse.debug.internal.ui.OutlineFolderView" orientation="512" selectedTabId="org.eclipse.team.ui.GenericHistoryView" style="1">&#x0A;<fastViews>&#x0A;<view id="org.eclipse.ui.views.ContentOutline" ratio="0.3"/>
+<fastViewBar fastViewLocation="131072" id="org.eclipse.debug.internal.ui.OutlineFolderView" orientation="512" selectedTabId="org.eclipse.team.ui.GenericHistoryView" style="1">
+<fastViews>
+<view id="org.eclipse.ui.views.ContentOutline" ratio="0.3"/>
 <view id="net.sourceforge.keytool.views.KeyStoreView" ratio="0.3"/>
 <view id="org.eclipse.team.ui.GenericHistoryView" ratio="0.3"/>
 </fastViews>
 </fastViewBar>
-<fastViewBar fastViewLocation="1024" id="org.eclipse.ui.internal.ViewStack@3a95af61" orientation="256" selectedTabId="org.eclipse.ui.console.ConsoleView" style="0">&#x0A;<fastViews>&#x0A;<view id="org.eclipse.ui.views.TaskList" ratio="0.3"/>
+<fastViewBar fastViewLocation="1024" id="org.eclipse.ui.internal.ViewStack@3a95af61" orientation="256" selectedTabId="org.eclipse.ui.console.ConsoleView" style="0">
+<fastViews>
+<view id="org.eclipse.ui.views.TaskList" ratio="0.3"/>
 <view id="org.eclipse.ui.console.ConsoleView" ratio="0.29913294"/>
 </fastViews>
 </fastViewBar>
 </fastViewBars>
-<layout>&#x0A;<mainWindow>&#x0A;<info folder="true" part="org.eclipse.debug.internal.ui.NavigatorFolderView">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="org.eclipse.ui.views.ResourceNavigator" label="LabelNotFound"/>
+<layout>
+<mainWindow>
+<info folder="true" part="org.eclipse.debug.internal.ui.NavigatorFolderView">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.ui.views.ResourceNavigator" label="LabelNotFound"/>
 <page content="org.eclipse.jdt.ui.PackageExplorer" label="LabelNotFound"/>
 <page content="org.eclipse.jdt.ui.TypeHierarchy" label="LabelNotFound"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
-<info folder="true" part="stickyFolderRight" ratio="0.75" ratioLeft="1194" ratioRight="398" relationship="2" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
+<info folder="true" part="stickyFolderRight" ratio="0.75" ratioLeft="1194" ratioRight="398" relationship="2" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
 <page content="org.eclipse.ui.internal.introview" label="LabelNotFound"/>
 <page content="org.eclipse.ui.cheatsheets.views.CheatSheetView" label="LabelNotFound"/>
 </folder>
 </info>
-<info folder="true" part="org.eclipse.debug.internal.ui.ConsoleFolderView" ratio="0.8946609" ratioLeft="620" ratioRight="73" relationship="4" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="org.eclipse.jdt.callhierarchy.view" label="LabelNotFound"/>
+<info folder="true" part="org.eclipse.debug.internal.ui.ConsoleFolderView" ratio="0.8946609" ratioLeft="620" ratioRight="73" relationship="4" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.jdt.callhierarchy.view" label="LabelNotFound"/>
 <page content="org.eclipse.ui.views.BookmarkView" label="LabelNotFound"/>
 <page content="org.eclipse.ui.views.PropertySheet" label="LabelNotFound"/>
 <page content="org.eclipse.jdt.debug.ui.DisplayView" label="LabelNotFound"/>
@@ -472,40 +540,56 @@
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
-<info folder="true" part="org.eclipse.ui.internal.ViewStack@30c93360" ratio="0.17460318" ratioLeft="121" ratioRight="572" relationship="4" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="org.eclipse.debug.ui.VariableView" label="LabelNotFound"/>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@30c93360" ratio="0.17460318" ratioLeft="121" ratioRight="572" relationship="4" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.debug.ui.VariableView" label="LabelNotFound"/>
 <page content="org.eclipse.debug.ui.BreakpointView" label="LabelNotFound"/>
 <page content="org.eclipse.debug.ui.ExpressionView" label="LabelNotFound"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
-<info folder="true" part="org.eclipse.debug.internal.ui.OutlineFolderView" ratio="0.9332914" ratioLeft="1483" ratioRight="106" relationship="2" relative="org.eclipse.ui.internal.ViewStack@30c93360">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="org.eclipse.ui.views.ContentOutline" label="LabelNotFound"/>
+<info folder="true" part="org.eclipse.debug.internal.ui.OutlineFolderView" ratio="0.9332914" ratioLeft="1483" ratioRight="106" relationship="2" relative="org.eclipse.ui.internal.ViewStack@30c93360">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.ui.views.ContentOutline" label="LabelNotFound"/>
 <page content="net.sourceforge.keytool.views.KeyStoreView" label="LabelNotFound"/>
 <page content="org.eclipse.team.ui.GenericHistoryView" label="LabelNotFound"/>
 <page content="org.eclipse.ant.ui.views.AntView" label="LabelNotFound"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
-<info folder="true" part="org.eclipse.ui.internal.ViewStack@7cb07a83" ratio="0.21212122" ratioLeft="147" ratioRight="546" relationship="4" relative="org.eclipse.ui.internal.ViewStack@30c93360">&#x0A;<folder activePageID="org.eclipse.debug.ui.DebugView" appearance="2" expanded="2">&#x0A;<page content="org.eclipse.debug.ui.DebugView" label="Debug"/>
-<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">&#x0A;<part id="0"/>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@7cb07a83" ratio="0.21212122" ratioLeft="147" ratioRight="546" relationship="4" relative="org.eclipse.ui.internal.ViewStack@30c93360">
+<folder activePageID="org.eclipse.debug.ui.DebugView" appearance="2" expanded="2">
+<page content="org.eclipse.debug.ui.DebugView" label="Debug"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
+<part id="0"/>
 </presentation>
 </folder>
 </info>
-<info folder="true" part="org.eclipse.ui.internal.ViewStack@3a95af61" ratio="0.70718235" ratioLeft="384" ratioRight="159" relationship="4" relative="org.eclipse.ui.internal.ViewStack@7cb07a83">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="org.eclipse.ui.views.TaskList" label="LabelNotFound"/>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@3a95af61" ratio="0.70718235" ratioLeft="384" ratioRight="159" relationship="4" relative="org.eclipse.ui.internal.ViewStack@7cb07a83">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.ui.views.TaskList" label="LabelNotFound"/>
 <page content="org.eclipse.ui.console.ConsoleView" label="LabelNotFound"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
 <info part="org.eclipse.ui.editorss" ratio="0.25108853" ratioLeft="173" ratioRight="516" relationship="4" relative="org.eclipse.ui.internal.ViewStack@7cb07a83"/>
-<info folder="true" part="org.eclipse.ui.internal.ViewStack@772a2f36" ratio="0.5" ratioLeft="762" ratioRight="762" relationship="2" relative="org.eclipse.ui.editorss">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="com.android.ide.eclipse.ddms.views.DeviceView" label="LabelNotFound"/>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@772a2f36" ratio="0.5" ratioLeft="762" ratioRight="762" relationship="2" relative="org.eclipse.ui.editorss">
+<folder appearance="2" expanded="2">
+<page content="com.android.ide.eclipse.ddms.views.DeviceView" label="LabelNotFound"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
-<info folder="true" part="org.eclipse.ui.internal.ViewStack@630774e2" ratio="0.90448344" ratioLeft="464" ratioRight="49" relationship="4" relative="org.eclipse.ui.editorss">&#x0A;<folder activePageID="com.android.ide.eclipse.ddms.views.LogCatView" appearance="2" expanded="2">&#x0A;<page content="com.android.ide.eclipse.ddms.views.LogCatView" label="LogCat"/>
-<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">&#x0A;<part id="0"/>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@630774e2" ratio="0.89668614" ratioLeft="460" ratioRight="53" relationship="4" relative="org.eclipse.ui.editorss">
+<folder activePageID="com.android.ide.eclipse.ddms.views.LogCatView" appearance="2" expanded="2">
+<page content="com.android.ide.eclipse.ddms.views.LogCatView" label="LogCat"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
+<part id="0"/>
 </presentation>
 </folder>
 </info>
-<info folder="true" part="org.eclipse.debug.internal.ui.ToolsFolderView" ratio="0.1913153" ratioLeft="304" ratioRight="1285" relationship="2" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="org.eclipse.debug.ui.RegisterView" label="LabelNotFound"/>
+<info folder="true" part="org.eclipse.debug.internal.ui.ToolsFolderView" ratio="0.1913153" ratioLeft="304" ratioRight="1285" relationship="2" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.debug.ui.RegisterView" label="LabelNotFound"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
@@ -661,119 +745,133 @@
 <workingSets/>
 <navigationHistory>
 <editors>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/layout/profile_page_top.xml"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/values/styles.xml"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/layout/activity_user_profile.xml"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/UserProfilePageFragment.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/UserProfilePageActivity.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/ImageAdapter.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/layout/thumbnail_grid.xml"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/layout/thumbnail.xml"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventDetailActivity.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventListActivity.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/MotleeLoginActivity.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/EventListFragment.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/layout/activity_event_list.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/layout/first_use_header.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/layout/progress_bar.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/EventServiceBuffer.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.manifest.ManifestEditor" path="/com.motlee.android.MotleeLoginActivity/AndroidManifest.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" path="/com.motlee.android.MotleeLoginActivity/res/layout/message_list_item.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/MessageDetailFragment.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/MessageAdapter.java"/>
 </editors>
-<item historyLabel="UserProfilePageFragment.java" index="3">
-<position info="not_deleted" x="7175" y="0"/>
+<item historyLabel="com.motlee.android.MotleeLoginActivity Manifest" index="7"/>
+<item historyLabel="MotleeLoginActivity.java" index="1">
+<position info="not_deleted" x="3006" y="0"/>
 </item>
-<item historyLabel="UserProfilePageFragment.java" index="3">
-<position info="not_deleted" x="3569" y="0"/>
+<item historyLabel="EventServiceBuffer.java" index="6">
+<position info="not_deleted" x="5759" y="0"/>
 </item>
-<item historyLabel="profile_page_top.xml" index="0"/>
-<item historyLabel="UserProfilePageFragment.java" index="3">
-<position info="not_deleted" x="3828" y="0"/>
+<item historyLabel="MotleeLoginActivity.java" index="1">
+<position info="not_deleted" x="49" y="0"/>
 </item>
-<item historyLabel="UserProfilePageFragment.java" index="3">
-<position info="not_deleted" x="3891" y="0"/>
+<item historyLabel="com.motlee.android.MotleeLoginActivity Manifest" index="7"/>
+<item historyLabel="MotleeLoginActivity.java" index="1">
+<position info="not_deleted" x="49" y="0"/>
 </item>
-<item historyLabel="profile_page_top.xml" index="0"/>
-<item historyLabel="styles.xml" index="1"/>
-<item historyLabel="profile_page_top.xml" index="0"/>
-<item historyLabel="UserProfilePageFragment.java" index="3">
-<position info="not_deleted" x="3572" y="0"/>
+<item historyLabel="first_use_header.xml" index="4"/>
+<item historyLabel="activity_event_list.xml" index="3"/>
+<item historyLabel="first_use_header.xml" index="4"/>
+<item historyLabel="EventListFragment.java" index="2">
+<position info="not_deleted" x="3619" y="0"/>
 </item>
-<item historyLabel="activity_user_profile.xml" index="2"/>
-<item historyLabel="profile_page_top.xml" index="0"/>
-<item historyLabel="UserProfilePageFragment.java" index="3">
-<position info="not_deleted" x="3478" y="0"/>
+<item historyLabel="EventListFragment.java" index="2">
+<position info="not_deleted" x="3905" y="0"/>
 </item>
-<item historyLabel="profile_page_top.xml" index="0"/>
-<item historyLabel="UserProfilePageFragment.java" index="3">
-<position info="not_deleted" x="3498" y="0"/>
+<item historyLabel="EventListFragment.java" index="2">
+<position info="not_deleted" x="5696" y="0"/>
 </item>
-<item historyLabel="styles.xml" index="1"/>
-<item historyLabel="profile_page_top.xml" index="0"/>
-<item historyLabel="UserProfilePageFragment.java" index="3">
-<position info="not_deleted" x="3824" y="0"/>
+<item historyLabel="EventListActivity.java" index="0">
+<position info="not_deleted" x="6051" y="0"/>
 </item>
-<item historyLabel="profile_page_top.xml" index="0"/>
-<item historyLabel="UserProfilePageFragment.java" index="3">
-<position info="not_deleted" x="3498" y="0"/>
+<item historyLabel="EventListFragment.java" index="2">
+<position info="not_deleted" x="7832" y="0"/>
 </item>
-<item historyLabel="activity_user_profile.xml" index="2"/>
-<item historyLabel="profile_page_top.xml" index="0"/>
-<item historyLabel="UserProfilePageFragment.java" index="3">
-<position info="not_deleted" x="5162" y="0"/>
+<item historyLabel="EventListActivity.java" index="0">
+<position info="not_deleted" x="7395" y="0"/>
 </item>
-<item historyLabel="activity_user_profile.xml" index="2"/>
-<item historyLabel="profile_page_top.xml" index="0"/>
-<item historyLabel="UserProfilePageFragment.java" index="3">
-<position info="not_deleted" x="5044" y="3"/>
+<item historyLabel="MotleeLoginActivity.java" index="1">
+<position info="not_deleted" x="3075" y="0"/>
 </item>
-<item historyLabel="profile_page_top.xml" index="0"/>
-<item historyLabel="UserProfilePageActivity.java" index="4">
-<position info="not_deleted" x="3896" y="0"/>
+<item historyLabel="EventListActivity.java" index="0">
+<position info="not_deleted" x="7281" y="0"/>
 </item>
-<item historyLabel="activity_user_profile.xml" index="2"/>
-<item historyLabel="profile_page_top.xml" index="0"/>
-<item historyLabel="UserProfilePageFragment.java" index="3">
-<position info="not_deleted" x="5305" y="0"/>
+<item historyLabel="EventListActivity.java" index="0">
+<position info="not_deleted" x="7395" y="0"/>
 </item>
-<item historyLabel="UserProfilePageActivity.java" index="4">
-<position info="not_deleted" x="3896" y="0"/>
+<item historyLabel="EventListActivity.java" index="0">
+<position info="not_deleted" x="7356" y="0"/>
 </item>
-<item historyLabel="ImageAdapter.java" index="5">
-<position info="not_deleted" x="4469" y="0"/>
+<item historyLabel="EventListActivity.java" index="0">
+<position info="not_deleted" x="7215" y="0"/>
 </item>
-<item historyLabel="thumbnail_grid.xml" index="6"/>
-<item historyLabel="ImageAdapter.java" index="5">
-<position info="not_deleted" x="4469" y="0"/>
-</item>
-<item historyLabel="thumbnail.xml" index="7"/>
-<item historyLabel="ImageAdapter.java" index="5">
-<position info="not_deleted" x="4669" y="0"/>
-</item>
-<item historyLabel="thumbnail.xml" index="7"/>
-<item historyLabel="ImageAdapter.java" index="5">
-<position info="not_deleted" x="4766" y="0"/>
-</item>
-<item historyLabel="thumbnail.xml" index="7"/>
-<item historyLabel="ImageAdapter.java" index="5">
-<position info="not_deleted" x="4766" y="0"/>
-</item>
-<item historyLabel="ImageAdapter.java" index="5">
+<item historyLabel="EventListFragment.java" index="2">
 <position/>
 </item>
-<item historyLabel="ImageAdapter.java" index="5">
+<item historyLabel="progress_bar.xml" index="5"/>
+<item historyLabel="EventListFragment.java" index="2">
 <position/>
 </item>
-<item historyLabel="ImageAdapter.java" index="5">
-<position info="not_deleted" x="4903" y="0"/>
+<item historyLabel="progress_bar.xml" index="5"/>
+<item historyLabel="EventListFragment.java" index="2">
+<position/>
 </item>
-<item historyLabel="thumbnail.xml" index="7"/>
-<item historyLabel="ImageAdapter.java" index="5">
-<position info="not_deleted" x="4818" y="0"/>
+<item historyLabel="EventListFragment.java" index="2">
+<position/>
 </item>
-<item historyLabel="thumbnail.xml" index="7"/>
-<item historyLabel="ImageAdapter.java" index="5">
-<position info="not_deleted" x="4818" y="0"/>
+<item historyLabel="EventListFragment.java" index="2">
+<position info="not_deleted" x="4779" y="0"/>
 </item>
-<item historyLabel="ImageAdapter.java" index="5">
-<position info="not_deleted" x="4057" y="0"/>
+<item historyLabel="progress_bar.xml" index="5"/>
+<item historyLabel="EventListFragment.java" index="2">
+<position info="not_deleted" x="5077" y="0"/>
 </item>
-<item historyLabel="ImageAdapter.java" index="5">
-<position info="not_deleted" x="5468" y="0"/>
+<item historyLabel="progress_bar.xml" index="5"/>
+<item historyLabel="EventListFragment.java" index="2">
+<position info="not_deleted" x="5077" y="0"/>
 </item>
-<item active="true" historyLabel="EventDetailActivity.java" index="8">
-<position info="not_deleted" x="0" y="0"/>
+<item historyLabel="EventListFragment.java" index="2">
+<position info="not_deleted" x="5079" y="0"/>
+</item>
+<item historyLabel="EventListFragment.java" index="2">
+<position info="not_deleted" x="5224" y="0"/>
+</item>
+<item historyLabel="EventListFragment.java" index="2">
+<position info="not_deleted" x="5423" y="0"/>
+</item>
+<item historyLabel="EventListFragment.java" index="2">
+<position info="not_deleted" x="4826" y="0"/>
+</item>
+<item historyLabel="progress_bar.xml" index="5"/>
+<item historyLabel="first_use_header.xml" index="4"/>
+<item historyLabel="EventListFragment.java" index="2">
+<position info="not_deleted" x="5336" y="0"/>
+</item>
+<item historyLabel="activity_event_list.xml" index="3"/>
+<item historyLabel="progress_bar.xml" index="5"/>
+<item historyLabel="EventListFragment.java" index="2">
+<position info="not_deleted" x="5392" y="0"/>
+</item>
+<item historyLabel="progress_bar.xml" index="5"/>
+<item historyLabel="EventListFragment.java" index="2">
+<position info="not_deleted" x="4866" y="0"/>
+</item>
+<item historyLabel="EventListActivity.java" index="0">
+<position info="not_deleted" x="7351" y="0"/>
+</item>
+<item historyLabel="activity_event_list.xml" index="3"/>
+<item historyLabel="message_list_item.xml" index="8"/>
+<item historyLabel="MessageDetailFragment.java" index="9">
+<position info="not_deleted" x="5433" y="0"/>
+</item>
+<item historyLabel="MessageAdapter.java" index="10">
+<position info="not_deleted" x="4646" y="0"/>
+</item>
+<item historyLabel="message_list_item.xml" index="8"/>
+<item active="true" historyLabel="EventListActivity.java" index="0">
+<position info="not_deleted" x="7351" y="0"/>
 </item>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
@@ -783,6 +881,10 @@
 <trimLayout>
 <trimArea IMemento.internal.id="16384">
 <trimItem IMemento.internal.id="bottomLeft"/>
+<trimItem IMemento.internal.id="org.eclipse.ui.internal.ViewStack@30c93360"/>
+</trimArea>
+<trimArea IMemento.internal.id="131072">
+<trimItem IMemento.internal.id="org.eclipse.debug.internal.ui.OutlineFolderView"/>
 </trimArea>
 <trimArea IMemento.internal.id="128">
 <trimItem IMemento.internal.id="org.eclipse.ui.internal.WorkbenchWindow.topBar"/>
@@ -792,51 +894,52 @@
 <trimItem IMemento.internal.id="org.eclipse.jface.action.StatusLineManager"/>
 <trimItem IMemento.internal.id="org.eclipse.ui.internal.progress.ProgressRegion"/>
 <trimItem IMemento.internal.id="org.eclipse.ui.internal.ViewStack@11c3ec45"/>
+<trimItem IMemento.internal.id="org.eclipse.ui.internal.ViewStack@3a95af61"/>
 </trimArea>
 </trimLayout>
 </window>
 <mruList>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EventDetailActivity.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventDetailActivity.java">
-<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventDetailActivity.java"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="MessageAdapter.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/MessageAdapter.java">
+<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/MessageAdapter.java"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="thumbnail.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/thumbnail.xml">
-<persistable path="/com.motlee.android.MotleeLoginActivity/res/layout/thumbnail.xml"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="MessageDetailFragment.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/MessageDetailFragment.java">
+<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/MessageDetailFragment.java"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="thumbnail_grid.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/thumbnail_grid.xml">
-<persistable path="/com.motlee.android.MotleeLoginActivity/res/layout/thumbnail_grid.xml"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="message_list_item.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/message_list_item.xml">
+<persistable path="/com.motlee.android.MotleeLoginActivity/res/layout/message_list_item.xml"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="ImageAdapter.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/ImageAdapter.java">
-<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/ImageAdapter.java"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.manifest.ManifestEditor" name="AndroidManifest.xml" tooltip="com.motlee.android.MotleeLoginActivity/AndroidManifest.xml">
+<persistable path="/com.motlee.android.MotleeLoginActivity/AndroidManifest.xml"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="styles.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/values/styles.xml">
-<persistable path="/com.motlee.android.MotleeLoginActivity/res/values/styles.xml"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="GlobalVariables.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/GlobalVariables.java">
+<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/GlobalVariables.java"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="profile_page_top.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/profile_page_top.xml">
-<persistable path="/com.motlee.android.MotleeLoginActivity/res/layout/profile_page_top.xml"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="event_detail_photos.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/event_detail_photos.xml">
+<persistable path="/com.motlee.android.MotleeLoginActivity/res/layout/event_detail_photos.xml"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="activity_user_profile.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/activity_user_profile.xml">
-<persistable path="/com.motlee.android.MotleeLoginActivity/res/layout/activity_user_profile.xml"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="activity_event_list.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/activity_event_list.xml">
+<persistable path="/com.motlee.android.MotleeLoginActivity/res/layout/activity_event_list.xml"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="UserProfilePageFragment.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/UserProfilePageFragment.java">
-<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/fragment/UserProfilePageFragment.java"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="event_list_item.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/event_list_item.xml">
+<persistable path="/com.motlee.android.MotleeLoginActivity/res/layout/event_list_item.xml"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="UserProfilePageActivity.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/UserProfilePageActivity.java">
-<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/UserProfilePageActivity.java"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.CommonXmlEditor" name="blank_space.xml" tooltip="com.motlee.android.MotleeLoginActivity/res/layout/blank_space.xml">
+<persistable path="/com.motlee.android.MotleeLoginActivity/res/layout/blank_space.xml"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EventServiceBuffer.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/EventServiceBuffer.java">
-<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/EventServiceBuffer.java"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="PullToRefreshListView.java" tooltip="pulltorefresh/src/com/markupartist/android/widget/PullToRefreshListView.java">
+<persistable path="/pulltorefresh/src/com/markupartist/android/widget/PullToRefreshListView.java"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EventItemDetailActivity.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventItemDetailActivity.java">
-<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventItemDetailActivity.java"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="RubyService.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/service/RubyService.java">
+<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/service/RubyService.java"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EventItem.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/EventItem.java">
-<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/object/EventItem.java"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EventListAdapter.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/EventListAdapter.java">
+<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/EventListAdapter.java"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="PhotoDetailPagedViewAdapter.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/PhotoDetailPagedViewAdapter.java">
-<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/adapter/PhotoDetailPagedViewAdapter.java"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="EventListActivity.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventListActivity.java">
+<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/EventListActivity.java"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.android.ide.eclipse.editors.manifest.ManifestEditor" name="AndroidManifest.xml" tooltip="library/AndroidManifest.xml">
-<persistable path="/library/AndroidManifest.xml"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="MotleeLoginActivity.java" tooltip="com.motlee.android.MotleeLoginActivity/src/com/motlee/android/MotleeLoginActivity.java">
+<persistable path="/com.motlee.android.MotleeLoginActivity/src/com/motlee/android/MotleeLoginActivity.java"/>
 </file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="WrapperView.java" tooltip="library/src/com/emilsjolander/components/StickyListHeaders/WrapperView.java">
 <persistable path="/library/src/com/emilsjolander/components/StickyListHeaders/WrapperView.java"/>

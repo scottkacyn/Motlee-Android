@@ -2,6 +2,7 @@ package com.motlee.android.adapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 import java.util.Vector;
 
 import com.motlee.android.R;
@@ -30,6 +31,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -43,6 +45,7 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
 		
 		private static final Integer LOAD_MORE = 1;
 		private static final Integer EVENT_ITEM = 2;
+		private static final Integer SPACE = -9998;
 		
         private LayoutInflater inflater;
         // store the resource
@@ -67,9 +70,18 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
                 this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 this.resource = resource;
                 this.data.addAll(data);
-                this.data.add(LOAD_MORE_BUTTON);
+                if (this.data.size() < 4)
+                {
+                	this.data.add(SPACE);
+                }
+                //this.data.add(LOAD_MORE_BUTTON);
         }
 
+        @Override
+        public boolean isEmpty()
+        {
+        	return false;
+        }
         
         public Collection<Integer> getData()
         {
@@ -107,6 +119,16 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
         	}
         }
         
+        public void addAll(ArrayList<Integer> eventIds)
+        {
+        	this.data.addAll(eventIds);
+        	if (eventIds.size() < 4)
+        	{
+        		this.data.add(SPACE);
+        	}
+        	this.notifyDataSetChanged();
+        }
+        
         public void clear()
         {
         	Log.w(tag, "clear");
@@ -137,14 +159,16 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
 	                        holder.event_footer_owner = (TextView) convertView.findViewById(R.id.event_footer_owner);
 	                        holder.event_footer_location = (TextView) convertView.findViewById(R.id.event_footer_location);
 	                        holder.imageAdapter = new ImageAdapter(mContext, R.layout.thumbnail);
+	                        holder.blank_space = (LinearLayout) convertView.findViewById(R.id.blank_space);
 	                        convertView.setTag(holder);
                 			
                 } else {
                         holder = (ViewHolder) convertView.getTag();
                 }
 
+
                 this.bindData(holder, position, convertView);
-           
+
                 // bind the data to the view object
                 return convertView;
         }
@@ -155,17 +179,27 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
          */
         public void bindData(ViewHolder holder, int position, View convertView) {
                 
+        	if (this.data.get(position) == SPACE)
+        	{        		
+        		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(GlobalVariables.DISPLAY_WIDTH, GlobalVariables.DISPLAY_HEIGHT);
+        		
+        		holder.blank_space.setLayoutParams(params);
+        		
+        		holder.blank_space.setVisibility(View.VISIBLE);
+        		
+        		holder.event_background.setVisibility(View.GONE);
+        	}
+        	else
+        	{
                 // pull out the object
                 EventDetail item = GlobalEventList.eventDetailMap.get(this.data.get(position));
 
                 String dateString = DateStringFormatter.getEventDateString(item.getStartTime(), item.getEndTime());
                 
-                if (dateString.equals(DateStringFormatter.UPCOMING))
-                {
-                	convertView.setVisibility(View.GONE);
-                }
-                else
-                {
+        		holder.blank_space.setVisibility(View.GONE);
+        		
+        		holder.event_background.setVisibility(View.VISIBLE);
+
 	                if (holder.event_background.getBackground() == null)
 	                {
 	                	DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.event_list_detail_background, GlobalVariables.DISPLAY_WIDTH);
@@ -238,7 +272,7 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
 	                	holder.imageAdapter.setURLs(item.getImages());
 	                	holder.list_view.setAdapter(holder.imageAdapter);
 	                }
-                }
+        	}
         }
         
         private static class ViewHolder {
@@ -251,6 +285,7 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
             public ImageAdapter imageAdapter;
             public RelativeLayout event_background;
             public LinearLayout event_footer_background;
+            public LinearLayout blank_space;
         }
 
 

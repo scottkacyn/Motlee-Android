@@ -4,11 +4,14 @@ import java.util.ArrayList;
 
 import com.markupartist.android.widget.PullToRefreshListView;
 import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
+import com.motlee.android.EventListActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.EventListAdapter;
+import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventListParams;
 import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
@@ -27,11 +30,14 @@ import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -45,8 +51,28 @@ public class EventListFragment extends ListFragmentWithHeader {
 	
 	private Boolean onCreateViewHasBeenCalled = false;
 	
+	private EventListParams params;
+	
 	private Typeface gothamLightFont;
 
+	private View view;
+	
+	private View upcomingHeader;
+	
+	private boolean showBackButton = false;
+	private boolean hideProgressBar = false;
+	
+	private View firstUseHeader;
+	
+	private View progressBar;
+	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		this.setPageHeader(params.headerText);
+	}
+	
 	/*@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 	    String[] links = getResources().getStringArray(R.array.tut_links);
@@ -70,9 +96,30 @@ public class EventListFragment extends ListFragmentWithHeader {
 	{
 		
 		Log.w(tag, "onCreateView");
-		View view = (View) getActivity().getLayoutInflater().inflate(R.layout.activity_event_list, null);
+		view = (View) getActivity().getLayoutInflater().inflate(R.layout.activity_event_list, null);
 		
 		//view.findViewById(R.id.buffer).setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, GlobalVariables.getInstance().getMenuButtonsHeight()));
+		
+		firstUseHeader = getActivity().getLayoutInflater().inflate(R.layout.first_use_header, null);
+		
+		ImageButton closeFirstUse = (ImageButton) firstUseHeader.findViewById(R.id.first_message_close);
+		closeFirstUse.setOnClickListener(closeFirstUseMessage);
+		
+		ListView listView = (ListView) view.findViewById(android.R.id.list);
+		listView.addHeaderView(firstUseHeader);
+		
+		if (GlobalVariables.getInstance().firstUse)
+		{
+			firstUseHeader.findViewById(R.id.first_use_header_content).setVisibility(View.VISIBLE);
+			GlobalVariables.getInstance().firstUse = false;
+		}
+		
+		if (!this.hideProgressBar)
+		{
+			setLoadingHeader();
+		}
+		
+		setUpcomingHeader();
 		
 		setListAdapter(mEventListAdapter);
 		
@@ -85,18 +132,111 @@ public class EventListFragment extends ListFragmentWithHeader {
 		
 		//mHeaderView.findViewById(R.id.header_create_event_button).setVisibility(View.VISIBLE);
 		
-		mHeaderView.findViewById(R.id.header_left_button).setVisibility(View.GONE);
+		if (this.showBackButton)
+		{
+			mHeaderView.findViewById(R.id.header_left_button).setVisibility(View.VISIBLE);
+		}
+		else
+		{
+			mHeaderView.findViewById(R.id.header_left_button).setVisibility(View.GONE);
+		}
 		
 		//mHeaderView.findViewById(R.id.header_menu_button).setVisibility(View.VISIBLE);
-		
-		ListView listView = (ListView) view.findViewById(android.R.id.list);
-		
+
 		setRefreshListener(listView);
 		//listView.addFooterView(inflater.inflate(R.layout.event_list_load_more, null));
 		
 		return view;
 	}
 
+	private OnClickListener closeFirstUseMessage = new OnClickListener(){
+
+		public void onClick(View v) {
+			
+			hideFirstUseHeader();
+			
+		}
+		
+	};
+	
+	private void setLoadingHeader() {
+		
+		progressBar = getActivity().getLayoutInflater().inflate(R.layout.progress_bar, null);
+		
+		ProgressBar bar = (ProgressBar) progressBar.findViewById(R.id.marker_progress);
+		
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(DrawableCache.convertDpToPixel(30), DrawableCache.convertDpToPixel(30));
+		
+		params.topMargin = DrawableCache.convertDpToPixel(10);
+		params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+		params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+		
+		bar.setLayoutParams(params);
+		
+		ListView listView = (ListView) view.findViewById(android.R.id.list);
+		listView.addHeaderView(progressBar);
+	}
+
+	public void hideFirstUseHeader()
+	{
+		ListView listView = (ListView) view.findViewById(android.R.id.list);
+		listView.removeHeaderView(firstUseHeader);
+	}
+	
+	public void setDoneLoading()
+	{
+		firstUseHeader.findViewById(R.id.progress_bar).setVisibility(View.GONE);
+		firstUseHeader.findViewById(R.id.text_done).setVisibility(View.VISIBLE);
+		
+		ListView listView = (ListView) view.findViewById(android.R.id.list);
+		listView.removeHeaderView(progressBar);
+	}
+	
+	public void showUpcomingHeader(ArrayList<Integer> upcomingEvents)
+	{
+		TextView labelButtonText = (TextView) upcomingHeader.findViewById(R.id.label_button_text);
+		labelButtonText.setText(upcomingEvents.size() + " Upcoming Events");
+		
+		ImageButton labelButton = (ImageButton) upcomingHeader.findViewById(R.id.label_button);
+		labelButton.setTag(upcomingEvents);
+		
+		upcomingHeader.findViewById(R.id.label_button_content).setVisibility(View.VISIBLE);
+	}
+	
+	public void hideUpcomingHeader()
+	{
+		if (upcomingHeader != null)
+		{
+			upcomingHeader.findViewById(R.id.label_button_content).setVisibility(View.GONE);
+		}
+	}
+	
+	public void showBackButton()
+	{
+		this.showBackButton = true;
+	}
+	
+	public void hideBackButton()
+	{
+		mHeaderView.findViewById(R.id.header_left_button).setVisibility(View.GONE);
+	}
+	
+	public void setUpcomingHeader()
+	{
+		upcomingHeader = getActivity().getLayoutInflater().inflate(R.layout.event_detail_info_button, null);
+		
+		upcomingHeader.findViewById(R.id.label_button_icon).setVisibility(View.GONE);
+		
+		TextView labelButtonText = (TextView) upcomingHeader.findViewById(R.id.label_button_text);
+		labelButtonText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		labelButtonText.setText("Upcoming Events");
+		
+		ListView listView = (ListView) view.findViewById(android.R.id.list);
+		listView.addHeaderView(upcomingHeader);
+		
+		upcomingHeader.findViewById(R.id.label_button_content).setVisibility(View.GONE);
+	}
+	
 	public void setRefreshListener(ListView listView)
 	{
         ((PullToRefreshListView) listView).setOnRefreshListener(new OnRefreshListener() {
@@ -106,17 +246,27 @@ public class EventListFragment extends ListFragmentWithHeader {
             	EventServiceBuffer.setEventDetailListener(new UpdatedEventDetailListener(){
 
 					public void myEventOccurred(UpdatedEventDetailEvent evt) {
-						for (Integer eventID : evt.getEventIds())
+						
+						if (params.dataContent == EventServiceBuffer.MY_EVENTS)
+						{
+							((EventListActivity) getActivity()).updateEventAdapter(GlobalEventList.myEventDetails);
+						}
+						else if (params.dataContent == EventServiceBuffer.NO_EVENT_FILTER)
+						{
+							((EventListActivity) getActivity()).updateEventAdapter(GlobalEventList.eventDetailMap.keySet());
+						}
+						
+						/*for (Integer eventID : evt.getEventIds())
 						{
 							mEventListAdapter.add(eventID);
-						}
+						}*/
 						
 						getPullToRefreshListView().setSelection(1);
 						getPullToRefreshListView().onRefreshComplete();
 					}
 		        });
             	
-            	EventServiceBuffer.getEventsFromService();
+            	EventServiceBuffer.getEventsFromService(params.dataContent);
             }
         });
 	}
@@ -140,6 +290,8 @@ public class EventListFragment extends ListFragmentWithHeader {
 	
 	public void setEventListParams(EventListParams params)
 	{
+		
+		this.params = params;
 		this.pageTitle = params.headerText;
 		
 		if (onCreateViewHasBeenCalled)
@@ -147,5 +299,19 @@ public class EventListFragment extends ListFragmentWithHeader {
 			this.setPageHeader(pageTitle);
 			this.setHeaderIcon(pageTitle);
 		}
+	}
+
+	public void updateListAdapter(EventListAdapter eAdapter) {
+		
+		mEventListAdapter = eAdapter;
+		
+		setListAdapter(mEventListAdapter);
+		
+	}
+
+	public void hideProgressBar() {
+		
+		this.hideProgressBar = true;
+		
 	}
 }

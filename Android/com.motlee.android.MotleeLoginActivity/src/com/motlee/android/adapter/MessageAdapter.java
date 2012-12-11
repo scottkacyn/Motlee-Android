@@ -138,7 +138,7 @@ public class MessageAdapter extends ArrayAdapter<StoryItem> {
                 holder.owner_comment_name.setText(UserInfoList.getInstance().get(story.user_id).name);
                 holder.owner_comment_time.setText(DateStringFormatter.getPastDateString(story.created_at));
                 
-                imageDownloader.displayImage(GlobalVariables.getInstance().getFacebookPictureUrl(UserInfoList.getInstance().get(story.user_id).uid), holder.owner_profile_pic, mOptions);
+                imageDownloader.displayImage(GlobalVariables.getInstance().getFacebookPictureUrlLarge(UserInfoList.getInstance().get(story.user_id).uid), holder.owner_profile_pic, mOptions);
             }
             else
             {
@@ -151,7 +151,7 @@ public class MessageAdapter extends ArrayAdapter<StoryItem> {
                 holder.friend_comment_name.setText(UserInfoList.getInstance().get(story.user_id).name);
                 holder.friend_comment_time.setText(DateStringFormatter.getPastDateString(story.created_at));
                 
-                imageDownloader.displayImage(GlobalVariables.getInstance().getFacebookPictureUrl(UserInfoList.getInstance().get(story.user_id).uid), holder.friend_profile_pic, mOptions);
+                imageDownloader.displayImage(GlobalVariables.getInstance().getFacebookPictureUrlLarge(UserInfoList.getInstance().get(story.user_id).uid), holder.friend_profile_pic, mOptions);
             }
         
             return convertView;

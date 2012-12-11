@@ -99,7 +99,7 @@ public class RubyService extends IntentService {
         }
         
         // We default to GET if no verb was specified.
-        int            verb     = extras.getInt(EXTRA_HTTP_VERB, GET);
+        final int            verb     = extras.getInt(EXTRA_HTTP_VERB, GET);
         Bundle         params   = extras.getParcelable(EXTRA_PARAMS);
         final ResultReceiver receiver = extras.getParcelable(EXTRA_RESULT_RECEIVER);
         final int dataContent			= extras.getInt(EXTRA_DATA_CONTENT, EVENT);
@@ -215,7 +215,7 @@ public class RubyService extends IntentService {
 	                        if (responseEntity != null) {
 	                            Bundle resultData = new Bundle();
 	                            resultData.putString(REST_RESULT, EntityUtils.toString(responseEntity));
-	                            if (dataContent == PHOTO)
+	                            if (dataContent == PHOTO && verb == POST)
 	                            {
 	                            	resultData.putParcelable(EXTRA_PHOTO_ITEM, extras.getParcelable(EXTRA_PHOTO_ITEM));
 	                            }

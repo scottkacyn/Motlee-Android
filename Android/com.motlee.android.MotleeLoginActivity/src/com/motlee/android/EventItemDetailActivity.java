@@ -19,7 +19,11 @@ import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.event.UpdatedLikeEvent;
 import com.motlee.android.object.event.UpdatedLikeListener;
+import com.motlee.android.object.event.UpdatedPhotoEvent;
+import com.motlee.android.object.event.UpdatedPhotoListener;
+import com.motlee.android.view.ProgressDialogWithTimeout;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -37,7 +41,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-public class EventItemDetailActivity extends BaseMotleeActivity {
+public class EventItemDetailActivity extends BaseMotleeActivity implements UpdatedPhotoListener {
 	
 	private EventItem mEventItem;
 	private EventItemDetailFragment fragment;
@@ -48,6 +52,9 @@ public class EventItemDetailActivity extends BaseMotleeActivity {
 	private HashMap<PhotoItem, Boolean> likeMap = new HashMap<PhotoItem, Boolean>();
 	
 	private EditText editText;
+	private boolean getPhotoInformation = true;
+	
+	private ProgressDialog progressDialog;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -58,10 +65,31 @@ public class EventItemDetailActivity extends BaseMotleeActivity {
         //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
         
         mEventItem = (EventItem) getIntent().getParcelableExtra("EventItem");
+        getPhotoInformation = getIntent().getBooleanExtra("GetPhotoInfo", true);
         
         //setEditText();
-        
-        if (mEventItem instanceof PhotoItem)
+        if (getPhotoInformation)
+        {
+	        EventServiceBuffer.setPhotoListener(this);
+	        
+	        EventServiceBuffer.getPhotosForEventFromService(mEventItem.event_id);
+	        
+	        progressDialog = ProgressDialogWithTimeout.show(EventItemDetailActivity.this, "", "Loading Photos");
+        }
+        else
+        {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            
+            fragment = new EventItemDetailFragment();
+            fragment.setHeaderView(findViewById(R.id.header));
+            
+            fragment.setDetailImage((PhotoItem)mEventItem);
+            
+            ft.add(R.id.fragment_content, fragment)
+            .commit();
+        }
+        /*if (mEventItem instanceof PhotoItem)
         {
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
@@ -87,7 +115,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity {
             
             ft.add(R.id.fragment_content, fragment)
             .commit();
-        }
+        }*/
 	}
 	
     public void sendComment(View view)
@@ -193,5 +221,24 @@ public class EventItemDetailActivity extends BaseMotleeActivity {
 		}
 		
 		super.onDestroy();
+	}
+
+	public void photoEvent(UpdatedPhotoEvent e) {
+		
+		EventServiceBuffer.removePhotoListener(this);
+		
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        
+        fragment = new EventItemDetailFragment();
+        fragment.setHeaderView(findViewById(R.id.header));
+        
+        fragment.setDetailImage((PhotoItem)mEventItem);
+        
+        ft.add(R.id.fragment_content, fragment)
+        .commit();
+        
+        progressDialog.dismiss();
+		
 	}
 }

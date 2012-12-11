@@ -23,8 +23,7 @@
            android:layout_weight=".87"
            android:layout_height="wrap_content"
            android:orientation="vertical"
-           android:padding="10dp"
-           android:background="@drawable/chat_bubble_red">
+           android:padding="10dp" >
            
 		    <TextView 
 		        android:id="@+id/message_friend_name_text"
@@ -36,13 +35,20 @@
 		        android:textColor="@color/gray"
 		        android:background="@android:color/transparent" />
 		    
-		    <TextView
-		        android:id="@+id/message_friend_body_text"
+   		    <LinearLayout 
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
-		        android:paddingLeft="15dp"
-		        style="@style/CodeFont"
-		        android:background="@android:color/transparent" />
+		        android:background="@drawable/chat_bubble_blue" >
+		        
+			    <TextView
+			        android:id="@+id/message_friend_body_text"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			        android:paddingLeft="15dp"
+			        style="@style/CodeFont"
+			        android:background="@android:color/transparent" />
+			    
+		    </LinearLayout>
 		    
 		    <TextView
 		        android:id="@+id/message_friend_time_text"
@@ -68,8 +74,7 @@
            android:layout_weight=".87"
            android:layout_height="wrap_content"
            android:orientation="vertical"
-           android:padding="10dp"
-           android:background="@drawable/chat_bubble_blue">
+           android:padding="10dp">
            
 		    <TextView 
 		        android:id="@+id/message_owner_name_text"
@@ -81,13 +86,18 @@
 		        android:textColor="@color/gray"
 		        android:background="@android:color/transparent" />
 		    
-		    <TextView
-		        android:id="@+id/message_owner_body_text"
+		    <LinearLayout 
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
-		        android:paddingLeft="15dp"
-		        style="@style/CodeFont"
-		        android:background="@android:color/transparent" />
+		        android:background="@drawable/chat_bubble_orange" >
+			    <TextView
+			        android:id="@+id/message_owner_body_text"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			        android:paddingLeft="15dp"
+			        style="@style/CodeFont"
+			        android:background="@android:color/transparent" />
+		    </LinearLayout>
 		    
 		    <TextView
 		        android:id="@+id/message_owner_time_text"
@@ -103,7 +113,7 @@
            android:id="@+id/message_owner_profile_pic"
            android:layout_width="0dp"
            android:layout_height="wrap_content"
-           android:layout_gravity="bottom"
+           android:layout_gravity="bottom|left"
            android:paddingLeft="10dp"
            android:paddingTop="2dp"
            android:layout_weight=".13" />

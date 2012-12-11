@@ -7,6 +7,7 @@ import java.util.Vector;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.motlee.android.fragment.BaseMotleeFragment;
 import com.motlee.android.fragment.CreateEventFragment;
 import com.motlee.android.fragment.SearchPeopleFragment;
 import com.motlee.android.fragment.SearchPlacesFragment;
@@ -84,7 +85,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	
 	private Vector<Integer> removedAttendees = new Vector<Integer>();
 	
-	private boolean isEditing = false;
+	public boolean isEditing = false;
 	/*
 	 * get initial location of user and set up locationListener to update if 
 	 * user moves by more than LOCATION_CHANGE_THRESHOLD (default=50) meters
@@ -175,7 +176,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     	}
     	else
     	{
-    		Fragment mainFragment = fm.findFragmentByTag(MAIN_FRAGMENT);
+    		BaseMotleeFragment mainFragment = (BaseMotleeFragment) fm.findFragmentByTag(MAIN_FRAGMENT);
+    		mainFragment.setPageHeader("Create Event");
     		ft.show(mainFragment)
     		.commit();
     	}
@@ -281,6 +283,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
             
             ft.remove(searchPeopleFragment)
             .commit();
+            
+            createEventFragment.updatePageHeader();
             
             if (isEditing)
             {

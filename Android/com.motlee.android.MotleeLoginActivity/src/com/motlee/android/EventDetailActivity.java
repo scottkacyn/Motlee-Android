@@ -17,6 +17,7 @@ import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Like;
@@ -33,6 +34,7 @@ import com.motlee.android.object.event.UpdatedLikeEvent;
 import com.motlee.android.object.event.UpdatedLikeListener;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
+import com.motlee.android.view.ProgressDialogWithTimeout;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -112,7 +114,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
 		eDetail = GlobalEventList.eventDetailMap.get(mEventID);
 		
-		progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading " + eDetail.getEventName());
+		progressDialog = ProgressDialogWithTimeout.show(EventDetailActivity.this, "", "Loading " + eDetail.getEventName());
 		//setUpFragments();
 		
 		if (findViewById(R.id.header) == null)
@@ -142,7 +144,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         
         //progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading " + eDetail.getEventName());
         
-        showMenuButtons();
+        //showMenuButtons();
         
         EventServiceBuffer.setPhotoListener(this);
         
@@ -205,7 +207,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 			
 			EventServiceBuffer.setAttendeeListener(attendeeListener);
 
-			progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Joining Event");
+			progressDialog = ProgressDialogWithTimeout.show(EventDetailActivity.this, "", "Joining Event");
 			
 			ArrayList<Integer> attendees = new ArrayList<Integer>();
 			attendees.add(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId()).uid);
@@ -408,8 +410,12 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         	if (fm.findFragmentByTag("Location") == locationFragment)
         	{
 	        	Fragment fragment = fm.findFragmentById(R.id.fragment_content);
-	    		ft.remove(fragment);
-	    		ft.show(locationFragment);
+	        	if (fragment != locationFragment)
+	        	{
+	        		ft.remove(fragment);
+	        	}
+	        	
+	        	ft.show(locationFragment);
         	}
         	else
         	{
@@ -522,10 +528,12 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         if (eDetail.getAttendees().contains(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId())))
         {
             setActionForRightMenu(takePhotoListener);
+            showMenuButtons(BaseMotleeActivity.TAKE_PICTURE);
         }
         else
         {
         	setActionForRightMenu(joinMenuListener);
+        	showMenuButtons(BaseMotleeActivity.JOIN_EVENT);
         }
         
         if (mNewPhoto != null)
@@ -661,6 +669,12 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		fragment.addLikeToListAdapter(likeEvent);
 		likeButtons.get(likeEvent.itemId).setEnabled(true);
 	}*/
+	
+	@Override
+	public void showPictureDetail(View view)
+	{
+		GlobalActivityFunctions.showPictureDetail(view, this, false);
+	}
 	
     @Override
 	protected void backButtonPressed()

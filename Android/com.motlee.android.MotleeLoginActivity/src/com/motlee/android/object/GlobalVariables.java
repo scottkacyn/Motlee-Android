@@ -21,8 +21,10 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 
 import com.facebook.android.Facebook;
+import com.motlee.android.EventDetailActivity;
 import com.motlee.android.EventListActivity;
 import com.motlee.android.R;
+import com.motlee.android.TakePhotoActivity;
 import com.nostra13.universalimageloader.cache.disc.impl.TotalSizeLimitedDiscCache;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -32,7 +34,9 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
@@ -75,6 +79,8 @@ public class GlobalVariables {
     private DisplayImageOptions options;
     
     private ExecutorService threadPool = Executors.newCachedThreadPool();
+    
+    public boolean firstUse = true;
     
     private Location userLocation;
     
@@ -163,6 +169,74 @@ public class GlobalVariables {
 	        }
 	    }
 	}
+	
+	/*public AlertDialog getWeakConnectionAlertDialog(Context context)
+	{
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+				context);
+		
+		alertDialogBuilder
+		.setMessage("Select Photo Source")
+		.setCancelable(true)
+		.setPositiveButton("Camera",new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				// if this button is clicked, close
+				// current activity
+				
+				Intent takePictureIntent = new Intent(activity, TakePhotoActivity.class);
+				takePictureIntent.putExtra("Action", TakePhotoActivity.TAKE_PHOTO);
+				takePictureIntent.putExtra("EventID", eventId);
+				//removePlusMenu(activity);
+				if (activity instanceof EventDetailActivity)
+				{
+					takePictureIntent.putExtra("EventDetail", true);
+				}
+				else
+				{
+					takePictureIntent.putExtra("EventDetail", false);
+				}
+				activity.startActivity(takePictureIntent);
+				if (!((activity instanceof EventListActivity) || (activity instanceof EventDetailActivity)))
+				{
+					activity.finish();
+				}
+				
+				dialog.cancel();
+			}
+		  })
+		.setNegativeButton("Gallery",new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				// if this button is clicked, just close
+				// the dialog box and do nothing
+				Intent takePictureIntent = new Intent(activity, TakePhotoActivity.class);
+				takePictureIntent.putExtra("Action", TakePhotoActivity.GET_PHOTO_LIBRARY);
+				takePictureIntent.putExtra("EventID", eventId);
+				//removePlusMenu(activity);
+				if (activity instanceof EventDetailActivity)
+				{
+					takePictureIntent.putExtra("EventDetail", true);
+				}
+				else
+				{
+					takePictureIntent.putExtra("EventDetail", false);
+				}
+				
+				activity.startActivity(takePictureIntent);
+				if (!((activity instanceof EventListActivity) || (activity instanceof EventDetailActivity)))
+				{
+					activity.finish();
+				}
+				
+				dialog.cancel();
+			}
+		});
+		
+		// create alert dialog
+		AlertDialog alertDialog = alertDialogBuilder.create();
+ 
+				// show it
+		alertDialog.show();
+	}*/
 	
 	public String getAWSUrlThumbnail(PhotoItem photo)
 	{

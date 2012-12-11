@@ -46,7 +46,7 @@ public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
 		super(context);
 		
 		mListItemsOriginal = new ArrayList<Integer>(listItems);
-		mListItems = new ArrayList<Integer>(listItems);
+		mListItems = new ArrayList<Integer>();
 		mSplitSectionOriginal = splitSection;
 		mSplitSection = splitSection;
 		
@@ -236,7 +236,7 @@ public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
             if (prefix == null || prefix.toString().trim().length() == 0) {
             	ArrayList<Integer> list;
                 synchronized (mLock) {
-                    list = new ArrayList<Integer>(mListItemsOriginal);
+                    list = new ArrayList<Integer>();
                 }
                 results.values = list;
                 results.count = list.size();

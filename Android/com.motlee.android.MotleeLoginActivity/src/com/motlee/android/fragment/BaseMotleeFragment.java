@@ -55,7 +55,7 @@ public class BaseMotleeFragment extends Fragment {
 		mHeaderView = headerView;
 	}
 	
-	protected void setPageHeader(String headerText)
+	public void setPageHeader(String headerText)
 	{
 		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
 		tv.setText(headerText);

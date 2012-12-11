@@ -1,0 +1,18 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" 
+    android:layout_gravity="center_vertical|center_horizontal">
+
+    <com.facebook.LoginButton
+        android:id="@+id/auth_button"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|center_horizontal"
+        android:width="140dp"
+        android:height="24dp"
+        android:contentDescription="FacebookLogin" />
+    
+    
+</FrameLayout>

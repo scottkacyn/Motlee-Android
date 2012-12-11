@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.emilsjolander.components.StickyListHeaders.StickyListHeadersListView;
 import com.motlee.android.BaseDetailActivity;
+import com.motlee.android.EventDetailActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.EventDetailGridAdapter;
 import com.motlee.android.adapter.EventDetailListAdapter;
@@ -18,6 +19,7 @@ import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.GridPictures;
@@ -31,7 +33,9 @@ import com.motlee.android.object.event.UpdatedStoryEvent;
 import com.motlee.android.object.event.UpdatedStoryListener;
 import com.motlee.android.view.HorizontalAspectImageButton;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -140,6 +144,14 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		//listViewLayout.addHeaderView(eventTop);
 		setListAdapter();
 		setGridAdapter();
+		
+		if (gridAdapter.getCount() == 0)
+		{
+			View headerView = inflater.inflate(R.layout.event_detail_no_photo_header, null);
+			headerView.findViewById(R.id.event_detail_no_photo_button).setOnClickListener(takePhotoListener);
+			listViewLayout.addHeaderView(headerView);
+		}
+		
 		listViewLayout.setAdapter(gridAdapter);
 
 	}
@@ -436,6 +448,34 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 			listAdapter.replaceData(storyPhotoList);
 		}
 	}
+	
+	private OnClickListener takePhotoListener = new OnClickListener(){
+
+		public void onClick(View v) {
+			
+			if (mEventDetail.getAttendees().contains(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId())))
+			{
+				MenuFunctions.takePictureOnPhone(mEventDetail.getEventID(), getActivity());
+			}
+			else
+			{
+				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+				builder.setMessage("Join This Event to Take Photo?")
+				.setCancelable(true)
+				.setPositiveButton("Join!", ((EventDetailActivity) getActivity()).joinListener)
+				.setNegativeButton("Nope", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+				
+				builder.create().show();
+			}
+			
+			
+		}
+		
+	};
 	
 	/*public void addListToAdapter()
 	{

@@ -62,7 +62,7 @@ import com.motlee.android.object.GraphUserComparator;
 public class SearchPeopleFragment extends ListFragmentWithHeader {
 	private String tag = "SearchFragment";
 	
-	private String pageTitle = "All Events";
+	private String pageTitle = "Add Friends";
 	
 	private View view;
 	
@@ -112,7 +112,7 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
 		
 		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
 		tv.setText(pageTitle);
-		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		tv.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		
 		View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
 		headerLeftButton.setVisibility(View.VISIBLE);

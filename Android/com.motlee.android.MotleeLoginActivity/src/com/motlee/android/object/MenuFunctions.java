@@ -387,8 +387,10 @@ public class MenuFunctions {
 			Intent intent = new Intent(activity, EventListActivity.class);
 			
 			intent.putExtra("ListType", params.headerText);
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
 			activity.startActivity(intent);
+			
+			activity.finish();
 		}
 	}
 }

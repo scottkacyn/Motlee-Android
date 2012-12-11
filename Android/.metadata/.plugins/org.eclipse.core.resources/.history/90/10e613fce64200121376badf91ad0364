@@ -1,0 +1,28 @@
+package com.motlee.android.view;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.view.MotionEvent;
+
+import com.devsmart.android.ui.HorizontalListView;
+
+public class HorizontalListViewDisallowIntercept extends HorizontalListView {
+
+	public HorizontalListViewDisallowIntercept(Context context,
+			AttributeSet attrs) {
+		super(context, attrs);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev)
+	{
+		boolean ret = super.dispatchTouchEvent(ev);
+		if (ret)
+		{
+			requestDisallowInterceptTouchEvent(true);
+		}
+		return ret;
+	}
+	
+}

@@ -1,0 +1,47 @@
+ <LinearLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:layout_gravity="bottom"
+     android:weightSum="1">
+     
+  <com.motlee.android.view.HorizontalAspectImageButton
+      android:id="@+id/menu_button"
+      android:layout_width="0dp"
+      android:layout_weight="0.2"
+      android:layout_height="match_parent"
+      android:src="@drawable/main_menu_button"
+      android:background="@android:color/transparent"
+      android:gravity="left"
+      android:scaleType="fitCenter"
+      android:onClick="onClickOpenMainMenu" />
+  
+  <LinearLayout
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_weight="0.6"
+      android:id="@+id/menu_middle_space" >
+      
+      <TextView
+          android:id="@+id/message_post_text"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_gravity="center_vertical"
+          android:gravity="center_vertical"
+          android:paddingLeft="15dp"
+          android:text="Post Message..." 
+          android:visibility="gone"/>
+      
+  </LinearLayout>
+  
+  <com.motlee.android.view.HorizontalAspectImageButton
+      android:id="@+id/plus_menu_button"
+      android:layout_width="0dp"
+      android:layout_weight="0.2"
+      android:layout_height="match_parent"
+      android:src="@drawable/right_menu_button"
+      android:background="@android:color/transparent"
+      android:scaleType="fitCenter"
+      android:onClick="onClickOpenPlusMenu"
+      android:gravity="right" />
+</LinearLayout>

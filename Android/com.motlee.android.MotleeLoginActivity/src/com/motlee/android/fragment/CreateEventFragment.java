@@ -77,6 +77,12 @@ public class CreateEventFragment extends BaseMotleeFragment {
     
     private TextView locationTextView;
     
+    @Override
+    public void onResume()
+    {
+    	super.onResume();
+    }
+    
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 	        Bundle savedInstanceState)
@@ -100,7 +106,8 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		}
 		else
 		{
-			setPageHeader(mEventDetail.getEventName());
+			pageTitle = mEventDetail.getEventName();
+			setPageHeader(pageTitle);
 			setHeaderIcon(EDIT_EVENTS);
 			showRightHeaderButton("Save");
 		}
@@ -121,7 +128,8 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		setDateLabels();
 		setFriendLayout();
 		setLocationLabel();
-
+		setPublicEventToggle();
+		
 		ImageScaleType ist = ImageScaleType.IN_SAMPLE_POWER_OF_2;
 		
 		mOptions = new DisplayImageOptions.Builder()
@@ -150,7 +158,41 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		
 		return view;
 	}
+	
+	private void setPublicEventToggle() {
+		
+		ImageButton toggle = (ImageButton) view.findViewById(R.id.event_create_public_switcher);
+		toggle.setOnClickListener(toggleListener);
+		toggle.setTag(true);
+		
+	}
 
+	private OnClickListener toggleListener = new OnClickListener()
+	{
+
+		public void onClick(View v) {
+			
+			boolean switcherState = (Boolean) v.getTag();
+			
+			if (switcherState)
+			{
+				((ImageView) v).setImageResource(R.drawable.switcher_button_off);
+				TextView text = (TextView) view.findViewById(R.id.event_create_public_event_text);
+				text.setText(R.string.public_event_false);
+				v.setTag(false);
+			}
+			else
+			{
+				((ImageView) v).setImageResource(R.drawable.switcher_button_on);
+				TextView text = (TextView) view.findViewById(R.id.event_create_public_event_text);
+				text.setText(R.string.public_event_true);
+				v.setTag(true);
+			}
+			
+		}
+		
+	};
+	
 	public LocationInfo getLocationInfo()
 	{
 		return this.mLocation;
@@ -192,6 +234,8 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		{
 			locationTextView.setText(mEventDetail.getLocationInfo().name);
 		}
+		
+		labelButton.findViewById(R.id.divider).setVisibility(View.GONE);
 		
 		TableRow tr = new TableRow(getActivity());
 		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -470,5 +514,11 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		eventFriendLayout.addView(tr);
 		
 		mAttendees.add(facebookID);
+	}
+
+	public void updatePageHeader() {
+		
+		this.setPageHeader(this.pageTitle);
+		
 	}
 }

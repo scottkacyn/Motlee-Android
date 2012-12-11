@@ -124,12 +124,6 @@ public class ImageAdapter extends BaseAdapter {
 	    		this.mPhotoList.add(photos.get(i));
 	    	}
 	    	
-	    	if (lastPosition < MIN_SIZE)
-	    	{
-	    		lastPosition++;
-	    		this.mPhotoList.add(FIRST_PHOTO);
-	    	}
-	    	
 	    	// Adds placeholder if photos list is not larger than MIN_SIZE
 	    	for (int i = lastPosition; i < MIN_SIZE; i++)
 	    	{
@@ -159,17 +153,6 @@ public class ImageAdapter extends BaseAdapter {
     	
     	if (mPhotoList.get(position) == NO_PHOTO)
     	{
-    		//holder.imageView.setClickable(false);
-    		//holder.imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.event_list_add_content));
-    		holder.imageView.setVisibility(View.GONE);
-			holder.imagePlaceHolder.setImageDrawable(context.getResources().getDrawable(R.drawable.watermark));
-			holder.imagePlaceHolder.setClickable(false);
-    		holder.imagePlaceHolder.setVisibility(View.VISIBLE);
-    		holder.imagePlaceHolder.setTag(eventId);
-    		
-    	}
-    	else if (mPhotoList.get(position).equals(FIRST_PHOTO))
-    	{
     		holder.imageView.setVisibility(View.GONE);
     		if (isAttending)
     		{
@@ -178,7 +161,7 @@ public class ImageAdapter extends BaseAdapter {
     		}
     		else
     		{
-    			holder.imagePlaceHolder.setImageDrawable(context.getResources().getDrawable(R.drawable.watermark));
+    			holder.imagePlaceHolder.setImageDrawable(context.getResources().getDrawable(R.drawable.watermark_no_content));
     			holder.imagePlaceHolder.setClickable(false);
     		}
     		holder.imagePlaceHolder.setVisibility(View.VISIBLE);

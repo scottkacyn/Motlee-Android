@@ -80,12 +80,6 @@ public class LocationFragment extends BaseDetailFragment {
 		view = (RelativeLayout) this.inflater.inflate(R.layout.event_detail_location, null);
 		
 		mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-		
-		setPageHeader(pageTitle);
-		if (pageTitle.equals(NEARBY_EVENTS))
-		{
-			setHeaderIcon(NEARBY_EVENTS);
-		}
 
 		eventHeader = (LinearLayout) view.findViewById(R.id.event_detail_header);
 		
@@ -106,6 +100,12 @@ public class LocationFragment extends BaseDetailFragment {
 				this.pageTitle = mEventList.get(0).getEventName();
 				showRightHeaderButton(mEventList.get(0));
 			}
+		}
+		
+		setPageHeader(pageTitle);
+		if (pageTitle.equals(NEARBY_EVENTS))
+		{
+			setHeaderIcon(NEARBY_EVENTS);
 		}
 		
 		showLeftHeaderButton();
@@ -152,7 +152,15 @@ public class LocationFragment extends BaseDetailFragment {
 				Location userLocation = mLocationManager.getLastKnownLocation(bestProvider);
 				point = new GeoPoint((int) (userLocation.getLatitude() * locMultiplier), (int) (userLocation.getLongitude() * locMultiplier));
 			}
-		}		
+		}
+		else
+		{
+			Criteria criteria = new Criteria();
+			String bestProvider = mLocationManager.getBestProvider(criteria, true);
+			
+			Location userLocation = mLocationManager.getLastKnownLocation(bestProvider);
+			point = new GeoPoint((int) (userLocation.getLatitude() * locMultiplier), (int) (userLocation.getLongitude() * locMultiplier));
+		}
 		
 		mapView = (MapView) view.findViewById(R.id.map_view);
 		

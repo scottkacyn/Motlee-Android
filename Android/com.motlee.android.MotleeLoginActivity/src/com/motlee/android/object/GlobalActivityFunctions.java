@@ -17,10 +17,16 @@ public class GlobalActivityFunctions {
 	
 	public static void showPictureDetail(View view, Activity activity)
 	{
+		showPictureDetail(view, activity, true);
+	}
+	
+	public static void showPictureDetail(View view, Activity activity, boolean getPhotoInfo)
+	{
 		PhotoItem photo = (PhotoItem) view.getTag();
 		
 		Intent showPictureIntent = new Intent(activity, EventItemDetailActivity.class);
 		showPictureIntent.putExtra("EventItem", photo);
+		showPictureIntent.putExtra("GetPhotoInfo", getPhotoInfo);
 		activity.startActivity(showPictureIntent);
 	}
 	

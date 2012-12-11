@@ -25,6 +25,10 @@ import android.widget.LinearLayout;
 
 public class BaseMotleeActivity extends FragmentActivity implements UpdatedEventDetailListener {
 
+	public static final int CREATE_EVENT = 0;
+	public static final int TAKE_PICTURE = 1;
+	public static final int JOIN_EVENT = 2;
+	
 	final public void onClickShowProfile(View view)
 	{
 		GlobalActivityFunctions.showProfileDetail(view, this);
@@ -40,7 +44,7 @@ public class BaseMotleeActivity extends FragmentActivity implements UpdatedEvent
 		GlobalActivityFunctions.showStoryDetail(view, this);
 	}
 	
-	final public void showPictureDetail(View view)
+	public void showPictureDetail(View view)
 	{
 		GlobalActivityFunctions.showPictureDetail(view, this);
 	}
@@ -98,9 +102,22 @@ public class BaseMotleeActivity extends FragmentActivity implements UpdatedEvent
 		MenuFunctions.showSearchPage(this);
 	}
 	
-	final public void showMenuButtons()
+	final public void showMenuButtons(int iconToShow)
 	{
 		findViewById(R.id.menu_buttons).setVisibility(View.VISIBLE);
+		
+		if (iconToShow == this.CREATE_EVENT)
+		{
+			((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_plus_icon);
+		}
+		else if (iconToShow == this.TAKE_PICTURE)
+		{
+			((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_photo_icon);
+		}
+		else if (iconToShow == this.JOIN_EVENT)
+		{
+			((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_join_icon);
+		}
 	}
 	
 	final public void setActionForRightMenu(OnClickListener listener)

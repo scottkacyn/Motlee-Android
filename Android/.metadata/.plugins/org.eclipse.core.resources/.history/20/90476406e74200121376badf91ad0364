@@ -1,0 +1,56 @@
+package com.motlee.android.view;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.VelocityTracker;
+
+import com.devsmart.android.ui.HorizontalListView;
+
+public class HorizontalListViewDisallowIntercept extends HorizontalListView {
+
+	private VelocityTracker mVelocityTracker;
+	
+	public HorizontalListViewDisallowIntercept(Context context,
+			AttributeSet attrs) {
+		super(context, attrs);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent event)
+	{
+		boolean ret = super.dispatchTouchEvent(event);
+		if (ret)
+		{
+			final int action = event.getAction();
+		    final float x = event.getX();
+		    final float y = event.getY();
+		 
+		    if (mVelocityTracker == null) {
+		        mVelocityTracker = VelocityTracker.obtain();
+		    }
+		    mVelocityTracker.addMovement(event);
+
+			switch (action) {
+		    case MotionEvent.ACTION_DOWN:
+		    	
+		        break;
+
+			case MotionEvent.ACTION_UP:
+				
+				if (mVelocityTracker.getXVelocity() > mVelocityTracker.getYVelocity())
+				{
+					requestDisallowInterceptTouchEvent(true);
+				}
+	            break;
+	 
+	        default:
+	            mVelocityTracker.recycle();
+	            mVelocityTracker = null;
+	            break;
+		}
+		return ret;
+	}
+	
+}

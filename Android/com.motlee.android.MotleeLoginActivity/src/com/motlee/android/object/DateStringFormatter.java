@@ -9,7 +9,7 @@ import org.joda.time.PeriodType;
 
 public class DateStringFormatter {
 
-	public static String UPCOMING = "upcoming";
+	public static String UPCOMING = "Upcoming";
 	
 	private static DateTime currentTime;
 	private static final long msInMin = 60000;
@@ -37,7 +37,7 @@ public class DateStringFormatter {
 			
 			if (timeInMs > msInDay)
 			{
-				return UPCOMING;
+				return dateFormat.format(startDate);
 			}
 			if (timeInMs > 2 * msInHour)
 			{

@@ -6,6 +6,7 @@ import java.util.TimerTask;
 
 import org.json.JSONObject;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -31,6 +32,7 @@ import com.emilsjolander.components.StickyListHeaders.StickyListHeadersListView;
 import com.facebook.HttpMethod;
 import com.facebook.Request;
 import com.facebook.Session;
+import com.motlee.android.EventDetailActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.SearchAllAdapter;
 import com.motlee.android.adapter.SearchPeopleAdapter;
@@ -41,6 +43,7 @@ import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedFriendsEvent;
 import com.motlee.android.object.event.UpdatedFriendsListener;
+import com.motlee.android.view.ProgressDialogWithTimeout;
 
 public class SearchAllFragment extends ListFragmentWithHeader implements UpdatedFriendsListener, OnScrollListener  {
 
@@ -70,6 +73,8 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
 	
 	private static final String KEY_LIST_POSITION = "KEY_LIST_POSITION";
 	private int firstVisible;
+	
+	private ProgressDialog progressDialog;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
@@ -102,10 +107,16 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
 		
 		setEditText();
 		
+    	view.findViewById(R.id.search_progress_bar).setVisibility(View.GONE);
+    	
+    	view.findViewById(R.id.search_list).setVisibility(View.VISIBLE); 
+		
 		EventServiceBuffer.setFriendsListener(this);
 		
 		EventServiceBuffer.requestMotleeFriends(GlobalVariables.getInstance().getUserId());
 
+		progressDialog = ProgressDialogWithTimeout.show(getActivity(), "", "Loading Friends");
+		
 		return view;
 	}
 	
@@ -114,6 +125,7 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
 		editText = (EditText) view.findViewById(R.id.search_text_box_text);
 		editText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		editText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+		editText.setHint("Search Friends/Events...");
 		
 		editText.setOnEditorActionListener(editorActionListener);
 		editText.setOnFocusChangeListener(focusChangeListener);
@@ -231,15 +243,7 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
 		
 		stickyList.setAdapter(mAdapter);		
 		
-    	mHandler.post(new Runnable() {
-    	    
-    		public void run() { 
-    			
-    	    	view.findViewById(R.id.search_progress_bar).setVisibility(View.GONE);
-    	    	
-    	    	view.findViewById(R.id.search_list).setVisibility(View.VISIBLE); 
-	    	}
-	    });
+		progressDialog.dismiss();
 	}
 
 	public void onScroll(AbsListView view, int firstVisibleItem,
