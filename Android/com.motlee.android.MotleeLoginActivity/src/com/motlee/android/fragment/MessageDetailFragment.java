@@ -506,6 +506,13 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
         }       
     }
 	
+	@Override
+	public void onPause()
+	{
+		EventServiceBuffer.setStoryListener(null);
+		super.onPause();
+	}
+	
 	public void setMessageButton(View menuButtons) {
 		
 		this.menuButtons = menuButtons;

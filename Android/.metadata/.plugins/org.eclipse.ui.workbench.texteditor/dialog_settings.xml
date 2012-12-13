@@ -13,16 +13,16 @@
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="ProgressDialog" key="selection"/>
+		<item value="" key="selection"/>
 		<list key="findhistory">
+			<item value="UnkownHostException"/>
+			<item value="There was a problem sending the request"/>
+			<item value="postPhotoSuccessCode"/>
 			<item value="progressDialog"/>
 			<item value="setPageHeader"/>
 			<item value="ProgressDialogWithTimeout"/>
 			<item value="getUser"/>
 			<item value="profile_number_friends_text"/>
-			<item value="request"/>
-			<item value="showP"/>
-			<item value="new Intent"/>
 		</list>
 		<list key="replacehistory">
 			<item value="EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);"/>

@@ -31,9 +31,13 @@ import com.motlee.android.object.event.UpdatedEventDetailListener;
 import com.motlee.android.object.event.UserInfoEvent;
 import com.motlee.android.object.event.UserInfoListener;
 import com.motlee.android.object.event.UserWithEventsPhotosEvent;
+import com.motlee.android.service.RubyService;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -41,9 +45,12 @@ import android.os.Environment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class MotleeLoginActivity extends FacebookActivity implements UpdatedEventDetailListener, OnFragmentAttachedListener {
 
@@ -51,6 +58,39 @@ public class MotleeLoginActivity extends FacebookActivity implements UpdatedEven
     private SharedPreferences mPrefs;
     private MotleeLoginActivity instance = this;
     private LoginPageFragment loginPageFragment;
+    
+	private BroadcastReceiver receiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+        	
+            showToast();
+
+        }
+    };
+	
+    private void showToast(){
+    	Toast toast = Toast.makeText(MotleeLoginActivity.this, "Whoops. There seems to be a connection issue.  Try again in one sec.", Toast.LENGTH_LONG);
+    	TextView v = (TextView)toast.getView().findViewById(android.R.id.message);
+    	if( v != null) v.setGravity(Gravity.CENTER);
+    	toast.show();
+    }
+    
+    @Override
+    protected void onResume() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(RubyService.CONNECTION_ERROR);
+        registerReceiver(receiver, filter);
+
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        unregisterReceiver(receiver);
+        super.onPause();
+    }
+    
     
     @Override
     public void onCreate(Bundle savedInstanceState) {

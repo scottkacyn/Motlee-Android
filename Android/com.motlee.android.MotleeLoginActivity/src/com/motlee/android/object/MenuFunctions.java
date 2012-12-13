@@ -103,6 +103,11 @@ public class MenuFunctions {
         ft.commit();
 	}
 	
+	public static void resetMenuOpen()
+	{
+		menuOpen = false;
+	}
+	
 	// plus menu deprecated
 	/*public static void openPlusMenu(View view, FragmentActivity activity)
 	{
@@ -124,7 +129,10 @@ public class MenuFunctions {
 	public static boolean onDispatchTouchOverride(MotionEvent ev, FragmentActivity activity)
 	{
 		// Only check if menu is open
-		if (menuOpen)
+		
+		Fragment fragment = activity.getSupportFragmentManager().findFragmentById(R.id.main_menu);
+		
+		if (fragment != null && fragment.isAdded())
 		{
 		    Rect menuBounds = new Rect();
 		    View view = activity.findViewById(R.id.main_menu);

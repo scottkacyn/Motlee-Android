@@ -23,11 +23,13 @@
             android:name=".MotleeLoginActivity"
             android:label="@string/title_login_page" 
             android:theme="@style/app_theme"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+                <!-- <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="com.motlee.android.service.RubyService.CONNECTION_ERROR" /> -->
             </intent-filter>
         </activity>
         
@@ -181,14 +183,17 @@
         </activity>
         
         <activity
-            android:name=".AddPeopleActivity"
-            android:label="@string/title_add_people_activity"
+            android:name=".BaseMotleeActivity"
+            android:label="@string/title_base_motlee_activity"
             android:theme="@style/app_theme"
-            android:launchMode="singleTop"
             android:screenOrientation="portrait" >
             <meta-data
             	android:name="android.support.PARENT_ACTIVITY"
             	android:value="com.example.myfirstapp.MainActivity" />
+            
+            <intent-filter>
+            	<action android:name="com.motlee.android.service.RubyService.CONNECTION_ERROR"></action>
+        	</intent-filter>
         </activity>
         
         <activity

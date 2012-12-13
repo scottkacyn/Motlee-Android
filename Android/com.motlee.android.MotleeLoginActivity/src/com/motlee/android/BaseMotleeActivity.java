@@ -10,10 +10,17 @@ import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
+import com.motlee.android.service.RubyService;
 
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,6 +29,8 @@ import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class BaseMotleeActivity extends FragmentActivity implements UpdatedEventDetailListener {
 
@@ -29,6 +38,45 @@ public class BaseMotleeActivity extends FragmentActivity implements UpdatedEvent
 	public static final int TAKE_PICTURE = 1;
 	public static final int JOIN_EVENT = 2;
 	
+	protected ProgressDialog progressDialog;
+	
+	private BroadcastReceiver receiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            
+        	if (progressDialog != null && progressDialog.isShowing())
+        	{
+        		progressDialog.dismiss();
+        	}
+        	
+            showToast();
+
+        }
+    };
+	
+    private void showToast(){
+    	Toast toast = Toast.makeText(this, "Whoops. There seems to be a connection issue.  Try again in one sec.", Toast.LENGTH_LONG);
+    	TextView v = (TextView)toast.getView().findViewById(android.R.id.message);
+    	if( v != null) v.setGravity(Gravity.CENTER);
+    	toast.show();
+    }
+    
+    @Override
+    protected void onResume() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(RubyService.CONNECTION_ERROR);
+        registerReceiver(receiver, filter);
+
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        unregisterReceiver(receiver);
+        super.onPause();
+    }
+    
 	final public void onClickShowProfile(View view)
 	{
 		GlobalActivityFunctions.showProfileDetail(view, this);

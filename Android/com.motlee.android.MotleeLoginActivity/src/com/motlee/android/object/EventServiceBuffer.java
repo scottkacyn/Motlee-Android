@@ -754,6 +754,10 @@ public class EventServiceBuffer extends Object {
         {
         	getPhotoFromJson(result, photo);
         }
+		else
+		{
+			sendBroadcast();
+		}
 	}
 
 	public void onRESTResult(int code, String result) {
@@ -835,9 +839,18 @@ public class EventServiceBuffer extends Object {
                 //		.
             }
             Log.d("EventServiceBuffer", "Failed: code: " + code + ", result: " + result);
+            
+            sendBroadcast();
         }
     }
 
+    private void sendBroadcast()
+    {
+    	Intent broadcast = new Intent();
+        broadcast.setAction(RubyService.CONNECTION_ERROR);
+        mContext.sendBroadcast(broadcast);
+    }
+	
 	private void getDeletedPhotoFromJson(String result) {
 		
 		Gson gson = new Gson();

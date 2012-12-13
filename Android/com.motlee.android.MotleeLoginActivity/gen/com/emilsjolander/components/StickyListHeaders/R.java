@@ -1326,13 +1326,13 @@ containing a value of this type.
         public static final int menu_buttons=0x7f0500f6;
         public static final int menu_middle_space=0x7f050100;
         public static final int menu_settings=0x7f05013c;
-        public static final int message_body_friend=0x7f050107;
+        public static final int message_body_friend=0x7f050108;
         public static final int message_body_owner=0x7f05010d;
         public static final int message_friend=0x7f050105;
-        public static final int message_friend_body_text=0x7f050109;
+        public static final int message_friend_body_text=0x7f05010a;
         public static final int message_friend_name_text=0x7f050106;
-        public static final int message_friend_profile_pic=0x7f050108;
-        public static final int message_friend_time_text=0x7f05010a;
+        public static final int message_friend_profile_pic=0x7f050109;
+        public static final int message_friend_time_text=0x7f050107;
         public static final int message_owner=0x7f05010b;
         public static final int message_owner_body_text=0x7f05010e;
         public static final int message_owner_name_text=0x7f05010c;
@@ -1567,8 +1567,8 @@ containing a value of this type.
         public static final int activity_event_list=0x7f0a0000;
     }
     public static final class string {
-        public static final int album_name=0x7f080047;
-        public static final int app_id=0x7f080046;
+        public static final int album_name=0x7f080048;
+        public static final int app_id=0x7f080047;
         public static final int app_name=0x7f08001d;
         public static final int com_facebook_choose_friends=0x7f08002d;
         public static final int com_facebook_dialogloginactivity_ok_button=0x7f08001e;
@@ -1618,17 +1618,18 @@ containing a value of this type.
         public static final int gd_trashcan=0x7f080015;
         public static final int hello=0x7f08001c;
         public static final int hello_world=0x7f080033;
-        public static final int map_key=0x7f080048;
+        public static final int map_key=0x7f080049;
         public static final int menu_settings=0x7f080034;
-        public static final int no_photo_text=0x7f08004b;
-        public static final int public_event_false=0x7f08004a;
-        public static final int public_event_true=0x7f080049;
+        public static final int no_photo_text=0x7f08004c;
+        public static final int public_event_false=0x7f08004b;
+        public static final int public_event_true=0x7f08004a;
         public static final int pull_to_refresh_pull_label=0x7f08002f;
         public static final int pull_to_refresh_refreshing_label=0x7f080031;
         public static final int pull_to_refresh_release_label=0x7f080030;
         public static final int pull_to_refresh_tap_label=0x7f080032;
         public static final int title_activity_event_list=0x7f080035;
         public static final int title_add_people_activity=0x7f080045;
+        public static final int title_base_motlee_activity=0x7f080046;
         public static final int title_comment_activity=0x7f080042;
         public static final int title_create_event_activity=0x7f08003a;
         public static final int title_crop_image_activity=0x7f080041;

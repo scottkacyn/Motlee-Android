@@ -66,7 +66,6 @@ import android.widget.RelativeLayout.LayoutParams;
 public class EventDetailActivity extends BaseDetailActivity implements OnFragmentAttachedListener, UpdatedEventDetailListener, UpdatedPhotoListener {
 
 	private FragmentTransaction ft;
-	private ProgressDialog progressDialog;
 	private int mEventID;
 	
 	private EventDetailFragment photosFragment;

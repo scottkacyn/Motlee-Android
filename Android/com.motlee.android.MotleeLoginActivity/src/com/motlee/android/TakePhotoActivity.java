@@ -402,8 +402,9 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			intent.putExtra("image-save", mCurrentCroppedPhotoPath);
 			intent.putExtra("aspectX", 1);
 			intent.putExtra("aspectY", 1);
-			intent.putExtra("outputX", GlobalVariables.getInstance().getDisplayWidth());
-			intent.putExtra("outputY", GlobalVariables.getInstance().getDisplayWidth());
+			int outputSize = GlobalVariables.DISPLAY_WIDTH > 720 ? GlobalVariables.DISPLAY_WIDTH : 720;
+			intent.putExtra("outputX", outputSize);
+			intent.putExtra("outputY", outputSize);
 			intent.putExtra("scale", true);
 			startActivity(intent); 
     	}

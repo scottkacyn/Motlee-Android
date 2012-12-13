@@ -59,8 +59,6 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 	private EditText editText;
 	private boolean getPhotoInformation = true;
 	
-	private ProgressDialog progressDialog;
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{

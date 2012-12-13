@@ -20,6 +20,7 @@
     <string name="title_nearby_events_activity">NearbyEventsActivity</string>
     <string name="title_search_activity">SearchActivity</string>
     <string name="title_add_people_activity">AddPeopleActivity</string>
+    <string name="title_base_motlee_activity">BaseMotleeActivity</string>
     <string name="app_id">283790891721595</string>
     <string name="album_name">Motlee Pictures</string>
     <string name="map_key">0oE1cuDjQWjAeMp6PSnXQ2-zp6QB_nyPeeQEEQA</string>

@@ -59,8 +59,6 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements UserI
 	
 	private ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>();
 	
-	private ProgressDialog progressDialog;
-	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

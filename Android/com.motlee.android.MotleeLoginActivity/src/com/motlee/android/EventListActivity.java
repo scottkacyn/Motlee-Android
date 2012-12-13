@@ -73,8 +73,6 @@ public class EventListActivity extends BaseMotleeActivity {
 
 	private HashMap<Integer, ImageButton> fomoButtons = new HashMap<Integer, ImageButton>();
 	
-	private ProgressDialog progressDialog;
-	
 	private EventListFragment mEventListFragment;
 	
 	private FragmentActivity mActivity;
@@ -89,6 +87,8 @@ public class EventListActivity extends BaseMotleeActivity {
 		{
 			eAdapter.notifyDataSetChanged();
 		}
+		
+		
 		
 		//mEventListFragment.setPageHeader(eventListParams.headerText);
 		//requestNewDataForList(eventListParams.dataContent, eventListParams.headerText);

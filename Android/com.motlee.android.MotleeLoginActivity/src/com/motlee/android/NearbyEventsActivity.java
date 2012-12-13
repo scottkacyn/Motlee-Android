@@ -19,8 +19,6 @@ import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 
 public class NearbyEventsActivity extends BaseMotleeActivity implements UpdatedEventDetailListener, OnFragmentAttachedListener {
-
-	private ProgressDialog progressDialog;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
