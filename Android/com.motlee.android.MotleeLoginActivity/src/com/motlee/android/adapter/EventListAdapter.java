@@ -160,6 +160,7 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
 	                        holder.event_footer_location = (TextView) convertView.findViewById(R.id.event_footer_location);
 	                        holder.imageAdapter = new ImageAdapter(mContext, R.layout.thumbnail);
 	                        holder.blank_space = (LinearLayout) convertView.findViewById(R.id.blank_space);
+	                        holder.event_header_icon = (ImageView) convertView.findViewById(R.id.event_header_icon);
 	                        convertView.setTag(holder);
                 			
                 } else {
@@ -224,6 +225,21 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
 	                CharSequence charSequence = Integer.toString(item.getEventID());
 	                holder.event_header_button.setContentDescription(charSequence);
 	                
+	                if (item.getOwnerID() == GlobalVariables.getInstance().getUserId())
+	                {
+	                	holder.event_header_icon.setVisibility(View.VISIBLE);
+	                	holder.event_header_icon.setImageDrawable(this.mContext.getResources().getDrawable(R.drawable.icon_button_gear));
+	                }
+	                else if (GlobalEventList.myEventDetails.contains(item.getEventID()))
+	                {
+	                	holder.event_header_icon.setVisibility(View.VISIBLE);
+	                	holder.event_header_icon.setImageDrawable(this.mContext.getResources().getDrawable(R.drawable.icon_button_star));
+	                }
+	                else
+	                {
+	                	holder.event_header_icon.setVisibility(View.GONE);
+	                }
+	                
 	                // set the value
 	                holder.event_header_name.setText(item.getEventName());
 	                holder.event_header_name.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
@@ -286,6 +302,7 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
             public RelativeLayout event_background;
             public LinearLayout event_footer_background;
             public LinearLayout blank_space;
+            public ImageView event_header_icon;
         }
 
 

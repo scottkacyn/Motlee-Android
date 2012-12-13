@@ -64,6 +64,7 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 	private String pageTitle = "All Events";
 	
 	private EventItem eventItem;
+	private ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>();
 	
 	private EditText editText;
 	
@@ -92,8 +93,6 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		
 		pagedView = (PagedView) view.findViewById(R.id.comment_paged_view);
 		
-		ArrayList<PhotoItem> photos = GlobalEventList.eventDetailMap.get(eventItem.event_id).getImages();
-		
 		Collections.sort(photos);
 		
 		int index = photos.indexOf(eventItem);
@@ -104,7 +103,7 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		
 		pagedView.scrollToPage(index);
 		
-		setPageHeader(GlobalEventList.eventDetailMap.get(eventItem.event_id).getEventName());
+		setPageHeader(this.pageTitle);
 		showLeftHeaderButton();
 		
 		setEditText();
@@ -120,6 +119,11 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 	public PhotoDetailPagedViewAdapter getAdapter()
 	{
 		return this.adapter;
+	}
+	
+	public void setPageTitle(String pageTitle)
+	{
+		this.pageTitle = pageTitle;
 	}
 	
 	/*@Override
@@ -372,6 +376,11 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		this.eventItem = photoItem;
 		this.isPhotoDetail = true;
 		this.isStoryDetail = false;
+	}
+	
+	public void setPhotoList(ArrayList<PhotoItem> photos)
+	{
+		this.photos = photos;
 	}
 	
 	public void setDetailStory(StoryItem storyItem)

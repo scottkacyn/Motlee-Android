@@ -100,27 +100,27 @@ public class DateStringFormatter {
 		if (timeInMs > msInYear)
 		{
 			int numOfYears = timeInterval.toPeriod(PeriodType.years()).getYears();
-			dateString = setUpString(numOfYears, "year");
+			dateString = setUpString(numOfYears, "yr");
 		}
 		else if (timeInMs > msInMonth)
 		{
 			int numOfMonths = timeInterval.toPeriod(PeriodType.months()).getMonths();
-			dateString = setUpString(numOfMonths, "month");
+			dateString = setUpString(numOfMonths, "mon");
 		}
 		else if (timeInMs > msInWeek)
 		{
 			int numOfWeeks = timeInterval.toPeriod(PeriodType.weeks()).getWeeks();
-			dateString = setUpString(numOfWeeks, "week");
+			dateString = setUpString(numOfWeeks, "wk");
 		}
 		else if (timeInMs > msInDay)
 		{
 			int numOfDays = timeInterval.toPeriod(PeriodType.days()).getDays();
-			dateString = setUpString(numOfDays, "day");
+			dateString = setUpString(numOfDays, "d");
 		}
 		else if (timeInMs > msInHour)
 		{
 			int numOfHours = timeInterval.toPeriod(PeriodType.hours()).getHours();
-			dateString = setUpString(numOfHours, "hour");
+			dateString = setUpString(numOfHours, "hr");
 		}
 		else if (timeInMs > msInMin)
 		{
@@ -130,7 +130,7 @@ public class DateStringFormatter {
 		else
 		{
 			int numOfSecs = timeInterval.toPeriod(PeriodType.seconds()).getSeconds();
-			dateString = setUpString(numOfSecs, "sec");
+			dateString = setUpString(numOfSecs, "s");
 		}
 		
 		return dateString;
@@ -139,11 +139,7 @@ public class DateStringFormatter {
 	private static String setUpString(int time, String singularLabel)
 	{
 		String dateString = Integer.toString(time) + " " + singularLabel;
-		if (time > 1)
-		{
-			dateString = dateString + "s ";
-		}
-		dateString = dateString + "ago";
+
 		return dateString;
 	}
 	

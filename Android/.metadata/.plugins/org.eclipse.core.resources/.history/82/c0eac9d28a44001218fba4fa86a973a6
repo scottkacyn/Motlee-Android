@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.motlee.android.layouts.HorizontalRatioLinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent">
+		    
+    <ImageView
+        android:id="@+id/profile_picture"
+        android:layout_width="0dp"
+        android:layout_weight=".25"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:padding="3dp" />
+    
+     <LinearLayout
+         android:id="@+id/profile_photos"
+         android:layout_width="0dp"
+         android:layout_height="match_parent"
+         android:layout_weight=".25" 
+         android:orientation="vertical"
+         android:clickable="true">
+         
+         <FrameLayout
+             android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_weight=".6667" >
+             
+             <ImageView
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 android:id="@+id/profile_number_glow"
+                 android:src="@drawable/user_profile_orange_glow"
+                 android:adjustViewBounds="true" />
+             
+	         <TextView
+	             android:layout_width="match_parent"
+	             android:layout_height="match_parent"
+	             android:id="@+id/profile_number_photos_text"
+	             android:gravity="center"
+	             style="@style/ProfileNumbers"/>
+	         
+         </FrameLayout>
+         <TextView
+             android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_weight=".3333"
+             android:id="@+id/profile_photos_text"
+        	 android:gravity="top|center_horizontal"
+        	 android:paddingBottom="5dp"
+        	 android:text="photos"
+        	 style="@style/CodeFont.Small" />        
+     </LinearLayout>
+     
+     <LinearLayout
+         android:id="@+id/profile_events"
+         android:layout_width="0dp"
+         android:layout_height="match_parent"
+         android:layout_weight=".25" 
+         android:orientation="vertical"
+         android:clickable="true">
+         
+         <FrameLayout
+             android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_weight=".6667" >
+             
+             <ImageView
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 android:id="@+id/profile_events_glow"
+                 android:src="@drawable/user_profile_orange_glow"
+                 android:adjustViewBounds="true"
+                 android:visibility="gone" />
+         
+	         <TextView
+	             android:layout_width="match_parent"
+	             android:layout_height="match_parent"
+	             android:id="@+id/profile_number_events_text"
+	             android:gravity="center"
+	             style="@style/ProfileNumbers"/>
+         
+       	 </FrameLayout>
+         <TextView
+             android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_weight=".3333"
+             android:id="@+id/profile_events_text"
+        	 android:gravity="top|center_horizontal"
+        	 android:paddingBottom="5dp"
+        	 android:text="events"
+        	 style="@style/CodeFont.Small" />
+         
+     </LinearLayout>
+     
+     <LinearLayout
+         android:id="@+id/profile_friends"
+         android:layout_width="0dp"
+         android:layout_height="match_parent"
+         android:layout_weight=".25" 
+         android:orientation="vertical"
+         android:clickable="true">
+         
+         <FrameLayout
+             android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_weight=".6667" >
+             
+             <ImageView
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 android:id="@+id/profile_friends_glow"
+                 android:src="@drawable/user_profile_orange_glow"
+                 android:adjustViewBounds="true"
+                 android:visibility="gone" />
+         
+	         <TextView
+	             android:layout_width="match_parent"
+	             android:layout_height="0dp"
+	             android:layout_weight=".6667"
+	             android:id="@+id/profile_number_friends_text"
+	             android:gravity="center"
+	             style="@style/ProfileNumbers"/>
+	         
+         </FrameLayout>
+	         
+         <TextView
+             android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_weight=".3333"
+             android:id="@+id/profile_friends_text"
+        	 android:gravity="top|center_horizontal"
+        	 android:paddingBottom="5dp"
+        	 android:text="friends"
+        	 style="@style/CodeFont.Small" />
+                 
+     </LinearLayout>
+</com.motlee.android.layouts.HorizontalRatioLinearLayout>

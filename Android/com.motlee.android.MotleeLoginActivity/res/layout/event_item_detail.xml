@@ -131,6 +131,18 @@
 	            android:gravity="center"/>
 	        
 	     </FrameLayout>
+	     
+	    <ImageButton
+	        android:id="@+id/photo_detail_delete_button"
+	        android:layout_width="50dp"
+	        android:layout_height="50dp"
+	        android:adjustViewBounds="true"
+	        android:scaleType="fitCenter"
+	        android:layout_gravity="top|right"
+	        android:src="@drawable/icon_close_normal"
+	        android:onClick="onDeletePhoto"
+	        android:background="@android:color/transparent" />
+	    
      </FrameLayout>
     <com.motlee.android.layouts.RatioBackgroundRelativeLayout
         android:layout_width="match_parent"

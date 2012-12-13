@@ -2,9 +2,9 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="814" key="DIALOG_WIDTH"/>
-		<item value="514" key="DIALOG_Y_ORIGIN"/>
+		<item value="73" key="DIALOG_Y_ORIGIN"/>
 		<item value="225" key="DIALOG_HEIGHT"/>
-		<item value="786" key="DIALOG_X_ORIGIN"/>
+		<item value="609" key="DIALOG_X_ORIGIN"/>
 		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
@@ -13,16 +13,16 @@
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="sendPhoto" key="selection"/>
+		<item value="ProgressDialog" key="selection"/>
 		<list key="findhistory">
-			<item value="sendPhoto"/>
-			<item value="eventHeader"/>
-			<item value="hideFirstUseHeader"/>
-			<item value="getPhoto"/>
-			<item value="seeMoreDetail"/>
-			<item value="mNewPhoto"/>
-			<item value="touchOverlay"/>
-			<item value="mShowHeader"/>
+			<item value="progressDialog"/>
+			<item value="setPageHeader"/>
+			<item value="ProgressDialogWithTimeout"/>
+			<item value="getUser"/>
+			<item value="profile_number_friends_text"/>
+			<item value="request"/>
+			<item value="showP"/>
+			<item value="new Intent"/>
 		</list>
 		<list key="replacehistory">
 			<item value="EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);"/>

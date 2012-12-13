@@ -8,6 +8,7 @@ import java.util.Collections;
 import com.facebook.android.Facebook;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.motlee.android.AddPeopleActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.ImageAdapter;
 import com.motlee.android.adapter.PeopleListAdapter;
@@ -23,6 +24,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -30,12 +32,14 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
@@ -71,16 +75,8 @@ public class PeopleListFragment extends BaseDetailFragment {
     private LinearLayout eventHeader;
     
 	private String pageLabel;
-    
-	/*@Override
-	public void onListItemClick(ListView l, View v, int position, long id) {
-	    String[] links = getResources().getStringArray(R.array.tut_links);
-	    String content = links[position];
-	    Intent showContent = new Intent(getActivity().getApplicationContext(),
-	            TutViewerActivity.class);
-	    showContent.setData(Uri.parse(content));
-	    startActivity(showContent);
-	}*/
+	
+	private View inviteFriendsHeader;
 	
 	@Override
 	public void onResume()
@@ -92,7 +88,7 @@ public class PeopleListFragment extends BaseDetailFragment {
 		
 		if (eventDetailPeopleList.getHeaderViewsCount() == 0)
 		{
-			eventDetailPeopleList.addHeaderView(eventHeader);
+			eventDetailPeopleList.addHeaderView(inviteFriendsHeader);
 		}
 		
 		setUpPeopleList();
@@ -112,6 +108,8 @@ public class PeopleListFragment extends BaseDetailFragment {
 		
 		setUpPageHeader();
 		
+		setUpInviteFriendsHeader();
+		
 		setPageHeader(pageTitle);
 		if (mEventDetail != null)
 		{
@@ -124,13 +122,50 @@ public class PeopleListFragment extends BaseDetailFragment {
 	
 	private void setUpPageHeader() 
 	{
-		eventHeader = (LinearLayout) this.inflater.inflate(R.layout.event_detail_header, null);
+		eventHeader = (LinearLayout) view.findViewById(R.id.event_detail_header);
 		eventHeader.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getDrawable());
 		
-		((ImageButton) eventHeader.findViewById(R.id.event_detail_friends)).setEnabled(false);
+		eventHeader.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getHeight()));
 		
-
+		((ImageButton) eventHeader.findViewById(R.id.event_detail_friends)).setEnabled(false);
 	}
+	
+	private void setUpInviteFriendsHeader()
+	{
+		inviteFriendsHeader = getActivity().getLayoutInflater().inflate(R.layout.event_detail_info_button, null);
+		
+		inviteFriendsHeader.findViewById(R.id.label_button_icon).setVisibility(View.GONE);
+		
+		TextView labelButtonText = (TextView) inviteFriendsHeader.findViewById(R.id.label_button_text);
+		labelButtonText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		labelButtonText.setText("Add Friends +");
+		
+		inviteFriendsHeader.findViewById(R.id.label_button).setOnClickListener(addFriendsListener);
+		
+		//inviteFriendsHeader.findViewById(R.id.label_button_content).setVisibility(View.GONE);
+	}
+	
+	private OnClickListener addFriendsListener = new OnClickListener(){
+
+		public void onClick(View arg0) {
+			
+			Intent addFriendIntent = new Intent(getActivity(), AddPeopleActivity.class);
+			
+			ArrayList<Integer> attendeeUIDs = new ArrayList<Integer>();
+			
+			for (UserInfo user : mEventDetail.getAttendees())
+			{
+				attendeeUIDs.add(user.uid);
+			}
+			
+			addFriendIntent.putIntegerArrayListExtra("Attendees", attendeeUIDs);
+			addFriendIntent.putExtra("EventId", mEventDetail.getEventID());
+			
+			getActivity().startActivity(addFriendIntent);
+			
+		}
+		
+	};
 	
 	public void setUpPeopleList() 
 	{

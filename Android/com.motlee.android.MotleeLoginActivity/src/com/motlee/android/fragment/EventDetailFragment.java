@@ -145,9 +145,18 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		setListAdapter();
 		setGridAdapter();
 		
+		if (listViewLayout.getFooterViewsCount() == 0)
+		{
+			setUpFooter();
+		}
+		
 		if (gridAdapter.getCount() == 0 && listViewLayout.getHeaderViewsCount() == 0)
 		{
 			View headerView = inflater.inflate(R.layout.event_detail_no_photo_header, null);
+			
+			TextView text = (TextView) headerView.findViewById(R.id.event_detail_no_photo_text);
+			text.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+			
 			headerView.findViewById(R.id.event_detail_no_photo_button).setOnClickListener(takePhotoListener);
 			listViewLayout.addHeaderView(headerView);
 		}
@@ -219,6 +228,20 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		}
 	}*/
 	
+	private void setUpFooter() {
+		
+		LinearLayout blank = new LinearLayout(getActivity());
+		
+		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.event_list_load_more, GlobalVariables.DISPLAY_WIDTH);
+		
+		blank.setLayoutParams(new ListView.LayoutParams(drawable.getWidth(), drawable.getHeight()));
+		
+		blank.setBackgroundColor(android.R.color.transparent);
+				
+		listViewLayout.addFooterView(blank);
+		
+	}
+
 	private void setUpPageHeader() 
 	{
 		eventHeader = (LinearLayout) view.findViewById(R.id.event_detail_header);

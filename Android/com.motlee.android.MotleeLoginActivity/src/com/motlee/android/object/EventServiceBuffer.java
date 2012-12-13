@@ -42,6 +42,7 @@ import com.motlee.android.R;
 import com.motlee.android.adapter.EventListAdapter;
 import com.motlee.android.enums.EventItemType;
 import com.motlee.android.fragment.EventListFragment;
+import com.motlee.android.object.event.DeletePhotoListener;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.object.event.UpdatedCommentEvent;
@@ -104,6 +105,7 @@ public class EventServiceBuffer extends Object {
     public static final int addCommentSuccessCode = HttpStatus.SC_CREATED + RubyService.ADD_COMMENT;
     public static final int updateEventSuccessCode = HttpStatus.SC_OK + RubyService.CREATE_EVEVT;
     public static final int friendsSuccessCode = HttpStatus.SC_OK + RubyService.FRIENDS;
+    public static final int deletePhotoSuccessCode = HttpStatus.SC_OK + RubyService.DELETE_PHOTO;
     
     private static Vector<UpdatedEventDetailListener> mEventDetailListener;
     private static Vector<UpdatedLikeListener> mLikeListener;
@@ -114,7 +116,8 @@ public class EventServiceBuffer extends Object {
 	private static Vector<UpdatedPhotoListener> mPhotoListener;
 	private static UpdatedStoryListener mStoryListener;
 	private static Vector<UpdatedFriendsListener> mFriendsListener;
-
+	private static DeletePhotoListener mDeletePhotoListener; 
+	
 	public static synchronized EventServiceBuffer getInstance(Context context)
 	{
 		mContext = context;
@@ -155,6 +158,11 @@ public class EventServiceBuffer extends Object {
         GlobalEventList.getInstance();
 	}
 
+	public static void setDeletePhotoListener(DeletePhotoListener listener)
+	{
+		mDeletePhotoListener = listener;
+	}
+	
 	public static void setStoryListener(UpdatedStoryListener listener)
 	{
 		mStoryListener = listener;
@@ -285,6 +293,22 @@ public class EventServiceBuffer extends Object {
 	public static void deleteAttendeeFromEvent(Integer id) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public static void deletePhotoFromEvent(PhotoItem photo)
+	{
+		Bundle params = new Bundle();
+		params.putString(AUTH_TOK, GlobalVariables.getInstance().getAuthoToken());
+		
+		Intent intent = new Intent(mContext, RubyService.class);
+		intent.setData(Uri.parse(WEB_SERVICE_URL + "events/" + photo.event_id + "/photos/" + photo.id));
+		
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.DELETE);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.DELETE_PHOTO);
+        intent.putExtra(RubyService.EXTRA_PARAMS, params);
+        
+        mContext.startService(intent);
 	}
 	
 	public static void addCommentToEventItem(EventItem item, String body)
@@ -798,6 +822,10 @@ public class EventServiceBuffer extends Object {
         {
         	getFriendsFromJson(result);
         }
+        else if (code == deletePhotoSuccessCode && result != null)
+        {
+        	getDeletedPhotoFromJson(result);
+        }
         else {
         	
             if (mContext instanceof Activity) {
@@ -809,6 +837,37 @@ public class EventServiceBuffer extends Object {
             Log.d("EventServiceBuffer", "Failed: code: " + code + ", result: " + result);
         }
     }
+
+	private void getDeletedPhotoFromJson(String result) {
+		
+		Gson gson = new Gson();
+		
+		JsonParser parser = new JsonParser();
+		
+		JsonObject object = parser.parse(result).getAsJsonObject();
+		
+		JsonObject photoObject = object.getAsJsonObject("photo");
+		
+		PhotoItem photo = gson.fromJson(photoObject, PhotoItem.class);
+		
+		EventDetail eDetail = GlobalEventList.eventDetailMap.get(photo.event_id);
+		
+		for (PhotoItem eventPhoto : eDetail.getImages())
+		{
+			if (eventPhoto.id == photo.id)
+			{
+				eDetail.getImages().remove(eventPhoto);
+				break;
+			}
+		}
+		
+		if (mDeletePhotoListener != null)
+		{
+			UpdatedPhotoEvent event = new UpdatedPhotoEvent(this, photo);
+			
+			mDeletePhotoListener.photoDeleted(event);
+		}
+	}
 
 	private void getFriendsFromJson(String result) {
 		

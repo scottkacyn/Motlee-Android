@@ -25,9 +25,12 @@ import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.UserInfoList;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
+import com.motlee.android.object.event.UpdatedFriendsEvent;
+import com.motlee.android.object.event.UpdatedFriendsListener;
 import com.motlee.android.object.event.UserInfoEvent;
 import com.motlee.android.object.event.UserInfoListener;
 import com.motlee.android.object.event.UserWithEventsPhotosEvent;
@@ -48,10 +51,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 
-public class UserProfilePageActivity extends BaseMotleeActivity implements UserInfoListener, OnFragmentAttachedListener {
+public class UserProfilePageActivity extends BaseMotleeActivity implements UserInfoListener, OnFragmentAttachedListener, UpdatedFriendsListener {
     
 	private int mUserID;
 	private int facebookID;
+	private ArrayList<UserInfo> friends = new ArrayList<UserInfo>();
+	
+	private ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>();
 	
 	private ProgressDialog progressDialog;
 	
@@ -73,14 +79,16 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements UserI
         ft.add(new EmptyFragmentWithCallbackOnResume(), "EmptyFragment")
         .commit();
         
-        progressDialog = ProgressDialog.show(UserProfilePageActivity.this, "", "Loading");
+        progressDialog = ProgressDialog.show(UserProfilePageActivity.this, "", "Loading " + UserInfoList.getInstance().get(mUserID).name + "'s Profile");
     }
 	
-	private void setUpProfilePageFragment(UserProfilePageFragment userProfileFragment, ArrayList<PhotoItem> photos, ArrayList<Integer> eventIds) 
+	private void setUpProfilePageFragment(UserProfilePageFragment userProfileFragment, ArrayList<PhotoItem> photos, ArrayList<Integer> eventIds, ArrayList<UserInfo> friends) 
 	{
 		userProfileFragment.setPhotos(photos);
 		
 		userProfileFragment.setEventIds(eventIds);
+		
+		userProfileFragment.setFriends(friends);
 		
 		userProfileFragment.setHeaderView(findViewById(R.id.header));
 		
@@ -92,12 +100,28 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements UserI
 
 	}
 
+	public void showProfilePage(View view)
+	{
+		UserInfo user = (UserInfo) view.getTag();
+		
+		Intent userProfile = new Intent(UserProfilePageActivity.this, UserProfilePageActivity.class);
+		
+		userProfile.putExtra("UserID", user.id);
+		userProfile.putExtra("UID", user.uid);
+		
+		startActivity(userProfile);
+	}
+	
 	public void OnFragmentAttached() {
 		
         EventServiceBuffer.setUserInfoListener(this);
         
         EventServiceBuffer.getUserInfoFromService(mUserID, true);
 		
+        //EventServiceBuffer.setFriendsListener(this);
+        
+        //EventServiceBuffer.requestMotleeFriends(mUserID);
+        
 	}
 
 	public void showMoreDetail(View view)
@@ -119,7 +143,7 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements UserI
 
 	public void userWithEventsPhotos(UserWithEventsPhotosEvent e) {
 		
-		final ArrayList<PhotoItem> photos = e.getPhotos();
+		photos = e.getPhotos();
 		final ArrayList<Integer> eventIds = e.getEventIds();
 		
 		EventServiceBuffer.removeUserInfoListener();
@@ -133,7 +157,7 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements UserI
         {
         	userProfileFragment = new UserProfilePageFragment();
     
-	        setUpProfilePageFragment(userProfileFragment, photos, eventIds);
+	        setUpProfilePageFragment(userProfileFragment, photos, eventIds, friends);
         	
 	        ft.add(R.id.fragment_content, userProfileFragment);
 	        
@@ -141,11 +165,22 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements UserI
         }
         else
         {
-	        setUpProfilePageFragment(userProfileFragment, photos, eventIds);
+	        setUpProfilePageFragment(userProfileFragment, photos, eventIds, friends);
         }
         
         progressDialog.dismiss();
 		
+	}
+	
+	@Override
+	public void showPictureDetail(View view)
+	{
+		PhotoItem photo = (PhotoItem) view.getTag();
+		
+		Intent showPictureIntent = new Intent(this, EventItemDetailActivity.class);
+		showPictureIntent.putExtra("EventItem", photo);
+		showPictureIntent.putParcelableArrayListExtra("Photos", this.photos);
+		startActivity(showPictureIntent);
 	}
 	
 	public void showEventPeopleDetail(View view)
@@ -157,5 +192,27 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements UserI
     	eventDetail.putExtra("EventID", eDetail.getEventID());
     	
     	startActivity(eventDetail);
+	}
+
+	public void friendsEvent(UpdatedFriendsEvent evt) {
+		
+		EventServiceBuffer.removeFriendsListener(this);
+		
+		friends = evt.getFriends();
+		
+        EventServiceBuffer.setUserInfoListener(this);
+        
+        EventServiceBuffer.getUserInfoFromService(mUserID, true);
+		
+	}
+	
+	@Override
+	public void onPause()
+	{
+		EventServiceBuffer.removeFriendsListener(this);
+		
+		EventServiceBuffer.removeUserInfoListener();
+		
+		super.onPause();
 	}
 }

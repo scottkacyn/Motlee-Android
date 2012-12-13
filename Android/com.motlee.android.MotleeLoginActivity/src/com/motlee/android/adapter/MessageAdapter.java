@@ -135,11 +135,14 @@ public class MessageAdapter extends ArrayAdapter<StoryItem> {
             	//holder.message_owner.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.chat_bubble_blue, GlobalVariables.DISPLAY_WIDTH).getDrawable());
             	
             	holder.owner_comment_body.setText(story.body);
-                holder.owner_comment_name.setText(UserInfoList.getInstance().get(story.user_id).name);
+                holder.owner_comment_name.setText("Me");
                 holder.owner_comment_time.setText(DateStringFormatter.getPastDateString(story.created_at));
                 
                 holder.owner_profile_pic.setTag(UserInfoList.getInstance().get(story.user_id));
                 holder.owner_comment_name.setTag(UserInfoList.getInstance().get(story.user_id));
+                
+                holder.owner_profile_pic.setMaxHeight((int) (GlobalVariables.DISPLAY_WIDTH * .17));
+                holder.owner_profile_pic.setMaxWidth((int) (GlobalVariables.DISPLAY_WIDTH * .17));
                 
                 imageDownloader.displayImage(GlobalVariables.getInstance().getFacebookPictureUrlLarge(UserInfoList.getInstance().get(story.user_id).uid), holder.owner_profile_pic, mOptions);
             }
@@ -156,6 +159,9 @@ public class MessageAdapter extends ArrayAdapter<StoryItem> {
                 
                 holder.friend_profile_pic.setTag(UserInfoList.getInstance().get(story.user_id));
                 holder.friend_comment_name.setTag(UserInfoList.getInstance().get(story.user_id));
+                
+                holder.friend_profile_pic.setMaxHeight((int) (GlobalVariables.DISPLAY_WIDTH * .17));
+                holder.friend_profile_pic.setMaxWidth((int) (GlobalVariables.DISPLAY_WIDTH * .17));
                 
                 imageDownloader.displayImage(GlobalVariables.getInstance().getFacebookPictureUrlLarge(UserInfoList.getInstance().get(story.user_id).uid), holder.friend_profile_pic, mOptions);
             }

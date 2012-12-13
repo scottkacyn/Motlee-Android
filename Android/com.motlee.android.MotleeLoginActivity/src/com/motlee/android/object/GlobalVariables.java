@@ -327,6 +327,7 @@ public class GlobalVariables {
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context.getApplicationContext())
 		.threadPriority(Thread.NORM_PRIORITY - 2)
 		.memoryCache(new WeakMemoryCache())
+		.enableLogging()
 		.build();
 		
 		imageLoader.init(config);

@@ -114,8 +114,10 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
 		eDetail = GlobalEventList.eventDetailMap.get(mEventID);
 		
-		progressDialog = ProgressDialogWithTimeout.show(EventDetailActivity.this, "", "Loading " + eDetail.getEventName());
-		//setUpFragments();
+		if (progressDialog == null || !progressDialog.isShowing())
+		{
+			progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading " + eDetail.getEventName());
+		}//setUpFragments();
 		
 		if (findViewById(R.id.header) == null)
 		{
@@ -207,7 +209,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 			
 			EventServiceBuffer.setAttendeeListener(attendeeListener);
 
-			progressDialog = ProgressDialogWithTimeout.show(EventDetailActivity.this, "", "Joining Event");
+			progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Joining Event");
 			
 			ArrayList<Integer> attendees = new ArrayList<Integer>();
 			attendees.add(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId()).uid);
@@ -637,44 +639,21 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
 		startActivity(openComment);
 	}
-    
-	/*public void onLikeClick(View view)
-	{
-		EventItem item = (EventItem) view.getTag();
-		
-		likeButtons.put(item.id, (ImageButton) view);
-		
-		likeButtons.get(item.id).setEnabled(false);
-
-		for (Iterator<Like> it = item.likes.iterator(); it.hasNext(); )
-		{
-			Like like = it.next();
-			
-			if (like.user_id == GlobalVariables.getInstance().getUserId())
-			{
-				it.remove();
-				EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
-				fragment.notifyDataSetChanged();
-				likeButtons.get(like.id).setEnabled(true);
-			}
-		}
-		
-		EventServiceBuffer.setLikeInfoListener(this);
-		
-		EventServiceBuffer.likeEventItem(item);
-	}
-
-	public void likeSuccess(UpdatedLikeEvent likeEvent) {
-		
-		EventDetailFragment fragment = (EventDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
-		fragment.addLikeToListAdapter(likeEvent);
-		likeButtons.get(likeEvent.itemId).setEnabled(true);
-	}*/
 	
 	@Override
 	public void showPictureDetail(View view)
 	{
 		GlobalActivityFunctions.showPictureDetail(view, this, false);
+	}
+	
+	@Override
+	public void onPause()
+	{
+
+		EventServiceBuffer.removePhotoListener(this);
+		EventServiceBuffer.removeEventDetailListener(this);
+		
+		super.onPause();
 	}
 	
     @Override

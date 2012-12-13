@@ -19,10 +19,12 @@
     <string name="title_comment_activity">CommentActivity</string>
     <string name="title_nearby_events_activity">NearbyEventsActivity</string>
     <string name="title_search_activity">SearchActivity</string>
+    <string name="title_add_people_activity">AddPeopleActivity</string>
     <string name="app_id">283790891721595</string>
     <string name="album_name">Motlee Pictures</string>
     <string name="map_key">0oE1cuDjQWjAeMp6PSnXQ2-zp6QB_nyPeeQEEQA</string>
     <string name="public_event_true">Shows event to all your friends</string>
     <string name="public_event_false">Shows event to invitees only</string>
+    <string name="no_photo_text">How boring... no one has added any photos yet. Why don\'t you be the first?</string>
     
 </resources>

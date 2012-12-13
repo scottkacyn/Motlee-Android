@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="com.motlee.android.adapter.CommentAdapter"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.DateStringFormatter"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.Comment"/>
 <fullyQualifiedTypeName name="java.util.Date"/>
@@ -8,8 +7,6 @@
 <fullyQualifiedTypeName name="android.view.GestureDetector.SimpleOnGestureListener"/>
 <fullyQualifiedTypeName name="android.view.GestureDetector"/>
 <fullyQualifiedTypeName name="com.motlee.android.fragment.PeopleListFragment"/>
-<fullyQualifiedTypeName name="com.motlee.android.object.UserInfo"/>
-<fullyQualifiedTypeName name="com.motlee.android.adapter.PeopleListAdapter"/>
 <fullyQualifiedTypeName name="com.google.android.maps.MapView"/>
 <fullyQualifiedTypeName name="com.motlee.android.fragment.DateDetailFragment"/>
 <fullyQualifiedTypeName name="java.text.SimpleDateFormat"/>
@@ -30,19 +27,16 @@
 <fullyQualifiedTypeName name="android.widget.TextView.OnEditorActionListener"/>
 <fullyQualifiedTypeName name="android.text.InputType"/>
 <fullyQualifiedTypeName name="com.motlee.android.fragment.MessageDetailFragment"/>
-<fullyQualifiedTypeName name="com.motlee.android.object.UserInfoList"/>
 <fullyQualifiedTypeName name="java.util.HashMap"/>
 <fullyQualifiedTypeName name="com.motlee.android.adapter.PhotoDetailPagedViewAdapter"/>
 <fullyQualifiedTypeName name="java.util.Collections"/>
 <fullyQualifiedTypeName name="android.widget.LinearLayout"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.DrawableWithHeight"/>
-<fullyQualifiedTypeName name="com.motlee.android.R.drawable"/>
 <fullyQualifiedTypeName name="com.motlee.android.enums.EventItemType"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="android.widget.ImageButton"/>
 <fullyQualifiedTypeName name="java.util.HashSet"/>
 <fullyQualifiedTypeName name="com.motlee.android.EventListActivity"/>
-<fullyQualifiedTypeName name="com.motlee.android.object.GlobalEventList"/>
 <fullyQualifiedTypeName name="com.motlee.android.fragment.BaseMotleeFragment"/>
 <fullyQualifiedTypeName name="android.view.VelocityTracker"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.event.UpdatedPhotoListener"/>
@@ -55,9 +49,15 @@
 <fullyQualifiedTypeName name="android.widget.ListView"/>
 <fullyQualifiedTypeName name="java.io.File"/>
 <fullyQualifiedTypeName name="android.os.Environment"/>
-<fullyQualifiedTypeName name="com.motlee.android.R.id"/>
 <fullyQualifiedTypeName name="android.widget.ProgressBar"/>
 <fullyQualifiedTypeName name="android.widget.RelativeLayout.LayoutParams"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.DrawableCache"/>
 <fullyQualifiedTypeName name="android.widget.RelativeLayout"/>
+<fullyQualifiedTypeName name="com.motlee.android.object.event.UpdatedFriendsListener"/>
+<fullyQualifiedTypeName name="com.motlee.android.object.UserInfo"/>
+<fullyQualifiedTypeName name="com.motlee.android.adapter.PeopleListAdapter"/>
+<fullyQualifiedTypeName name="com.motlee.android.R.drawable"/>
+<fullyQualifiedTypeName name="com.motlee.android.R.id"/>
+<fullyQualifiedTypeName name="com.motlee.android.object.GlobalEventList"/>
+<fullyQualifiedTypeName name="com.motlee.android.object.UserInfoList"/>
 </qualifiedTypeNameHistroy>

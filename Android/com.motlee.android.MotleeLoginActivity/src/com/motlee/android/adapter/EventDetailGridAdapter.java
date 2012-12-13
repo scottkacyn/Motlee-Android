@@ -167,6 +167,9 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
     	
     	if (!(item.image1 == GridPictures.NO_PICTURE))
     	{
+    		holder.image1.setMaxHeight(GlobalVariables.DISPLAY_WIDTH / 3);
+    		holder.image1.setMaxWidth(GlobalVariables.DISPLAY_WIDTH / 3);
+    		
 	    	if (item.image1.id == -1)
 	    	{
 				holder.image1.setImageDrawable(DrawableCache.getDrawable(R.drawable.watermark, GlobalVariables.DISPLAY_WIDTH / 3).getDrawable());
@@ -202,6 +205,9 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
     	
     	if (!(item.image2 == GridPictures.NO_PICTURE))
     	{
+    		holder.image2.setMaxHeight(GlobalVariables.DISPLAY_WIDTH / 3);
+    		holder.image2.setMaxWidth(GlobalVariables.DISPLAY_WIDTH / 3);
+    		
 	    	if (item.image2.id == -1)
 	    	{
 				holder.image2.setImageDrawable(DrawableCache.getDrawable(R.drawable.watermark, GlobalVariables.DISPLAY_WIDTH / 3).getDrawable());
@@ -237,6 +243,9 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
     	
     	if (!(item.image3 == GridPictures.NO_PICTURE))
     	{
+    		holder.image3.setMaxHeight(GlobalVariables.DISPLAY_WIDTH / 3);
+    		holder.image3.setMaxWidth(GlobalVariables.DISPLAY_WIDTH / 3);
+    		
 	    	if (item.image3.id == -1)
 	    	{
 				holder.image3.setImageDrawable(DrawableCache.getDrawable(R.drawable.watermark, GlobalVariables.DISPLAY_WIDTH / 3).getDrawable());

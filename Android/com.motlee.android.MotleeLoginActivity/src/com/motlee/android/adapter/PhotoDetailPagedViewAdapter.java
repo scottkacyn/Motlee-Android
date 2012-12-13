@@ -92,6 +92,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
         public ListView comment_list;
         public TextView photo_detail_caption;
         public ImageButton photo_detail_like_button;
+        public ImageButton photo_detail_delete_button;
 	}
 	
 		@Override
@@ -121,6 +122,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	                     holder.touch_overlay = holder.header_view.findViewById(R.id.photo_detail_touch_overlay);
 	                     holder.photo_detail_caption = (TextView) holder.touch_overlay.findViewById(R.id.photo_detail_description);
 	                     holder.photo_detail_like_button = (ImageButton) holder.header_view.findViewById(R.id.photo_detail_like_button);
+	                     holder.photo_detail_delete_button = (ImageButton) holder.header_view.findViewById(R.id.photo_detail_delete_button);
 	                     
 	                     convertView.setTag(holder);
 	         			
@@ -145,9 +147,9 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	  * Bind the provided data to the view.
 	  * This is the only method not required by base adapter.
 	  */
-	 public void bindData(ViewHolder holder, int position) {
+	 public void bindData(final ViewHolder holder, int position) {
 	         
-	 	PhotoItem photo = this.mData.get(position);
+	 	final PhotoItem photo = this.mData.get(position);
 	
 	 	Collections.sort(photo.comments);
 	 	
@@ -194,7 +196,21 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 		    		holder.touch_overlay.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.photo_detail_overlay, GlobalVariables.DISPLAY_WIDTH).getDrawable());
 		    	}
 		    	
+		    	holder.photo_detail_delete_button.setTag(photo);
+		    	
+		    	if (photo.user_id == GlobalVariables.getInstance().getUserId())
+		    	{
+		    		holder.photo_detail_delete_button.setVisibility(View.VISIBLE);
+		    	}
+		    	else
+		    	{
+		    		holder.photo_detail_delete_button.setVisibility(View.GONE);
+		    	}
+		    	
 		    	final View touchOverlay = holder.touch_overlay;
+		    	
+		    	holder.photo_detail_picture.setMaxHeight(GlobalVariables.DISPLAY_WIDTH);
+		    	holder.photo_detail_picture.setMaxWidth(GlobalVariables.DISPLAY_WIDTH);
 		    	
 		        GlobalVariables.getInstance().downloadImage(holder.photo_detail_picture, GlobalVariables.getInstance().getAWSUrlCompressed(photo));
 		        
@@ -209,10 +225,15 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 						if (touchOverlay.getVisibility() == View.GONE)
 						{
 							touchOverlay.setVisibility(View.VISIBLE);
+							if (photo.user_id == GlobalVariables.getInstance().getUserId())
+							{
+								holder.photo_detail_delete_button.setVisibility(View.VISIBLE);
+							}
 						}
 						else
 						{
 							touchOverlay.setVisibility(View.GONE);
+							holder.photo_detail_delete_button.setVisibility(View.GONE);
 						}
 					}
 				});
@@ -235,10 +256,10 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 		holder.photo_detail_thumbnail.setTag(UserInfoList.getInstance().get(item.user_id));
 		
 		holder.photo_detail_thumbnail.setMaxHeight(background.getHeight());
-		holder.photo_detail_thumbnail.setMaxWidth(background.getWidth());
+		holder.photo_detail_thumbnail.setMaxWidth(background.getHeight());
 		
 		holder.photo_detail_thumbnail_bg.setMaxHeight(background.getHeight());
-		holder.photo_detail_thumbnail_bg.setMaxWidth(background.getWidth());
+		holder.photo_detail_thumbnail_bg.setMaxWidth(background.getHeight());
 		
 		if (UserInfoList.getInstance().get(item.user_id) != null)
 		{

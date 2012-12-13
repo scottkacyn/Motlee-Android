@@ -1,0 +1,89 @@
+package com.motlee.android;
+
+import java.util.ArrayList;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.ProgressDialog;
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
+
+import com.motlee.android.fragment.CreateEventFragment;
+import com.motlee.android.fragment.SearchAllFragment;
+import com.motlee.android.fragment.SearchPeopleFragment;
+import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.event.UpdatedAttendeeEvent;
+import com.motlee.android.object.event.UpdatedAttendeeListener;
+
+public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAttendeeListener {
+
+	private SearchPeopleFragment searchPeopleFragment;
+	
+	private Integer eventId;
+	
+	private ProgressDialog progressDialog;
+	
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+ 
+        //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
+        
+        ArrayList<Integer> attendees = getIntent().getIntegerArrayListExtra("Attendees");
+        eventId = getIntent().getIntExtra("EventId", 0);
+        
+        FragmentManager     fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        
+        searchPeopleFragment = new SearchPeopleFragment();
+        searchPeopleFragment.setHeaderView(findViewById(R.id.header));
+        searchPeopleFragment.setInitialFriendList(attendees);
+        ft.add(R.id.fragment_content, searchPeopleFragment)
+        .commit();
+        
+    }
+
+    public void onRightHeaderButtonClick(View view)
+    {
+
+		//ArrayList<JSONObject> peopleToAdd = searchPeopleFragment.getPeopleToAdd();
+    	
+    	progressDialog = ProgressDialog.show(this, "", "Adding Friends");
+    	
+        ArrayList<Integer> peopleToAdd = new ArrayList<Integer>();
+		
+        try
+        {
+            for (JSONObject person : searchPeopleFragment.getPeopleToAdd())
+            {
+            	peopleToAdd.add(person.getInt("uid"));
+            }
+        }
+        catch (JSONException e)
+        {
+        	Log.e(this.toString(), e.getMessage());
+        }
+        
+        EventServiceBuffer.setAttendeeListener(this);
+        
+        EventServiceBuffer.sendAttendeesForEvent(eventId, peopleToAdd);
+            
+	}
+
+	public void raised(UpdatedAttendeeEvent e) {
+		
+		EventServiceBuffer.setAttendeeListener(null);
+		
+		progressDialog.dismiss();
+		
+		finish();
+		
+	}
+    
+}

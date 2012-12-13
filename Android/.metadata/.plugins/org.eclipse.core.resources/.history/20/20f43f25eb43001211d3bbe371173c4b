@@ -1,0 +1,9 @@
+package com.motlee.android;
+
+public class AddPeopleActivity extends BaseMotleeActivity {
+
+	public AddPeopleActivity() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

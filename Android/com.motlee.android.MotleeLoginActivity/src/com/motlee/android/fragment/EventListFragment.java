@@ -9,6 +9,7 @@ import com.motlee.android.EventListActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.EventListAdapter;
 import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventListParams;
 import com.motlee.android.object.EventServiceBuffer;
@@ -73,16 +74,7 @@ public class EventListFragment extends ListFragmentWithHeader {
 		super.onResume();
 		this.setPageHeader(params.headerText);
 	}
-	
-	/*@Override
-	public void onListItemClick(ListView l, View v, int position, long id) {
-	    String[] links = getResources().getStringArray(R.array.tut_links);
-	    String content = links[position];
-	    Intent showContent = new Intent(getActivity().getApplicationContext(),
-	            TutViewerActivity.class);
-	    showContent.setData(Uri.parse(content));
-	    startActivity(showContent);
-	}*/
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -122,6 +114,8 @@ public class EventListFragment extends ListFragmentWithHeader {
 		
 		setUpcomingHeader();
 		
+		setBlankFooter();
+		
 		setListAdapter(mEventListAdapter);
 		
 		this.setPageHeader(pageTitle);
@@ -148,6 +142,21 @@ public class EventListFragment extends ListFragmentWithHeader {
 		//listView.addFooterView(inflater.inflate(R.layout.event_list_load_more, null));
 		
 		return view;
+	}
+
+	private void setBlankFooter() {
+		
+		LinearLayout blank = new LinearLayout(getActivity());
+		
+		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.event_list_load_more, GlobalVariables.DISPLAY_WIDTH);
+		
+		blank.setLayoutParams(new ListView.LayoutParams(drawable.getWidth(), drawable.getHeight()));
+		
+		blank.setBackgroundColor(android.R.color.transparent);
+		
+		ListView listView = (ListView) view.findViewById(android.R.id.list);
+		listView.addFooterView(blank);
+		
 	}
 
 	private OnClickListener closeFirstUseMessage = new OnClickListener(){

@@ -10,7 +10,8 @@
         android:layout_width="0dp"
         android:layout_weight=".25"
         android:layout_height="wrap_content"
-        android:scaleType="fitCenter"
+        android:scaleType="fitStart"
+        android:layout_marginLeft="5dp"
         android:adjustViewBounds="true"
         android:padding="3dp" />
     
@@ -22,14 +23,26 @@
          android:orientation="vertical"
          android:clickable="true">
          
-         <TextView
+         <FrameLayout
              android:layout_width="match_parent"
              android:layout_height="0dp"
-             android:layout_weight=".6667"
-             android:id="@+id/profile_number_photos_text"
-             android:gravity="center"
-             style="@style/ProfileNumbers"/>
-         
+             android:layout_weight=".6667" >
+             
+             <ImageView
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 android:id="@+id/profile_number_glow"
+                 android:src="@drawable/user_profile_orange_glow"
+                 android:adjustViewBounds="true" />
+             
+	         <TextView
+	             android:layout_width="match_parent"
+	             android:layout_height="match_parent"
+	             android:id="@+id/profile_number_photos_text"
+	             android:gravity="center"
+	             style="@style/ProfileNumbers"/>
+	         
+         </FrameLayout>
          <TextView
              android:layout_width="match_parent"
              android:layout_height="0dp"
@@ -49,14 +62,27 @@
          android:orientation="vertical"
          android:clickable="true">
          
-         <TextView
+         <FrameLayout
              android:layout_width="match_parent"
              android:layout_height="0dp"
-             android:layout_weight=".6667"
-             android:id="@+id/profile_number_events_text"
-             android:gravity="center"
-             style="@style/ProfileNumbers"/>
+             android:layout_weight=".6667" >
+             
+             <ImageView
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 android:id="@+id/profile_events_glow"
+                 android:src="@drawable/user_profile_orange_glow"
+                 android:adjustViewBounds="true"
+                 android:visibility="gone" />
          
+	         <TextView
+	             android:layout_width="match_parent"
+	             android:layout_height="match_parent"
+	             android:id="@+id/profile_number_events_text"
+	             android:gravity="center"
+	             style="@style/ProfileNumbers"/>
+         
+       	 </FrameLayout>
          <TextView
              android:layout_width="match_parent"
              android:layout_height="0dp"
@@ -75,16 +101,31 @@
          android:layout_height="match_parent"
          android:layout_weight=".25" 
          android:orientation="vertical"
-         android:clickable="true">
+         android:clickable="true"
+         android:visibility="gone">
          
-         <TextView
+         <FrameLayout
              android:layout_width="match_parent"
              android:layout_height="0dp"
-             android:layout_weight=".6667"
-             android:id="@+id/profile_number_friends_text"
-             android:gravity="center"
-             style="@style/ProfileNumbers"/>
+             android:layout_weight=".6667" >
+             
+             <ImageView
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 android:id="@+id/profile_friends_glow"
+                 android:src="@drawable/user_profile_orange_glow"
+                 android:adjustViewBounds="true"
+                 android:visibility="gone" />
          
+	         <TextView
+	             android:layout_width="match_parent"
+	             android:layout_height="match_parent"
+	             android:id="@+id/profile_number_friends_text"
+	             android:gravity="center"
+	             style="@style/ProfileNumbers"/>
+	         
+         </FrameLayout>
+	         
          <TextView
              android:layout_width="match_parent"
              android:layout_height="0dp"

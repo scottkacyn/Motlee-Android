@@ -13,18 +13,23 @@ import com.motlee.android.fragment.EventItemDetailFragment;
 import com.motlee.android.object.Comment;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.StoryItem;
+import com.motlee.android.object.UserInfoList;
+import com.motlee.android.object.event.DeletePhotoListener;
 import com.motlee.android.object.event.UpdatedLikeEvent;
 import com.motlee.android.object.event.UpdatedLikeListener;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
 import com.motlee.android.view.ProgressDialogWithTimeout;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -41,7 +46,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-public class EventItemDetailActivity extends BaseMotleeActivity implements UpdatedPhotoListener {
+public class EventItemDetailActivity extends BaseMotleeActivity implements UpdatedPhotoListener, DeletePhotoListener {
 	
 	private EventItem mEventItem;
 	private EventItemDetailFragment fragment;
@@ -69,6 +74,13 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
         
         getPhotoInformation = true;
         
+        ArrayList<PhotoItem> photos = getIntent().getParcelableArrayListExtra("Photos");
+        
+        if (photos != null)
+        {
+            getPhotoInformation = false;
+        }
+        
         //setEditText();
         if (getPhotoInformation)
         {
@@ -87,6 +99,8 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
             fragment.setHeaderView(findViewById(R.id.header));
             
             fragment.setDetailImage((PhotoItem)mEventItem);
+            fragment.setPhotoList(photos);
+            fragment.setPageTitle(UserInfoList.getInstance().get(mEventItem.user_id).name);
             
             ft.add(R.id.fragment_content, fragment)
             .commit();
@@ -118,6 +132,34 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
             ft.add(R.id.fragment_content, fragment)
             .commit();
         }*/
+	}
+	
+	public void onDeletePhoto(View view)
+	{
+		final PhotoItem currentPhoto = (PhotoItem) view.getTag();
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(EventItemDetailActivity.this);
+		builder.setMessage("Delete This Photo?")
+		.setCancelable(true)
+		.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+			
+			public void onClick(DialogInterface dialog, int which) {
+				
+				progressDialog = ProgressDialog.show(EventItemDetailActivity.this, "", "Deleting your photo");
+				
+				EventServiceBuffer.setDeletePhotoListener(EventItemDetailActivity.this);
+				
+				EventServiceBuffer.deletePhotoFromEvent(currentPhoto);
+				
+			}
+		})
+		.setNegativeButton("No Way!", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+			}
+		});
+		
+		builder.create().show();
 	}
 	
     public void sendComment(View view)
@@ -237,10 +279,22 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
         
         fragment.setDetailImage((PhotoItem)mEventItem);
         
+        fragment.setPhotoList(GlobalEventList.eventDetailMap.get(mEventItem.event_id).getImages());
+        
+        fragment.setPageTitle(GlobalEventList.eventDetailMap.get(mEventItem.event_id).getEventName());
+        
         ft.add(R.id.fragment_content, fragment)
         .commit();
         
         progressDialog.dismiss();
+		
+	}
+
+	public void photoDeleted(UpdatedPhotoEvent photo) {
+		
+		progressDialog.dismiss();
+		
+		finish();
 		
 	}
 }

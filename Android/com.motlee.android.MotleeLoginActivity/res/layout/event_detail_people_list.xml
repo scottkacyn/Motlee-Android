@@ -1,13 +1,20 @@
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/search_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
+    
+    <include layout="@layout/event_detail_header"
+        android:id="@+id/event_detail_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    
 	<ListView
 	    android:id="@+id/event_detail_people_list"
 	    android:layout_height="fill_parent"
 	    android:layout_width="fill_parent"
 	    android:fastScrollEnabled="true"
 	    android:scrollbars="none" 
+	    android:layout_below="@id/event_detail_header"
 	    android:divider="@null" />
-</LinearLayout>
+</RelativeLayout>

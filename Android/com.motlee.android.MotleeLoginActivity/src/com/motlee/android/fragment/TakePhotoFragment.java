@@ -133,7 +133,7 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 
 		public void onClick(View v) {
 			
-			if (mEventID == CurrentEventWheelAdapter.CREATE_EVENT)
+			/*if (mEventID == CurrentEventWheelAdapter.CREATE_EVENT)
 			{
 				Intent createEventIntent = new Intent(getActivity(), CreateEventActivity.class);
 				createEventIntent.putExtra("Image", mCurrentPhotoPath);
@@ -155,7 +155,7 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 				alert.show();
 			}
 			else
-			{
+			{*/
 
 				PhotoItem photo = new PhotoItem(mEventID, EventItemType.PICTURE, GlobalVariables.getInstance().getUserId(), 
 						new Date(), photoDescriptionEdit.getText().toString(), "");
@@ -178,7 +178,7 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 				
 				getActivity().finish();
 				
-			}
+			
 			
 		}
 		

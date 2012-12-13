@@ -119,6 +119,8 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
 		
 		TextView headerRightButton = (TextView) mHeaderView.findViewById(R.id.header_right_text);
 		
+		mHeaderView.findViewById(R.id.header_right_layout_button).setVisibility(View.VISIBLE);
+		
 		headerRightButton.setText("Add");
 		
 		setEditText();
