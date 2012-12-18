@@ -7,10 +7,6 @@ import java.util.Vector;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.facebook.FacebookException;
-import com.facebook.Session;
-import com.facebook.widget.WebDialog;
-import com.facebook.widget.WebDialog.OnCompleteListener;
 import com.motlee.android.fragment.BaseMotleeFragment;
 import com.motlee.android.fragment.CreateEventFragment;
 import com.motlee.android.fragment.SearchPeopleFragment;
@@ -22,7 +18,6 @@ import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.UserInfo;
-import com.motlee.android.object.UserInfoList;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
@@ -55,7 +50,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEventDetailListener, UpdatedPhotoListener {
 	
@@ -81,6 +75,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	
 	private LocationInfo selectLocation;
 	private SearchPlacesFragment searchPlacesFragment;
+
+	private ProgressDialog progressDialog;
 
 	private Integer mEventID;
 	
@@ -347,53 +343,6 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     	
     }
     
-    private void createRequestDialog(String eventName)
-    {
- 
-        String toParam = "";
-        
-        for (int person : mEventAttendees)
-        {
-        	toParam = toParam + person + ",";
-        }
-        
-        if (toParam.length() > 0)
-        {
-        	toParam.substring(0, toParam.length() - 1);
-        }
-        
-        Bundle params = new Bundle();
-        params.putString("message", UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId()).name 
-        		+ " invited you to " + eventName);
-        params.putString("to", toParam);
-        params.putString("frictionless", "1");
-        WebDialog requestsDialog = (
-            new WebDialog.RequestsDialogBuilder(this,
-                Session.getActiveSession(),
-                params))
-                .setOnCompleteListener(new OnCompleteListener() {
-
-                public void onComplete(Bundle values, FacebookException error) {
-                    final String requestId = values.getString("request");
-                    if (requestId == null) {
-                    	Toast.makeText(CreateEventActivity.this.getApplicationContext(), 
-                                "No Requests sent", 
-                                Toast.LENGTH_SHORT).show();
-                    } 
-                    
-                    progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Inviting Friends");
-                    
-                    EventServiceBuffer.setAttendeeListener(attendeeListener);
-                    
-                    EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees);
-                }
-
-            })
-            .build();
-        
-        requestsDialog.show();
-    }
-    
     private UpdatedAttendeeListener attendeeListener = new UpdatedAttendeeListener(){
 
 		public void raised(UpdatedAttendeeEvent e) {
@@ -420,11 +369,17 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 				{
 					mEventID = eventID;
 					
-					progressDialog.dismiss();
-					
-					createRequestDialog(GlobalEventList.eventDetailMap.get(mEventID).getEventName());
-					
-					
+					// Deprecate starting event from photo
+					/*if (mPhotoUrl != null)
+					{
+						EventServiceBuffer.setPhotoListener(this);
+						
+						EventServiceBuffer.sendPhotoToDatabase(eventID, mPhotoUrl, mLocationInfo, mPhotoDesc);
+					}
+					else*/
+					{
+						EventServiceBuffer.sendAttendeesForEvent(eventID, mEventAttendees);
+					}
 				}
 			}
 		}
@@ -443,9 +398,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 			
 			mEventID = mCreatedEvent.getEventID();
 			
-			progressDialog.dismiss();
-			
-			createRequestDialog(GlobalEventList.eventDetailMap.get(mEventID).getEventName());
+			EventServiceBuffer.sendAttendeesForEvent(mCreatedEvent.getEventID(), mEventAttendees);
 		}
 	}
     

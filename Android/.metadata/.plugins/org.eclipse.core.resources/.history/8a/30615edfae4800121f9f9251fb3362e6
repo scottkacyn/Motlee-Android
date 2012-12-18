@@ -37,8 +37,6 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
 	
 	private ProgressDialog progressDialog;
 	
-	private ArrayList<Integer> initialAttendees = new ArrayList<Integer>();
-	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +44,7 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
  
         //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
         
-        initialAttendees = getIntent().getIntegerArrayListExtra("Attendees");
+        ArrayList<Integer> attendees = getIntent().getIntegerArrayListExtra("Attendees");
         eventId = getIntent().getIntExtra("EventId", 0);
         
         FragmentManager     fm = getSupportFragmentManager();
@@ -54,7 +52,7 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
         
         searchPeopleFragment = new SearchPeopleFragment();
         searchPeopleFragment.setHeaderView(findViewById(R.id.header));
-        searchPeopleFragment.setInitialFriendList(initialAttendees);
+        searchPeopleFragment.setInitialFriendList(attendees);
         searchPeopleFragment.disableDeletingFriends();
         ft.add(R.id.fragment_content, searchPeopleFragment)
         .commit();
@@ -72,11 +70,7 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
         {
             for (JSONObject person : searchPeopleFragment.getPeopleToAdd())
             {
-            	int uid = person.getInt("uid");
-            	if (!initialAttendees.contains(uid))
-            	{
-            		peopleToAdd.add(uid);
-            	}
+            	peopleToAdd.add(person.getInt("uid"));
             }
         }
         catch (JSONException e)
@@ -109,7 +103,6 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
         params.putString("message", UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId()).name 
         		+ " invited you to " + eventName);
         params.putString("to", toParam);
-        params.putString("frictionless", "1");
         WebDialog requestsDialog = (
             new WebDialog.RequestsDialogBuilder(this,
                 Session.getActiveSession(),

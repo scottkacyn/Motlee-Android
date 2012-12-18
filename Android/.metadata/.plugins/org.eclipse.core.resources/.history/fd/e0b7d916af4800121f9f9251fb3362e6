@@ -73,7 +73,7 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
             for (JSONObject person : searchPeopleFragment.getPeopleToAdd())
             {
             	int uid = person.getInt("uid");
-            	if (!initialAttendees.contains(uid))
+            	if (initialAttendees.contains(uid))
             	{
             		peopleToAdd.add(uid);
             	}
@@ -109,7 +109,6 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
         params.putString("message", UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId()).name 
         		+ " invited you to " + eventName);
         params.putString("to", toParam);
-        params.putString("frictionless", "1");
         WebDialog requestsDialog = (
             new WebDialog.RequestsDialogBuilder(this,
                 Session.getActiveSession(),

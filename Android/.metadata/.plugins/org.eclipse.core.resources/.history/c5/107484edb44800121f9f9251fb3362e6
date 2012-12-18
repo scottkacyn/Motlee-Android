@@ -82,6 +82,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	private LocationInfo selectLocation;
 	private SearchPlacesFragment searchPlacesFragment;
 
+	private ProgressDialog progressDialog;
+
 	private Integer mEventID;
 	
 	private EventDetail mCreatedEvent;

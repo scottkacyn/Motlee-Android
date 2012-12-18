@@ -82,6 +82,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	private LocationInfo selectLocation;
 	private SearchPlacesFragment searchPlacesFragment;
 
+	private ProgressDialog progressDialog;
+
 	private Integer mEventID;
 	
 	private EventDetail mCreatedEvent;
@@ -352,7 +354,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
  
         String toParam = "";
         
-        for (int person : mEventAttendees)
+        for (int person : peopleToAdd)
         {
         	toParam = toParam + person + ",";
         }
@@ -376,16 +378,16 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
                 public void onComplete(Bundle values, FacebookException error) {
                     final String requestId = values.getString("request");
                     if (requestId == null) {
-                    	Toast.makeText(CreateEventActivity.this.getApplicationContext(), 
+                    	Toast.makeText(AddPeopleActivity.this.getApplicationContext(), 
                                 "No Requests sent", 
                                 Toast.LENGTH_SHORT).show();
                     } 
                     
-                    progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Inviting Friends");
+                    progressDialog = ProgressDialog.show(AddPeopleActivity.this, "", "Adding Friends");
                     
-                    EventServiceBuffer.setAttendeeListener(attendeeListener);
+                    EventServiceBuffer.setAttendeeListener(AddPeopleActivity.this);
                     
-                    EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees);
+                    EventServiceBuffer.sendAttendeesForEvent(eventId, peopleToAdd);
                 }
 
             })
@@ -420,11 +422,17 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 				{
 					mEventID = eventID;
 					
-					progressDialog.dismiss();
-					
-					createRequestDialog(GlobalEventList.eventDetailMap.get(mEventID).getEventName());
-					
-					
+					// Deprecate starting event from photo
+					/*if (mPhotoUrl != null)
+					{
+						EventServiceBuffer.setPhotoListener(this);
+						
+						EventServiceBuffer.sendPhotoToDatabase(eventID, mPhotoUrl, mLocationInfo, mPhotoDesc);
+					}
+					else*/
+					{
+						EventServiceBuffer.sendAttendeesForEvent(eventID, mEventAttendees);
+					}
 				}
 			}
 		}
@@ -443,9 +451,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 			
 			mEventID = mCreatedEvent.getEventID();
 			
-			progressDialog.dismiss();
-			
-			createRequestDialog(GlobalEventList.eventDetailMap.get(mEventID).getEventName());
+			EventServiceBuffer.sendAttendeesForEvent(mCreatedEvent.getEventID(), mEventAttendees);
 		}
 	}
     
