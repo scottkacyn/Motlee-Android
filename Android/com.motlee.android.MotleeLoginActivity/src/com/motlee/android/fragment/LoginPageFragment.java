@@ -1,6 +1,6 @@
 package com.motlee.android.fragment;
 
-import com.facebook.LoginButton;
+import com.facebook.widget.LoginButton;
 import com.facebook.android.*;
 import com.facebook.android.Facebook.*;
 import com.motlee.android.R;

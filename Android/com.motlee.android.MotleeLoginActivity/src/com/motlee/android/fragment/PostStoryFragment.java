@@ -200,7 +200,7 @@ public class PostStoryFragment extends BaseMotleeFragment {
 			
 			EventServiceBuffer.setStoryListener(updatedStoryListener);
 			
-			EventServiceBuffer.sendStoryToDatabase(mEventID, storyEditText.getText().toString());
+			//EventServiceBuffer.sendStoryToDatabase(mEventID, storyEditText.getText().toString(), null);
 			
 		}
 		

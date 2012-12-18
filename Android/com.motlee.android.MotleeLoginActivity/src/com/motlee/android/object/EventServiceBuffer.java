@@ -118,6 +118,8 @@ public class EventServiceBuffer extends Object {
 	private static Vector<UpdatedFriendsListener> mFriendsListener;
 	private static DeletePhotoListener mDeletePhotoListener; 
 	
+	private static ArrayList<Bundle> photosToSend = new ArrayList<Bundle>();
+	
 	public static synchronized EventServiceBuffer getInstance(Context context)
 	{
 		mContext = context;
@@ -142,6 +144,10 @@ public class EventServiceBuffer extends Object {
                 	if (resultData.containsKey(RubyService.EXTRA_PHOTO_ITEM))
                 	{
                 		onRESTResult(resultCode, resultData.getString(RubyService.REST_RESULT), resultData.getParcelable(RubyService.EXTRA_PHOTO_ITEM));
+                	}
+                	else if (resultData.containsKey(RubyService.EXTRA_MESSAGE_ITEM))
+                	{
+                		onRESTResult(resultCode, resultData.getString(RubyService.REST_RESULT), resultData.getParcelable(RubyService.EXTRA_MESSAGE_ITEM));
                 	}
                 	else
                 	{
@@ -391,7 +397,7 @@ public class EventServiceBuffer extends Object {
         mContext.startService(intent);
 	}
 	
-	public static void sendStoryToDatabase(Integer eventID, String body)
+	public static void sendStoryToDatabase(Integer eventID, String body, StoryItem story)
 	{
 		Bundle params = new Bundle();
 		params.putString(AUTH_TOK, GlobalVariables.getInstance().getAuthoToken());
@@ -411,10 +417,56 @@ public class EventServiceBuffer extends Object {
         intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.POST);
         intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.STORY);
         intent.putExtra(RubyService.EXTRA_PARAMS, params);
+        intent.putExtra(RubyService.EXTRA_MESSAGE_ITEM, story);
         
         mContext.startService(intent);
 	}
 	
+	public static void addPhotoToCache(Integer eventID, String mCurrentPhotoPath, LocationInfo location, String caption, PhotoItem photo)
+	{
+		Bundle params = new Bundle();
+		params.putString(AUTH_TOK, GlobalVariables.getInstance().getAuthoToken());
+		params.putInt("photo[event_id]", eventID);
+		params.putDouble("photo[lat]", location.lat);
+		params.putDouble("photo[lon]", location.lon);
+		params.putString("photo[caption]", caption);
+		params.putInt("photo[user_id]", GlobalVariables.getInstance().getUserId());
+		params.putString("photo[image]", mCurrentPhotoPath);
+		params.putParcelable("photoObject", photo);
+		
+		photosToSend.add(params);
+	}
+	
+	public static int sendPhotoCacheToDatabase()
+	{
+		for (Bundle params : photosToSend)
+		{			
+			int eventID = params.getInt("photo[event_id]");
+			//image.recycle();
+			
+			PhotoItem photo = params.getParcelable("photoObject");
+			
+			params.remove("photoObject");
+			
+	        Intent intent = new Intent(mContext, RubyService.class);
+	        intent.setData(Uri.parse(WEB_SERVICE_URL + "events/" + eventID + "/photos"));
+	        
+	        // Here we are going to place our REST call parameters. Note that
+	        // we could have just used Uri.Builder and appendQueryParameter()
+	        // here, but I wanted to illustrate how to use the Bundle params.
+	        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+	        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.POST);
+	        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.PHOTO);
+	        intent.putExtra(RubyService.EXTRA_PARAMS, params);
+	        intent.putExtra(RubyService.EXTRA_PHOTO_ITEM, photo);
+	        
+	        mContext.startService(intent);
+		}
+		
+		int photoCacheSize = photosToSend.size();
+		photosToSend.clear();
+		return photoCacheSize;
+	}
 	
 	public static void sendPhotoToDatabase(Integer eventID, String mCurrentPhotoPath, LocationInfo location, String caption, PhotoItem photo) {
 
@@ -748,12 +800,16 @@ public class EventServiceBuffer extends Object {
         mContext.startService(intent);
     }
     
-	protected void onRESTResult(int code, String result, Parcelable photo) {
+	protected void onRESTResult(int code, String result, Parcelable parcelable) {
 		
 		if (code == postPhotoSuccessCode && result != null)
         {
-        	getPhotoFromJson(result, photo);
+        	getPhotoFromJson(result, parcelable);
         }
+		else if (code == postStorySuccessCode && result != null)
+		{
+			getStoryFromJson(result, parcelable);
+		}
 		else
 		{
 			sendBroadcast();
@@ -1091,6 +1147,42 @@ public class EventServiceBuffer extends Object {
 		}
 	}
 
+	private void getStoryFromJson(String result, Parcelable parcelable) {
+		
+		Gson gson = new Gson();
+		
+		StoryItem tempMessage = (StoryItem) parcelable;
+		
+		JsonParser parser = new JsonParser();
+		
+		JsonObject object = parser.parse(result).getAsJsonObject();
+		
+		JsonObject storyObject = object.getAsJsonObject("story");
+		
+		StoryItem story = gson.fromJson(storyObject, StoryItem.class);
+		
+		ArrayList<StoryItem> messages = GlobalEventList.eventDetailMap.get(story.event_id).getStories();
+		
+		for (StoryItem message : messages)
+		{
+			if (message.equals(tempMessage))
+			{
+				messages.remove(message);
+				break;
+			}
+		}
+		
+		messages.add(story);
+		
+		if (mStoryListener != null)
+		{
+			UpdatedStoryEvent event = new UpdatedStoryEvent(this, story);
+			
+			mStoryListener.storyEvent(event);
+		}
+		
+	}
+	
 	private void getStoryFromJson(String result) {
     	
 		Gson gson = new Gson();
@@ -1153,7 +1245,14 @@ public class EventServiceBuffer extends Object {
     		originalEventDetail.clearAttendees();
     		for (JsonElement element : attendingElement)
     		{
-    			originalEventDetail.addAttendee(gson.fromJson(element, UserInfo.class));
+    			UserInfo user = gson.fromJson(element, UserInfo.class);
+    			
+    			originalEventDetail.addAttendee(user);
+    			
+    			if (!UserInfoList.getInstance().containsKey(user.id))
+    			{
+    				UserInfoList.getInstance().put(user.id, user);
+    			}
     		}
     		
     		originalEventDetail.getStories().clear();
@@ -1242,10 +1341,11 @@ public class EventServiceBuffer extends Object {
 			if (eventPhoto.equals(tempPhoto))
 			{
 				photos.remove(eventPhoto);
-				photos.add(photo);
 				break;
 			}
 		}
+		
+		photos.add(photo);
 		
 		if (mPhotoListener != null)
 		{

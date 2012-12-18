@@ -538,10 +538,15 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         	showMenuButtons(BaseMotleeActivity.JOIN_EVENT);
         }
         
-        if (mNewPhoto != null)
-        {
-        	eDetail.getImages().add(mNewPhoto);
-        }
+    	if (mNewPhoto != null)
+    	{
+    		
+    		EventServiceBuffer.setPhotoListener(this);
+    		
+    		EventServiceBuffer.sendPhotoCacheToDatabase();
+    		
+    		eDetail.getImages().add(mNewPhoto);
+    	}
         
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.fragment_content);
@@ -673,6 +678,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
     }
 
 	public void photoEvent(UpdatedPhotoEvent e) {
+		
+		EventServiceBuffer.removePhotoListener(this);
 		
 		FragmentManager     fm = getSupportFragmentManager();
         

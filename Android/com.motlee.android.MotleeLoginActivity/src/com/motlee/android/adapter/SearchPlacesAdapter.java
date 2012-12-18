@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.facebook.GraphPlace;
-import com.facebook.GraphUser;
+import com.facebook.model.GraphPlace;
+import com.facebook.model.GraphUser;
 import com.motlee.android.R;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.GlobalVariables;

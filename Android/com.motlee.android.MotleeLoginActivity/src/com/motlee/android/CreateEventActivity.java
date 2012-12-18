@@ -178,8 +178,16 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     	{
     		BaseMotleeFragment mainFragment = (BaseMotleeFragment) fm.findFragmentByTag(MAIN_FRAGMENT);
     		mainFragment.setPageHeader("Create Event");
+            if (isEditing)
+            {
+            	((TextView) findViewById(R.id.header_right_text)).setText("Save");
+            }
+            else
+            {
+            	((TextView) findViewById(R.id.header_right_text)).setText("Start!");
+            }
     		ft.show(mainFragment)
-    		.commit();
+    		.commit( );
     	}
     }
     

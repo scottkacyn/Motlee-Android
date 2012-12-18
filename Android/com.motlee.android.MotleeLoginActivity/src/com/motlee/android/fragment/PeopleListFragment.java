@@ -86,7 +86,7 @@ public class PeopleListFragment extends BaseDetailFragment {
 		eventDetailPeopleList = (ListView) view.findViewById(R.id.event_detail_people_list);
 		//eventDetailPeopleList.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
 		
-		if (eventDetailPeopleList.getHeaderViewsCount() == 0)
+		if (eventDetailPeopleList.getHeaderViewsCount() == 0 && mEventDetail.getAttendees().contains(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId())))
 		{
 			eventDetailPeopleList.addHeaderView(inviteFriendsHeader);
 		}

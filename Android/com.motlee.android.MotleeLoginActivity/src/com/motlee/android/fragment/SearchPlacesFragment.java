@@ -38,11 +38,11 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.facebook.FacebookException;
-import com.facebook.GraphPlace;
 import com.facebook.Request;
 import com.facebook.Request.GraphPlaceListCallback;
 import com.facebook.Response;
 import com.facebook.Session;
+import com.facebook.model.GraphPlace;
 import com.motlee.android.CreateEventActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.SearchPlacesAdapter;

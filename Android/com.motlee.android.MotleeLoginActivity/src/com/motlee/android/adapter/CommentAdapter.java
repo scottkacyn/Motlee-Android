@@ -3,7 +3,6 @@ package com.motlee.android.adapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facebook.GraphUser;
 import com.motlee.android.R;
 import com.motlee.android.object.Comment;
 import com.motlee.android.object.DateStringFormatter;

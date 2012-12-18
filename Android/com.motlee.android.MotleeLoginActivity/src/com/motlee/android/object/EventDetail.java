@@ -32,7 +32,7 @@ public class EventDetail implements Comparable<EventDetail> {
 	private Collection<UserInfo> people_attending;
 	
 	@NoExpose
-	private Collection<StoryItem> stories;
+	private ArrayList<StoryItem> stories;
 	
 	// @NoExpose is a way to stop the json parser from including them
 	// when we convert EventDetail to a json.
@@ -298,7 +298,7 @@ public class EventDetail implements Comparable<EventDetail> {
 		}
 	}
 
-	public Collection<StoryItem> getStories() {
+	public ArrayList<StoryItem> getStories() {
 		return stories;
 	}
 

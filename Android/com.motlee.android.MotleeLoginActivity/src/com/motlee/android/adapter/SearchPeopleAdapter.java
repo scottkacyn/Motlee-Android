@@ -13,8 +13,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.facebook.GraphObject;
-import com.facebook.GraphUser;
+import com.facebook.model.GraphObject;
+import com.facebook.model.GraphUser;
 import com.motlee.android.R;
 import com.motlee.android.layouts.HorizontalRatioLinearLayout;
 import com.motlee.android.object.DrawableCache;
@@ -56,6 +56,7 @@ public class SearchPeopleAdapter extends ArrayAdapter<JSONObject> implements Sec
     private final ArrayList<JSONObject> mOriginalData;
     private ArrayList<JSONObject> mData;
     private ArrayList<JSONObject> peopleToAdd;
+    private boolean mCanDeletePeople = false;
     
     HashMap<String, Integer> alphaIndexer;
     String[] sections;

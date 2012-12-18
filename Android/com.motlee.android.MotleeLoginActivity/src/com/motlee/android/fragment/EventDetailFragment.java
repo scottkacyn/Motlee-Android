@@ -274,7 +274,7 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		
 	};
 	
-	private OnClickListener postStory = new OnClickListener(){
+	/*private OnClickListener postStory = new OnClickListener(){
 
 		public void onClick(View v) {
 			
@@ -296,7 +296,7 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
             sendLayout.setVisibility(View.GONE);
 		}
 		
-	};
+	};*/
 	
 	public void addEventDetail(EventDetail eDetail) {
 		Log.w(tag, "addEventDetail");

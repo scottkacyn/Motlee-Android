@@ -211,6 +211,11 @@ public class BaseMotleeActivity extends FragmentActivity implements UpdatedEvent
 		EventServiceBuffer.removeEventDetailListener(this);
 		unbindDrawables(this.findViewById(android.R.id.content));
 		System.gc();
+		
+		if (progressDialog != null && progressDialog.isShowing())
+		{
+			progressDialog.dismiss();
+		}
 		super.onDestroy();
 	}
 	

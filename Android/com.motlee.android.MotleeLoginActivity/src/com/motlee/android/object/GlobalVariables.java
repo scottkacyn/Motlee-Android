@@ -26,7 +26,9 @@ import com.motlee.android.EventDetailActivity;
 import com.motlee.android.EventListActivity;
 import com.motlee.android.R;
 import com.motlee.android.TakePhotoActivity;
+import com.motlee.android.enums.EventItemType;
 import com.nostra13.universalimageloader.cache.disc.impl.TotalSizeLimitedDiscCache;
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -34,6 +36,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
+import com.nostra13.universalimageloader.utils.StorageUtils;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -97,7 +100,7 @@ public class GlobalVariables {
     public static String LOCATION = "location";
     public static String FB_APP_ID = "283790891721595";
     
-    public static File file = new File(Environment.getExternalStorageDirectory() + File.separator + "test1.txt");
+    public static File file = new File(Environment.getExternalStorageDirectory() + File.separator + "test2.txt");
     
 	private static GlobalVariables instance;
 	
@@ -324,17 +327,21 @@ public class GlobalVariables {
 	
 	public void initializeImageLoader(Context context)
 	{
+		File cacheDir = StorageUtils.getOwnCacheDirectory(context, "motlee/Cache");
+		
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context.getApplicationContext())
+		.threadPoolSize(3)
 		.threadPriority(Thread.NORM_PRIORITY - 2)
 		.memoryCache(new WeakMemoryCache())
-		.enableLogging()
+		.denyCacheImageMultipleSizesInMemory()
+        .discCache(new UnlimitedDiscCache(cacheDir))
 		.build();
 		
 		imageLoader.init(config);
 		
 		options = new DisplayImageOptions.Builder()
 		.showStubImage(R.drawable.watermark)
-		.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
+		.imageScaleType(ImageScaleType.EXACTLY)
 		.cacheInMemory()
 		.cacheOnDisc()
 		.displayer(new SimpleBitmapDisplayer())

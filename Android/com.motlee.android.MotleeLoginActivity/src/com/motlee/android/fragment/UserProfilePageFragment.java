@@ -12,10 +12,6 @@ import java.util.Date;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.facebook.GraphObject;
-import com.facebook.GraphUser;
-import com.facebook.android.AsyncFacebookRunner;
-import com.facebook.android.AsyncFacebookRunner.RequestListener;
 import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
 import com.google.gson.JsonObject;

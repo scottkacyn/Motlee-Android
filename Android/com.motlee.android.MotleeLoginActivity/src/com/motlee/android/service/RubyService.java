@@ -74,6 +74,7 @@ public class RubyService extends IntentService {
     public static final String EXTRA_RESULT_RECEIVER = "com.motlee.android.EXTRA_RESULT_RECEIVER";
     public static final String EXTRA_DATA_CONTENT	 = "com.motlee.android.EXTRA_DATA_CONTENT";
     public static final String EXTRA_PHOTO_ITEM 	 = "com.motlee.android.EXTRA_PHOTO_ITEM";
+    public static final String EXTRA_MESSAGE_ITEM	 = "com.motlee.android.EXTRA_MESSAGE_ITEM";
     
     public static final String REST_RESULT = "com.motlee.android.REST_RESULT";
     
@@ -200,6 +201,7 @@ public class RubyService extends IntentService {
                 GlobalVariables.getInstance().getExecutorService().execute(new Runnable(){
                 	public void run()
                 	{
+                		Log.d(TAG, "Running on Thread: " + Thread.currentThread().getName());
                 		try
                 		{
 	                        HttpResponse response;
@@ -221,6 +223,10 @@ public class RubyService extends IntentService {
 	                            if (dataContent == PHOTO && verb == POST) 
 	                            {
 	                            	resultData.putParcelable(EXTRA_PHOTO_ITEM, extras.getParcelable(EXTRA_PHOTO_ITEM));
+	                            }
+	                            else if (dataContent == STORY && verb == POST)
+	                            {
+	                            	resultData.putParcelable(EXTRA_MESSAGE_ITEM, extras.getParcelable(EXTRA_MESSAGE_ITEM));
 	                            }
 	                            receiver.send(statusCode, resultData);
 	                        }

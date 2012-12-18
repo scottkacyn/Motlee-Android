@@ -112,11 +112,9 @@ public class MessageAdapter extends ArrayAdapter<StoryItem> {
                     holder.message_owner = convertView.findViewById(R.id.message_owner);
                     holder.message_friend = convertView.findViewById(R.id.message_friend);
                     holder.friend_comment_body = (TextView) convertView.findViewById(R.id.message_friend_body_text);
-                    holder.friend_comment_name = (TextView) convertView.findViewById(R.id.message_friend_name_text);
-                    holder.friend_comment_time = (TextView) convertView.findViewById(R.id.message_friend_time_text);
+                    holder.friend_comment_name_time = (TextView) convertView.findViewById(R.id.message_friend_name_time_text);
                     holder.friend_profile_pic = (ImageView) convertView.findViewById(R.id.message_friend_profile_pic);
                     holder.owner_comment_body = (TextView) convertView.findViewById(R.id.message_owner_body_text);
-                    holder.owner_comment_name = (TextView) convertView.findViewById(R.id.message_owner_name_text);
                     holder.owner_comment_time = (TextView) convertView.findViewById(R.id.message_owner_time_text);
                     holder.owner_profile_pic = (ImageView) convertView.findViewById(R.id.message_owner_profile_pic);
                     
@@ -135,11 +133,17 @@ public class MessageAdapter extends ArrayAdapter<StoryItem> {
             	//holder.message_owner.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.chat_bubble_blue, GlobalVariables.DISPLAY_WIDTH).getDrawable());
             	
             	holder.owner_comment_body.setText(story.body);
-                holder.owner_comment_name.setText("Me");
-                holder.owner_comment_time.setText(DateStringFormatter.getPastDateString(story.created_at));
-                
+                //holder.owner_comment_name.setText("Me");
+            	if (story.id == -1)
+            	{
+            		holder.owner_comment_time.setText("Loading...");
+            	}
+            	else
+            	{
+            		holder.owner_comment_time.setText(DateStringFormatter.getPastDateString(story.created_at));
+            	}
+            	
                 holder.owner_profile_pic.setTag(UserInfoList.getInstance().get(story.user_id));
-                holder.owner_comment_name.setTag(UserInfoList.getInstance().get(story.user_id));
                 
                 holder.owner_profile_pic.setMaxHeight((int) (GlobalVariables.DISPLAY_WIDTH * .17));
                 holder.owner_profile_pic.setMaxWidth((int) (GlobalVariables.DISPLAY_WIDTH * .17));
@@ -154,11 +158,10 @@ public class MessageAdapter extends ArrayAdapter<StoryItem> {
             	//holder.message_friend.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.chat_bubble_red, GlobalVariables.DISPLAY_WIDTH).getDrawable());
             	
             	holder.friend_comment_body.setText(story.body);
-                holder.friend_comment_name.setText(UserInfoList.getInstance().get(story.user_id).name);
-                holder.friend_comment_time.setText(DateStringFormatter.getPastDateString(story.created_at));
+                holder.friend_comment_name_time.setText(UserInfoList.getInstance().get(story.user_id).name + ", " + DateStringFormatter.getPastDateString(story.created_at));
                 
                 holder.friend_profile_pic.setTag(UserInfoList.getInstance().get(story.user_id));
-                holder.friend_comment_name.setTag(UserInfoList.getInstance().get(story.user_id));
+                holder.friend_comment_name_time.setTag(UserInfoList.getInstance().get(story.user_id));
                 
                 holder.friend_profile_pic.setMaxHeight((int) (GlobalVariables.DISPLAY_WIDTH * .17));
                 holder.friend_profile_pic.setMaxWidth((int) (GlobalVariables.DISPLAY_WIDTH * .17));
@@ -174,11 +177,9 @@ public class MessageAdapter extends ArrayAdapter<StoryItem> {
     	View message_owner;
     	View message_friend;
     	TextView friend_comment_body;
-    	TextView friend_comment_name;
-    	TextView friend_comment_time;
+    	TextView friend_comment_name_time;
     	ImageView friend_profile_pic;
     	TextView owner_comment_body;
-    	TextView owner_comment_name;
     	TextView owner_comment_time;
     	ImageView owner_profile_pic;
     }

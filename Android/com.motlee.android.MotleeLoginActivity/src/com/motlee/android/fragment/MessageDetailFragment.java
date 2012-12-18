@@ -2,6 +2,7 @@ package com.motlee.android.fragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -38,6 +39,7 @@ import com.motlee.android.R;
 import com.motlee.android.adapter.EventDetailGridAdapter;
 import com.motlee.android.adapter.EventDetailListAdapter;
 import com.motlee.android.adapter.MessageAdapter;
+import com.motlee.android.enums.EventItemType;
 import com.motlee.android.fragment.EventDetailFragment.MyGestureListener;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
@@ -278,9 +280,15 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 			
 			listViewLayout.requestFocus();
 			
+			StoryItem newMessage = new StoryItem(mEventDetail.getEventID(), EventItemType.STORY, GlobalVariables.getInstance().getUserId(), new Date(), storyText);
+			
+			mEventDetail.getStories().add(newMessage);
+			
+			updateMessageAdapter();
+			
 			EventServiceBuffer.setStoryListener(MessageDetailFragment.this);
 			
-			EventServiceBuffer.sendStoryToDatabase(mEventDetail.getEventID(), storyText);
+			EventServiceBuffer.sendStoryToDatabase(mEventDetail.getEventID(), storyText, newMessage);
 			
 			InputMethodManager imm = (InputMethodManager) view.getContext()
 		            .getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -420,8 +428,12 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 
 	public void storyEvent(UpdatedStoryEvent evt) {
 		
-		mEventDetail.getStories().add(evt.getStory());
+		updateMessageAdapter();
 		
+	}
+	
+	private void updateMessageAdapter()
+	{
 		ArrayList<StoryItem> stories = new ArrayList<StoryItem>(mEventDetail.getStories());
 		
 		Collections.sort(stories);
@@ -431,10 +443,7 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 		listViewLayout.setAdapter(messageAdapter);
 		
 		listViewLayout.setSelection(this.messageAdapter.getCount() - 1);
-		//addListToAdapter();
-		
 	}
-	
 	
     public boolean onTouchEvent(MotionEvent event) {
         // or implement in activity or component. When your not assigning to a child component.

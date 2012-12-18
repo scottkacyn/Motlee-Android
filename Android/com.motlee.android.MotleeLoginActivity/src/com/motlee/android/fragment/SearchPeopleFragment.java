@@ -37,8 +37,6 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.facebook.FacebookException;
-import com.facebook.GraphObject;
-import com.facebook.GraphUser;
 import com.facebook.HttpMethod;
 import com.facebook.Request;
 import com.facebook.Request.Callback;
@@ -86,6 +84,8 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
 	
 	private String mSearchText;
 	
+	private boolean mCanDeleteFriends = true;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 	        Bundle savedInstanceState)
@@ -128,6 +128,11 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
 		//mAdapter.on
 		
 		return view;
+	}
+	
+	public void disableDeletingFriends()
+	{
+		this.mCanDeleteFriends = false;
 	}
 	
 	private void setEditText()
@@ -285,7 +290,10 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
     	//boolean personIsAdded = 
     	if (peopleToAdd.contains(person))
     	{
-    		peopleToAdd.remove(person);
+    		if (this.mCanDeleteFriends)
+    		{
+    			peopleToAdd.remove(person);
+    		}
     	}
     	else
     	{

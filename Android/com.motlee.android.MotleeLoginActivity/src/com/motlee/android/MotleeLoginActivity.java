@@ -5,10 +5,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
 
-import com.facebook.FacebookActivity;
-import com.facebook.LoginButton;
 import com.facebook.Session;
 import com.facebook.SessionState;
+import com.facebook.UiLifecycleHelper;
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
@@ -42,6 +41,7 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -52,7 +52,7 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MotleeLoginActivity extends FacebookActivity implements UpdatedEventDetailListener, OnFragmentAttachedListener {
+public class MotleeLoginActivity extends FragmentActivity implements UpdatedEventDetailListener, OnFragmentAttachedListener {
 
     Facebook facebook = new Facebook(GlobalVariables.FB_APP_ID);
     private SharedPreferences mPrefs;
@@ -146,6 +146,16 @@ public class MotleeLoginActivity extends FacebookActivity implements UpdatedEven
         
         //access_token = session.get     
         
+     // start Facebook Login
+        Session.openActiveSession(this, true, new Session.StatusCallback() {
+
+          // callback when session changes state
+	          public void call(Session session, SessionState state, Exception exception) {
+	        	  
+	        	  onSessionChange(session, state, exception);
+	          }
+        });
+        
         EventServiceBuffer.getInstance(getApplication());
         
         //EventServiceBuffer.setEventDetailListener(this);
@@ -173,21 +183,33 @@ public class MotleeLoginActivity extends FacebookActivity implements UpdatedEven
         });
     }
     
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+      super.onActivityResult(requestCode, resultCode, data);
+      Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
+    }
+    
+    public void onSessionChange(Session session, SessionState state, Exception exception)
+    {
+		if (session != null)
+		{
+			if (session.isOpened())
+			{
+				  loginPageFragment.hideLoginButton();
+				  
+				  String access_token = Session.getActiveSession().getAccessToken();
+				  
+				  EventServiceBuffer.getUserInfoFromFacebookAccessToken(access_token);
+			}
+		}
+    }
+    
     public void myEventOccurred(UpdatedEventDetailEvent evt) {
 		// TODO Auto-generated method stub
 		
 		EventServiceBuffer.removeEventDetailListener(this);
 		startEventListActivity();
 	}
-    
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        String access_token = this.getSession().getAccessToken();
-        
-        access_token = access_token.substring(4);
-    }	
     
     //Starts EventListActivity and finishes this one
     private void startEventListActivity()
@@ -229,7 +251,7 @@ public class MotleeLoginActivity extends FacebookActivity implements UpdatedEven
 			{
 				  loginPageFragment.hideLoginButton();
 				  
-				  String access_token = this.getSession().getAccessToken();
+				  String access_token = Session.getActiveSession().getAccessToken();
 				  
 				  EventServiceBuffer.getUserInfoFromFacebookAccessToken(access_token);
 			}

@@ -35,8 +35,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -92,17 +94,18 @@ public class EventListFragment extends ListFragmentWithHeader {
 		view = (View) getActivity().getLayoutInflater().inflate(R.layout.activity_event_list, null);
 		
 		//view.findViewById(R.id.buffer).setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, GlobalVariables.getInstance().getMenuButtonsHeight()));
-		
-		firstUseHeader = getActivity().getLayoutInflater().inflate(R.layout.first_use_header, null);
-		
-		ImageButton closeFirstUse = (ImageButton) firstUseHeader.findViewById(R.id.first_message_close);
-		closeFirstUse.setOnClickListener(closeFirstUseMessage);
-		
 		ListView listView = (ListView) view.findViewById(android.R.id.list);
-		listView.addHeaderView(firstUseHeader);
 		
 		if (GlobalVariables.getInstance().firstUse)
 		{
+			firstUseHeader = getActivity().getLayoutInflater().inflate(R.layout.first_use_header, null);
+			
+			ImageButton closeFirstUse = (ImageButton) firstUseHeader.findViewById(R.id.first_message_close);
+			closeFirstUse.setOnClickListener(closeFirstUseMessage);
+			
+			
+			listView.addHeaderView(firstUseHeader);
+			
 			firstUseHeader.findViewById(R.id.first_use_header_content).setVisibility(View.VISIBLE);
 			GlobalVariables.getInstance().firstUse = false;
 		}
@@ -200,12 +203,29 @@ public class EventListFragment extends ListFragmentWithHeader {
 	{
 		ListView listView = (ListView) view.findViewById(android.R.id.list);
 		listView.removeHeaderView(firstUseHeader);
+		
+		unbindDrawables(firstUseHeader);
+	}
+	
+	private void unbindDrawables(View view) {
+	    if (view.getBackground() != null) {
+	        view.getBackground().setCallback(null);
+	    }
+	    if (view instanceof ViewGroup) {
+	        for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+	            unbindDrawables(((ViewGroup) view).getChildAt(i));
+	        }
+	        ((ViewGroup) view).removeAllViews();
+	    }
 	}
 	
 	public void setDoneLoading()
 	{
-		firstUseHeader.findViewById(R.id.progress_bar).setVisibility(View.GONE);
-		firstUseHeader.findViewById(R.id.text_done).setVisibility(View.VISIBLE);
+		if (firstUseHeader != null)
+		{
+			firstUseHeader.findViewById(R.id.progress_bar).setVisibility(View.GONE);
+			firstUseHeader.findViewById(R.id.text_done).setVisibility(View.VISIBLE);
+		}
 		
 		ListView listView = (ListView) view.findViewById(android.R.id.list);
 		listView.removeHeaderView(progressBar);

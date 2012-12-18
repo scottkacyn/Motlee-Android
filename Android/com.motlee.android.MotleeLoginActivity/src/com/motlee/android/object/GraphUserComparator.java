@@ -2,7 +2,7 @@ package com.motlee.android.object;
 
 import java.util.Comparator;
 
-import com.facebook.GraphUser;
+import com.facebook.model.GraphUser;
 
 public class GraphUserComparator implements Comparator<GraphUser> {
 
