@@ -11,6 +11,7 @@ import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 import com.motlee.android.service.RubyService;
+import com.slidingmenu.lib.SlidingMenu;
 
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -40,6 +41,8 @@ public class BaseMotleeActivity extends FragmentActivity implements UpdatedEvent
 	
 	protected ProgressDialog progressDialog;
 	
+	protected SlidingMenu menu;
+	
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
 
         @Override
@@ -67,10 +70,18 @@ public class BaseMotleeActivity extends FragmentActivity implements UpdatedEvent
         IntentFilter filter = new IntentFilter();
         filter.addAction(RubyService.CONNECTION_ERROR);
         registerReceiver(receiver, filter);
-
+        
         super.onResume();
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+    	
+    	EventServiceBuffer.getInstance(getApplicationContext());
+    	
+    	super.onCreate(savedInstanceState);
+    }
+    
     @Override
     protected void onPause() {
         unregisterReceiver(receiver);
@@ -122,31 +133,36 @@ public class BaseMotleeActivity extends FragmentActivity implements UpdatedEvent
     
 	final public void onClickOpenMainMenu(View view)
     {
-    	MenuFunctions.openMainMenu(view, this);
+		menu.toggle();
     }
     
 	final public void onClickShowAllEvents(View view)
 	{
+		menu.toggle();
 		MenuFunctions.showAllEvents(view, this);
 	}
 	
 	final public void onClickShowMyEvents(View view)
 	{
+		menu.toggle();
 		MenuFunctions.showMyEvents(view, this);
 	}
 	
 	final public void onClickShowNearbyEvents(View view)
 	{
+		menu.toggle();
 		MenuFunctions.showNearbyEvents(view, this);
 	}
 	
 	final public void onClickShowSettings(View view)
 	{
+		menu.toggle();
 		MenuFunctions.showSettings(this);
 	}
 	
 	final public void onClickShowSearch(View view)
 	{
+		menu.toggle();
 		MenuFunctions.showSearchPage(this);
 	}
 	

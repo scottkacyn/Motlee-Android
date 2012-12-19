@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import org.acra.ACRA;
 import org.apache.http.HttpStatus;
 
 import android.app.Activity;
@@ -124,14 +125,6 @@ public class EventServiceBuffer extends Object {
 	{
 		mContext = context;
 		return instance;
-	}
-
-	public static void finishContext(Context context)
-	{
-		if (mContext == context)
-		{
-			mContext = null;
-		}
 	}
 	
 	private EventServiceBuffer() {
@@ -689,6 +682,11 @@ public class EventServiceBuffer extends Object {
 	
 	public static void getEventsFromService(String eventParam)
 	{
+		if (mContext == null)
+		{
+			ACRA.getErrorReporter().putCustomData("getEventsFromService:mContext", "null");
+		}
+		
         Intent intent = new Intent(mContext, RubyService.class);
         intent.setData(Uri.parse(WEB_SERVICE_URL + "events"));
         
@@ -1491,10 +1489,18 @@ public class EventServiceBuffer extends Object {
 		
 		Gson gson = new Gson();
     	
-    	String authTok = gson.fromJson(json, AuthTokenHolder.class).token;
+		JsonParser parser = new JsonParser();
+		
+		if (!parser.parse(json).isJsonObject())
+		{			
+			ACRA.getErrorReporter().putCustomData("Auth Token", GlobalVariables.getInstance().getAuthoToken());
+			ACRA.getErrorReporter().putCustomData("Json", json);
+		}
+		
+		String authTok = gson.fromJson(json, AuthTokenHolder.class).token;
     	
     	GlobalVariables.getInstance().setAuthoToken(authTok);
-
+    	
     	//AUTH_TOK = AUTH_TOK + authTok;
     	
     	getUserInfoFromService();

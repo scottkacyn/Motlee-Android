@@ -132,6 +132,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         
         setContentView(R.layout.main);
         
+        menu = GlobalActivityFunctions.setUpSlidingMenu(this);
+        
         View mainLayout = findViewById(R.id.main_frame_layout);
         mainLayout.setClickable(true);
         //mainLayout.setOnClickListener(onClick);

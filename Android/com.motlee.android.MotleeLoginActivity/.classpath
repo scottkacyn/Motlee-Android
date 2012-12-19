@@ -10,7 +10,6 @@
 	<classpathentry kind="lib" path="libs/universal-image-loader-1.6.1.jar" sourcepath="libs/universal-image-loader-1.6.1-sources.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="lib" path="libs/com.slidingmenu.lib.slidingmenuactivity.jar"/>
 	<classpathentry kind="lib" path="libs/joda-time-2.1-sources.jar"/>
 	<classpathentry kind="lib" path="libs/joda-time-2.1.jar"/>
 	<classpathentry kind="lib" path="libs/httpmime-4.2.2.jar"/>

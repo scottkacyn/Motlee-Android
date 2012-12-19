@@ -13,6 +13,7 @@ import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentA
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
 import com.motlee.android.fragment.LocationFragment;
 import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
@@ -26,6 +27,10 @@ public class NearbyEventsActivity extends BaseMotleeActivity implements UpdatedE
 
         setContentView(R.layout.main);
 	    
+        menu = GlobalActivityFunctions.setUpSlidingMenu(this);
+        
+        showMenuButtons(BaseMotleeActivity.CREATE_EVENT);
+        
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         

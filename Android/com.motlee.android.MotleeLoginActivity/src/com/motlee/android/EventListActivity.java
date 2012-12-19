@@ -23,6 +23,7 @@ import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventListParams;
 import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.MenuFunctions;
@@ -36,6 +37,7 @@ import com.motlee.android.object.event.UpdatedFomoEvent;
 import com.motlee.android.object.event.UpdatedFomoListener;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
+import com.slidingmenu.lib.SlidingMenu;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -80,6 +82,11 @@ public class EventListActivity extends BaseMotleeActivity {
 	@Override
 	public void onResume()
 	{
+		if (mEventListFragment != null)
+		{
+			mEventListFragment.setHeaderView(findViewById(R.id.header));
+		}
+		
 		Log.d(this.toString(), "onResume");
 		super.onResume();
 		
@@ -128,6 +135,8 @@ public class EventListActivity extends BaseMotleeActivity {
         setContentView(R.layout.main);
         
         Log.d("EventListAcitivity", getIntent().toString());
+        
+        menu = GlobalActivityFunctions.setUpSlidingMenu(this);
         
         //GlobalVariables.getInstance().setMenuButtonsHeight(findViewById(R.id.menu_buttons).getHeight());
         

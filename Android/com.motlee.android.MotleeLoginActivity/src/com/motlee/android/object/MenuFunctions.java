@@ -17,6 +17,7 @@ import com.motlee.android.fragment.PlusMenuFragment;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.view.HorizontalAspectImageButton;
+import com.slidingmenu.lib.SlidingMenu;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -86,9 +87,11 @@ public class MenuFunctions {
 		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
 	}
 	
-	public static void openMainMenu(View view, FragmentActivity activity)
+	public static void openMainMenu(View view, FragmentActivity activity, SlidingMenu menu)
 	{
-    	FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
+		menu.showMenu();
+		
+    	/*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
         
         MainMenuFragment mainMenuFragment = new MainMenuFragment();
         
@@ -96,11 +99,11 @@ public class MenuFunctions {
         
         /*HorizontalAspectImageButton menuButton = (HorizontalAspectImageButton) activity.findViewById(R.id.menu_button);
 		
-		menuButton.setEnabled(false);*/
+		menuButton.setEnabled(false);
         
 		menuOpen = true;
 		
-        ft.commit();
+        ft.commit();*/
 	}
 	
 	public static void resetMenuOpen()
