@@ -22,4 +22,6 @@ public class UserInfoList extends HashMap<Integer, UserInfo> {
 	{
 		return instance;
 	}
+	
+	public ArrayList<Integer> friendsList = new ArrayList<Integer>();
 }

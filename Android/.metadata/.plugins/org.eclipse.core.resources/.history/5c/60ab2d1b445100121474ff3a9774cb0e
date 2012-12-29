@@ -1,0 +1,77 @@
+ <LinearLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:layout_gravity="bottom"
+     android:weightSum="1">
+     
+     
+  <FrameLayout
+      android:layout_width="0dp"
+      android:layout_weight="0.2"
+      android:layout_height="wrap_content">   
+	  <com.motlee.android.view.HorizontalAspectImageButton
+	      android:id="@+id/menu_button"
+	      android:layout_width="match_parent"
+	      android:layout_height="wrap_content"
+	      android:src="@drawable/main_menu_button"
+	      android:background="@android:color/transparent"
+	      android:layout_gravity="left|bottom"
+	      android:scaleType="fitXY"
+	      android:onClick="onClickOpenMainMenu" />
+  
+	  <View
+	    android:id="@+id/invisible_for_badge_view"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="left|bottom" />
+	      
+	  
+  </FrameLayout>
+  
+  <LinearLayout
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_weight="0.6"
+      android:id="@+id/menu_middle_space" >
+      
+      <TextView
+          android:id="@+id/message_post_text"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_gravity="center_vertical"
+          android:gravity="center_vertical"
+          android:paddingLeft="15dp"
+          android:text="Post Message..." 
+          android:visibility="gone"/>
+      
+  </LinearLayout>
+  
+  <FrameLayout
+      android:layout_width="0dp"
+      android:layout_weight="0.2"
+      android:layout_height="wrap_content" >
+      
+	  <com.motlee.android.view.HorizontalAspectImageButton
+	      android:id="@+id/plus_menu_button"
+	      android:layout_width="match_parent"
+	      android:layout_height="wrap_content"
+	      android:src="@drawable/right_menu_button"
+	      android:background="@android:color/transparent"
+	      android:scaleType="fitXY"
+	      android:onClick="onClickOpenPlusMenu"
+	      android:layout_gravity="right|bottom" />
+	  
+	  <ImageView
+	      android:id="@+id/right_menu_icon"
+	      android:layout_width="match_parent"
+	      android:layout_height="wrap_content"
+	      android:paddingTop="15dp"
+	      android:paddingLeft="17dp"
+	      android:paddingRight="5dp"
+	      android:paddingBottom="3dp"
+	      android:scaleType="fitCenter"
+	      android:adjustViewBounds="true" />
+
+  </FrameLayout>
+</LinearLayout>

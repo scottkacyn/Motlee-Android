@@ -68,6 +68,8 @@ public class RubyService extends IntentService {
 	public static final int ADD_COMMENT = 110000;
 	public static final int FRIENDS = 120000;
 	public static final int DELETE_PHOTO = 130000;
+	public static final int NEW_NOTIFICATION = 140000;
+	public static final int ALL_NOTIFICATION = 150000;
     
     public static final String EXTRA_HTTP_VERB       = "com.motlee.android.EXTRA_HTTP_VERB";
     public static final String EXTRA_PARAMS          = "com.motlee.android.EXTRA_PARAMS";

@@ -176,6 +176,8 @@ public class MotleeLoginActivity extends FragmentActivity implements UpdatedEven
 				
 	        	EventServiceBuffer.setUserInfoListener(null);
 	        	
+	        	EventServiceBuffer.requestMotleeFriends(e.getUserInfo().id);
+	        	
 	    		startEventListActivity();
 	        	//EventServiceBuffer.getEventsFromService();
 			}

@@ -35,8 +35,6 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
 	
 	private Integer eventId;
 	
-	private ProgressDialog progressDialog;
-	
 	private ArrayList<Integer> initialAttendees = new ArrayList<Integer>();
 	
     @Override
@@ -124,11 +122,19 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
                                 Toast.LENGTH_SHORT).show();
                     } 
                     
-                    progressDialog = ProgressDialog.show(AddPeopleActivity.this, "", "Adding Friends");
+                    if (peopleToAdd.size() > 0)
+                    {
+                    	progressDialog = ProgressDialog.show(AddPeopleActivity.this, "", "Adding Friends");
                     
-                    EventServiceBuffer.setAttendeeListener(AddPeopleActivity.this);
+                    	EventServiceBuffer.setAttendeeListener(AddPeopleActivity.this);
                     
-                    EventServiceBuffer.sendAttendeesForEvent(eventId, peopleToAdd);
+                    	EventServiceBuffer.sendAttendeesForEvent(eventId, peopleToAdd);
+                    }
+                    else
+                    {
+                		finish();
+                    }
+                    
                 }
 
             })

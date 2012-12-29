@@ -161,6 +161,7 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
 	                        holder.imageAdapter = new ImageAdapter(mContext, R.layout.thumbnail);
 	                        holder.blank_space = (LinearLayout) convertView.findViewById(R.id.blank_space);
 	                        holder.event_header_icon = (ImageView) convertView.findViewById(R.id.event_header_icon);
+	                        holder.event_footer_people = (TextView) convertView.findViewById(R.id.event_footer_people);
 	                        convertView.setTag(holder);
                 			
                 } else {
@@ -248,17 +249,21 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
 	                holder.event_header_time.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 	
 	                String attendeeText = "";
-	                if (item.getAttendeeCount() == 1)
+	                if (item.getAttendeeCount() > 1)
 	                {
-	                	holder.event_footer_owner.setText("1 person");
+		                holder.event_footer_people.setText(" + " + (item.getAttendeeCount() - 1));
+		                holder.event_footer_people.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		                holder.event_footer_people.setVisibility(View.VISIBLE);
 	                }
 	                else
 	                {
-	                	holder.event_footer_owner.setText(item.getAttendeeCount() + " people");
+	                	holder.event_footer_people.setVisibility(View.GONE);
 	                }
-	                
+
+	                holder.event_footer_owner.setText(item.getEventOwner().first_name.substring(0, 1) + ". " + item.getEventOwner().last_name);
+	                //holder.event_footer_owner.setText(item.getEventOwner().first_name.substring(0, 1) + ". CrazyAssMotherFuckinLongLastName");
 	                holder.event_footer_owner.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-	   
+	                
 	                holder.event_footer_location.setText(item.getLocationInfo().name);
 	                holder.event_footer_location.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 	                
@@ -303,6 +308,7 @@ public class EventListAdapter extends ArrayAdapter<Integer> {
             public LinearLayout event_footer_background;
             public LinearLayout blank_space;
             public ImageView event_header_icon;
+            public TextView event_footer_people;
         }
 
 

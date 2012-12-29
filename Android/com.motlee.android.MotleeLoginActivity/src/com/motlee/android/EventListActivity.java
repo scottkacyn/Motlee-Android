@@ -81,12 +81,7 @@ public class EventListActivity extends BaseMotleeActivity {
 	
 	@Override
 	public void onResume()
-	{
-		if (mEventListFragment != null)
-		{
-			mEventListFragment.setHeaderView(findViewById(R.id.header));
-		}
-		
+	{		
 		Log.d(this.toString(), "onResume");
 		super.onResume();
 		
@@ -101,9 +96,18 @@ public class EventListActivity extends BaseMotleeActivity {
 		//requestNewDataForList(eventListParams.dataContent, eventListParams.headerText);
 	}
 	
+	@Override 
+	public void onStart()
+	{
+		Log.d("EventListActivity", "onStart");
+
+		super.onStart();
+	}
+	
 	@Override
 	public void onNewIntent(Intent intent)
 	{
+		Log.d("EventListActivity", "onNewIntent");
 		
         Object listType = null;
         if (intent.getExtras() != null)
@@ -148,6 +152,14 @@ public class EventListActivity extends BaseMotleeActivity {
         
         FragmentManager     fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
+        
+    	if (fm.findFragmentById(R.id.fragment_content) != null)
+    	{
+    		EventListFragment fragment = (EventListFragment) fm.findFragmentById(R.id.fragment_content);
+    		Log.d("EventListActivity", "A fragment already exists: " + fragment.toString());
+    		
+    		ft.remove(fragment);
+    	}
         
         mEventListFragment = new EventListFragment();
         

@@ -64,4 +64,8 @@ public class SettingsDetailActivity extends BaseMotleeActivity {
 		startActivity(loginPageIntent);
 	}
  
+	public void onRightHeaderButtonClick(View view)
+	{
+		
+	}
 }

@@ -14,7 +14,8 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/app_theme"
-        android:name=".MotleeApplication"  >
+        android:name=".MotleeApplication"
+        android:debuggable="true"  >
         
         <uses-library android:name="com.google.android.maps"/>
         <uses-feature android:name="android.hardware.camera" />
@@ -97,7 +98,7 @@
             android:name=".TakePhotoActivity"
             android:label="@string/title_take_photo_activity"
             android:theme="@style/app_theme"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" >
             <meta-data
             	android:name="android.support.PARENT_ACTIVITY"
@@ -185,6 +186,16 @@
         <activity
             android:name=".AddPeopleActivity"
             android:label="@string/title_add_people_activity"
+            android:theme="@style/app_theme"
+            android:screenOrientation="portrait" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.example.myfirstapp.MainActivity" />
+        </activity>
+        
+        <activity
+            android:name=".NotificationActivity"
+            android:label="@string/title_notification_activity"
             android:theme="@style/app_theme"
             android:screenOrientation="portrait" >
             <meta-data

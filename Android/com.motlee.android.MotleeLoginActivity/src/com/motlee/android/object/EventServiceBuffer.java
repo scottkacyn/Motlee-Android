@@ -58,6 +58,7 @@ import com.motlee.android.object.event.UpdatedLikeEvent;
 import com.motlee.android.object.event.UpdatedLikeListener;
 import com.motlee.android.object.event.UpdatedLocationEvent;
 import com.motlee.android.object.event.UpdatedLocationListener;
+import com.motlee.android.object.event.UpdatedNotificationListener;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
 import com.motlee.android.object.event.UpdatedStoryEvent;
@@ -107,6 +108,8 @@ public class EventServiceBuffer extends Object {
     public static final int updateEventSuccessCode = HttpStatus.SC_OK + RubyService.CREATE_EVEVT;
     public static final int friendsSuccessCode = HttpStatus.SC_OK + RubyService.FRIENDS;
     public static final int deletePhotoSuccessCode = HttpStatus.SC_OK + RubyService.DELETE_PHOTO;
+    public static final int newNotificationSuccessCode = HttpStatus.SC_OK + RubyService.NEW_NOTIFICATION;
+    public static final int allNotificationSuccessCode = HttpStatus.SC_OK + RubyService.ALL_NOTIFICATION;
     
     private static Vector<UpdatedEventDetailListener> mEventDetailListener;
     private static Vector<UpdatedLikeListener> mLikeListener;
@@ -117,6 +120,7 @@ public class EventServiceBuffer extends Object {
 	private static Vector<UpdatedPhotoListener> mPhotoListener;
 	private static UpdatedStoryListener mStoryListener;
 	private static Vector<UpdatedFriendsListener> mFriendsListener;
+	private static Vector<UpdatedNotificationListener> mNotificationListener;
 	private static DeletePhotoListener mDeletePhotoListener; 
 	
 	private static ArrayList<Bundle> photosToSend = new ArrayList<Bundle>();
@@ -184,6 +188,23 @@ public class EventServiceBuffer extends Object {
 	public static void setAttendeeListener(UpdatedAttendeeListener listener)
 	{
 		mAttendeeListener = listener;
+	}
+	
+	public static void setNotificationListener(UpdatedNotificationListener listener) {
+		
+		if (mNotificationListener == null)
+			mNotificationListener = new Vector<UpdatedNotificationListener>();
+		if (!mNotificationListener.contains(listener))
+		{
+			mNotificationListener.addElement(listener);
+		}
+	}
+	
+	public static void removeNotificationListener(UpdatedNotificationListener listener)
+	{
+		if (mNotificationListener == null)
+			mNotificationListener = new Vector<UpdatedNotificationListener>();
+		mNotificationListener.removeElement(listener);
 	}
 	
 	public static void setEventDetailListener(UpdatedEventDetailListener listener)
@@ -292,6 +313,40 @@ public class EventServiceBuffer extends Object {
 	public static void deleteAttendeeFromEvent(Integer id) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public static void getAllNotifications()
+	{
+		Bundle params = new Bundle();
+		params.putString(AUTH_TOK, GlobalVariables.getInstance().getAuthoToken());
+		params.putString("type", "all");
+		
+		Intent intent = new Intent(mContext, RubyService.class);
+		intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + GlobalVariables.getInstance().getUserId() + "/notifications"));
+		
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.ALL_NOTIFICATION);
+        intent.putExtra(RubyService.EXTRA_PARAMS, params);
+        
+        mContext.startService(intent);
+	}
+	
+	public static void getNewNotificationsFromServer()
+	{
+		Bundle params = new Bundle();
+		params.putString(AUTH_TOK, GlobalVariables.getInstance().getAuthoToken());
+		params.putString("type", "unread");
+		
+		Intent intent = new Intent(mContext, RubyService.class);
+		intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + GlobalVariables.getInstance().getUserId() + "/notifications"));
+		
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.NEW_NOTIFICATION);
+        intent.putExtra(RubyService.EXTRA_PARAMS, params);
+        
+        mContext.startService(intent);
 	}
 	
 	public static void deletePhotoFromEvent(PhotoItem photo)
@@ -544,6 +599,7 @@ public class EventServiceBuffer extends Object {
 		eventDetailBundle.putString("location[name]", eDetail.getLocationInfo().name);
 		eventDetailBundle.putDouble("location[lat]", eDetail.getLocationInfo().lat);
 		eventDetailBundle.putDouble("location[lon]", eDetail.getLocationInfo().lon);
+		eventDetailBundle.putBoolean("event[is_private]", eDetail.getIsPrivate());
 		if (eDetail.getLocationInfo().uid != null)
 		{
 			eventDetailBundle.putString("location[uid]", eDetail.getLocationInfo().uid.toString());
@@ -581,6 +637,7 @@ public class EventServiceBuffer extends Object {
 		eventDetailBundle.putString("location[name]", eDetail.getLocationInfo().name);
 		eventDetailBundle.putDouble("location[lat]", eDetail.getLocationInfo().lat);
 		eventDetailBundle.putDouble("location[lon]", eDetail.getLocationInfo().lon);
+		eventDetailBundle.putBoolean("event[is_private]", eDetail.getIsPrivate());
 		if (eDetail.getLocationInfo().uid != null)
 		{
 			eventDetailBundle.putString("location[uid]", eDetail.getLocationInfo().uid.toString());
@@ -884,6 +941,14 @@ public class EventServiceBuffer extends Object {
         {
         	getDeletedPhotoFromJson(result);
         }
+        else if (code == newNotificationSuccessCode && result != null)
+        {
+        	getNewNotificationFromJson(result);
+        }
+        else if (code == allNotificationSuccessCode && result != null)
+        {
+        	getAllNotificationFromJson(result);
+        }
         else {
         	
             if (mContext instanceof Activity) {
@@ -898,7 +963,47 @@ public class EventServiceBuffer extends Object {
         }
     }
 
-    private void sendBroadcast()
+    private void getAllNotificationFromJson(String result) {
+		
+    	NotificationList.getInstance().setNotificationList(result);
+    	
+		Vector<UpdatedNotificationListener> targets;
+	    synchronized (this) {
+	        targets = (Vector<UpdatedNotificationListener>) mNotificationListener.clone();
+	    }
+		
+		Enumeration e = targets.elements();
+        while (e.hasMoreElements()) 
+        {
+        	UpdatedNotificationListener l = (UpdatedNotificationListener) e.nextElement();
+        	l.receivedAllNotifications();
+        }
+		
+	}
+
+	private void getNewNotificationFromJson(String result) {
+		
+    	JsonParser parser = new JsonParser();
+    	
+    	JsonArray array = parser.parse(result).getAsJsonArray();
+    	
+    	NotificationList.getInstance().setNumUnreadNotifications(array.size());
+    	
+		Vector<UpdatedNotificationListener> targets;
+	    synchronized (this) {
+	        targets = (Vector<UpdatedNotificationListener>) mNotificationListener.clone();
+	    }
+		
+		Enumeration e = targets.elements();
+        while (e.hasMoreElements()) 
+        {
+        	UpdatedNotificationListener l = (UpdatedNotificationListener) e.nextElement();
+        	l.receivedNewNotifications();
+        }
+		
+	}
+
+	private void sendBroadcast()
     {
     	Intent broadcast = new Intent();
         broadcast.setAction(RubyService.CONNECTION_ERROR);
@@ -967,24 +1072,31 @@ public class EventServiceBuffer extends Object {
 		    		{
 		    			UserInfoList.getInstance().put(userInfo.id, userInfo);
 		    		}
+		    		
+		    		if (!UserInfoList.getInstance().friendsList.contains(userInfo.id))
+		    		{
+		    			UserInfoList.getInstance().friendsList.add(userInfo.id);
+		    		}
 		    	}
     		}
     	}
     	
     	UpdatedFriendsEvent evt = new UpdatedFriendsEvent(this, userInfoList);
     	
-		Vector<UpdatedFriendsListener> targets;
-	    synchronized (this) {
-	        targets = (Vector<UpdatedFriendsListener>) mFriendsListener.clone();
-	    }
-		
-		Enumeration e = targets.elements();
-        while (e.hasMoreElements()) 
-        {
-        	UpdatedFriendsListener l = (UpdatedFriendsListener) e.nextElement();
-        	l.friendsEvent(evt);
-        }
-		
+    	if (mFriendsListener != null)
+    	{
+			Vector<UpdatedFriendsListener> targets;
+		    synchronized (this) {
+		        targets = (Vector<UpdatedFriendsListener>) mFriendsListener.clone();
+		    }
+			
+			Enumeration e = targets.elements();
+	        while (e.hasMoreElements()) 
+	        {
+	        	UpdatedFriendsListener l = (UpdatedFriendsListener) e.nextElement();
+	        	l.friendsEvent(evt);
+	        }
+    	}
 	}
 
 	private void getUpdatedEventFromJson(String result) {
@@ -1563,6 +1675,8 @@ public class EventServiceBuffer extends Object {
     	for (JsonElement element : photoJson) 
     	{
     		PhotoItem photo = gson.fromJson(element, PhotoItem.class);
+    		
+    		GlobalVariables.getInstance().getUserPhotos().put(photo.id, photo);
     		
     		photos.add(photo);
     	}

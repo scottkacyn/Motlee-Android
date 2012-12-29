@@ -548,38 +548,42 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
     		EventServiceBuffer.sendPhotoCacheToDatabase();
     		
     		eDetail.getImages().add(mNewPhoto);
+    		
+    		showPhotos(null);
     	}
-        
-        FragmentManager fm = getSupportFragmentManager();
-        Fragment fragment = fm.findFragmentById(R.id.fragment_content);
-        if (fragment != null)
-        {
-			if (fragment instanceof EventDetailFragment)
-			{
-				showPhotos(null);
-			}
-			else if (fragment instanceof MessageDetailFragment)
-			{
-				showComments(null);
-			}
-			else if (fragment instanceof PeopleListFragment)
-			{
-				showFriends(null);
-			}
-			else if (fragment instanceof LocationFragment)
-			{
-				this.showMap(null);
-			}
-			else if (fragment instanceof DateDetailFragment)
-			{
-				this.showTime(null);
-			}
-        }
-        else
-        {
-        	showPhotos(null);
-        }
-        
+    	else
+    	{
+            FragmentManager fm = getSupportFragmentManager();
+            Fragment fragment = fm.findFragmentById(R.id.fragment_content);
+            if (fragment != null)
+            {
+    			if (fragment instanceof EventDetailFragment)
+    			{
+    				showPhotos(null);
+    			}
+    			else if (fragment instanceof MessageDetailFragment)
+    			{
+    				showComments(null);
+    			}
+    			else if (fragment instanceof PeopleListFragment)
+    			{
+    				showFriends(null);
+    			}
+    			else if (fragment instanceof LocationFragment)
+    			{
+    				this.showMap(null);
+    			}
+    			else if (fragment instanceof DateDetailFragment)
+    			{
+    				this.showTime(null);
+    			}
+            }
+            else
+            {
+            	showPhotos(null);
+            }
+    	}
+
 		progressDialog.dismiss();
 	}
 

@@ -50,6 +50,8 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 	private static final String JPEG_FILE_PREFIX = "IMG_";
 	private static final String JPEG_FILE_SUFFIX = ".jpg";
 	private static final String TAKEN_PHOTO = "TakenPhoto";
+	private static final String CURRENT_PATH = "CurrentPath";
+	private static final String EVENT_ID = "EventId";
 	
 	private static final String MOTLEE_PATH = "Pictures/Motlee/";
 	
@@ -183,6 +185,10 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 				}
 				if (picUri == null)
 				{
+					if (mCurrentPhotoPath == null)
+					{
+						Log.e("TakePhotoActivity", mCurrentPhotoPath);
+					}
 					picUri = Uri.fromFile(new File(mCurrentPhotoPath));
 				}
 				else
@@ -430,6 +436,8 @@ public class TakePhotoActivity extends BaseMotleeActivity {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save the user's current game state
         savedInstanceState.putBoolean(TAKEN_PHOTO, mTakenPhoto);
+        savedInstanceState.putString(CURRENT_PATH, mCurrentPhotoPath);
+        savedInstanceState.putInt(EVENT_ID, mEventId);
         
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
@@ -442,5 +450,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
        
         // Restore state members from saved instance
         mTakenPhoto = savedInstanceState.getBoolean(TAKEN_PHOTO);
+        mCurrentPhotoPath = savedInstanceState.getString(CURRENT_PATH);
+        mEventId = savedInstanceState.getInt(EVENT_ID);
     }
 }

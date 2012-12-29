@@ -15,6 +15,7 @@
         android:layout_height="match_parent"
         android:focusableInTouchMode="true"
         android:focusable="true"
-        android:background="@android:color/transparent" />
+        android:background="@android:color/transparent"
+        android:overScrollFooter="@null" />
     
 </RelativeLayout>

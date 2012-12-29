@@ -2,27 +2,27 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="814" key="DIALOG_WIDTH"/>
-		<item value="382" key="DIALOG_Y_ORIGIN"/>
+		<item value="627" key="DIALOG_Y_ORIGIN"/>
+		<item value="334" key="DIALOG_X_ORIGIN"/>
 		<item value="225" key="DIALOG_HEIGHT"/>
-		<item value="571" key="DIALOG_X_ORIGIN"/>
 		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
-		<item value="false" key="isRegEx"/>
 		<item value="false" key="casesensitive"/>
+		<item value="false" key="isRegEx"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="setMode" key="selection"/>
+		<item value="getEvent" key="selection"/>
 		<list key="findhistory">
-			<item value="setMode"/>
-			<item value="friction"/>
-			<item value="frictionless"/>
-			<item value="UnkownHostException"/>
-			<item value="There was a problem sending the request"/>
-			<item value="postPhotoSuccessCode"/>
-			<item value="progressDialog"/>
-			<item value="setPageHeader"/>
+			<item value="getEvent"/>
+			<item value="DISPLAY_WIDTH"/>
+			<item value="onsave"/>
+			<item value="SimpleDateFormat"/>
+			<item value="getFriends"/>
+			<item value="getUser"/>
+			<item value="menu"/>
+			<item value="SlidingMenu"/>
 		</list>
 		<list key="replacehistory">
 			<item value="EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);"/>

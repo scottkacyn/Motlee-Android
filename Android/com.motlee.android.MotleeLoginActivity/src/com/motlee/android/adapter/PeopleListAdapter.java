@@ -118,8 +118,8 @@ public class PeopleListAdapter extends ArrayAdapter<UserInfo> {
         holder.search_people_text.setText(person.name);
         holder.search_people_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
         holder.search_button.setTag(person);
-        holder.search_people_profile_pic.setMaxHeight(background.getHeight());
-        holder.search_people_profile_pic.setMaxWidth(background.getHeight());
+        holder.search_people_profile_pic.setMaxHeight(background.getHeight() - DrawableCache.convertDpToPixel(5));
+        holder.search_people_profile_pic.setMaxWidth(background.getHeight() - DrawableCache.convertDpToPixel(5));
         
         GlobalVariables.getInstance().downloadImage(holder.search_people_profile_pic, GlobalVariables.getInstance().getFacebookPictureUrl(person.uid));
         // bind the data to the view object

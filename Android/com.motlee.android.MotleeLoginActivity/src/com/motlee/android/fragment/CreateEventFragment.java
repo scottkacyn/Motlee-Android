@@ -77,6 +77,8 @@ public class CreateEventFragment extends BaseMotleeFragment {
     
     private TextView locationTextView;
     
+    private boolean isPrivate = false;
+    
     @Override
     public void onResume()
     {
@@ -161,9 +163,30 @@ public class CreateEventFragment extends BaseMotleeFragment {
 	
 	private void setPublicEventToggle() {
 		
-		ImageButton toggle = (ImageButton) view.findViewById(R.id.event_create_public_switcher);
-		toggle.setOnClickListener(toggleListener);
-		toggle.setTag(true);
+		if (mEventDetail ==  null)
+		{
+			ImageButton toggle = (ImageButton) view.findViewById(R.id.event_create_public_switcher);
+			toggle.setOnClickListener(toggleListener);
+			toggle.setTag(true);
+		}
+		else
+		{
+			if (mEventDetail.getIsPrivate())
+			{
+				ImageButton toggle = (ImageButton) view.findViewById(R.id.event_create_public_switcher);
+				toggle.setImageResource(R.drawable.switcher_button_off);
+				TextView text = (TextView) view.findViewById(R.id.event_create_public_event_text);
+				text.setText(R.string.public_event_false);
+				toggle.setTag(false);
+				isPrivate = true;
+			}
+			else
+			{
+				ImageButton toggle = (ImageButton) view.findViewById(R.id.event_create_public_switcher);
+				toggle.setOnClickListener(toggleListener);
+				toggle.setTag(true);
+			}
+		}
 		
 	}
 
@@ -180,6 +203,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 				TextView text = (TextView) view.findViewById(R.id.event_create_public_event_text);
 				text.setText(R.string.public_event_false);
 				v.setTag(false);
+				isPrivate = true;
 			}
 			else
 			{
@@ -187,6 +211,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 				TextView text = (TextView) view.findViewById(R.id.event_create_public_event_text);
 				text.setText(R.string.public_event_true);
 				v.setTag(true);
+				isPrivate = false;
 			}
 			
 		}
@@ -196,6 +221,12 @@ public class CreateEventFragment extends BaseMotleeFragment {
 	public LocationInfo getLocationInfo()
 	{
 		return this.mLocation;
+	}
+	
+	
+	public boolean getIsPrivate()
+	{
+		return this.isPrivate;
 	}
 	
 	public void setEventDetail(EventDetail eDetail)

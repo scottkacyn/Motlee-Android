@@ -1,0 +1,63 @@
+package com.motlee.android.layouts;
+
+import android.content.Context;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
+import android.view.ViewGroup;
+import android.view.View.MeasureSpec;
+import android.widget.LinearLayout;
+
+public class SetWidthRatioLinearLayout extends LinearLayout {
+
+	private Integer layout_height;
+	private Integer bitmapHeight;
+	private Integer bitmapWidth;
+	
+	public SetWidthRatioLinearLayout(Context context) {
+		super(context);
+	}
+
+	public SetWidthRatioLinearLayout(Context context, AttributeSet attrs) {
+		super(context, attrs);
+	}
+	
+	@Override
+	public void setLayoutParams(ViewGroup.LayoutParams params)
+	{
+		if (layout_height != null)
+		{
+			params.height = layout_height;
+		}
+		super.setLayoutParams(params);
+	}
+	
+	@Override
+	public void setBackgroundDrawable(Drawable drawable)
+	{		
+		this.bitmapHeight = ((BitmapDrawable) drawable).getBitmap().getHeight();
+		this.bitmapWidth = ((BitmapDrawable) drawable).getBitmap().getWidth();
+		super.setBackgroundDrawable(drawable);
+	}
+
+	@Override
+	public void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
+	{
+		//Log.w("HorizonalAspectImageButton.onMeasure", "PreScaling: WidthMeasureSpec: " + widthMeasureSpec + ", HeightMeasureSpec: " + heightMeasureSpec);
+		
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		
+		int width = MeasureSpec.getSize(widthMeasureSpec);
+		int height = MeasureSpec.getSize(heightMeasureSpec);
+		
+		float scaleFactor = ((float) width) / this.bitmapWidth;
+
+		Matrix scale = new Matrix();
+		scale.postScale(scaleFactor, scaleFactor);
+		
+		layout_height = (int)(((float) this.bitmapHeight) * scaleFactor);
+		
+		this.setMeasuredDimension(width, layout_height);
+	}
+}

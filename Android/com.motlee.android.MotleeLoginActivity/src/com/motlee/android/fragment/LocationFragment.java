@@ -16,6 +16,8 @@ import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.ClickableBalloonItemizedOverlay;
 import com.motlee.android.object.OverlayItemWithEventID;
+import com.motlee.android.object.UserInfo;
+import com.motlee.android.object.UserInfoList;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -190,11 +192,22 @@ public class LocationFragment extends BaseDetailFragment {
 				point = new GeoPoint((int) (userLocation.getLatitude() * locMultiplier), (int) (userLocation.getLongitude() * locMultiplier));
 			}
 			
-			OverlayItemWithEventID overlay = new OverlayItemWithEventID(point, item.getEventName(), location.name, item.getEventID());
+			int friendsCount = 0;
+			
+			for (UserInfo attendee : item.getAttendees())
+			{
+				if (UserInfoList.getInstance().friendsList.contains(attendee.id))
+				{
+					friendsCount++;
+				}
+			}
+			
+			OverlayItemWithEventID overlay = new OverlayItemWithEventID(point, item.getEventName(), friendsCount + " Friends Here", item.getEventID());
 
 			Drawable drawable = this.getResources().getDrawable(R.drawable.map_pin_for_google);
 			ClickableBalloonItemizedOverlay itemizedoverlay = new ClickableBalloonItemizedOverlay(drawable, mapView, this.getActivity());
 			itemizedoverlay.addOverlay(overlay);
+			itemizedoverlay.setBalloonBottomOffset(DrawableCache.convertDpToPixel(30));
 			overlays.add(itemizedoverlay);
 			
 			mapView.invalidate();

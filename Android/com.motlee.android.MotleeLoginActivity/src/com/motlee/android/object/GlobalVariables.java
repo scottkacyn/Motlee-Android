@@ -53,6 +53,7 @@ import android.os.Environment;
 import android.os.Looper;
 import android.support.v4.util.LruCache;
 import android.view.Display;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -72,6 +73,9 @@ public class GlobalVariables {
     private Typeface helveticaNeueBoldFont;
     
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy h:mm aa");
+    
+    
+    private HashMap<Integer, PhotoItem> userPhotos = new HashMap<Integer, PhotoItem>();
     
     private String authoToken;
     
@@ -114,6 +118,8 @@ public class GlobalVariables {
 	}
 	
 	private GlobalVariables() {
+		
+		
 		
 	}
 	
@@ -178,6 +184,11 @@ public class GlobalVariables {
 	                    Looper.getMainLooper());
 	        }
 	    }
+	}
+	
+	public HashMap<Integer, PhotoItem> getUserPhotos()
+	{
+		return userPhotos;
 	}
 	
 	/*public AlertDialog getWeakConnectionAlertDialog(Context context)
@@ -306,8 +317,16 @@ public class GlobalVariables {
 	public void setDisplay(Display display)
 	{
 		this.display = display;
-		this.DISPLAY_WIDTH = display.getWidth();
-		this.DISPLAY_HEIGHT = display.getHeight();
+		DISPLAY_WIDTH = display.getWidth();
+		DISPLAY_HEIGHT = display.getHeight();
+	}
+	
+	public void refreshDisply(Context ctx)
+	{
+		WindowManager wm = (WindowManager) ctx.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+		this.display = wm.getDefaultDisplay();
+		DISPLAY_WIDTH = display.getWidth();
+		DISPLAY_HEIGHT = display.getHeight();
 	}
 	
 	public String getFacebookPictureUrl(Integer facebookUserID)
@@ -322,7 +341,7 @@ public class GlobalVariables {
 	
 	public int getDisplayWidth()
 	{
-		return this.DISPLAY_WIDTH;
+		return DISPLAY_WIDTH;
 	}
 	
 	public void initializeImageLoader(Context context)

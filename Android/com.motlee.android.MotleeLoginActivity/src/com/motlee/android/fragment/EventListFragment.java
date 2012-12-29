@@ -121,22 +121,29 @@ public class EventListFragment extends ListFragmentWithHeader {
 		
 		setListAdapter(mEventListAdapter);
 		
-		this.setPageHeader(pageTitle);
-		this.setHeaderIcon(pageTitle);
-		
-		onCreateViewHasBeenCalled = true;
-		
-		mHeaderView.findViewById(R.id.header_right_layout_button).setVisibility(View.GONE);
-		
-		//mHeaderView.findViewById(R.id.header_create_event_button).setVisibility(View.VISIBLE);
-		
-		if (this.showBackButton)
+		/*
+		 * Not 100% why this happens, but sometimes mHeaderView can be null.
+		 * When this happens, we can not start the Fragment. Always check, always good
+		 */
+		if (mHeaderView != null)
 		{
-			mHeaderView.findViewById(R.id.header_left_button).setVisibility(View.VISIBLE);
-		}
-		else
-		{
-			mHeaderView.findViewById(R.id.header_left_button).setVisibility(View.GONE);
+			this.setPageHeader(pageTitle);
+			this.setHeaderIcon(pageTitle);
+			
+			onCreateViewHasBeenCalled = true;
+			
+			mHeaderView.findViewById(R.id.header_right_layout_button).setVisibility(View.GONE);
+			
+			//mHeaderView.findViewById(R.id.header_create_event_button).setVisibility(View.VISIBLE);
+			
+			if (this.showBackButton)
+			{
+				mHeaderView.findViewById(R.id.header_left_button).setVisibility(View.VISIBLE);
+			}
+			else
+			{
+				mHeaderView.findViewById(R.id.header_left_button).setVisibility(View.GONE);
+			}
 		}
 		
 		//mHeaderView.findViewById(R.id.header_menu_button).setVisibility(View.VISIBLE);

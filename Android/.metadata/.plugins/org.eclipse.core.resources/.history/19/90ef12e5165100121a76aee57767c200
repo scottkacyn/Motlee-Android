@@ -1,0 +1,64 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+   
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" 
+	        android:layout_gravity="left|center_vertical"
+	        android:weightSum="1">
+	        <ImageView
+	            android:id="@+id/comment_profile_pic"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="top"
+	            android:paddingLeft="10dp"
+	            android:paddingTop="2dp"
+	            android:layout_weight=".13" />
+	        
+	        <LinearLayout
+	            android:layout_width="0dp"
+	            android:layout_weight=".87"
+	            android:layout_height="wrap_content"
+	            android:orientation="vertical">
+	            
+			    <TextView 
+			        android:id="@+id/comment_name_text"
+		    	    android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			        android:gravity="left|center_vertical"
+			        android:paddingLeft="15dp"
+			        style="@style/CodeFont.Small"
+			        android:textColor="@color/gray"
+			        android:background="@android:color/transparent" />
+			    
+			    <TextView
+			        android:id="@+id/comment_body_text"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			        android:paddingLeft="15dp"
+			        style="@style/CodeFont.Small"
+			        android:background="@android:color/transparent" />
+			    
+			    <TextView
+			        android:id="@+id/comment_time_text"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			        android:paddingLeft="15dp"
+			        style="@style/CodeFont.Tiny"
+			        android:textColor="@color/gray"
+			        android:background="@android:color/transparent" />
+			    
+		    </LinearLayout>
+	    </LinearLayout>
+	    <ImageView
+	        android:id="@+id/divider"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:scaleType="fitXY"
+	        android:adjustViewBounds="true"
+	        android:layout_gravity="bottom"
+	        android:src="@drawable/search_keyline_divider" />
+
+</FrameLayout>

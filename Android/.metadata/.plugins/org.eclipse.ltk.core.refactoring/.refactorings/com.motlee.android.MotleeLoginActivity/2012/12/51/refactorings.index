@@ -1,1 +1,5 @@
 1355875666904	Delete element
+1356014901400	Rename field 'isPublic'
+1356017989103	Rename compilation unit 'Notifications.java'
+1356019031094	Delete element
+1356035977572	Extract method 'showMenuButtonBadge'

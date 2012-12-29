@@ -4,6 +4,7 @@ import com.motlee.android.CreateEventActivity;
 import com.motlee.android.EventDetailActivity;
 import com.motlee.android.EventListActivity;
 import com.motlee.android.NearbyEventsActivity;
+import com.motlee.android.NotificationActivity;
 import com.motlee.android.PostStoryActivity;
 import com.motlee.android.R;
 import com.motlee.android.SearchActivity;
@@ -381,6 +382,15 @@ public class MenuFunctions {
 		Intent nearbyIntent = new Intent(activity, NearbyEventsActivity.class);
 		
 		activity.startActivity(nearbyIntent);
+		
+		removeMainMenu(activity);
+	}
+	
+	public static void showNotificationsPage(View view, FragmentActivity activity)
+	{
+		Intent notification = new Intent(activity, NotificationActivity.class);
+		
+		activity.startActivity(notification);
 		
 		removeMainMenu(activity);
 	}

@@ -17,8 +17,10 @@
         android:layout_height="match_parent"
 		android:fastScrollEnabled="true"
 	    android:scrollbars="none"
+	    android:cacheColorHint="@android:color/transparent"
 	    android:layout_below="@id/event_detail_header"
         android:background="@android:color/transparent"
-        android:divider="@null" />
+        android:divider="@null"
+        android:overScrollFooter="@null" />
     
 </RelativeLayout>

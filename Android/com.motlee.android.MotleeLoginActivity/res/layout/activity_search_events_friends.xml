@@ -53,7 +53,8 @@
 		        android:layout_height="fill_parent"
 		        android:layout_width="fill_parent"
 		        android:clipToPadding="false"
-		        android:scrollbars="none" />
+		        android:scrollbars="none"
+		        android:overScrollFooter="@null" />
 		    <TextView android:id="@android:id/empty"
 		        android:layout_width="fill_parent"
 		        android:layout_height="fill_parent"

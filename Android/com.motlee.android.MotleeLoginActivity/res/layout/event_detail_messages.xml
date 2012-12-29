@@ -28,6 +28,7 @@
 	    android:layout_below="@id/event_detail_header"
         android:background="@android:color/transparent"
         android:listSelector="@android:color/transparent"
-        android:divider="@null" />
+        android:divider="@null"
+        android:overScrollFooter="@null" />
     
 </RelativeLayout>

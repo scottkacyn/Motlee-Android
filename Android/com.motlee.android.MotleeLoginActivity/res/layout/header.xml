@@ -97,7 +97,7 @@
             android:layout_toRightOf="@id/header_icon"
             android:gravity="center_vertical"
             style="@style/CodeFont"
-            android:paddingLeft="3dp"
+            android:paddingLeft="5dp"
             />
         
     </com.motlee.android.layouts.RatioBackgroundRelativeLayout>

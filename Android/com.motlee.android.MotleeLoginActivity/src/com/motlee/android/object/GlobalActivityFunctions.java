@@ -29,7 +29,7 @@ public class GlobalActivityFunctions {
         menu.setMode(SlidingMenu.LEFT);
         menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
         menu.setFadeEnabled(false);
-        menu.setBehindScrollScale(1f);
+        menu.setBehindScrollScale(0f);
         menu.setBehindWidth((int) (GlobalVariables.DISPLAY_HEIGHT * 0.24864));
         menu.attachToActivity(activity, SlidingMenu.SLIDING_CONTENT);
         menu.setMenu(R.layout.main_menu);

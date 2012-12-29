@@ -121,8 +121,12 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
             Comment comment = this.mData.get(position);
             
             holder.comment_body.setText(comment.body);
+            holder.comment_body.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+            
             holder.comment_name.setText(UserInfoList.getInstance().get(comment.user_id).name);
+            holder.comment_name.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
             holder.comment_time.setText(DateStringFormatter.getPastDateString(comment.created_at));
+            holder.comment_time.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
             
             imageDownloader.displayImage(GlobalVariables.getInstance().getFacebookPictureUrl(UserInfoList.getInstance().get(comment.user_id).uid), holder.profile_pic, mOptions);
             

@@ -23,6 +23,7 @@ public class EventDetail implements Comparable<EventDetail> {
 	private double lat;
 	private double lon;
 	public Date updated;
+	private Boolean is_private;
 
 	@NoExpose
 	private ArrayList<PhotoItem> photos;
@@ -97,6 +98,7 @@ public class EventDetail implements Comparable<EventDetail> {
 		this.end_time = eDetail.getEndTime();
 		this.attendee_count = eDetail.getAttendeeCount();
 		this.created_at = eDetail.created_at;
+		this.is_private = eDetail.is_private;
 		if (this.location == null || eDetail.getLocationInfo() != null)
 		{
 			this.location = eDetail.getLocationInfo();
@@ -153,6 +155,15 @@ public class EventDetail implements Comparable<EventDetail> {
 		}
 	}
 	
+	public Boolean getIsPrivate()
+	{
+		return this.is_private;
+	}
+	
+	public void setIsPrivate(boolean isPrivate)
+	{
+		this.is_private = isPrivate;
+	}
 	
 	public int getAttendeeCount()
 	{

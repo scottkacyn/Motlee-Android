@@ -84,33 +84,53 @@
 		        android:weightSum="1"
 		        >
 		        
-		        <TextView android:id="@+id/event_footer_owner"
-					android:layout_width="0dp"
-		            android:layout_height="wrap_content"
-		            android:layout_gravity="center_vertical"
-		            style="@style/CodeFont.Small"
-		            android:textColor="@color/gray"
-		            android:layout_weight=".30"
-		            android:paddingLeft="3dp"
-		            android:paddingTop="3dp"
-		            android:paddingBottom="3dp"
-		            android:textSize="15dp"
-		            android:ellipsize="end"
-		            android:singleLine="true"/>
-		        
+			    <RelativeLayout
+			        android:layout_width="0dp"
+			        android:layout_weight=".50"
+			        android:layout_height="match_parent"
+			        android:paddingRight="3dp"
+			        android:paddingLeft="5dp">
+
+			        <TextView android:id="@+id/event_footer_owner"
+						android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"
+			            android:layout_gravity="center_vertical"
+			            android:layout_centerVertical="true"
+			            style="@style/CodeFont.Small"
+			            android:textColor="@color/gray"
+			            android:paddingLeft="3dp"
+			            android:paddingTop="3dp"
+			            android:paddingBottom="3dp"
+			            android:ellipsize="end"
+			            android:singleLine="true"/>
+			        
+   			        <TextView 
+			            android:id="@+id/event_footer_people"
+						android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"
+			            android:layout_gravity="center_vertical"
+			            android:layout_centerVertical="true"
+			            android:layout_toRightOf="@id/event_footer_owner"
+			            style="@style/CodeFont.Small"
+			            android:textColor="@color/gray"
+			            android:paddingTop="3dp"
+			            android:paddingBottom="3dp"
+			            android:textSize="13dp"
+			            android:singleLine="true"/>
+   			        
+		        </RelativeLayout>
 		        
 		        <TextView android:id="@+id/event_footer_location"
 					android:layout_width="0dp"
 		            android:layout_height="wrap_content"
 		            android:layout_gravity="right|center_vertical"
-		            android:gravity="right"
+		            android:gravity="right|center_vertical"
 		            style="@style/CodeFont.Small"
 		            android:textColor="@color/gray"
-		            android:layout_weight=".63"
+		            android:layout_weight=".43"
 		            android:paddingRight="3dp"
          		    android:paddingTop="3dp"
 		            android:paddingBottom="3dp"
-		            android:textSize="15dp"
 		            android:ellipsize="end"
 		            android:singleLine="true"/>
 		        
@@ -118,8 +138,10 @@
 		            android:layout_width="0dp"
 		            android:layout_weight=".07"
 		            android:layout_height="match_parent"
-		            android:src="@drawable/icon_button_map"
+		            android:src="@drawable/icon_map_event_list"
 		            android:padding="3dp"
+		            android:paddingTop="5dp"
+		            android:paddingBottom="5dp"
 		            android:scaleType="fitCenter" />
 		                    
 		    </LinearLayout>

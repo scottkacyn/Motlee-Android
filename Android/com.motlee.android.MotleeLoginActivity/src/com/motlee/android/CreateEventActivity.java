@@ -318,6 +318,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	    	mCreatedEvent.setEndTime(fragment.getEndTime().getTime());
 	    	mCreatedEvent.setOwnerID(GlobalVariables.getInstance().getUserId());
 	    	mCreatedEvent.setLocationInfo(fragment.getLocationInfo());
+	    	mCreatedEvent.setIsPrivate(fragment.getIsPrivate());
 	    	
 	    	EventServiceBuffer.setEventDetailListener(this);
 	    	
@@ -336,6 +337,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	    	mCreatedEvent.setEndTime(fragment.getEndTime().getTime());
 	    	mCreatedEvent.setOwnerID(GlobalVariables.getInstance().getUserId());
 	    	mCreatedEvent.setLocationInfo(fragment.getLocationInfo());
+	    	mCreatedEvent.setIsPrivate(fragment.getIsPrivate());
 	    	
 	    	EventServiceBuffer.setEventDetailListener(this);
 	    	
@@ -381,11 +383,18 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
                                 Toast.LENGTH_SHORT).show();
                     } 
                     
-                    progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Inviting Friends");
-                    
-                    EventServiceBuffer.setAttendeeListener(attendeeListener);
-                    
-                    EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees);
+                    if (mEventAttendees.size() > 0)
+                    {
+	                    progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Inviting Friends");
+	                    
+	                    EventServiceBuffer.setAttendeeListener(attendeeListener);
+	                    
+	                    EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees);
+                    }
+                    else
+                    {
+                    	endCreateEventActivity();
+                    }
                 }
 
             })
@@ -398,15 +407,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 
 		public void raised(UpdatedAttendeeEvent e) {
 			
-			Intent eventListIntent = new Intent(CreateEventActivity.this, EventListActivity.class);
-			eventListIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-			startActivity(eventListIntent);
-			
-			Intent seeDetailIntent = new Intent(CreateEventActivity.this, EventDetailActivity.class);
-			seeDetailIntent.putExtra("EventID", mEventID);
-			startActivity(seeDetailIntent);
-			progressDialog.dismiss();
-			finish();
+			endCreateEventActivity();
 		}
 	};
     
@@ -422,8 +423,14 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 					
 					progressDialog.dismiss();
 					
-					createRequestDialog(GlobalEventList.eventDetailMap.get(mEventID).getEventName());
-					
+					if (mEventAttendees.size() > 0)
+					{
+						createRequestDialog(GlobalEventList.eventDetailMap.get(mEventID).getEventName());
+					}
+					else
+					{
+						endCreateEventActivity();
+					}
 					
 				}
 			}
@@ -445,10 +452,30 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 			
 			progressDialog.dismiss();
 			
-			createRequestDialog(GlobalEventList.eventDetailMap.get(mEventID).getEventName());
+			if (mEventAttendees.size() > 0)
+			{
+				createRequestDialog(GlobalEventList.eventDetailMap.get(mEventID).getEventName());
+			}
+			else
+			{
+				endCreateEventActivity();
+			}
 		}
 	}
     
+	public void endCreateEventActivity()
+	{
+		Intent eventListIntent = new Intent(CreateEventActivity.this, EventListActivity.class);
+		eventListIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		startActivity(eventListIntent);
+		
+		Intent seeDetailIntent = new Intent(CreateEventActivity.this, EventDetailActivity.class);
+		seeDetailIntent.putExtra("EventID", mEventID);
+		startActivity(seeDetailIntent);
+		progressDialog.dismiss();
+		finish();
+	}
+	
 	public void photoEvent(UpdatedPhotoEvent e) {
 		
 		/*for (PhotoItem item : e.getPhotos())

@@ -86,6 +86,8 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 
 	protected MyGestureListener myGestureListener;
 	
+	private View headerView;
+	
 	@Override
 	public void onResume()
 	{
@@ -127,6 +129,16 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 		view.findViewById(R.id.comment_text_bar).setVisibility(View.VISIBLE);
         
 		EventServiceBuffer.setStoryListener(this);
+		
+		if (messageAdapter.getCount() == 0 && listViewLayout.getHeaderViewsCount() == 0)
+		{
+			headerView = inflater.inflate(R.layout.event_detail_no_story, null);
+			
+			TextView text = (TextView) headerView.findViewById(R.id.event_detail_no_photo_text);
+			text.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+			
+			listViewLayout.addHeaderView(headerView);
+		}
 		
 		listViewLayout.setAdapter(messageAdapter);
 		
@@ -272,27 +284,35 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 
 		public void onClick(View v) {
 			
-			String storyText = photoDescriptionEdit.getText().toString();
+			String storyText = photoDescriptionEdit.getText().toString().trim();
 			
-			photoDescriptionEdit.setText("");
-			
-			photoDescriptionEdit.clearFocus();
-			
-			listViewLayout.requestFocus();
-			
-			StoryItem newMessage = new StoryItem(mEventDetail.getEventID(), EventItemType.STORY, GlobalVariables.getInstance().getUserId(), new Date(), storyText);
-			
-			mEventDetail.getStories().add(newMessage);
-			
-			updateMessageAdapter();
-			
-			EventServiceBuffer.setStoryListener(MessageDetailFragment.this);
-			
-			EventServiceBuffer.sendStoryToDatabase(mEventDetail.getEventID(), storyText, newMessage);
-			
-			InputMethodManager imm = (InputMethodManager) view.getContext()
-		            .getSystemService(Context.INPUT_METHOD_SERVICE);
-		    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+			if (!storyText.equals(""))
+			{
+				photoDescriptionEdit.setText("");
+				
+				photoDescriptionEdit.clearFocus();
+				
+				listViewLayout.requestFocus();
+				
+				if (listViewLayout.getHeaderViewsCount() > 0 && headerView != null)
+				{
+					listViewLayout.removeHeaderView(headerView);
+				}
+				
+				StoryItem newMessage = new StoryItem(mEventDetail.getEventID(), EventItemType.STORY, GlobalVariables.getInstance().getUserId(), new Date(), storyText);
+				
+				mEventDetail.getStories().add(newMessage);
+				
+				updateMessageAdapter();
+				
+				EventServiceBuffer.setStoryListener(MessageDetailFragment.this);
+				
+				EventServiceBuffer.sendStoryToDatabase(mEventDetail.getEventID(), storyText, newMessage);
+				
+				InputMethodManager imm = (InputMethodManager) view.getContext()
+			            .getSystemService(Context.INPUT_METHOD_SERVICE);
+			    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+			}
 		}
 		
 	};

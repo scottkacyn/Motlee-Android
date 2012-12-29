@@ -136,6 +136,76 @@ public class DateStringFormatter {
 		return dateString;
 	}
 	
+	public static String getDescriptivePastDateString(Date date)
+	{
+		DateTime dateParam = new DateTime(date);
+		currentTime = new DateTime();
+		
+		String dateString = "";
+		
+		if (dateParam.compareTo(currentTime) >= 0)
+		{
+			return "Just Now";
+		}
+		
+		Interval timeInterval = new Interval(dateParam, currentTime);
+		long timeInMs = timeInterval.toDurationMillis();
+		
+		if (timeInMs > msInYear)
+		{
+			int numOfYears = timeInterval.toPeriod(PeriodType.years()).getYears();
+			dateString = setUpDescriptiveString(numOfYears, "year");
+		}
+		else if (timeInMs > msInMonth)
+		{
+			int numOfMonths = timeInterval.toPeriod(PeriodType.months()).getMonths();
+			dateString = setUpDescriptiveString(numOfMonths, "month");
+		}
+		else if (timeInMs > msInWeek)
+		{
+			int numOfWeeks = timeInterval.toPeriod(PeriodType.weeks()).getWeeks();
+			dateString = setUpDescriptiveString(numOfWeeks, "week");
+		}
+		else if (timeInMs > msInDay)
+		{
+			int numOfDays = timeInterval.toPeriod(PeriodType.days()).getDays();
+			dateString = setUpDescriptiveString(numOfDays, "day");
+		}
+		else if (timeInMs > msInHour)
+		{
+			int numOfHours = timeInterval.toPeriod(PeriodType.hours()).getHours();
+			dateString = setUpDescriptiveString(numOfHours, "hour");
+		}
+		else if (timeInMs > msInMin)
+		{
+			int numOfMins = timeInterval.toPeriod(PeriodType.minutes()).getMinutes();
+			dateString = setUpDescriptiveString(numOfMins, "min");
+		}
+		else
+		{
+			int numOfSecs = timeInterval.toPeriod(PeriodType.seconds()).getSeconds();
+			dateString = setUpDescriptiveString(numOfSecs, "sec");
+		}
+		
+		return dateString;
+	}
+	
+	private static String setUpDescriptiveString(int time, String singularLabel) {
+
+		String dateString = Integer.toString(time) + " " + singularLabel;
+
+		if (time > 1)
+		{
+			dateString = Integer.toString(time) + " " + singularLabel + "s ago";
+		}
+		else
+		{
+			dateString = Integer.toString(time) + " " + singularLabel + " ago";
+		}
+		
+		return dateString;
+	}
+
 	private static String setUpString(int time, String singularLabel)
 	{
 		String dateString = Integer.toString(time) + " " + singularLabel;

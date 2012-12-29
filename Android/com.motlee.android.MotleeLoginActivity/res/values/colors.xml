@@ -7,4 +7,5 @@
         <color name="label_color">#000000</color>
         <color name="orange">#c25541</color>
         <color name="gray">#968f87</color>
+        <color name="dark_gray">#544f49</color>
     </resources>

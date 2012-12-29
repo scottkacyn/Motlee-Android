@@ -16,5 +16,6 @@
 	    android:fastScrollEnabled="true"
 	    android:scrollbars="none" 
 	    android:layout_below="@id/event_detail_header"
-	    android:divider="@null" />
+	    android:divider="@null" 
+	    android:overScrollFooter="@null"/>
 </RelativeLayout>

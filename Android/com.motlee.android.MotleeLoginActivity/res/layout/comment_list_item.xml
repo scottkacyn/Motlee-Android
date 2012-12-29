@@ -7,6 +7,7 @@
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content" 
 	        android:layout_gravity="left|center_vertical"
+	        android:paddingBottom="5dp"
 	        android:weightSum="1">
 	        <ImageView
 	            android:id="@+id/comment_profile_pic"
@@ -21,6 +22,7 @@
 	            android:layout_width="0dp"
 	            android:layout_weight=".87"
 	            android:layout_height="wrap_content"
+	            android:paddingTop="2dp"
 	            android:orientation="vertical">
 	            
 			    <TextView 
@@ -29,7 +31,7 @@
 			        android:layout_height="wrap_content"
 			        android:gravity="left|center_vertical"
 			        android:paddingLeft="15dp"
-			        style="@style/CodeFont"
+			        style="@style/CodeFont.Small"
 			        android:textColor="@color/gray"
 			        android:background="@android:color/transparent" />
 			    
@@ -38,7 +40,8 @@
 			        android:layout_width="match_parent"
 			        android:layout_height="wrap_content"
 			        android:paddingLeft="15dp"
-			        style="@style/CodeFont"
+			        style="@style/CodeFont.Small"
+			        android:paddingBottom="3dp"
 			        android:background="@android:color/transparent" />
 			    
 			    <TextView
@@ -46,8 +49,8 @@
 			        android:layout_width="match_parent"
 			        android:layout_height="wrap_content"
 			        android:paddingLeft="15dp"
-			        style="@style/CodeFont.Tiny"
-			        android:textColor="@color/gray"
+			        style="@style/CodeFont.SuperTiny"
+			        android:textColor="@color/dark_gray"
 			        android:background="@android:color/transparent" />
 			    
 		    </LinearLayout>

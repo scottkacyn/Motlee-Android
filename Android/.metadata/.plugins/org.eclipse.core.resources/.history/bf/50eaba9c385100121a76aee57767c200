@@ -1,0 +1,152 @@
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@android:color/transparent">
+	<RelativeLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content" 
+	    android:id="@+id/event_list_detail_background">
+	
+		    <LinearLayout
+		        android:id="@+id/event_header"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:clickable="true"
+		        android:onClick="onClickGetEventDetail"
+		        android:gravity="top" >
+		        
+    		    <ImageView
+    		        android:id="@+id/event_header_icon"
+		            android:layout_width="0dp"
+		            android:layout_weight=".05"
+		            android:layout_height="match_parent"
+		            android:src="@drawable/icon_button_gear"
+		            android:scaleType="fitCenter"  />
+		        
+		        <TextView android:id="@+id/event_header_name"
+					android:layout_width="0dp"
+					android:layout_weight="0.45"
+		            android:layout_height="match_parent"
+		            android:gravity="left|center_vertical"
+		            style="@style/CodeFont"
+		            android:ellipsize="end"
+		            android:singleLine="true"
+		            android:paddingLeft="3dp" />
+		        
+		        
+		        <TextView android:id="@+id/event_header_time"
+					android:layout_width="0dp"
+					android:layout_weight="0.4"
+		            android:layout_height="match_parent"
+		            android:gravity="right|center_vertical"
+		            style="@style/CodeFont.Small"
+		            android:textColor="@color/orange"
+		            android:paddingRight="3dp" />
+		        
+		        <ImageView android:id="@+id/get_event_detail"
+		            android:layout_width="0dp"
+		            android:layout_weight="0.1"
+		            android:layout_height="match_parent"
+		            android:src="@drawable/navigation_arrow"
+		            android:padding="6dp"
+		            android:scaleType="fitCenter"
+		            android:background="@android:color/transparent"
+		            android:contentDescription="Arrow" />
+		        
+		    </LinearLayout>
+	
+		    
+		    <LinearLayout android:id="@+id/event_middle"
+		        android:baselineAligned="false"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_below="@id/event_header"
+		        android:layout_above="@id/event_footer"
+		        android:weightSum="1.0">
+
+		        <com.motlee.android.view.HorizontalListViewDisallowIntercept
+		          	android:id="@+id/listview"
+		  			android:layout_width="0dp"
+		  			android:layout_weight="1"
+		  			android:layout_height="match_parent"
+		  			android:fastScrollEnabled="true"
+		  			android:background="@android:color/transparent" />
+		            
+		    </LinearLayout>
+		    
+			<LinearLayout android:id="@+id/event_footer"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_alignParentBottom="true"
+		        android:weightSum="1"
+		        >
+		        
+			    <RelativeLayout
+			        android:layout_width="0dp"
+			        android:layout_weight=".50"
+			        android:layout_height="match_parent">
+			        
+   			        <TextView 
+			            android:id="@+id/event_footer_people"
+						android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"
+			            android:layout_gravity="center_vertical"
+			            style="@style/CodeFont.Tiny"
+			            android:textColor="@color/gray"
+			            android:textSize="15dp"
+			            android:singleLine="true"/>
+   			        
+			        <TextView android:id="@+id/event_footer_owner"
+						android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"
+			            android:layout_gravity="center_vertical"
+			            style="@style/CodeFont.Tiny"
+			            android:textColor="@color/gray"
+			            android:layout_toLeftOf="@id/event_footer_people"
+			            android:paddingLeft="3dp"
+			            android:paddingTop="3dp"
+			            android:paddingBottom="3dp"
+			            android:textSize="15dp"
+			            android:ellipsize="end"
+			            android:singleLine="true"/>
+			        
+
+		        </RelativeLayout>
+		        
+		        <TextView android:id="@+id/event_footer_location"
+					android:layout_width="0dp"
+		            android:layout_height="wrap_content"
+		            android:layout_gravity="right|center_vertical"
+		            android:gravity="right"
+		            style="@style/CodeFont.Tiny"
+		            android:textColor="@color/gray"
+		            android:layout_weight=".43"
+		            android:paddingRight="3dp"
+         		    android:paddingTop="3dp"
+		            android:paddingBottom="3dp"
+		            android:textSize="15dp"
+		            android:ellipsize="end"
+		            android:singleLine="true"/>
+		        
+		        <ImageView
+		            android:layout_width="0dp"
+		            android:layout_weight=".07"
+		            android:layout_height="match_parent"
+		            android:src="@drawable/icon_button_map"
+		            android:padding="3dp"
+		            android:scaleType="fitCenter" />
+		                    
+		    </LinearLayout>
+	</RelativeLayout>
+	<View
+        android:layout_width="fill_parent"
+        android:layout_height="10dp"
+	    android:background="@android:color/transparent" >
+    </View>
+    <include layout="@layout/blank_space"
+        android:id="@+id/blank_space"
+        android:visibility="gone" />
+</LinearLayout>

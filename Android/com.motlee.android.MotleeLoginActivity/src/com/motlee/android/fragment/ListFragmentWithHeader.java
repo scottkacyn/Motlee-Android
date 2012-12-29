@@ -4,6 +4,7 @@ import com.motlee.android.R;
 import com.motlee.android.object.GlobalVariables;
 
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -15,7 +16,7 @@ public class ListFragmentWithHeader extends ListFragment {
 	public static final String ALL_EVENTS = "All Events";
 	public static final String NEARBY_EVENTS = "Nearby Events";
 	
-	protected View mHeaderView;
+	public View mHeaderView;
 	
 	protected void setHeaderIcon(String headerIcon)
 	{
@@ -43,10 +44,22 @@ public class ListFragmentWithHeader extends ListFragment {
 	public void setHeaderView(View headerView)
 	{
 		mHeaderView = headerView;
+		if (mHeaderView == null)
+		{
+			Log.d("ListFragmentWithHeader", "headerView == null");
+		}
+		else
+		{
+			Log.d("ListFragmentWithHeader", "headerView != null");
+		}
 	}
 	
 	public void setPageHeader(String headerText)
 	{
+		if (mHeaderView == null)
+		{
+			Log.d("ListFragmentWithHeader", "HeaderView == null");
+		}
 		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
 		tv.setText(headerText);
 		tv.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
