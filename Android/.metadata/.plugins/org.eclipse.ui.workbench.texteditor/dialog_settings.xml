@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item value="814" key="DIALOG_WIDTH"/>
-		<item value="627" key="DIALOG_Y_ORIGIN"/>
-		<item value="334" key="DIALOG_X_ORIGIN"/>
-		<item value="225" key="DIALOG_HEIGHT"/>
+		<item value="1590" key="DIALOG_WIDTH"/>
+		<item value="433" key="DIALOG_Y_ORIGIN"/>
+		<item value="82" key="DIALOG_X_ORIGIN"/>
+		<item value="226" key="DIALOG_HEIGHT"/>
 		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
@@ -13,16 +13,16 @@
 		<item value="false" key="isRegEx"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="getEvent" key="selection"/>
+		<item value="InviteFriendsHeader" key="selection"/>
 		<list key="findhistory">
-			<item value="getEvent"/>
-			<item value="DISPLAY_WIDTH"/>
-			<item value="onsave"/>
-			<item value="SimpleDateFormat"/>
-			<item value="getFriends"/>
+			<item value="inviteFriendsHeader"/>
+			<item value="getEventDetail"/>
+			<item value="joinEvent"/>
+			<item value="showRightHeaderButton"/>
 			<item value="getUser"/>
-			<item value="menu"/>
-			<item value="SlidingMenu"/>
+			<item value="getEventsFrom"/>
+			<item value="getUserDao"/>
+			<item value="helper.getUserDao()"/>
 		</list>
 		<list key="replacehistory">
 			<item value="EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);"/>

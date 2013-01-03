@@ -7,68 +7,64 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 
+import com.j256.ormlite.dao.ForeignCollection;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
+import com.j256.ormlite.table.DatabaseTable;
 import com.motlee.android.object.event.UserInfoEvent;
 import com.motlee.android.object.event.UserInfoListener;
 
+@DatabaseTable(tableName = "events")
 public class EventDetail implements Comparable<EventDetail> {
 	
+	@DatabaseField(columnName = "name", dataType = DataType.STRING)
 	private String name;
+	
+	@DatabaseField(columnName = "description", dataType = DataType.STRING)
 	private String description;
+	
+	@DatabaseField(columnName = "start_time", dataType = DataType.DATE)
 	private Date start_time;
+	
+	@DatabaseField(columnName = "end_time", dataType = DataType.DATE)
 	private Date end_time;
+	
+	@DatabaseField(columnName = "user_id", dataType = DataType.INTEGER)
 	private int user_id;
+	
+	@DatabaseField(columnName = "location_id", dataType = DataType.INTEGER_OBJ)
 	private Integer location_id;
+	
+	@DatabaseField(columnName = "attendee_count", dataType = DataType.INTEGER)
 	private int attendee_count;
+	
+	@DatabaseField(columnName = "created_at", dataType = DataType.DATE)
 	private Date created_at;
+	
+	@DatabaseField(columnName = "lat", dataType = DataType.DOUBLE)
 	private double lat;
+	
+	@DatabaseField(columnName = "lon", dataType = DataType.DOUBLE)
 	private double lon;
+	
+	@DatabaseField(columnName = "updated", dataType = DataType.DATE)
 	public Date updated;
-	private Boolean is_private;
+	
+	@DatabaseField(columnName = "is_private", dataType = DataType.BOOLEAN_OBJ)
+	private Boolean is_private;	
 
-	@NoExpose
-	private ArrayList<PhotoItem> photos;
-
-	//TODO: Change to Collection<Integer>
-	@NoExpose
-	private Collection<UserInfo> people_attending;
-	
-	@NoExpose
-	private ArrayList<StoryItem> stories;
-	
-	// @NoExpose is a way to stop the json parser from including them
-	// when we convert EventDetail to a json.
-	@NoExpose
-	private UserInfoList userInfoList;
-	@NoExpose
-	private ArrayList<UserInfoListener> eventList;
-	
-	private LocationInfo location;
-	@NoExpose
+	@DatabaseField(columnName = "id", dataType = DataType.INTEGER, id = true, index = true)
 	private int id;
-	
-	public void addListener(UserInfoListener l) 
-	{
-		eventList.add(l);
-	}
-
-	public void removeListener(UserInfoListener l) 
-	{
-		eventList.remove(l);
-	}
 	
 	public EventDetail()
 	{
 		this.user_id = -1;
-		this.people_attending = new ArrayList<UserInfo>();
-		this.stories = new ArrayList<StoryItem>();
 		this.name = "";
 		this.start_time = new Date();
 		this.end_time = new Date();
-		this.location = null;
-		this.photos = new ArrayList<PhotoItem>();
 		this.setDescription("");
 		this.location_id = -1;
-		this.userInfoList = UserInfoList.getInstance();
 	}
 	
 	public Integer getEventID()
@@ -84,10 +80,6 @@ public class EventDetail implements Comparable<EventDetail> {
 		this.end_time = eDetail.getEndTime();
 		this.attendee_count = eDetail.getAttendeeCount();
 		this.created_at = eDetail.created_at;
-		if (this.location == null || eDetail.getLocationInfo() != null)
-		{
-			this.location = eDetail.getLocationInfo();
-		}
 	}
 	
 	public void UpdateWholeEventDetail(EventDetail eDetail)
@@ -99,14 +91,6 @@ public class EventDetail implements Comparable<EventDetail> {
 		this.attendee_count = eDetail.getAttendeeCount();
 		this.created_at = eDetail.created_at;
 		this.is_private = eDetail.is_private;
-		if (this.location == null || eDetail.getLocationInfo() != null)
-		{
-			this.location = eDetail.getLocationInfo();
-		}
-		
-		this.people_attending = eDetail.people_attending;
-		this.photos = eDetail.photos;
-		this.stories = eDetail.stories;
 	}
 	
 	/*public void checkUserInfoList()
@@ -139,22 +123,6 @@ public class EventDetail implements Comparable<EventDetail> {
 		}
 	}*/
 	
-	
-	/*
-	 * method to get solely the string for the owner name in the event list
-	 */
-	public String getEventOwnerSummaryString()
-	{
-		if (!userInfoList.containsKey(user_id))
-		{
-			return Integer.toString(user_id) + " + " + (attendee_count - 1) + " Others";
-		}
-		else
-		{
-			return userInfoList.get(user_id).name + " + " + (attendee_count - 1) + " Others";
-		}
-	}
-	
 	public Boolean getIsPrivate()
 	{
 		return this.is_private;
@@ -168,6 +136,11 @@ public class EventDetail implements Comparable<EventDetail> {
 	public int getAttendeeCount()
 	{
 		return this.attendee_count;
+	}
+	
+	public void setAttendeeCount(Integer attendee_count)
+	{
+		this.attendee_count = attendee_count;
 	}
 	
 	public int getOwnerID()
@@ -185,16 +158,6 @@ public class EventDetail implements Comparable<EventDetail> {
 		return this.location_id;
 	}
 	
-	public LocationInfo getLocationInfo()
-	{
-		return this.location;
-	}
-	
-	public void setLocationInfo(LocationInfo location)
-	{
-		this.location = location;
-	}
-	
 	public double getLatitude()
 	{
 		return this.lat;
@@ -203,34 +166,6 @@ public class EventDetail implements Comparable<EventDetail> {
 	public double getLongitude()
 	{
 		return this.lon;
-	}
-	
-	public void clearAttendees()
-	{
-		this.people_attending.clear();
-		attendee_count = 0;
-	}
-	
-	public void addAttendee(UserInfo attendee)
-	{
-		this.people_attending.add(attendee);
-		attendee_count++;
-	}
-	
-	public void addAttendee(Collection<UserInfo> attendees)
-	{
-		this.people_attending.addAll(attendees);
-		attendee_count = attendee_count + attendees.size();
-	}
-	
-	public Collection<UserInfo> getAttendees()
-	{
-		return Collections.unmodifiableCollection(this.people_attending);
-	}
-	
-	public UserInfo getEventOwner()
-	{
-		return this.userInfoList.get(this.user_id);
 	}
 	
 	public void setEventName(String eventName)
@@ -307,14 +242,6 @@ public class EventDetail implements Comparable<EventDetail> {
 		{
 			return new Date();
 		}
-	}
-
-	public ArrayList<StoryItem> getStories() {
-		return stories;
-	}
-
-	public ArrayList<PhotoItem> getImages() {
-		return photos;
 	}
 
 	public CharSequence getStartDateString() {

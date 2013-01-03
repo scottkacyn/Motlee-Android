@@ -3,6 +3,7 @@ package com.motlee.android;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.facebook.Request;
@@ -13,6 +14,7 @@ import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
 import com.facebook.android.AsyncFacebookRunner.RequestListener;
+import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.fragment.CreateEventFragment;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
@@ -24,7 +26,6 @@ import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.UserInfo;
-import com.motlee.android.object.UserInfoList;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 import com.motlee.android.object.event.UpdatedFriendsEvent;
@@ -47,12 +48,13 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 
 public class UserProfilePageActivity extends BaseMotleeActivity implements UserInfoListener, OnFragmentAttachedListener, UpdatedFriendsListener {
     
 	private int mUserID;
-	private int facebookID;
+	private Long facebookID;
 	private ArrayList<UserInfo> friends = new ArrayList<UserInfo>();
 	
 	private ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>();
@@ -65,7 +67,7 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements UserI
         
         mUserID = intent.getIntExtra("UserID", -1);
         
-        facebookID = intent.getIntExtra("UID", -1);
+        facebookID = intent.getLongExtra("UID", -1);
         
         setContentView(R.layout.main);
         
@@ -75,7 +77,16 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements UserI
         ft.add(new EmptyFragmentWithCallbackOnResume(), "EmptyFragment")
         .commit();
         
-        progressDialog = ProgressDialog.show(UserProfilePageActivity.this, "", "Loading " + UserInfoList.getInstance().get(mUserID).name + "'s Profile");
+        DatabaseHelper helper = new DatabaseHelper(this.getApplicationContext());
+        
+        UserInfo user = null;
+		try {
+			user = helper.getUserDao().queryForId(mUserID);
+		} catch (SQLException e) {
+			Log.e("DatabaseHelper", "Failed to queryForId for user", e);
+		}
+        
+        progressDialog = ProgressDialog.show(UserProfilePageActivity.this, "", "Loading " + user.name + "'s Profile");
     }
 	
 	private void setUpProfilePageFragment(UserProfilePageFragment userProfileFragment, ArrayList<PhotoItem> photos, ArrayList<Integer> eventIds, ArrayList<UserInfo> friends) 

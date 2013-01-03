@@ -15,7 +15,6 @@ import com.motlee.android.fragment.LocationFragment;
 import com.motlee.android.fragment.NotificationSettingsFragment;
 import com.motlee.android.fragment.PeopleListFragment;
 import com.motlee.android.object.EventDetail;
-import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 
 public class SettingsDetailActivity extends BaseMotleeActivity {

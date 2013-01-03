@@ -3,6 +3,7 @@ package com.motlee.android.fragment;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,17 +21,17 @@ import com.motlee.android.R;
 import com.motlee.android.adapter.EventDetailGridAdapter;
 import com.motlee.android.adapter.PeopleListAdapter;
 import com.motlee.android.adapter.UserProfileAdapter;
+import com.motlee.android.database.DatabaseHelper;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.layouts.StretchedBackgroundLinearLayout;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
-import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.GridPictures;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.UserInfo;
-import com.motlee.android.object.UserInfoList;
 import com.motlee.android.object.event.UserInfoEvent;
 import com.motlee.android.object.event.UserInfoListener;
 import com.motlee.android.object.event.UserWithEventsPhotosEvent;
@@ -46,6 +47,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -75,7 +77,7 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 	private LinearLayout profilePictures;
 	private LinearLayout profileFriends;
     
-	private int facebookID;
+	private Long facebookID;
 	
     private String pictureURL;
 	
@@ -94,6 +96,8 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
     private ArrayList<UserInfo> friends;
     
     private View headerView;
+    
+    private DatabaseWrapper dbWrapper;
 	
     private int maxHeightPic;
     
@@ -109,6 +113,8 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 		
 		userInfoList = (ListView) view.findViewById(R.id.user_profile_list_view);
 
+		dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
+		
 		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.user_profile_header_background, GlobalVariables.DISPLAY_WIDTH);
 		
 		maxHeightPic = drawable.getHeight();
@@ -128,7 +134,9 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 		profileEvents.setOnClickListener(showEvents);
 		profileFriends.setOnClickListener(showFriendsList);
 		
-		setPageHeader(UserInfoList.getInstance().get(mUserID).name);
+		user = dbWrapper.getUser(mUserID);
+		
+		setPageHeader(user.name);
 		showLeftHeaderButton();
 
 		this.setPageLayout();
@@ -148,10 +156,10 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 		this.birthDate = object.getProperty("birthday").toString();
 	}*/
 	
-	public void setUserId(int userID, int facebookID)
+	public void setUserId(int userID, Long facebookID)
 	{
 		this.mUserID = userID;
-		this.user = UserInfoList.getInstance().get(mUserID);
+
 		this.facebookID = facebookID;
 		if (view != null)
 		{

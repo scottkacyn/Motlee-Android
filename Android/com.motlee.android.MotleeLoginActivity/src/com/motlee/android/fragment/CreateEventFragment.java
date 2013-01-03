@@ -1,5 +1,6 @@
 package com.motlee.android.fragment;
 
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -7,14 +8,17 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import com.motlee.android.R;
+import com.motlee.android.database.DatabaseHelper;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.Attendee;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
+import com.motlee.android.object.SharedPreferencesWrapper;
 import com.motlee.android.object.UserInfo;
-import com.motlee.android.object.UserInfoList;
 import com.motlee.android.view.DateTimePicker;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -71,11 +75,14 @@ public class CreateEventFragment extends BaseMotleeFragment {
     private ImageLoader imageDownloader;
     private DisplayImageOptions mOptions;
 	
-    private ArrayList<Integer> mAttendees;
+    private ArrayList<Long> mAttendees;
     
     private LocationInfo mLocation;
     
     private TextView locationTextView;
+    
+    private DatabaseHelper mHelper;
+    private DatabaseWrapper dbWrapper;
     
     private boolean isPrivate = false;
     
@@ -93,7 +100,10 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		this.inflater = inflater;
 		view = (View) this.inflater.inflate(R.layout.activity_event_create, null);
 		
-		mAttendees = new ArrayList<Integer>();
+		mAttendees = new ArrayList<Long>();
+		
+		mHelper = new DatabaseHelper(this.getActivity().getApplicationContext());
+		dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
 		
 		eventInfoLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_create_info);
 		eventInfoLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
@@ -149,9 +159,12 @@ public class CreateEventFragment extends BaseMotleeFragment {
 
 		if (mEventDetail != null)
 		{
-			for (UserInfo user : mEventDetail.getAttendees())
+			for (Attendee attendee : dbWrapper.getAttendees(mEventDetail.getEventID()))
 			{
-				if (user.uid != UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId()).uid)
+				UserInfo phoneUser = dbWrapper.getUser(SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+				UserInfo user = dbWrapper.getUser(attendee.user_id);
+				
+				if (user.uid != phoneUser.uid)
 				{
 					addPersonToEvent(user.uid, user.name);
 				}
@@ -263,7 +276,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		}
 		else
 		{
-			locationTextView.setText(mEventDetail.getLocationInfo().name);
+			locationTextView.setText(dbWrapper.getLocation(mEventDetail.getLocationID()).name);
 		}
 		
 		labelButton.findViewById(R.id.divider).setVisibility(View.GONE);
@@ -488,7 +501,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		eventInfoLayout.addView(tr);
 	}
 
-	public ArrayList<Integer> getAttendeeList()
+	public ArrayList<Long> getAttendeeList()
 	{
 		return mAttendees;
 	}
@@ -520,7 +533,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		mAttendees.clear();
 	}
 	
-	public void addPersonToEvent(Integer facebookID, String attendeeName) {
+	public void addPersonToEvent(Long facebookID, String attendeeName) {
 		
 		View attendee = inflater.inflate(R.layout.edit_attendees, null);
 		
@@ -532,7 +545,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		attendeeText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		attendeeText.setText(attendeeName);
 		
-		attendee.findViewById(R.id.edit_attendee_remove).setContentDescription(Integer.toString(facebookID));
+		attendee.findViewById(R.id.edit_attendee_remove).setContentDescription(Long.toString(facebookID));
 		
 		ImageView profilePic = (ImageView) attendee.findViewById(R.id.edit_attendee_profile_pic);
 		imageDownloader.displayImage("https://graph.facebook.com/" + facebookID + "/picture", profilePic, mOptions);

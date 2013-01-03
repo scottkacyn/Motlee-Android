@@ -43,6 +43,8 @@ import com.facebook.Request.Callback;
 import com.facebook.Request.GraphUserListCallback;
 import com.facebook.Response;
 import com.facebook.Session;
+import com.facebook.Session.StatusCallback;
+import com.facebook.SessionState;
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.AsyncFacebookRunner.RequestListener;
 import com.facebook.android.FacebookError;
@@ -56,6 +58,7 @@ import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.FacebookPerson;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.GraphUserComparator;
+import com.motlee.android.object.SharedPreferencesWrapper;
 
 public class SearchPeopleFragment extends ListFragmentWithHeader {
 	private String tag = "SearchFragment";
@@ -70,7 +73,7 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
 	//private ArrayList<Integer> mUserIDs = new ArrayList<Integer>();
 	
 	private ArrayList<JSONObject> peopleToAdd;
-	private ArrayList<Integer> initialPeople;
+	private ArrayList<Long> initialPeople;
 	
 	private SearchPeopleAdapter mAdapter;
 	
@@ -99,9 +102,12 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
 		
 		
 		facebookSession = Session.getActiveSession();
-		request = new Request(facebookSession, "/fql", params, HttpMethod.GET, graphUserListCallback);              
+		if (facebookSession.isOpened())
+		{
+			request = new Request(facebookSession, "/fql", params, HttpMethod.GET, graphUserListCallback);              
 
-		Request.executeBatchAsync(request);
+			Request.executeBatchAsync(request);
+		}
 		
 		this.inflater = inflater;
 		view = (View) this.inflater.inflate(R.layout.activity_search, null);
@@ -238,7 +244,7 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
     }
     
     
-    public void setInitialFriendList(ArrayList<Integer> attendees)
+    public void setInitialFriendList(ArrayList<Long> attendees)
     {
     	this.initialPeople = attendees;
     }
@@ -256,7 +262,7 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
 				for (int i = 0; i < users.length(); i++)
 				{
 					JSONObject user = users.getJSONObject(i);
-					if (initialPeople.contains(user.getInt("uid")))
+					if (initialPeople.contains(user.getLong("uid")))
 					{
 						peopleToAdd.add(user);
 					}

@@ -1,15 +1,18 @@
 package com.motlee.android.adapter;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.motlee.android.R;
+import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.object.Comment;
 import com.motlee.android.object.DateStringFormatter;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.SharedPreferencesWrapper;
 import com.motlee.android.object.StoryItem;
-import com.motlee.android.object.UserInfoList;
+import com.motlee.android.object.UserInfo;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -38,12 +41,16 @@ public class MessageAdapter extends ArrayAdapter<StoryItem> {
     private ImageLoader imageDownloader;
     private DisplayImageOptions mOptions;
 	
+    private DatabaseHelper helper;
+    
 	public MessageAdapter(Context context, int resource, ArrayList<StoryItem> arrayList) {
 		super(context, resource, arrayList);
 		
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.resource = resource;
         this.mData = new ArrayList<StoryItem>(arrayList);
+        
+        helper = new DatabaseHelper(context.getApplicationContext());
         
 		ImageScaleType ist = ImageScaleType.IN_SAMPLE_POWER_OF_2;
 		
@@ -125,7 +132,14 @@ public class MessageAdapter extends ArrayAdapter<StoryItem> {
             
             StoryItem story = this.mData.get(position);
             
-            if (story.user_id == GlobalVariables.getInstance().getUserId())
+            UserInfo user = null;
+			try {
+				user = helper.getUserDao().queryForId(story.user_id);
+			} catch (SQLException e) {
+				Log.e("DatabaseHelper", "Failed to queryForId for user", e);
+			}
+            
+            if (story.user_id == SharedPreferencesWrapper.getIntPref(getContext().getApplicationContext(), SharedPreferencesWrapper.USER_ID))
             {
             	holder.message_friend.setVisibility(View.GONE);
             	holder.message_owner.setVisibility(View.VISIBLE);
@@ -143,12 +157,12 @@ public class MessageAdapter extends ArrayAdapter<StoryItem> {
             		holder.owner_comment_time.setText(DateStringFormatter.getPastDateString(story.created_at));
             	}
             	
-                holder.owner_profile_pic.setTag(UserInfoList.getInstance().get(story.user_id));
+                holder.owner_profile_pic.setTag(user);
                 
                 holder.owner_profile_pic.setMaxHeight((int) (GlobalVariables.DISPLAY_WIDTH * .17));
                 holder.owner_profile_pic.setMaxWidth((int) (GlobalVariables.DISPLAY_WIDTH * .17));
                 
-                imageDownloader.displayImage(GlobalVariables.getInstance().getFacebookPictureUrlLarge(UserInfoList.getInstance().get(story.user_id).uid), holder.owner_profile_pic, mOptions);
+                imageDownloader.displayImage(GlobalVariables.getInstance().getFacebookPictureUrlLarge(user.uid), holder.owner_profile_pic, mOptions);
             }
             else
             {
@@ -158,15 +172,15 @@ public class MessageAdapter extends ArrayAdapter<StoryItem> {
             	//holder.message_friend.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.chat_bubble_red, GlobalVariables.DISPLAY_WIDTH).getDrawable());
             	
             	holder.friend_comment_body.setText(story.body);
-                holder.friend_comment_name_time.setText(UserInfoList.getInstance().get(story.user_id).name + ", " + DateStringFormatter.getPastDateString(story.created_at));
+                holder.friend_comment_name_time.setText(user.name + ", " + DateStringFormatter.getPastDateString(story.created_at));
                 
-                holder.friend_profile_pic.setTag(UserInfoList.getInstance().get(story.user_id));
-                holder.friend_comment_name_time.setTag(UserInfoList.getInstance().get(story.user_id));
+                holder.friend_profile_pic.setTag(user);
+                holder.friend_comment_name_time.setTag(user);
                 
                 holder.friend_profile_pic.setMaxHeight((int) (GlobalVariables.DISPLAY_WIDTH * .17));
                 holder.friend_profile_pic.setMaxWidth((int) (GlobalVariables.DISPLAY_WIDTH * .17));
                 
-                imageDownloader.displayImage(GlobalVariables.getInstance().getFacebookPictureUrlLarge(UserInfoList.getInstance().get(story.user_id).uid), holder.friend_profile_pic, mOptions);
+                imageDownloader.displayImage(GlobalVariables.getInstance().getFacebookPictureUrlLarge(user.uid), holder.friend_profile_pic, mOptions);
             }
         
             return convertView;

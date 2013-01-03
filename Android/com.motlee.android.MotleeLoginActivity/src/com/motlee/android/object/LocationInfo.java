@@ -1,13 +1,30 @@
 package com.motlee.android.object;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
+@DatabaseTable(tableName = "locations")
 public class LocationInfo implements Parcelable {
+	
+	@DatabaseField(columnName = "name", dataType = DataType.STRING)
 	public final String name;
+	
+	@DatabaseField(columnName = "lon", dataType = DataType.DOUBLE)
 	public final double lon;
+	
+	@DatabaseField(columnName = "lat", dataType = DataType.DOUBLE)
 	public final double lat;
+	
+	@DatabaseField(columnName = "uid", dataType = DataType.LONG_OBJ)
 	public final Long uid;
+	
+	@DatabaseField(columnName = "id", dataType = DataType.INTEGER_OBJ, id = true)
+	public Integer id;
+	
 	public static final String NO_LOCATION = "No Location";
 	
 	public LocationInfo(String locationDescription, double latitude, double longitude, Long uid)

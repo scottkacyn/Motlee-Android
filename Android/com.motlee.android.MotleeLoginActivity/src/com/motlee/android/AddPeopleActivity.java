@@ -1,5 +1,6 @@
 package com.motlee.android;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.json.JSONException;
@@ -18,14 +19,16 @@ import com.facebook.FacebookException;
 import com.facebook.Session;
 import com.facebook.widget.WebDialog;
 import com.facebook.widget.WebDialog.OnCompleteListener;
+import com.motlee.android.database.DatabaseHelper;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.CreateEventFragment;
 import com.motlee.android.fragment.SearchAllFragment;
 import com.motlee.android.fragment.SearchPeopleFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
-import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.UserInfoList;
+import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
 
@@ -35,7 +38,9 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
 	
 	private Integer eventId;
 	
-	private ArrayList<Integer> initialAttendees = new ArrayList<Integer>();
+	private ArrayList<Long> initialAttendees = new ArrayList<Long>();
+	
+	private DatabaseWrapper dbWrapper;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,7 +49,15 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
  
         //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
         
-        initialAttendees = getIntent().getIntegerArrayListExtra("Attendees");
+        dbWrapper = new DatabaseWrapper(this.getApplicationContext());
+        
+        initialAttendees = new ArrayList<Long>();
+        
+        for (String attendee : getIntent().getStringArrayListExtra("Attendees"))
+        {
+        	initialAttendees.add(Long.valueOf(attendee));
+        }
+        
         eventId = getIntent().getIntExtra("EventId", 0);
         
         FragmentManager     fm = getSupportFragmentManager();
@@ -64,13 +77,13 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
 
 		//ArrayList<JSONObject> peopleToAdd = searchPeopleFragment.getPeopleToAdd();
     	
-        final ArrayList<Integer> peopleToAdd = new ArrayList<Integer>();
+        final ArrayList<Long> peopleToAdd = new ArrayList<Long>();
 		
         try
         {
             for (JSONObject person : searchPeopleFragment.getPeopleToAdd())
             {
-            	int uid = person.getInt("uid");
+            	Long uid = person.getLong("uid");
             	if (!initialAttendees.contains(uid))
             	{
             		peopleToAdd.add(uid);
@@ -82,7 +95,7 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
         	Log.e(this.toString(), e.getMessage());
         }
         
-        EventDetail eDetail = GlobalEventList.eventDetailMap.get(eventId);
+        EventDetail eDetail = dbWrapper.getEvent(eventId);
         
         String eventName = "an event";
         
@@ -93,7 +106,7 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
         
         String toParam = "";
         
-        for (int person : peopleToAdd)
+        for (Long person : peopleToAdd)
         {
         	toParam = toParam + person + ",";
         }
@@ -103,8 +116,10 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
         	toParam.substring(0, toParam.length() - 1);
         }
         
+        UserInfo user = dbWrapper.getUser(SharedPreferencesWrapper.getIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+        
         Bundle params = new Bundle();
-        params.putString("message", UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId()).name 
+        params.putString("message", user.name 
         		+ " invited you to " + eventName);
         params.putString("to", toParam);
         params.putString("frictionless", "1");

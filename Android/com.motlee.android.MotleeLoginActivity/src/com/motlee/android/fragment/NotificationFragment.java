@@ -22,7 +22,7 @@ public class NotificationFragment extends BaseMotleeFragment {
 		this.inflater = inflater;
 		view = (View) this.inflater.inflate(R.layout.activity_notification, null);
 		
-		adapter = new NotificationAdapter(getActivity(), R.layout.notification_item, NotificationList.getInstance().getNotificationList());
+		adapter = new NotificationAdapter(getActivity(), R.layout.notification_item, NotificationList.getInstance().getNotificationList(), NotificationList.getInstance().getNumUnreadNotifications());
 		
 		ListView list = (ListView) view.findViewById(R.id.notifications_list);
 		

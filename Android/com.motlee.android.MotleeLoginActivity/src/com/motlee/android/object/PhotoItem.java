@@ -5,15 +5,29 @@ import java.util.Date;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 import com.motlee.android.enums.EventItemType;
 
+@DatabaseTable(tableName = "photos")
 public class PhotoItem extends EventItem {
 
+	@DatabaseField(columnName = "caption", dataType = DataType.STRING)
 	public String caption;
+	
+	@DatabaseField(columnName = "image_file_name", dataType = DataType.STRING)
 	public String image_file_name;
+	
+	@DatabaseField(columnName = "lat", dataType = DataType.DOUBLE)
 	public double lat;
+	
+	@DatabaseField(columnName = "lon", dataType = DataType.DOUBLE)
 	public double lon;
 	public LocationInfo location = new LocationInfo();
+	
+	@DatabaseField(foreign = true, canBeNull = false, columnName = "event_detail")
+	public EventDetail event_detail;
 	
 	public PhotoItem()
 	{

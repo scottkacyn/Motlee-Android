@@ -3,6 +3,7 @@ package com.motlee.android.fragment;
 import greendroid.widget.PagedView;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 
@@ -34,6 +35,7 @@ import android.widget.TextView;
 import com.motlee.android.R;
 import com.motlee.android.adapter.CommentAdapter;
 import com.motlee.android.adapter.PhotoDetailPagedViewAdapter;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.EventItemType;
 import com.motlee.android.layouts.RatioBackgroundRelativeLayout;
 import com.motlee.android.layouts.StretchedBackgroundLinearLayout;
@@ -45,13 +47,12 @@ import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventItem;
-import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharedPreferencesWrapper;
 import com.motlee.android.object.StoryItem;
-import com.motlee.android.object.UserInfoList;
 import com.motlee.android.object.event.UpdatedLikeEvent;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
@@ -82,6 +83,8 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 	private PagedView pagedView;
 	private PhotoDetailPagedViewAdapter adapter;
 	
+	private DatabaseWrapper dbWrapper;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 	        Bundle savedInstanceState)
@@ -92,6 +95,8 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		view = this.inflater.inflate(R.layout.paged_view_layout, null);
 		
 		pagedView = (PagedView) view.findViewById(R.id.comment_paged_view);
+		
+		dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
 		
 		Collections.sort(photos);
 		
@@ -323,14 +328,17 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		
 		text = (TextView) headerView.findViewById(R.id.photo_detail_likes_text);
 		text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-		if (eventItem.likes.size() > 0)
+		
+		Collection<Like> likes = dbWrapper.getLikes(eventItem.id);
+		
+		if (likes.size() > 0)
 		{
 			headerView.findViewById(R.id.photo_detail_likes).setVisibility(View.VISIBLE);
-			text.setText(Integer.toString(eventItem.likes.size()));
+			text.setText(Integer.toString(likes.size()));
 			boolean hasLiked = false;
-			for (Like like : eventItem.likes)
+			for (Like like : likes)
 			{
-				if (like.user_id == GlobalVariables.getInstance().getUserId())
+				if (like.user_id == SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID))
 				{
 					hasLiked = true;
 				}
@@ -419,7 +427,7 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		
 		for (Like like : likes)
 		{
-			if (like.user_id == GlobalVariables.getInstance().getUserId())
+			if (like.user_id == SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID))
 			{
 				thumbIcon.setPressed(true);
 			}
@@ -432,7 +440,9 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		buttonText.setText("Like");
 		headerView.findViewById(R.id.photo_detail_like_button).setTag(false);
 		
-		if (eventItem.likes.size() == 0)
+		Collection<Like> likes = dbWrapper.getLikes(eventItem.id);
+		
+		if (likes.size() == 0)
 		{
 			headerView.findViewById(R.id.photo_detail_likes).setVisibility(View.GONE);
 		}
@@ -440,7 +450,7 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		{
 			headerView.findViewById(R.id.photo_detail_likes).setVisibility(View.VISIBLE);
 			TextView likeText = (TextView) headerView.findViewById(R.id.photo_detail_likes_text);
-			likeText.setText(Integer.toString(eventItem.likes.size()));
+			likeText.setText(Integer.toString(likes.size()));
 		}
 	}
 
@@ -450,9 +460,11 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		buttonText.setText("Unlike");
 		headerView.findViewById(R.id.photo_detail_like_button).setTag(true);
 
+		Collection<Like> likes = dbWrapper.getLikes(eventItem.id);
+		
 		headerView.findViewById(R.id.photo_detail_likes).setVisibility(View.VISIBLE);
 		TextView likeText = (TextView) headerView.findViewById(R.id.photo_detail_likes_text);
-		likeText.setText(Integer.toString(eventItem.likes.size()));
+		likeText.setText(Integer.toString(likes.size()));
 		
 	}
 

@@ -17,7 +17,6 @@ import com.motlee.android.object.GridPictures;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.StoryItem;
-import com.motlee.android.object.UserInfoList;
 
 import android.content.Context;
 import android.util.Log;

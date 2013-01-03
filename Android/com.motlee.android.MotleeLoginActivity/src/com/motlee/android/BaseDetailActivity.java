@@ -1,14 +1,18 @@
 package com.motlee.android;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.UserInfoList;
+import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
 
+import android.util.Log;
 import android.view.View;
 
 public abstract class BaseDetailActivity extends BaseMotleeActivity {
@@ -25,8 +29,17 @@ public abstract class BaseDetailActivity extends BaseMotleeActivity {
 		}
 		else if (view.getTag().toString() == JOIN)
 		{
-			ArrayList<Integer> attendeeList = new ArrayList<Integer>();
-			attendeeList.add(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId()).uid);
+			DatabaseHelper helper = new DatabaseHelper(this.getApplicationContext());
+			
+			UserInfo user = null;
+			try {
+				user = helper.getUserDao().queryForId(SharedPreferencesWrapper.getIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+			} catch (SQLException e1) {
+				Log.e("DatabaseHelper", "Failed to queryForId for user", e1);
+			}
+			
+			ArrayList<Long> attendeeList = new ArrayList<Long>();
+			attendeeList.add(user.uid);
 			EventServiceBuffer.setAttendeeListener(new UpdatedAttendeeListener(){
 
 				public void raised(UpdatedAttendeeEvent e) {

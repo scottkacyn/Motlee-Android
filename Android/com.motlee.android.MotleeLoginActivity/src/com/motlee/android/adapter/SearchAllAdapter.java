@@ -1,6 +1,8 @@
 package com.motlee.android.adapter;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,13 +17,14 @@ import android.widget.TextView;
 
 import com.emilsjolander.components.StickyListHeaders.StickyListHeadersBaseAdapter;
 import com.motlee.android.R;
+import com.motlee.android.database.DatabaseHelper;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.layouts.HorizontalRatioLinearLayout;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
-import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.UserInfo;
-import com.motlee.android.object.UserInfoList;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -41,6 +44,9 @@ public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
     
     private Filter mFilter;
     private Object mLock = new Object();
+    
+    private DatabaseHelper helper;
+    private DatabaseWrapper dbWrapper;
 	
 	public SearchAllAdapter(Context context, LayoutInflater inflater, ArrayList<Integer> listItems, int splitSection) {
 		super(context);
@@ -49,6 +55,9 @@ public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
 		mListItems = new ArrayList<Integer>();
 		mSplitSectionOriginal = splitSection;
 		mSplitSection = splitSection;
+		
+		helper = new DatabaseHelper(context.getApplicationContext());
+		dbWrapper = new DatabaseWrapper(context.getApplicationContext());
 		
 		this.inflater = inflater;
 		
@@ -150,14 +159,19 @@ public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
             
             if (position < this.mSplitSection)
             {
-            	UserInfo userInfo = UserInfoList.getInstance().get(this.mListItems.get(position));
-                
-                convertView.setContentDescription(Integer.toString(userInfo.uid));
+            	UserInfo userInfo = null;
+				try {
+					userInfo = helper.getUserDao().queryForId(this.mListItems.get(position));
+				} catch (SQLException e) {
+					Log.e("DatabaseHelper", "Failed to queryForId for user", e);
+				}
+            			               
+                convertView.setContentDescription(Long.toString(userInfo.uid));
                 
                 holder.search_event_name.setText(userInfo.name);
                 holder.search_event_name.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
                 holder.search_attendee_count.setText("");
-                holder.search_button.setContentDescription(Integer.toString(userInfo.uid));
+                holder.search_button.setContentDescription(Long.toString(userInfo.uid));
                 holder.search_button.setTag(userInfo);
                 holder.search_event_picture.setMaxHeight(DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH).getHeight());
                 
@@ -167,7 +181,7 @@ public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
             else
             {
 
-                EventDetail event = GlobalEventList.eventDetailMap.get(this.mListItems.get(position));
+                EventDetail event = dbWrapper.getEvent(this.mListItems.get(position));
             	
 	            convertView.setContentDescription(event.getEventID().toString());
 	            
@@ -176,9 +190,11 @@ public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
 	            
 	            holder.search_event_picture.setMaxHeight(DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH).getHeight());
 	            
-	            if (event.getImages().size() > 0)
+	            ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>(dbWrapper.getPhotos(event.getEventID()));
+	            
+	            if (photos.size() > 0)
 	            {
-	            	GlobalVariables.getInstance().downloadImage(holder.search_event_picture, GlobalVariables.getInstance().getAWSUrlThumbnail(event.getImages().get(0)));
+	            	GlobalVariables.getInstance().downloadImage(holder.search_event_picture, GlobalVariables.getInstance().getAWSUrlThumbnail(photos.get(0)));
 	            }
 	            else
 	            {
@@ -258,11 +274,18 @@ public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
                     String valueText = null;
 					if (i < mSplitSectionOriginal)
 					{
-						valueText = UserInfoList.getInstance().get(value).name;
+						UserInfo user = null;
+						try {
+							user = helper.getUserDao().queryForId(value);
+						} catch (SQLException e) {
+							Log.e("DatabaseHelper", "Failed to queryForId for user", e);
+						}
+						
+						valueText = user.name;
 					}
 					else
 					{
-						valueText = GlobalEventList.eventDetailMap.get(value).getEventName();
+						valueText = dbWrapper.getEvent(value).getEventName();
 					}
                     
                     // First match against the whole, non-splitted value

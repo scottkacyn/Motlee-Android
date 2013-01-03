@@ -117,9 +117,13 @@ public class NotificationList
 	{
 		NotificationObjectType type = NotificationObjectType.EVENT;
 		
-		if (string.contains("event"))
+		if (string.equals("event"))
 		{
 			type = NotificationObjectType.EVENT;
+		}
+		else if (string.equals("event_story"))
+		{
+			type = NotificationObjectType.EVENT_MESSAGE;
 		}
 		else if (string.contains("friend"))
 		{

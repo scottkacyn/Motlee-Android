@@ -5,10 +5,17 @@ import java.util.Date;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 import com.motlee.android.enums.EventItemType;
 
+@DatabaseTable(tableName = "likes")
 public class Like extends EventItem {
 
+	@DatabaseField(foreign = true, canBeNull = false, columnName = "photo")
+	public PhotoItem photo;
+	
 	public Like(Integer eventID, EventItemType type, Integer userID,
 			Date timeCreated) {
 		super(eventID, type, userID, timeCreated);
@@ -17,7 +24,6 @@ public class Like extends EventItem {
 
 	public Like(Parcel in) {
 		super(in);
-		
 	}
 
 	public Like() {

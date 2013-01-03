@@ -2,19 +2,22 @@ package com.motlee.android.fragment;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.markupartist.android.widget.PullToRefreshListView;
 import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 import com.motlee.android.EventListActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.EventListAdapter;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventListParams;
 import com.motlee.android.object.EventServiceBuffer;
-import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.SharedPreferencesWrapper;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 
@@ -45,6 +48,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+
 public class EventListFragment extends ListFragmentWithHeader {
 	
 	private String tag = "EventListFragment";
@@ -70,6 +74,8 @@ public class EventListFragment extends ListFragmentWithHeader {
 	
 	private View progressBar;
 	
+	private DatabaseWrapper dbWrapper;
+	
 	@Override
 	public void onResume()
 	{
@@ -81,6 +87,8 @@ public class EventListFragment extends ListFragmentWithHeader {
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    Log.w(tag, "onCreate");
+	    
+	    dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
 	    
 	    gothamLightFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/gotham_light.ttf");
 	}
@@ -230,8 +238,14 @@ public class EventListFragment extends ListFragmentWithHeader {
 	{
 		if (firstUseHeader != null)
 		{
-			firstUseHeader.findViewById(R.id.progress_bar).setVisibility(View.GONE);
-			firstUseHeader.findViewById(R.id.text_done).setVisibility(View.VISIBLE);
+			if (firstUseHeader.findViewById(R.id.progress_bar) != null)
+			{
+				firstUseHeader.findViewById(R.id.progress_bar).setVisibility(View.GONE);
+			}
+			if (firstUseHeader.findViewById(R.id.text_done) != null)
+			{
+				firstUseHeader.findViewById(R.id.text_done).setVisibility(View.VISIBLE);
+			}
 		}
 		
 		ListView listView = (ListView) view.findViewById(android.R.id.list);
@@ -295,11 +309,12 @@ public class EventListFragment extends ListFragmentWithHeader {
 						
 						if (params.dataContent == EventServiceBuffer.MY_EVENTS)
 						{
-							((EventListActivity) getActivity()).updateEventAdapter(GlobalEventList.myEventDetails);
+							Set<Integer> myEventIds = SharedPreferencesWrapper.getIntArrayPref(getActivity(), SharedPreferencesWrapper.MY_EVENT_DETAILS);
+							((EventListActivity) getActivity()).updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getEvents(myEventIds)));
 						}
 						else if (params.dataContent == EventServiceBuffer.NO_EVENT_FILTER)
 						{
-							((EventListActivity) getActivity()).updateEventAdapter(GlobalEventList.eventDetailMap.keySet());
+							((EventListActivity) getActivity()).updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getAllEvents()));
 						}
 						
 						/*for (Integer eventID : evt.getEventIds())

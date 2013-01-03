@@ -1,0 +1,80 @@
+package com.motlee.android.database;
+
+import java.sql.SQLException;
+import java.util.Collection;
+
+import com.j256.ormlite.stmt.UpdateBuilder;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.StoryItem;
+import com.motlee.android.object.UserInfo;
+
+import android.content.Context;
+import android.util.Log;
+
+public class DatabaseWrapper {
+	
+	private DatabaseHelper helper;
+
+	public DatabaseWrapper(Context context) {
+		
+		helper = new DatabaseHelper(context.getApplicationContext());
+	}
+	
+	public void createOrUpdateEvent(EventDetail eDetail)
+	{
+		try 
+		{
+			helper.getEventDao().createOrUpdate(eDetail);
+		} 
+		catch (SQLException e) 
+		{
+			Log.e("DatabaseWrapper", "Failed to createOrUpdate eventDetail", e);
+		}
+	}
+	
+	public void updateAttendees(Integer eventId, Collection<UserInfo> attendees)
+	{
+		try 
+		{
+			UpdateBuilder<EventDetail, Integer> updateBuilder = helper.getEventDao().updateBuilder();
+			updateBuilder.updateColumnValue("people_attending", attendees);
+			updateBuilder.where().idEq(eventId);
+			updateBuilder.update();
+		} 
+		catch (SQLException e)
+		{
+			Log.e("DatabaseWrapper", "Failed to updateAttendee for eventDetail", e);
+		}
+	}
+
+	public void updatePhotos(Integer eventId, Collection<PhotoItem> photos)
+	{
+		try 
+		{
+			UpdateBuilder<EventDetail, Integer> updateBuilder = helper.getEventDao().updateBuilder();
+			updateBuilder.updateColumnValue("photos", photos);
+			updateBuilder.where().idEq(eventId);
+			updateBuilder.update();
+		} 
+		catch (SQLException e)
+		{
+			Log.e("DatabaseWrapper", "Failed to updatePhotos for eventDetail", e);
+		}
+	}
+	
+	public void updateMessages(Integer eventId, Collection<StoryItem> stories)
+	{
+		try 
+		{
+			UpdateBuilder<EventDetail, Integer> updateBuilder = helper.getEventDao().updateBuilder();
+			updateBuilder.updateColumnValue("stories", stories);
+			updateBuilder.where().idEq(eventId);
+			updateBuilder.update();
+		} 
+		catch (SQLException e)
+		{
+			Log.e("DatabaseWrapper", "Failed to updatePhotos for eventDetail", e);
+		}
+	}
+}

@@ -329,12 +329,12 @@ public class GlobalVariables {
 		DISPLAY_HEIGHT = display.getHeight();
 	}
 	
-	public String getFacebookPictureUrl(Integer facebookUserID)
+	public String getFacebookPictureUrl(Long facebookUserID)
 	{
 		return "https://graph.facebook.com/" + facebookUserID + "/picture";
 	}
 	
-	public String getFacebookPictureUrlLarge(Integer facebookUserID)
+	public String getFacebookPictureUrlLarge(Long facebookUserID)
 	{
 		return "https://graph.facebook.com/" + facebookUserID + "/picture?width=200&height=200";
 	}
@@ -361,6 +361,7 @@ public class GlobalVariables {
 		options = new DisplayImageOptions.Builder()
 		.showStubImage(R.drawable.watermark)
 		.imageScaleType(ImageScaleType.EXACTLY)
+		.bitmapConfig(Bitmap.Config.RGB_565)
 		.cacheInMemory()
 		.cacheOnDisc()
 		.displayer(new SimpleBitmapDisplayer())
@@ -416,28 +417,6 @@ public class GlobalVariables {
 	public void setHelveticaNeueBoldFont(Typeface helveticaNeueBoldFont) 
 	{
 		this.helveticaNeueBoldFont = helveticaNeueBoldFont;
-	}
-
-	public String getAuthoToken() {
-		return authoToken;
-	}
-
-	public void setAuthoToken(String authoToken) {
-		this.authoToken = authoToken;
-	}
-
-	/**
-	 * @return the userID
-	 */
-	public int getUserId() {
-		return userId;
-	}
-
-	/**
-	 * @param userID the userID to set
-	 */
-	public void setUserId(int userId) {
-		this.userId = userId;
 	}
 
 	/**

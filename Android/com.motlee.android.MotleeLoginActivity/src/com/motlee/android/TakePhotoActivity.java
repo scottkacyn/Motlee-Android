@@ -9,11 +9,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.droid4you.util.cropimage.CropImage;
-import com.motlee.android.adapter.CurrentEventWheelAdapter;
 import com.motlee.android.fragment.TakePhotoFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
-import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
@@ -66,8 +64,6 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 	private static final String TAKE_PHOTO_FRAGMENT = "TakePhotoFragment";
 	
 	private Handler mHandler;
-	
-	private CurrentEventWheelAdapter mAdapter;
 	
 	private boolean cameFromEventDetail;
 	

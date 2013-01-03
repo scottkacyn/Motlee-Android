@@ -1,0 +1,9 @@
+package com.motlee.android.object;
+
+public class SharedPreferencesWrapper {
+
+	public SharedPreferencesWrapper() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

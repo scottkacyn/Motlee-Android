@@ -1,13 +1,15 @@
 package com.motlee.android.adapter;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.motlee.android.R;
+import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.object.Comment;
 import com.motlee.android.object.DateStringFormatter;
 import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.UserInfoList;
+import com.motlee.android.object.UserInfo;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -36,6 +38,8 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
     
     private ImageLoader imageDownloader;
     private DisplayImageOptions mOptions;
+    
+    private DatabaseHelper helper;
 	
 	public CommentAdapter(Context context, int resource, List<Comment> data) {
 		super(context, resource, data);
@@ -43,6 +47,8 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.resource = resource;
         this.mData = new ArrayList<Comment>(data);
+        
+        helper = new DatabaseHelper(context.getApplicationContext());
         
 		ImageScaleType ist = ImageScaleType.IN_SAMPLE_POWER_OF_2;
 		
@@ -123,12 +129,19 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
             holder.comment_body.setText(comment.body);
             holder.comment_body.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
             
-            holder.comment_name.setText(UserInfoList.getInstance().get(comment.user_id).name);
+            UserInfo user = null;
+			try {
+				user = helper.getUserDao().queryForId(comment.user_id);
+			} catch (SQLException e) {
+				Log.e("DatabaseHelper", "Failed to queryForId for user", e);
+			}
+            
+            holder.comment_name.setText(user.name);
             holder.comment_name.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
             holder.comment_time.setText(DateStringFormatter.getPastDateString(comment.created_at));
             holder.comment_time.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
             
-            imageDownloader.displayImage(GlobalVariables.getInstance().getFacebookPictureUrl(UserInfoList.getInstance().get(comment.user_id).uid), holder.profile_pic, mOptions);
+            imageDownloader.displayImage(GlobalVariables.getInstance().getFacebookPictureUrl(user.uid), holder.profile_pic, mOptions);
             
             return convertView;
     }

@@ -1,5 +1,6 @@
 package com.motlee.android;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Vector;
@@ -11,18 +12,20 @@ import com.facebook.FacebookException;
 import com.facebook.Session;
 import com.facebook.widget.WebDialog;
 import com.facebook.widget.WebDialog.OnCompleteListener;
+import com.motlee.android.database.DatabaseHelper;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.BaseMotleeFragment;
 import com.motlee.android.fragment.CreateEventFragment;
 import com.motlee.android.fragment.SearchPeopleFragment;
 import com.motlee.android.fragment.SearchPlacesFragment;
+import com.motlee.android.object.Attendee;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
-import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharedPreferencesWrapper;
 import com.motlee.android.object.UserInfo;
-import com.motlee.android.object.UserInfoList;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
@@ -85,9 +88,11 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	private Integer mEventID;
 	
 	private EventDetail mCreatedEvent;
-	private ArrayList<Integer> mEventAttendees;
+	private ArrayList<Long> mEventAttendees;
 	
-	private Vector<Integer> removedAttendees = new Vector<Integer>();
+	private DatabaseWrapper dbWrapper;
+	
+	private Vector<Long> removedAttendees = new Vector<Long>();
 	
 	public boolean isEditing = false;
 	/*
@@ -135,7 +140,14 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
         mPhotoDesc = getIntent().getStringExtra("Description");
         mLocationInfo = getIntent().getParcelableExtra("Location");
         
-        mCreatedEvent = GlobalEventList.eventDetailMap.get(getIntent().getIntExtra("EventID", -1));
+        Integer eventId = getIntent().getIntExtra("EventID", -1);
+        
+        if (eventId > 0)
+        {
+        	mCreatedEvent = dbWrapper.getEvent(eventId);
+        }
+        
+        dbWrapper = new DatabaseWrapper(this.getApplicationContext());
         
         if (mCreatedEvent != null)
         {
@@ -205,7 +217,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     	
     	fragment.removePersonFromEvent(Integer.parseInt((String) view.getContentDescription()));
     
-    	removedAttendees.add(Integer.parseInt((String) view.getContentDescription()));
+    	removedAttendees.add(Long.parseLong((String) view.getContentDescription()));
     }
     
     /*
@@ -285,7 +297,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
             	
 	            for (JSONObject person : peopleToAdd)
 	            {
-	            	createEventFragment.addPersonToEvent(person.getInt("uid"), person.getString("name"));
+	            	createEventFragment.addPersonToEvent(person.getLong("uid"), person.getString("name"));
 	            }
             }
             catch (JSONException e)
@@ -316,15 +328,14 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	    	mCreatedEvent.setEventName(fragment.getEventName());
 	    	mCreatedEvent.setStartTime(fragment.getStartTime().getTime());
 	    	mCreatedEvent.setEndTime(fragment.getEndTime().getTime());
-	    	mCreatedEvent.setOwnerID(GlobalVariables.getInstance().getUserId());
-	    	mCreatedEvent.setLocationInfo(fragment.getLocationInfo());
+	    	mCreatedEvent.setOwnerID(SharedPreferencesWrapper.getIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID));
 	    	mCreatedEvent.setIsPrivate(fragment.getIsPrivate());
 	    	
 	    	EventServiceBuffer.setEventDetailListener(this);
 	    	
 	    	EventServiceBuffer.setAttendeeListener(attendeeListener);
 	    	
-	    	EventServiceBuffer.sendNewEventToDatabase(mCreatedEvent);
+	    	EventServiceBuffer.sendNewEventToDatabase(mCreatedEvent, fragment.getLocationInfo());
 	    	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Creating Event");
     	}
     	else
@@ -335,15 +346,14 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	    	mCreatedEvent.setEventName(fragment.getEventName());
 	    	mCreatedEvent.setStartTime(fragment.getStartTime().getTime());
 	    	mCreatedEvent.setEndTime(fragment.getEndTime().getTime());
-	    	mCreatedEvent.setOwnerID(GlobalVariables.getInstance().getUserId());
-	    	mCreatedEvent.setLocationInfo(fragment.getLocationInfo());
+	    	mCreatedEvent.setOwnerID(SharedPreferencesWrapper.getIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID));
 	    	mCreatedEvent.setIsPrivate(fragment.getIsPrivate());
 	    	
 	    	EventServiceBuffer.setEventDetailListener(this);
 	    	
 	    	EventServiceBuffer.setAttendeeListener(attendeeListener);
 	    	
-	    	EventServiceBuffer.updateEventInDatabase(mCreatedEvent);
+	    	EventServiceBuffer.updateEventInDatabase(mCreatedEvent, fragment.getLocationInfo());
 	    	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Updating Event");
     	}
     	
@@ -354,7 +364,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
  
         String toParam = "";
         
-        for (int person : mEventAttendees)
+        for (Long person : mEventAttendees)
         {
         	toParam = toParam + person + ",";
         }
@@ -364,8 +374,10 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
         	toParam.substring(0, toParam.length() - 1);
         }
         
+        UserInfo user = dbWrapper.getUser(SharedPreferencesWrapper.getIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+        
         Bundle params = new Bundle();
-        params.putString("message", UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId()).name 
+        params.putString("message", user.name 
         		+ " invited you to " + eventName);
         params.putString("to", toParam);
         params.putString("frictionless", "1");
@@ -425,7 +437,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 					
 					if (mEventAttendees.size() > 0)
 					{
-						createRequestDialog(GlobalEventList.eventDetailMap.get(mEventID).getEventName());
+						createRequestDialog(dbWrapper.getEvent(mEventID).getEventName());
 					}
 					else
 					{
@@ -437,14 +449,15 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 		}
 		else
 		{
-			ArrayList<Integer> oldAttendees = new ArrayList<Integer>();
+			ArrayList<Long> oldAttendees = new ArrayList<Long>();
 			
-			for (UserInfo user : mCreatedEvent.getAttendees())
-			{
+			for (Attendee attendee : dbWrapper.getAttendees(mEventID))
+			{				
+				UserInfo user = dbWrapper.getUser(attendee.user_id);
 				if (!mEventAttendees.contains(user.uid))
 				{
 					oldAttendees.add(user.uid);
-					mEventAttendees.remove((Integer) user.uid);
+					mEventAttendees.remove(user.uid);
 				}
 			}
 			
@@ -454,7 +467,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 			
 			if (mEventAttendees.size() > 0)
 			{
-				createRequestDialog(GlobalEventList.eventDetailMap.get(mEventID).getEventName());
+				createRequestDialog(dbWrapper.getEvent(mEventID).getEventName());
 			}
 			else
 			{

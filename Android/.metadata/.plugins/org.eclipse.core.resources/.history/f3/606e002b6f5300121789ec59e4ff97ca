@@ -1,0 +1,55 @@
+package com.motlee.android.object;
+
+import java.util.Date;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+import com.motlee.android.enums.EventItemType;
+
+@DatabaseTable(tableName = "likes")
+public class Like extends EventItem {
+
+	@DatabaseField(columnName = "likeable_id", dataType = DataType.INTEGER_OBJ)
+	public Integer likeable_id;
+	
+	public Like(Integer eventID, EventItemType type, Integer userID,
+			Date timeCreated) {
+		super(eventID, type, userID, timeCreated);
+		// TODO Auto-generated constructor stub
+	}
+
+	public Like(Parcel in) {
+		super(in);
+		this.likeable_id = in.readInt();
+	}
+
+	public Like() {
+		super();
+		this.type = EventItemType.LIKE;
+	}
+
+	
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	public void writeToParcel(Parcel out, int flags) {
+		super.writeToParcel(out, flags);
+		out.writeInt(this.likeable_id);
+	}
+	
+	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Like createFromParcel(Parcel in) {
+            return new Like(in);
+        }
+ 
+        public Like[] newArray(int size) {
+            return new Like[size];
+        }
+    };
+}

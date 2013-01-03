@@ -2,19 +2,43 @@ package com.motlee.android.object;
 
 import java.util.Date;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 import com.motlee.android.enums.Gender;
 
+@DatabaseTable(tableName = "user")
 public class UserInfo implements Comparable<UserInfo> {
 	
+	@DatabaseField(columnName = "id", dataType = DataType.INTEGER, id = true, index = true)
 	public int id;
-	public int uid;
+	
+	@DatabaseField(columnName = "uid", dataType = DataType.LONG, index = true)
+	public long uid;
+	
+	@DatabaseField(columnName = "name", dataType = DataType.STRING)
 	public String name;
+	
+	@DatabaseField(columnName = "first_name", dataType = DataType.STRING)
 	public String first_name;
+	
+	@DatabaseField(columnName = "last_name", dataType = DataType.STRING)
 	public String last_name;
+	
+	@DatabaseField(columnName = "email", dataType = DataType.STRING)
 	public String email;
+	
+	@DatabaseField(foreign = true, canBeNull = true)
+	public EventDetail eventDetail;
+	
+	@DatabaseField(columnName = "gender", dataType = DataType.STRING)
 	public String gender;
 	private LocationInfo locationInfo;
+	
+	@DatabaseField(columnName = "picture", dataType = DataType.STRING)
 	public String picture;
+	
+	@DatabaseField(columnName = "birthday", dataType = DataType.STRING)
 	public String birthday;
 	
 	public UserInfo(int userID, int facebookID, String name, String email, Gender gender, String profilePicture, Date birthDate, LocationInfo locationInfo)
@@ -64,7 +88,7 @@ public class UserInfo implements Comparable<UserInfo> {
     public int hashCode() {
         int hashCode = 29;
         hashCode = hashCode + this.id;
-        hashCode = hashCode + this.uid;
+        hashCode = (int) (hashCode + this.uid);
         return hashCode;
     }
 

@@ -1,0 +1,47 @@
+package com.motlee.android.database;
+
+import java.sql.SQLException;
+
+import com.j256.ormlite.stmt.UpdateBuilder;
+import com.motlee.android.object.EventDetail;
+
+import android.content.Context;
+import android.util.Log;
+
+public class DatabaseWrapper {
+	
+	private DatabaseHelper helper;
+
+	public DatabaseWrapper(Context context) {
+		
+		helper = new DatabaseHelper(context.getApplicationContext());
+	}
+	
+	public void createOrUpdateEvent(EventDetail eDetail)
+	{
+		try 
+		{
+			helper.getEventDao().createOrUpdate(eDetail);
+		} 
+		catch (SQLException e) 
+		{
+			Log.e("DatabaseWrapper", "Failed to createOrUpdate eventDetail", e);
+		}
+	}
+	
+	public void updateAttendees(EventDetail eDetail)
+	{
+		try 
+		{
+			UpdateBuilder<EventDetail, Integer> updateBuilder = helper.getEventDao().updateBuilder();
+			updateBuilder.updateColumnValue("people_attending", eDetail.getAttendees());
+			updateBuilder.where().idEq(eDetail.getEventID());
+			updateBuilder.update();
+		} 
+		catch (SQLException e)
+		{
+			Log.e("DatabaseWrapper", "Failed to updateAttendee for eventDetail", e);
+		}
+	}
+
+}

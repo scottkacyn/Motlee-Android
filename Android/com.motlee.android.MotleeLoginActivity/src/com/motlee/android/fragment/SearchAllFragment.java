@@ -36,10 +36,11 @@ import com.motlee.android.EventDetailActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.SearchAllAdapter;
 import com.motlee.android.adapter.SearchPeopleAdapter;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventServiceBuffer;
-import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.SharedPreferencesWrapper;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedFriendsEvent;
 import com.motlee.android.object.event.UpdatedFriendsListener;
@@ -76,6 +77,8 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
 	
 	private ProgressDialog progressDialog;
 	
+	private DatabaseWrapper dbWrapper;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 	        Bundle savedInstanceState)
@@ -87,6 +90,8 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
 		view = (View) this.inflater.inflate(R.layout.activity_search_events_friends, null);
 		
 		view.findViewById(R.id.search_text_box_background).setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.search_text_box, GlobalVariables.DISPLAY_WIDTH).getDrawable());
+		
+		dbWrapper = new DatabaseWrapper(getActivity().getApplicationContext());
 		
 		/*StickyListHeadersListView stickyList = (StickyListHeadersListView) getListView();
 		stickyList.setOnScrollListener(this);
@@ -113,7 +118,7 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
 		
 		EventServiceBuffer.setFriendsListener(this);
 		
-		EventServiceBuffer.requestMotleeFriends(GlobalVariables.getInstance().getUserId());
+		EventServiceBuffer.requestMotleeFriends(SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID));
 
 		progressDialog = ProgressDialogWithTimeout.show(getActivity(), "", "Loading Friends");
 		
@@ -231,7 +236,7 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
 		
 		int switchPosition = listItems.size();
 		
-		for (Integer eventId : GlobalEventList.eventDetailMap.keySet())
+		for (Integer eventId : dbWrapper.getAllEventIds())
 		{
 			listItems.add(eventId);
 		}

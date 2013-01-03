@@ -2,6 +2,7 @@ package com.motlee.android;
 
 import java.util.ArrayList;
 
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.DateDetailFragment;
 import com.motlee.android.fragment.EventDetailFragment;
 import com.motlee.android.fragment.LocationFragment;
@@ -9,7 +10,6 @@ import com.motlee.android.fragment.PeopleListFragment;
 import com.motlee.android.object.Attendee;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventItem;
-import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.UserInfo;
@@ -24,6 +24,8 @@ import android.view.View;
 
 public class MoreEventDetailActivity extends BaseMotleeActivity {
 
+	private DatabaseWrapper dbWrapper;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +34,9 @@ public class MoreEventDetailActivity extends BaseMotleeActivity {
         
         Intent intent = getIntent();
         
-        EventDetail eDetail = GlobalEventList.eventDetailMap.get(intent.getExtras().get("EventID"));
+        dbWrapper = new DatabaseWrapper(getApplicationContext());
+        
+        EventDetail eDetail = dbWrapper.getEvent(intent.getExtras().getInt("EventID"));
         String detailDescription = intent.getExtras().get("DetailDescription").toString();
         
         FragmentManager     fm = getSupportFragmentManager();
@@ -86,10 +90,6 @@ public class MoreEventDetailActivity extends BaseMotleeActivity {
         	PeopleListFragment fragment = new PeopleListFragment();
         	
         	fragment.setHeaderView(findViewById(R.id.header));
-        	
-        	ArrayList<UserInfo> users = new ArrayList<UserInfo>();
-        	
-        	users.addAll(eDetail.getAttendees());
         	
         	//fragment.setPageTitle(eDetail.getEventName());
         	

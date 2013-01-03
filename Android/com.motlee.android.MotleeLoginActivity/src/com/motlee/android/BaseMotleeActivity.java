@@ -83,9 +83,10 @@ public class BaseMotleeActivity extends FragmentActivity implements UpdatedEvent
         filter.addAction(RubyService.CONNECTION_ERROR);
         registerReceiver(receiver, filter);
         
-        EventServiceBuffer.setNotificationListener(this);
-        
         showMenuButtonBadge();
+        
+    	
+        EventServiceBuffer.setNotificationListener(this);
         
         View target = findViewById(R.id.notification_icon);
 
@@ -101,9 +102,9 @@ public class BaseMotleeActivity extends FragmentActivity implements UpdatedEvent
         	}
         	
         	setUpNotificationIconBadge();
+        	
+            EventServiceBuffer.getNewNotificationsFromServer();
         }
-        
-        EventServiceBuffer.getNewNotificationsFromServer();
         
         super.onResume();
     }
@@ -155,12 +156,7 @@ public class BaseMotleeActivity extends FragmentActivity implements UpdatedEvent
 	{
 		GlobalActivityFunctions.showProfileDetail(view, this);
 	}
-	
-	final public void onClickPostStory(View view)
-	{
-		MenuFunctions.postComment(view, this);
-	}
-	
+
 	final public void showStoryDetail(View view)
 	{
 		GlobalActivityFunctions.showStoryDetail(view, this);

@@ -45,14 +45,14 @@ import com.motlee.android.EventDetailActivity;
 import com.motlee.android.EventItemDetailActivity;
 import com.motlee.android.EventListActivity;
 import com.motlee.android.R;
-import com.motlee.android.adapter.CurrentEventWheelAdapter;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.EventItemType;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.EventServiceBuffer;
-import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharedPreferencesWrapper;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
 
@@ -68,14 +68,13 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	private static ProgressDialog progressDialog;
 	
 	private StretchedBackgroundTableLayout photoDetailLayout;
-	private CurrentEventWheelAdapter mAdapter;
 	
 	private Handler handler = new Handler();
 	
 	//private WheelView eventWheel;
 	
 	private TextView mEventName;
-	private Integer mEventID = CurrentEventWheelAdapter.EVENT_NOT_SET;
+	private Integer mEventID;
 	private LocationInfo mLocation = new LocationInfo();
 	
 	private EditText photoDescriptionEdit;
@@ -83,6 +82,8 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	private String mCurrentPhotoPath;
 	
 	private boolean cameFromEventDetail;
+	
+	private DatabaseWrapper dbWrapper;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
@@ -93,6 +94,8 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 		
 		photoDetailLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.photo_detail_layout);
 		photoDetailLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		
+		dbWrapper = new DatabaseWrapper(getActivity().getApplicationContext());
 		
 		//eventWheel = (WheelView) view.findViewById(R.id.event_wheel);
 		//eventWheel.setViewAdapter(mAdapter);
@@ -158,12 +161,12 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 			else
 			{*/
 
-				PhotoItem photo = new PhotoItem(mEventID, EventItemType.PICTURE, GlobalVariables.getInstance().getUserId(), 
+				PhotoItem photo = new PhotoItem(mEventID, EventItemType.PICTURE, SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID), 
 						new Date(), photoDescriptionEdit.getText().toString(), mCurrentPhotoPath);
 				
-				Log.w("TakePhotoFragment", "EventId: " + mEventID + ", eventDetailMap.size(): " + GlobalEventList.eventDetailMap.size());
+				photo.event_detail = dbWrapper.getEvent(mEventID);
 				
-				GlobalEventList.eventDetailMap.get(mEventID).getImages().add(photo);
+				dbWrapper.createPhoto(photo);
 				
 				EventServiceBuffer.addPhotoToCache(mEventID, mCurrentPhotoPath, mLocation, photoDescriptionEdit.getText().toString(), photo);
 				
@@ -312,11 +315,6 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 		tr.setLayoutParams(lp);
 		tr.addView(label);
 		photoDetailLayout.addView(tr);
-	}
-	
-	public void setScrollWheelAdapter(CurrentEventWheelAdapter adapter)
-	{
-		this.mAdapter = adapter;
 	}
 	
 	private void setUpPicture()

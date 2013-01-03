@@ -2,6 +2,7 @@ package com.motlee.android.fragment;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -12,12 +13,15 @@ import com.motlee.android.AddPeopleActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.ImageAdapter;
 import com.motlee.android.adapter.PeopleListAdapter;
+import com.motlee.android.database.DatabaseHelper;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.Attendee;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.SharedPreferencesWrapper;
 import com.motlee.android.object.UserInfo;
-import com.motlee.android.object.UserInfoList;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -78,6 +82,8 @@ public class PeopleListFragment extends BaseDetailFragment {
 	
 	private View inviteFriendsHeader;
 	
+	private DatabaseWrapper dbWrapper;
+	
 	@Override
 	public void onResume()
 	{
@@ -86,7 +92,9 @@ public class PeopleListFragment extends BaseDetailFragment {
 		eventDetailPeopleList = (ListView) view.findViewById(R.id.event_detail_people_list);
 		//eventDetailPeopleList.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
 		
-		if (eventDetailPeopleList.getHeaderViewsCount() == 0 && mEventDetail.getAttendees().contains(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId())))
+		Attendee attendee = new Attendee(SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+		
+		if (eventDetailPeopleList.getHeaderViewsCount() == 0 && dbWrapper.getAttendees(mEventDetail.getEventID()).contains(attendee))
 		{
 			eventDetailPeopleList.addHeaderView(inviteFriendsHeader);
 		}
@@ -105,6 +113,7 @@ public class PeopleListFragment extends BaseDetailFragment {
 		this.inflater = inflater;
 		view = (View) this.inflater.inflate(R.layout.event_detail_people_list, null);
 
+		dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
 		
 		setUpPageHeader();
 		
@@ -113,7 +122,7 @@ public class PeopleListFragment extends BaseDetailFragment {
 		setPageHeader(pageTitle);
 		if (mEventDetail != null)
 		{
-			showRightHeaderButton(mEventDetail);
+			showRightHeaderButton(mEventDetail, this.getActivity().getApplicationContext());
 		}
 		showLeftHeaderButton();
 		
@@ -151,14 +160,16 @@ public class PeopleListFragment extends BaseDetailFragment {
 			
 			Intent addFriendIntent = new Intent(getActivity(), AddPeopleActivity.class);
 			
-			ArrayList<Integer> attendeeUIDs = new ArrayList<Integer>();
+			ArrayList<String> attendeeUIDs = new ArrayList<String>();
 			
-			for (UserInfo user : mEventDetail.getAttendees())
+			for (Attendee attendee : dbWrapper.getAttendees(mEventDetail.getEventID()))
 			{
-				attendeeUIDs.add(user.uid);
+				UserInfo user = dbWrapper.getUser(attendee.user_id);
+				
+				attendeeUIDs.add(String.valueOf(user.uid));
 			}
 			
-			addFriendIntent.putIntegerArrayListExtra("Attendees", attendeeUIDs);
+			addFriendIntent.putStringArrayListExtra("Attendees", attendeeUIDs);
 			addFriendIntent.putExtra("EventId", mEventDetail.getEventID());
 			
 			getActivity().startActivity(addFriendIntent);
@@ -169,7 +180,12 @@ public class PeopleListFragment extends BaseDetailFragment {
 	
 	public void setUpPeopleList() 
 	{
-		mUsers = new ArrayList<UserInfo>(mEventDetail.getAttendees());
+		mUsers = new ArrayList<UserInfo>(); 
+				
+		for (Attendee user : dbWrapper.getAttendees(mEventDetail.getEventID()))
+		{		
+			mUsers.add(dbWrapper.getUser(user.user_id));
+		}
 		
 		if (mUsers.size() > 0)
 		{

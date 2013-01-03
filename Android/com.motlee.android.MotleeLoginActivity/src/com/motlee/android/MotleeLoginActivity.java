@@ -3,6 +3,7 @@ package com.motlee.android;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.HashSet;
 import java.util.List;
 
 import com.facebook.Session;
@@ -23,8 +24,8 @@ import com.motlee.android.fragment.LoginPageFragment;
 import com.motlee.android.fragment.SplashScreenFragment;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventServiceBuffer;
-import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.SharedPreferencesWrapper;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 import com.motlee.android.object.event.UserInfoEvent;
@@ -170,9 +171,9 @@ public class MotleeLoginActivity extends FragmentActivity implements UpdatedEven
 
 			public void userWithEventsPhotos(UserWithEventsPhotosEvent e) {
 
-				GlobalVariables.getInstance().setUserId(e.getUserInfo().id);
+				SharedPreferencesWrapper.setIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID, e.getUserInfo().id);
 				
-				GlobalEventList.myEventDetails.addAll(e.getEventIds());
+				SharedPreferencesWrapper.setIntArrayPref(getApplicationContext(), SharedPreferencesWrapper.MY_EVENT_DETAILS, new HashSet<Integer>(e.getEventIds()));
 				
 	        	EventServiceBuffer.setUserInfoListener(null);
 	        	

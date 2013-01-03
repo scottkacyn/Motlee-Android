@@ -1,21 +1,26 @@
 package com.motlee.android.adapter;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 
 import com.motlee.android.R;
+import com.motlee.android.database.DatabaseHelper;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.EventItemType;
+import com.motlee.android.object.Comment;
 import com.motlee.android.object.DateStringFormatter;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventItem;
-import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharedPreferencesWrapper;
 import com.motlee.android.object.StoryItem;
-import com.motlee.android.object.UserInfoList;
+import com.motlee.android.object.UserInfo;
 
 import android.content.Context;
 import android.util.Log;
@@ -40,10 +45,17 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	private Context context;
 	private boolean showFirstComment = false;
 	
+	private DatabaseHelper helper;
+	
+	private DatabaseWrapper dbWrapper;
+	
 	public PhotoDetailPagedViewAdapter(Context context, ArrayList<PhotoItem> data) {
 		this.context = context;
 		this.inflater = LayoutInflater.from(context);
 		this.mData = new ArrayList<PhotoItem>(data);
+		
+		helper = new DatabaseHelper(context.getApplicationContext());
+		dbWrapper = new DatabaseWrapper(context.getApplicationContext());
 	}
 
 	@Override
@@ -151,11 +163,13 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	         
 	 	final PhotoItem photo = this.mData.get(position);
 	
-	 	Collections.sort(photo.comments);
+	 	ArrayList<Comment> comments = new ArrayList<Comment>(dbWrapper.getComments(photo.id));
+	 	
+	 	Collections.sort(comments);
 	 	
 	 	holder.photo_detail_like_button.setTag(photo);
 	 	
-	 	CommentAdapter adapter = new CommentAdapter(context, R.layout.comment_list_item, photo.comments);
+	 	CommentAdapter adapter = new CommentAdapter(context, R.layout.comment_list_item, comments);
 	 	
 	 	if (holder.comment_list.getHeaderViewsCount() == 0)
 	 	{
@@ -198,7 +212,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 		    	
 		    	holder.photo_detail_delete_button.setTag(photo);
 		    	
-		    	if (photo.user_id == GlobalVariables.getInstance().getUserId())
+		    	if (photo.user_id == SharedPreferencesWrapper.getIntPref(context.getApplicationContext(), SharedPreferencesWrapper.USER_ID))
 		    	{
 		    		holder.photo_detail_delete_button.setVisibility(View.VISIBLE);
 		    	}
@@ -225,7 +239,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 						if (touchOverlay.getVisibility() == View.GONE)
 						{
 							touchOverlay.setVisibility(View.VISIBLE);
-							if (photo.user_id == GlobalVariables.getInstance().getUserId())
+							if (photo.user_id == SharedPreferencesWrapper.getIntPref(context.getApplicationContext(), SharedPreferencesWrapper.USER_ID))
 							{
 								holder.photo_detail_delete_button.setVisibility(View.VISIBLE);
 							}
@@ -251,9 +265,16 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
  
 	private void setUpStoryPictureHeader(ViewHolder holder, PhotoItem item, int height, LocationInfo location)
 	{
+		UserInfo photoOwner = null;
+		try {
+			photoOwner = helper.getUserDao().queryForId(item.user_id);
+		} catch (SQLException e) {
+			Log.e("DatabaseHelper", "Failed to queryForId for user", e);
+		}
+		
 		DrawableWithHeight background = DrawableCache.getDrawable(R.drawable.photo_detail_rect, GlobalVariables.DISPLAY_WIDTH);
 		
-		holder.photo_detail_thumbnail.setTag(UserInfoList.getInstance().get(item.user_id));
+		holder.photo_detail_thumbnail.setTag(photoOwner);
 		
 		holder.photo_detail_thumbnail.setMaxHeight(background.getHeight());
 		holder.photo_detail_thumbnail.setMaxWidth(background.getHeight());
@@ -261,16 +282,16 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 		holder.photo_detail_thumbnail_bg.setMaxHeight(background.getHeight());
 		holder.photo_detail_thumbnail_bg.setMaxWidth(background.getHeight());
 		
-		if (UserInfoList.getInstance().get(item.user_id) != null)
+		if (photoOwner != null)
 		{
 		
-			Integer facebookID = UserInfoList.getInstance().get(item.user_id).uid;
+			Long facebookID = photoOwner.uid;
 			
 			GlobalVariables.getInstance().downloadImage(holder.photo_detail_thumbnail, GlobalVariables.getInstance().getFacebookPictureUrlLarge(facebookID));
 
 			holder.photo_detail_name_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-			holder.photo_detail_name_text.setText(UserInfoList.getInstance().get(item.user_id).name);
-			holder.photo_detail_name_text.setTag(UserInfoList.getInstance().get(item.user_id));
+			holder.photo_detail_name_text.setText(photoOwner.name);
+			holder.photo_detail_name_text.setTag(photoOwner);
 			
 			holder.photo_detail_time_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 			holder.photo_detail_time_text.setText(DateStringFormatter.getPastDateString(item.created_at));
@@ -278,14 +299,17 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 			holder.photo_detail_like_button_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 			
 			holder.photo_detail_likes_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-			if (item.likes.size() > 0)
+			
+			Collection<Like> likes = dbWrapper.getLikes(item.id);
+			
+			if (likes.size() > 0)
 			{
 				holder.photo_detail_likes.setVisibility(View.VISIBLE);
-				holder.photo_detail_likes_text.setText(Integer.toString(item.likes.size()));
+				holder.photo_detail_likes_text.setText(Integer.toString(likes.size()));
 				boolean hasLiked = false;
-				for (Like like : item.likes)
+				for (Like like : likes)
 				{
-					if (like.user_id == GlobalVariables.getInstance().getUserId())
+					if (like.user_id == SharedPreferencesWrapper.getIntPref(context.getApplicationContext(), SharedPreferencesWrapper.USER_ID))
 					{
 						hasLiked = true;
 					}

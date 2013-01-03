@@ -5,7 +5,6 @@ import com.motlee.android.EventDetailActivity;
 import com.motlee.android.EventListActivity;
 import com.motlee.android.NearbyEventsActivity;
 import com.motlee.android.NotificationActivity;
-import com.motlee.android.PostStoryActivity;
 import com.motlee.android.R;
 import com.motlee.android.SearchActivity;
 import com.motlee.android.SettingsActivity;
@@ -303,17 +302,6 @@ public class MenuFunctions {
 		final int eventId = (Integer) view.getTag();
 		
 		takePictureOnPhone(eventId, activity);
-	}
-	
-	public static void postComment(View view, FragmentActivity activity)
-	{
-		Intent postStoryIntent = new Intent(activity, PostStoryActivity.class);
-		//removePlusMenu(activity);
-		activity.startActivity(postStoryIntent);
-		if (!((activity instanceof EventListActivity) || (activity instanceof EventDetailActivity)))
-		{
-			activity.finish();
-		}
 	}
 	
 	public static void uploadPictureFromPhone(View view, FragmentActivity activity)

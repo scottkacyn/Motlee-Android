@@ -1,5 +1,6 @@
 package com.motlee.android.fragment;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,15 +10,18 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 import com.motlee.android.R;
+import com.motlee.android.database.DatabaseHelper;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.Attendee;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.Friend;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.ClickableBalloonItemizedOverlay;
 import com.motlee.android.object.OverlayItemWithEventID;
 import com.motlee.android.object.UserInfo;
-import com.motlee.android.object.UserInfoList;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -30,6 +34,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,6 +69,8 @@ public class LocationFragment extends BaseDetailFragment {
 	private MapView mapView;
 	
 	private MapController mMapController;
+
+	private DatabaseWrapper dbWrapper;
 	
 	@Override
 	public void onResume()
@@ -85,6 +92,8 @@ public class LocationFragment extends BaseDetailFragment {
 
 		eventHeader = (LinearLayout) view.findViewById(R.id.event_detail_header);
 		
+		dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
+		
 		if (!mShowHeader)
 		{
 			eventHeader.setVisibility(View.GONE);
@@ -100,7 +109,7 @@ public class LocationFragment extends BaseDetailFragment {
 			if (mEventList.size() == 1)
 			{
 				this.pageTitle = mEventList.get(0).getEventName();
-				showRightHeaderButton(mEventList.get(0));
+				showRightHeaderButton(mEventList.get(0), this.getActivity().getApplicationContext());
 			}
 		}
 		
@@ -140,7 +149,7 @@ public class LocationFragment extends BaseDetailFragment {
 		}
 		else if (mEventList.size() == 1)
 		{
-			location = mEventList.get(0).getLocationInfo();
+			location = dbWrapper.getLocation(mEventList.get(0).getLocationID());
 			
 			if (!location.name.equals(LocationInfo.NO_LOCATION))
 			{
@@ -177,7 +186,7 @@ public class LocationFragment extends BaseDetailFragment {
 		
 		for (EventDetail item : mEventList)
 		{
-			location = item.getLocationInfo();
+			location = dbWrapper.getLocation(item.getLocationID());
 			
 			if (!location.name.equals(LocationInfo.NO_LOCATION))
 			{
@@ -194,9 +203,11 @@ public class LocationFragment extends BaseDetailFragment {
 			
 			int friendsCount = 0;
 			
-			for (UserInfo attendee : item.getAttendees())
-			{
-				if (UserInfoList.getInstance().friendsList.contains(attendee.id))
+			for (Attendee attendee : dbWrapper.getAttendees(item.getEventID()))
+			{				
+				Friend friend = dbWrapper.getFriend(attendee.user_id);
+				
+				if (friend != null)
 				{
 					friendsCount++;
 				}

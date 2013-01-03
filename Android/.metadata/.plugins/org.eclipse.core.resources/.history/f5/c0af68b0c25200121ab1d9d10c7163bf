@@ -1,0 +1,19 @@
+package com.motlee.android.object;
+
+import java.util.ArrayList;
+
+import com.j256.ormlite.dao.ForeignCollection;
+import com.j256.ormlite.field.ForeignCollectionField;
+import com.j256.ormlite.table.DatabaseTable;
+
+@DatabaseTable(tableName = "friends")
+public class Friends {
+
+	@ForeignCollectionField(columnName = "friend_list")
+	public ForeignCollection<Integer> friend_list;
+	
+	public Friends() {
+		friend_list = (ForeignCollection<Integer>) new ArrayList<Integer>();
+	}
+
+}

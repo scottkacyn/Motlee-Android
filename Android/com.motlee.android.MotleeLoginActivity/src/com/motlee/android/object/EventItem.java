@@ -6,16 +6,22 @@ import java.util.Date;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
 import com.motlee.android.enums.EventItemType;
 
 public class EventItem implements Comparable<EventItem>, Parcelable {
 	
+	@DatabaseField(columnName = "event_id", dataType = DataType.INTEGER_OBJ, index = true)
 	public Integer event_id;
 	
+	@DatabaseField(columnName = "type", dataType = DataType.ENUM_INTEGER)
 	public EventItemType type;
 	
+	@DatabaseField(columnName = "user_id", dataType = DataType.INTEGER_OBJ, index = true)
 	public Integer user_id;
 	
+	@DatabaseField(columnName = "created_at", dataType = DataType.DATE)
 	public Date created_at;
 	
 	private int SEED = 23;
@@ -23,10 +29,8 @@ public class EventItem implements Comparable<EventItem>, Parcelable {
 	/*
 	 * Event Item's id
 	 */
+	@DatabaseField(columnName = "id", dataType = DataType.INTEGER_OBJ, index = true, id = true)
 	public Integer id = -1;
-	
-	public ArrayList<Comment> comments = new ArrayList<Comment>();
-	public ArrayList<Like> likes = new ArrayList<Like>();
 	
 	public EventItem(Integer eventID, EventItemType type, Integer userID, Date timeCreated)
 	{
@@ -34,8 +38,6 @@ public class EventItem implements Comparable<EventItem>, Parcelable {
 		this.type = type;
 		this.user_id = userID;
 		this.created_at = timeCreated;
-		this.comments = new ArrayList<Comment>();
-		this.likes = new ArrayList<Like>();
 	}
 
 	public int compareTo(EventItem item) {
@@ -55,8 +57,6 @@ public class EventItem implements Comparable<EventItem>, Parcelable {
 		this.type = EventItemType.valueOf(in.readString());
 		this.user_id = in.readInt();
 		this.created_at = new Date(in.readLong());
-		in.readTypedList(this.comments, Comment.CREATOR);
-		in.readTypedList(this.likes, Like.CREATOR);
 	}
 	
 	public EventItem() {
@@ -74,8 +74,6 @@ public class EventItem implements Comparable<EventItem>, Parcelable {
 			created_at = new Date();
 		}
 		out.writeLong(created_at.getTime());
-		out.writeTypedList(comments);
-		out.writeTypedList(likes);
 	}
 	
 	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {

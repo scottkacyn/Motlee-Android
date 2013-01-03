@@ -37,10 +37,11 @@ import android.widget.TextView.OnEditorActionListener;
 import com.motlee.android.EventDetailActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.EventDetailGridAdapter;
-import com.motlee.android.adapter.EventDetailListAdapter;
 import com.motlee.android.adapter.MessageAdapter;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.EventItemType;
 import com.motlee.android.fragment.EventDetailFragment.MyGestureListener;
+import com.motlee.android.object.Attendee;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventItem;
@@ -48,8 +49,8 @@ import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.GridPictures;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharedPreferencesWrapper;
 import com.motlee.android.object.StoryItem;
-import com.motlee.android.object.UserInfoList;
 import com.motlee.android.object.event.UpdatedLikeEvent;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedStoryEvent;
@@ -88,6 +89,8 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 	
 	private View headerView;
 	
+	private DatabaseWrapper dbWrapper;
+	
 	@Override
 	public void onResume()
 	{
@@ -95,7 +98,7 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 		
 		listViewLayout = (ListView) view.findViewById(R.id.event_detail_list_view);
 		//listAdapter = new EventDetailListAdapter(getActivity(), R.layout.event_item_detail_photo, new ArrayList<EventItem>());
-		messageAdapter = new MessageAdapter(getActivity(), R.layout.message_list_item, new ArrayList<StoryItem>(mEventDetail.getStories()));
+		messageAdapter = new MessageAdapter(getActivity(), R.layout.message_list_item, new ArrayList<StoryItem>(dbWrapper.getStories(mEventDetail.getEventID())));
 		
 		 myGestureListener = new MyGestureListener(getActivity());
 	        // or if you have already created a Gesture Detector.
@@ -156,6 +159,7 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 		this.inflater = inflater;
 		view = (View) this.inflater.inflate(R.layout.event_detail_messages, null);
 		
+		dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
 		
 		setUpPageHeader();
 		//listViewLayout.setOnTouchListener(touchListener);
@@ -178,7 +182,7 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 		setPageHeader(pageTitle);
 		if (mEventDetail != null)
 		{
-			showRightHeaderButton(mEventDetail);
+			showRightHeaderButton(mEventDetail, this.getActivity().getApplicationContext());
 		}
 		
 		//checkBottomCommentBar();
@@ -192,7 +196,7 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 	
 	public void refreshMessageAdapter()
 	{
-		messageAdapter = new MessageAdapter(getActivity(), R.layout.message_list_item, new ArrayList<StoryItem>(mEventDetail.getStories()));
+		messageAdapter = new MessageAdapter(getActivity(), R.layout.message_list_item, new ArrayList<StoryItem>(dbWrapper.getStories(mEventDetail.getEventID())));
 		
 		listViewLayout.setAdapter(messageAdapter);
 		
@@ -231,7 +235,9 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 		
 		public void onClick(View v)
 		{
-			if (mEventDetail.getAttendees().contains(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId())))
+			Attendee attendee = new Attendee(SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+			
+			if (dbWrapper.getAttendees(mEventDetail.getEventID()).contains(attendee))
 			{
 				menuButtons.setVisibility(View.GONE);
 				
@@ -299,9 +305,11 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 					listViewLayout.removeHeaderView(headerView);
 				}
 				
-				StoryItem newMessage = new StoryItem(mEventDetail.getEventID(), EventItemType.STORY, GlobalVariables.getInstance().getUserId(), new Date(), storyText);
+				StoryItem newMessage = new StoryItem(mEventDetail.getEventID(), EventItemType.STORY, SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID), new Date(), storyText);
 				
-				mEventDetail.getStories().add(newMessage);
+				newMessage.event_detail = mEventDetail;
+				
+				dbWrapper.createStory(newMessage);
 				
 				updateMessageAdapter();
 				
@@ -323,9 +331,9 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 		this.pageTitle = mEventDetail.getEventName();
 		setPageHeader(pageTitle);
 		
-		if (mEventDetail != null)
+		if (mEventDetail != null && getActivity() != null)
 		{ 
-			showRightHeaderButton(mEventDetail);
+			showRightHeaderButton(mEventDetail, this.getActivity().getApplicationContext());
 		}
 		
 		//addListToAdapter();
@@ -454,7 +462,7 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 	
 	private void updateMessageAdapter()
 	{
-		ArrayList<StoryItem> stories = new ArrayList<StoryItem>(mEventDetail.getStories());
+		ArrayList<StoryItem> stories = new ArrayList<StoryItem>(dbWrapper.getStories(mEventDetail.getEventID()));
 		
 		Collections.sort(stories);
 		

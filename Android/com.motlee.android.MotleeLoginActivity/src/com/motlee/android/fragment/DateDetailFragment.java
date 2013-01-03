@@ -62,7 +62,7 @@ public class DateDetailFragment extends BaseDetailFragment {
 		setPageHeader(pageTitle);
 		if (mEventDetail != null)
 		{
-			showRightHeaderButton(mEventDetail);
+			showRightHeaderButton(mEventDetail, this.getActivity().getApplicationContext());
 		}
 		showLeftHeaderButton();
 		

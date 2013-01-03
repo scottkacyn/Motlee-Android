@@ -1,7 +1,10 @@
 package com.motlee.android.fragment;
 
+import java.sql.SQLException;
+
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -12,10 +15,11 @@ import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
 
 import com.motlee.android.R;
+import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.SharedPreferencesWrapper;
 import com.motlee.android.object.UserInfo;
-import com.motlee.android.object.UserInfoList;
 
 public class FacebookSettingsFragment extends BaseMotleeFragment {
 	
@@ -23,6 +27,8 @@ public class FacebookSettingsFragment extends BaseMotleeFragment {
 	private View view;
 	
 	private StretchedBackgroundTableLayout settingsLayout;
+	
+	private DatabaseHelper helper;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
@@ -34,6 +40,8 @@ public class FacebookSettingsFragment extends BaseMotleeFragment {
 		
 		settingsLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.settings_table_layout);
 		settingsLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		
+		helper = new DatabaseHelper(this.getActivity().getApplicationContext());
 		
 		setNavigationButtons();
 		
@@ -59,7 +67,14 @@ public class FacebookSettingsFragment extends BaseMotleeFragment {
 		
 		settingsLayout.setShrinkAllColumns(true);
 		
-		UserInfo userInfo = UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId());
+		
+		
+		UserInfo userInfo = null;
+		try {
+			userInfo = helper.getUserDao().queryForId(SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+		} catch (SQLException e) {
+			Log.e("DatabaseHelper", "Failed to queryForId for user", e);
+		}
 		
 		ImageView imageView = (ImageView) labelButton.findViewById(R.id.facebook_profile_pic);
 		String facebookURL = GlobalVariables.getInstance().getFacebookPictureUrl(userInfo.uid);

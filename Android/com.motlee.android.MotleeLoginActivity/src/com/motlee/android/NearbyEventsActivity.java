@@ -9,17 +9,19 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
 import com.motlee.android.fragment.LocationFragment;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalActivityFunctions;
-import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 
 public class NearbyEventsActivity extends BaseMotleeActivity implements UpdatedEventDetailListener, OnFragmentAttachedListener {
+	
+	private DatabaseWrapper dbWrapper;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,6 +30,8 @@ public class NearbyEventsActivity extends BaseMotleeActivity implements UpdatedE
         setContentView(R.layout.main);
 	    
         menu = GlobalActivityFunctions.setUpSlidingMenu(this);
+        
+        dbWrapper = new DatabaseWrapper(getApplicationContext());
         
         showMenuButtons(BaseMotleeActivity.CREATE_EVENT);
         
@@ -62,7 +66,7 @@ public class NearbyEventsActivity extends BaseMotleeActivity implements UpdatedE
 	        
 	        for (Integer eventId : evt.getEventIds())
 	        {
-	        	locationFragment.addEventDetail(GlobalEventList.eventDetailMap.get(eventId));
+	        	locationFragment.addEventDetail(dbWrapper.getEvent(eventId));
 	        }
 	        
 	        ft.add(R.id.fragment_content, locationFragment)

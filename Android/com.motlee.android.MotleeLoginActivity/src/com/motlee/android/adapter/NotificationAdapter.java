@@ -1,8 +1,11 @@
 package com.motlee.android.adapter;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.emilsjolander.components.StickyListHeaders.StickyListHeadersBaseAdapter;
 import com.motlee.android.R;
+import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.layouts.HorizontalRatioLinearLayout;
 import com.motlee.android.object.DateStringFormatter;
 import com.motlee.android.object.DrawableCache;
@@ -10,7 +13,6 @@ import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Notification;
 import com.motlee.android.object.UserInfo;
-import com.motlee.android.object.UserInfoList;
 
 import android.content.Context;
 import android.util.Log;
@@ -21,21 +23,27 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class NotificationAdapter extends ArrayAdapter<Notification> {
+public class NotificationAdapter extends StickyListHeadersBaseAdapter {
 
 	private String tag = "NotificationAdapter";
 	
 	private LayoutInflater inflater;
 	private int resource;
 	private ArrayList<Notification> mData;
+	private Integer mSplitSection;
 	
+	private DatabaseHelper helper;
 	
-    public NotificationAdapter(Context context, int resource, ArrayList<Notification> data) {
-    	super(context, resource, data);
+    public NotificationAdapter(Context context, int resource, ArrayList<Notification> data, int splitIndex) {
+    	super(context);
         	Log.w(tag, "constructor");
             this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             this.resource = resource;
             this.mData = new ArrayList<Notification>(data);
+            this.mSplitSection = splitIndex;
+            
+            
+            helper = new DatabaseHelper(context.getApplicationContext());
     }
 	
     /**
@@ -75,15 +83,16 @@ public class NotificationAdapter extends ArrayAdapter<Notification> {
     /**
      * Return a generated view for a position.
      */
-    public View getView(int position, View convertView, ViewGroup parent) {
-    	Log.w(tag, "getView: position, " + position + ", convertView, " + convertView + ", parent: " + parent);
+    @Override
+    public View getView(int position, View convertView) {
+    	Log.w(tag, "getView: position, " + position + ", convertView, " + convertView);
             // reuse a given view, or inflate a new one from the xml
              
         ViewHolder holder = new ViewHolder();
         
         if (convertView == null) {
         	Log.w(tag, "inflating resource: " + resource);
-                convertView = this.inflater.inflate(resource, parent, false);
+                convertView = this.inflater.inflate(resource, null);
                 
                 holder.notification_profile = (ImageView) convertView.findViewById(R.id.notification_profile_pic);
                 holder.notification_message = (TextView) convertView.findViewById(R.id.notification_message);
@@ -97,6 +106,13 @@ public class NotificationAdapter extends ArrayAdapter<Notification> {
 
         Notification notification = this.mData.get(position);
         
+        UserInfo notificationOwner = null;
+		try {
+			notificationOwner = helper.getUserDao().queryForId(notification.userId);
+		} catch (SQLException e) {
+			Log.e("DatabaseHelper", "Failed to queryForId for user", e);
+		}
+        		
         holder.notification_message.setText(notification.message);
         holder.notification_message.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
         holder.notification_time.setText(DateStringFormatter.getDescriptivePastDateString(notification.timeCreated));
@@ -108,7 +124,7 @@ public class NotificationAdapter extends ArrayAdapter<Notification> {
         holder.notification_profile.setMaxHeight(drawable.getHeight() - DrawableCache.convertDpToPixel(5));
         holder.notification_profile.setMaxWidth(drawable.getHeight() - DrawableCache.convertDpToPixel(5));
         
-        GlobalVariables.getInstance().downloadImage(holder.notification_profile, GlobalVariables.getInstance().getFacebookPictureUrlLarge(UserInfoList.getInstance().get(notification.userId).uid));
+        GlobalVariables.getInstance().downloadImage(holder.notification_profile, GlobalVariables.getInstance().getFacebookPictureUrlLarge(notificationOwner.uid));
         // bind the data to the view object
         return convertView;
     }
@@ -119,4 +135,49 @@ public class NotificationAdapter extends ArrayAdapter<Notification> {
         public View notification_button;
         public TextView notification_time;
     }
+
+
+	private class HeaderViewHolder
+	{
+		TextView category_title;
+	}
+    
+	@Override
+	public View getHeaderView(int position, View convertView) {
+		HeaderViewHolder holder = new HeaderViewHolder();
+    	
+    	if (convertView == null) {
+    		convertView = (View) this.inflater.inflate(R.layout.search_category_bar, null);
+            holder.category_title = (TextView) convertView.findViewById(R.id.category_text);
+            convertView.setTag(holder);
+        }
+    	else
+    	{
+    		holder = (HeaderViewHolder) convertView.getTag();
+    	}
+    	
+    	holder.category_title.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+    	if (position < mSplitSection)
+    	{
+    		holder.category_title.setText("New Notifications");
+    	}
+    	else
+    	{
+    		holder.category_title.setText("Old Notifications");
+    	}
+    	
+    	return convertView;
+	}
+
+	@Override
+	public long getHeaderId(int position) {
+		if (position < mSplitSection)
+		{
+			return 0;
+		}
+		else
+		{
+			return 1;
+		}
+	}
 }

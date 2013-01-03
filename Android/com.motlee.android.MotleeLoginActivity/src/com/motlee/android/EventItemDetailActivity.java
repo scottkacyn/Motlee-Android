@@ -1,24 +1,29 @@
 package com.motlee.android;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import com.motlee.android.adapter.PhotoDetailPagedViewAdapter;
+import com.motlee.android.database.DatabaseHelper;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.EventItemType;
 import com.motlee.android.fragment.EventDetailFragment;
 import com.motlee.android.fragment.EventItemDetailFragment;
 import com.motlee.android.object.Comment;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventServiceBuffer;
-import com.motlee.android.object.GlobalEventList;
+
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharedPreferencesWrapper;
 import com.motlee.android.object.StoryItem;
-import com.motlee.android.object.UserInfoList;
+import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.DeletePhotoListener;
 import com.motlee.android.object.event.UpdatedLikeEvent;
 import com.motlee.android.object.event.UpdatedLikeListener;
@@ -37,6 +42,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.InputType;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
@@ -59,6 +65,8 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 	private EditText editText;
 	private boolean getPhotoInformation = true;
 	
+	private DatabaseWrapper dbWrapper;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -71,6 +79,8 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
         getPhotoInformation = getIntent().getBooleanExtra("GetPhotoInfo", true);
         
         getPhotoInformation = true;
+        
+        dbWrapper = new DatabaseWrapper(getApplicationContext());
         
         ArrayList<PhotoItem> photos = getIntent().getParcelableArrayListExtra("Photos");
         
@@ -90,6 +100,15 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
         }
         else
         {
+        	DatabaseHelper helper = new DatabaseHelper(this.getApplicationContext());
+        	
+        	UserInfo user = null;
+			try {
+				user = helper.getUserDao().queryForId(mEventItem.user_id);
+			} catch (SQLException e) {
+				Log.e("DatabaseHelper", "Failed to queryForId for user", e);
+			}
+        	
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
             
@@ -98,7 +117,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
             
             fragment.setDetailImage((PhotoItem)mEventItem);
             fragment.setPhotoList(photos);
-            fragment.setPageTitle(UserInfoList.getInstance().get(mEventItem.user_id).name);
+            fragment.setPageTitle(user.name);
             
             ft.add(R.id.fragment_content, fragment)
             .commit();
@@ -169,7 +188,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
     	{
 	    	//EventServiceBuffer.addCommentToEventItem(mEventItem, fragment.getCommentText());
 	    	
-    		Comment comment = new Comment(currentPhoto.event_id, EventItemType.COMMENT, GlobalVariables.getInstance().getUserId(), new Date(), fragment.getCommentText());
+    		Comment comment = new Comment(currentPhoto.event_id, EventItemType.COMMENT, SharedPreferencesWrapper.getIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID), new Date(), fragment.getCommentText());
     		
     		if (newComments.containsKey(currentPhoto))
     		{
@@ -181,7 +200,9 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
     			newComments.get(currentPhoto).add(comment);
     		}
     		
-    		currentPhoto.comments.add(comment);
+    		comment.photo = currentPhoto;
+    		
+    		dbWrapper.createComment(comment);
     		
 	    	fragment.removeTextAndKeyboard();
 	    	
@@ -204,9 +225,11 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 		
 		boolean hasLiked = false;
 		
-		for (Like like : photo.likes)
+		Collection<Like> likes = dbWrapper.getLikes(photo.id);
+		
+		for (Like like : likes)
 		{
-			if (like.user_id.equals(GlobalVariables.getInstance().getUserId()))
+			if (like.user_id.equals(SharedPreferencesWrapper.getIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID)))
 			{
 				hasLiked = true;
 				break;
@@ -215,13 +238,13 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 		
 		if (hasLiked)
 		{
-			for (Iterator<Like> it = photo.likes.iterator(); it.hasNext(); )
+			for (Iterator<Like> it = likes.iterator(); it.hasNext(); )
 			{
 				Like like = it.next();
 				
-				if (like.user_id == GlobalVariables.getInstance().getUserId())
+				if (like.user_id == SharedPreferencesWrapper.getIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID))
 				{
-					it.remove();
+					dbWrapper.deleteLike(like);
 				}
 			}
 			
@@ -232,9 +255,11 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 		}
 		else
 		{
-			Like newLike = new Like(photo.event_id, EventItemType.LIKE, GlobalVariables.getInstance().getUserId(), new Date());
+			Like newLike = new Like(photo.event_id, EventItemType.LIKE, SharedPreferencesWrapper.getIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID), new Date());
 			
-			photo.likes.add(newLike);
+			newLike.photo = photo;
+			
+			dbWrapper.createLike(newLike);
 			
 			PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
 			PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
@@ -277,9 +302,9 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
         
         fragment.setDetailImage((PhotoItem)mEventItem);
         
-        fragment.setPhotoList(GlobalEventList.eventDetailMap.get(mEventItem.event_id).getImages());
+        fragment.setPhotoList(new ArrayList<PhotoItem>(dbWrapper.getPhotos(mEventItem.event_id)));
         
-        fragment.setPageTitle(GlobalEventList.eventDetailMap.get(mEventItem.event_id).getEventName());
+        fragment.setPageTitle(dbWrapper.getEvent(mEventItem.event_id).getEventName());
         
         ft.add(R.id.fragment_content, fragment)
         .commit();

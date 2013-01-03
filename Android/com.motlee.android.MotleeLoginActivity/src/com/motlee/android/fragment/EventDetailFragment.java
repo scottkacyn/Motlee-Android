@@ -10,9 +10,10 @@ import com.motlee.android.BaseDetailActivity;
 import com.motlee.android.EventDetailActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.EventDetailGridAdapter;
-import com.motlee.android.adapter.EventDetailListAdapter;
 import com.motlee.android.adapter.EventListAdapter;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.Attendee;
 import com.motlee.android.object.DateStringFormatter;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
@@ -21,11 +22,11 @@ import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharedPreferencesWrapper;
 import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.GridPictures;
 import com.motlee.android.object.EventListParams;
 import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.UserInfoList;
 import com.motlee.android.object.event.UpdatedLikeEvent;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
@@ -78,7 +79,6 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 	
 	private String pageTitle = "All Events";
 	
-	private EventDetailListAdapter listAdapter;
 	private EventDetailGridAdapter gridAdapter;
 	
 	private ListView listViewLayout;
@@ -98,6 +98,8 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 	private LinearLayout eventHeader;
 
 	protected MyGestureListener myGestureListener;
+	
+	private DatabaseWrapper dbWrapper;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -142,7 +144,6 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		}*/
 		//View eventTop = inflater.inflate(R.layout.event_detail_top, null);
 		//listViewLayout.addHeaderView(eventTop);
-		setListAdapter();
 		setGridAdapter();
 		
 		if (listViewLayout.getFooterViewsCount() == 0)
@@ -175,7 +176,7 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		this.inflater = inflater;
 		view = (View) this.inflater.inflate(R.layout.event_detail_photos, null);
 		
-
+		dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
 		
 		//listViewLayout.setOnTouchListener(touchListener);
 		
@@ -197,7 +198,7 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		setPageHeader(pageTitle);
 		if (mEventDetail != null)
 		{
-			showRightHeaderButton(mEventDetail);
+			showRightHeaderButton(mEventDetail, this.getActivity().getApplicationContext());
 		}
 		
 		//checkBottomCommentBar();
@@ -304,9 +305,9 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		this.pageTitle = mEventDetail.getEventName();
 		setPageHeader(pageTitle);
 		
-		if (mEventDetail != null)
-		{ 
-			showRightHeaderButton(mEventDetail);
+		if (mEventDetail != null && getActivity() != null)
+		{
+			showRightHeaderButton(mEventDetail, getActivity().getApplicationContext());
 		}
 		
 		//addListToAdapter();
@@ -441,42 +442,13 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		addGridToTableLayout();
 	}
 	
-	public void addLikeToListAdapter(UpdatedLikeEvent params)
-	{
-		for (EventItem item : listAdapter.getData())
-		{
-			if (item.type == params.type && item.id == params.itemId)
-			{
-				params.like.event_id = item.event_id;
-				item.likes.add(params.like);
-				listAdapter.notifyDataSetChanged();
-			}
-		}
-	}
-	
-	public void notifyDataSetChanged()
-	{
-		listAdapter.notifyDataSetChanged();
-	}
-	
-	public void setListAdapter()
-	{
-		if (mEventDetail != null && listAdapter != null)
-		{
-			List<EventItem> storyPhotoList = new ArrayList<EventItem>();
-			storyPhotoList.addAll(mEventDetail.getStories());
-			storyPhotoList.addAll(mEventDetail.getImages());
-			Collections.sort(storyPhotoList);
-			
-			listAdapter.replaceData(storyPhotoList);
-		}
-	}
-	
 	private OnClickListener takePhotoListener = new OnClickListener(){
 
 		public void onClick(View v) {
 			
-			if (mEventDetail.getAttendees().contains(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId())))
+			Attendee attendee = new Attendee(SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+			
+			if (dbWrapper.getAttendees(mEventDetail.getEventID()).contains(attendee))
 			{
 				MenuFunctions.takePictureOnPhone(mEventDetail.getEventID(), getActivity());
 			}
@@ -514,11 +486,13 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		
 		ArrayList<GridPictures> gridList = new ArrayList<GridPictures>();
 		
-		int imageCount = mEventDetail.getImages().size();
+		ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>(dbWrapper.getPhotos(mEventDetail.getEventID()));
+		
+		int imageCount = photos.size();
 		
 		List<EventItem> storyPhotoList = new ArrayList<EventItem>();
 		
-		storyPhotoList.addAll(mEventDetail.getImages());
+		storyPhotoList.addAll(photos);
 		
 		Collections.sort(storyPhotoList);
 		
@@ -564,7 +538,9 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 
 	public void storyEvent(UpdatedStoryEvent evt) {
 		
-		mEventDetail.getStories().add(evt.getStory());
+		evt.getStory().event_detail = mEventDetail;
+		
+		dbWrapper.createStory(evt.getStory());
 		//addListToAdapter();
 		
 	}

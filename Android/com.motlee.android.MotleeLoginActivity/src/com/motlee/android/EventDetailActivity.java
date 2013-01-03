@@ -1,10 +1,14 @@
 package com.motlee.android;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 import com.google.android.maps.MapView;
+import com.motlee.android.database.DatabaseHelper;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.EventItemType;
 import com.motlee.android.fragment.DateDetailFragment;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
@@ -13,19 +17,19 @@ import com.motlee.android.fragment.EventDetailFragment;
 import com.motlee.android.fragment.LocationFragment;
 import com.motlee.android.fragment.MessageDetailFragment;
 import com.motlee.android.fragment.PeopleListFragment;
+import com.motlee.android.object.Attendee;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalActivityFunctions;
-import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharedPreferencesWrapper;
 import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.UserInfo;
-import com.motlee.android.object.UserInfoList;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
@@ -68,6 +72,10 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	private FragmentTransaction ft;
 	private int mEventID;
 	
+	public static final String PHOTOS = "photos";
+	public static final String MESSAGES = "messages";
+	
+	
 	private EventDetailFragment photosFragment;
 	private PeopleListFragment peopleListFragment;
 	private LocationFragment locationFragment;
@@ -88,6 +96,10 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	
 	private AlertDialog alertDialog;
 	
+	private DatabaseWrapper dbWrapper;
+	
+	private String firstScreen;
+	
 	/*
 	 * (non-Javadoc)
 	 * @see com.google.android.maps.MapActivity#onNewIntent(android.content.Intent)
@@ -101,7 +113,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		mEventID = intent.getExtras().getInt("EventID");
 		mNewPhoto = intent.getParcelableExtra("NewPhoto");
 		
-		eDetail = GlobalEventList.eventDetailMap.get(mEventID);
+		eDetail = dbWrapper.getEvent(mEventID);
 		
 		setUpFragments();
 	}
@@ -111,7 +123,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	{
 		super.onResume();
 		
-		eDetail = GlobalEventList.eventDetailMap.get(mEventID);
+		eDetail = dbWrapper.getEvent(mEventID);
 		
 		if (progressDialog == null || !progressDialog.isShowing())
 		{
@@ -134,13 +146,17 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         
         menu = GlobalActivityFunctions.setUpSlidingMenu(this);
         
+        dbWrapper = new DatabaseWrapper(this.getApplicationContext());
+        
         View mainLayout = findViewById(R.id.main_frame_layout);
         mainLayout.setClickable(true);
         //mainLayout.setOnClickListener(onClick);
         
+        firstScreen = getIntent().getExtras().getString("Page");
+        
         mEventID = getIntent().getExtras().getInt("EventID");
         
-        eDetail = GlobalEventList.eventDetailMap.get(mEventID);
+        eDetail = dbWrapper.getEvent(mEventID);
         
         header = findViewById(R.id.header);
         mNewPhoto = getIntent().getParcelableExtra("NewPhoto");
@@ -212,8 +228,11 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 
 			progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Joining Event");
 			
-			ArrayList<Integer> attendees = new ArrayList<Integer>();
-			attendees.add(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId()).uid);
+			ArrayList<Long> attendees = new ArrayList<Long>();
+			
+			UserInfo user = dbWrapper.getUser(SharedPreferencesWrapper.getIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+			
+			attendees.add(user.uid);
 			
 			EventServiceBuffer.joinEvent(eDetail.getEventID());
 		}
@@ -268,7 +287,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 
 	private MessageDetailFragment setUpMessageFragment() {
 
-		eDetail = GlobalEventList.eventDetailMap.get(mEventID);
+		eDetail = dbWrapper.getEvent(mEventID);
         
         MessageDetailFragment messageFragment = new MessageDetailFragment();
         
@@ -294,7 +313,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
     
     private LocationFragment setUpLocationFragment()
     {
-    	eDetail = GlobalEventList.eventDetailMap.get(mEventID);
+    	eDetail = dbWrapper.getEvent(mEventID);
     	
         LocationFragment locationFragment = new LocationFragment();
         
@@ -311,7 +330,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
     
 	private EventDetailFragment setUpPhotosFragment() {
 
-		eDetail = GlobalEventList.eventDetailMap.get(mEventID);
+		eDetail = dbWrapper.getEvent(mEventID);
         
         EventDetailFragment eventDetailFragment = new EventDetailFragment();
         
@@ -324,7 +343,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
     
 	private PeopleListFragment setUpFriendsFragment() {
 
-		eDetail = GlobalEventList.eventDetailMap.get(mEventID);
+		eDetail = dbWrapper.getEvent(mEventID);
         
 		PeopleListFragment fragment = new PeopleListFragment();
         
@@ -524,14 +543,21 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
 		EventServiceBuffer.removeEventDetailListener(this);
 		
-        eDetail = GlobalEventList.eventDetailMap.get(mEventID); 
+        eDetail = dbWrapper.getEvent(mEventID); 
         
         setUpFragments();
         
-        if (eDetail.getAttendees().contains(UserInfoList.getInstance().get(GlobalVariables.getInstance().getUserId())))
+        Attendee attendee = new Attendee(SharedPreferencesWrapper.getIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+        
+        if (dbWrapper.getAttendees(mEventID).contains(attendee))
         {
-        	GlobalEventList.myEventDetails.add(eDetail.getEventID());
-            setActionForRightMenu(takePhotoListener);
+        	Set<Integer> myEvents = SharedPreferencesWrapper.getIntArrayPref(getApplicationContext(), SharedPreferencesWrapper.MY_EVENT_DETAILS);
+            
+        	myEvents.add(mEventID);
+        	
+        	SharedPreferencesWrapper.setIntArrayPref(getApplicationContext(), SharedPreferencesWrapper.MY_EVENT_DETAILS, myEvents);
+
+        	setActionForRightMenu(takePhotoListener);
             showMenuButtons(BaseMotleeActivity.TAKE_PICTURE);
         }
         else
@@ -547,9 +573,26 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
     		
     		EventServiceBuffer.sendPhotoCacheToDatabase();
     		
-    		eDetail.getImages().add(mNewPhoto);
+    		mNewPhoto.event_detail = eDetail;
+    		
+    		dbWrapper.createPhoto(mNewPhoto);
     		
     		showPhotos(null);
+    	}
+    	else if (firstScreen != null)
+    	{
+    		if (firstScreen.equals(PHOTOS))
+    		{
+    			showPhotos(null);
+    		}
+    		else if (firstScreen.equals(MESSAGES))
+    		{
+    			showComments(null);
+    		}
+    		else
+    		{
+    			showPhotos(null);
+    		}
     	}
     	else
     	{
@@ -604,7 +647,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		}
 		else
 		{
-			eDetail = GlobalEventList.eventDetailMap.get(mEventID);
+			eDetail = dbWrapper.getEvent(mEventID);
 			
 			Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_content);
 			

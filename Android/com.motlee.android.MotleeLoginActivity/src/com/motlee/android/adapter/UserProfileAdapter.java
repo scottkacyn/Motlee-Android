@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.motlee.android.R;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
-import com.motlee.android.object.GlobalEventList;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.UserInfo;
-import com.motlee.android.object.UserInfoList;
 
 import android.content.Context;
 import android.util.Log;
@@ -26,12 +26,16 @@ public class UserProfileAdapter extends ArrayAdapter<Integer> {
 	private LayoutInflater inflater;
 	private int resource;
 	
+	private DatabaseWrapper dbWrapper;
+	
 	public UserProfileAdapter(Context context, int textViewResourceId, List<Integer> objects) {
 		super(context, textViewResourceId, objects);
 		
 		inflater = LayoutInflater.from(context);
 		resource = textViewResourceId;
 		mEventIds = new ArrayList<Integer>(objects);
+		
+		dbWrapper = new DatabaseWrapper(context.getApplicationContext());
 	}
 
 	public int getCount() {
@@ -69,7 +73,7 @@ public class UserProfileAdapter extends ArrayAdapter<Integer> {
         	convertView.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH).getDrawable());
         }
         
-        EventDetail event = GlobalEventList.eventDetailMap.get(this.mEventIds.get(position));
+        EventDetail event = dbWrapper.getEvent(this.mEventIds.get(position));
     	
         convertView.setContentDescription(event.getEventID().toString());
         
@@ -78,9 +82,11 @@ public class UserProfileAdapter extends ArrayAdapter<Integer> {
         
         holder.search_event_picture.setMaxHeight(DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH).getHeight());
         
-        if (event.getImages().size() > 0)
+        ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>(dbWrapper.getPhotos(event.getEventID()));
+        
+        if (photos.size() > 0)
         {
-        	GlobalVariables.getInstance().downloadImage(holder.search_event_picture, GlobalVariables.getInstance().getAWSUrlThumbnail(event.getImages().get(0)));
+        	GlobalVariables.getInstance().downloadImage(holder.search_event_picture, GlobalVariables.getInstance().getAWSUrlThumbnail(photos.get(0)));
         }
         else
         {

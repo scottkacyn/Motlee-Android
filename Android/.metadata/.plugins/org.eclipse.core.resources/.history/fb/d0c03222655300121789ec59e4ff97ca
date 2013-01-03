@@ -1,0 +1,26 @@
+package com.motlee.android.object;
+
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+import com.motlee.android.enums.EventItemType;
+
+@DatabaseTable(tableName = "attendees")
+public class Attendee {
+
+	@DatabaseField(foreign = true, canBeNull = false, columnName = "event_detail")
+	public EventDetail event_detail;
+	
+	@DatabaseField(columnName = "user_id", dataType = DataType.INTEGER_OBJ)
+	public Integer user_id;
+	
+	public Attendee()
+	{
+		
+	}
+	
+	public Attendee(Integer user_id)
+	{
+		this.user_id = user_id;
+	}
+}
