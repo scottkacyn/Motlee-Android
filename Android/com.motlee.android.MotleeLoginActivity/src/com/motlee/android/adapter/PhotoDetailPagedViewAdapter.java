@@ -18,7 +18,7 @@ import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
-import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.UserInfo;
 
@@ -212,7 +212,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 		    	
 		    	holder.photo_detail_delete_button.setTag(photo);
 		    	
-		    	if (photo.user_id == SharedPreferencesWrapper.getIntPref(context.getApplicationContext(), SharedPreferencesWrapper.USER_ID))
+		    	if (photo.user_id == SharePref.getIntPref(context.getApplicationContext(), SharePref.USER_ID))
 		    	{
 		    		holder.photo_detail_delete_button.setVisibility(View.VISIBLE);
 		    	}
@@ -239,7 +239,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 						if (touchOverlay.getVisibility() == View.GONE)
 						{
 							touchOverlay.setVisibility(View.VISIBLE);
-							if (photo.user_id == SharedPreferencesWrapper.getIntPref(context.getApplicationContext(), SharedPreferencesWrapper.USER_ID))
+							if (photo.user_id == SharePref.getIntPref(context.getApplicationContext(), SharePref.USER_ID))
 							{
 								holder.photo_detail_delete_button.setVisibility(View.VISIBLE);
 							}
@@ -309,7 +309,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 				boolean hasLiked = false;
 				for (Like like : likes)
 				{
-					if (like.user_id == SharedPreferencesWrapper.getIntPref(context.getApplicationContext(), SharedPreferencesWrapper.USER_ID))
+					if (like.user_id == SharePref.getIntPref(context.getApplicationContext(), SharePref.USER_ID))
 					{
 						hasLiked = true;
 					}

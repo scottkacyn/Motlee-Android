@@ -153,7 +153,7 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements UserI
 		photos = e.getPhotos();
 		final ArrayList<Integer> eventIds = e.getEventIds();
 		
-		EventServiceBuffer.removeUserInfoListener();
+		EventServiceBuffer.removeUserInfoListener(this);
 		
         FragmentManager     fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
@@ -218,7 +218,7 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements UserI
 	{
 		EventServiceBuffer.removeFriendsListener(this);
 		
-		EventServiceBuffer.removeUserInfoListener();
+		EventServiceBuffer.removeUserInfoListener(this);
 		
 		super.onPause();
 	}

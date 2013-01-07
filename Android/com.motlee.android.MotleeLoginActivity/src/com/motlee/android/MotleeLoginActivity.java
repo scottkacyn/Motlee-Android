@@ -25,7 +25,7 @@ import com.motlee.android.fragment.SplashScreenFragment;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 import com.motlee.android.object.event.UserInfoEvent;
@@ -53,12 +53,13 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MotleeLoginActivity extends FragmentActivity implements UpdatedEventDetailListener, OnFragmentAttachedListener {
+public class MotleeLoginActivity extends FragmentActivity implements UserInfoListener, UpdatedEventDetailListener, OnFragmentAttachedListener {
 
     Facebook facebook = new Facebook(GlobalVariables.FB_APP_ID);
     private SharedPreferences mPrefs;
     private MotleeLoginActivity instance = this;
     private LoginPageFragment loginPageFragment;
+    private UiLifecycleHelper uiHelper;
     
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
 
@@ -84,12 +85,14 @@ public class MotleeLoginActivity extends FragmentActivity implements UpdatedEven
         registerReceiver(receiver, filter);
 
         super.onResume();
+        uiHelper.onResume();
     }
 
     @Override
     protected void onPause() {
         unregisterReceiver(receiver);
         super.onPause();
+        uiHelper.onPause();
     }
     
     
@@ -100,6 +103,18 @@ public class MotleeLoginActivity extends FragmentActivity implements UpdatedEven
         setContentView(R.layout.first_screen);
         // Get existing access_token if any
         
+        Session.StatusCallback callback = new Session.StatusCallback() {
+
+            // callback when session changes state
+  	          public void call(Session session, SessionState state, Exception exception) {
+  	        	  
+  	        	  onSessionChange(session, state, exception);
+  	          }
+        };
+        
+        uiHelper = new UiLifecycleHelper(this, callback);
+        uiHelper.onCreate(savedInstanceState);
+        
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         
@@ -108,31 +123,6 @@ public class MotleeLoginActivity extends FragmentActivity implements UpdatedEven
         ft.add(R.id.fragment, loginPageFragment)
         .add(new EmptyFragmentWithCallbackOnResume(), "EmptyFragment")
         .commit();
-        
-        GlobalVariables instance = GlobalVariables.getInstance();
-        
-        
-        DrawableCache.getInstance(getResources());
-        
-        // Create dummy file to see if it is first time
-        File file = GlobalVariables.file;
-        
-		boolean exists = file.exists();
-		
-		if (!exists) 
-		{
-			GlobalVariables.getInstance().firstUse = true;  
-		}
-		else 
-		{
-			GlobalVariables.getInstance().firstUse = false;
-		}
-        instance.setDisplay(getWindowManager().getDefaultDisplay());
-        instance.setGothamLigtFont(Typeface.createFromAsset(getAssets(), "fonts/gotham_light.ttf"));
-        instance.setHelveticaNeueRegularFont(Typeface.createFromAsset(getAssets(), "fonts/helvetica_neue_bold.ttf"));
-        instance.setHelveticaNeueRegularFont(Typeface.createFromAsset(getAssets(), "fonts/helvetica_neue_regular.ttf"));
-        instance.setFacebook(facebook);
-        instance.calculateEventListImageSize();
         
         //this.openSession();
         
@@ -146,65 +136,42 @@ public class MotleeLoginActivity extends FragmentActivity implements UpdatedEven
         session.openForRead(this);*/
         
         //access_token = session.get     
-        
-     // start Facebook Login
-        Session.openActiveSession(this, true, new Session.StatusCallback() {
 
-          // callback when session changes state
-	          public void call(Session session, SessionState state, Exception exception) {
-	        	  
-	        	  onSessionChange(session, state, exception);
-	          }
-        });
-        
-        EventServiceBuffer.getInstance(getApplication());
-        
         //EventServiceBuffer.setEventDetailListener(this);
         
-        EventServiceBuffer.setUserInfoListener(new UserInfoListener(){
-
-			public void raised(UserInfoEvent e) {
-				
-
-	        	
-			}
-
-			public void userWithEventsPhotos(UserWithEventsPhotosEvent e) {
-
-				SharedPreferencesWrapper.setIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID, e.getUserInfo().id);
-				
-				SharedPreferencesWrapper.setIntArrayPref(getApplicationContext(), SharedPreferencesWrapper.MY_EVENT_DETAILS, new HashSet<Integer>(e.getEventIds()));
-				
-	        	EventServiceBuffer.setUserInfoListener(null);
-	        	
-	        	EventServiceBuffer.requestMotleeFriends(e.getUserInfo().id);
-	        	
-	    		startEventListActivity();
-	        	//EventServiceBuffer.getEventsFromService();
-			}
-        	
-        });
+        EventServiceBuffer.setUserInfoListener(this);
     }
     
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
       super.onActivityResult(requestCode, resultCode, data);
-      Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
+      uiHelper.onActivityResult(requestCode, resultCode, data);
     }
     
     public void onSessionChange(Session session, SessionState state, Exception exception)
     {
-		if (session != null)
+		if (session.isOpened())
 		{
-			if (session.isOpened())
-			{
-				  loginPageFragment.hideLoginButton();
-				  
-				  String access_token = Session.getActiveSession().getAccessToken();
-				  
-				  EventServiceBuffer.getUserInfoFromFacebookAccessToken(access_token);
-			}
+			  loginPageFragment.hideLoginButton();
+			  
+			  String access_token = Session.getActiveSession().getAccessToken();
+			  
+			  EventServiceBuffer.getUserInfoFromFacebookAccessToken(access_token);
 		}
+    }
+    
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+        /*Session session = Session.getActiveSession();
+
+        if (session != null && session.isOpened()) {
+			  loginPageFragment.hideLoginButton();
+			  
+			  String access_token = Session.getActiveSession().getAccessToken();
+			  
+			  EventServiceBuffer.getUserInfoFromFacebookAccessToken(access_token);
+        } */
     }
     
     public void myEventOccurred(UpdatedEventDetailEvent evt) {
@@ -217,10 +184,15 @@ public class MotleeLoginActivity extends FragmentActivity implements UpdatedEven
     //Starts EventListActivity and finishes this one
     private void startEventListActivity()
     {
-    	Intent intent = new Intent(instance, EventListActivity.class);
-    	startActivity(intent);
+    	setResult(0);
     	
     	finish();
+    }
+    
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        uiHelper.onSaveInstanceState(outState);
     }
     
     @Override
@@ -232,6 +204,7 @@ public class MotleeLoginActivity extends FragmentActivity implements UpdatedEven
 		EventServiceBuffer.removeEventDetailListener(this);
 		unbindDrawables(this.findViewById(android.R.id.content));
 		super.onDestroy();
+		uiHelper.onDestroy();
     }
 
 	private void unbindDrawables(View view) {
@@ -248,7 +221,7 @@ public class MotleeLoginActivity extends FragmentActivity implements UpdatedEven
 
 	public void OnFragmentAttached() {
 		
-		if (Session.getActiveSession() != null)
+		/*if (Session.getActiveSession() != null)
 		{
 			if (Session.getActiveSession().isOpened())
 			{
@@ -258,6 +231,25 @@ public class MotleeLoginActivity extends FragmentActivity implements UpdatedEven
 				  
 				  EventServiceBuffer.getUserInfoFromFacebookAccessToken(access_token);
 			}
-		}
+		}*/
+	}
+
+	public void raised(UserInfoEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void userWithEventsPhotos(UserWithEventsPhotosEvent e) {
+
+		SharePref.setIntPref(getApplicationContext(), SharePref.USER_ID, e.getUserInfo().id);
+		
+		SharePref.setIntArrayPref(getApplicationContext(), SharePref.MY_EVENT_DETAILS, new HashSet<Integer>(e.getEventIds()));
+		
+    	EventServiceBuffer.removeUserInfoListener(this);
+    	
+    	EventServiceBuffer.requestMotleeFriends(e.getUserInfo().id);
+    	
+		startEventListActivity();
+    	//EventServiceBuffer.getEventsFromService();
 	}
 }

@@ -75,10 +75,9 @@ public class DatabaseWrapper {
 		CloseableIterator<EventDetail> iterator = null;
 		try 
 		{
-		QueryBuilder<EventDetail, Integer> qb = helper.getEventDao().queryBuilder();
-		qb.where();
-		// when you are done, prepare your query and build an iterator
-
+			QueryBuilder<EventDetail, Integer> qb = helper.getEventDao().queryBuilder();
+			qb.where();
+			// when you are done, prepare your query and build an iterator
 
 			iterator = helper.getEventDao().iterator(qb.prepare());
 
@@ -122,6 +121,22 @@ public class DatabaseWrapper {
 		}
 	}
 	
+	public long getPhotoCount(Integer eventId)
+	{
+		try
+		{
+			QueryBuilder<PhotoItem, Integer> queryBuilder = helper.getPhotoDao().queryBuilder();
+			queryBuilder.where().eq("event_detail", eventId);
+			queryBuilder.setCountOf(true);
+			return helper.getPhotoDao().countOf(queryBuilder.prepare());
+		}
+		catch (SQLException e)
+		{
+			Log.e("DatabaseWrapper", "Failed to getPhotoCount");
+			return -1;
+		}
+	}
+	
 	public void createIfNotExistsEvent(EventDetail eDetail)
 	{
 		try {
@@ -142,7 +157,7 @@ public class DatabaseWrapper {
 	
 	public LocationInfo getLocation(Integer locationId)
 	{
-		if (locationId < 1)
+		if (locationId == null || locationId < 1)
 		{
 			return new LocationInfo();
 		}
@@ -152,7 +167,7 @@ public class DatabaseWrapper {
 				return helper.getLocationDao().queryForId(locationId);
 			} catch (SQLException e) {
 				Log.e("DatabaseWrapper", "Failed to getLocation location", e);
-				return null;
+				return new LocationInfo();
 			}
 		}
 	}
@@ -386,6 +401,16 @@ public class DatabaseWrapper {
 			helper.getStoryDao().delete(story);
 		} catch (SQLException e) {
 			Log.e("DatabaseWrapper", "Failed to deleteStory for event", e);
+		}
+	}
+	
+	public Comment getComment(Integer commentId)
+	{
+		try {
+			return helper.getCommentDao().queryForId(commentId);
+		} catch (SQLException e) {
+			Log.e("DatabaseWrapper", "Failed to getCommment", e);
+			return null;
 		}
 	}
 	

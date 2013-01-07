@@ -4,8 +4,9 @@ public enum NotificationObjectType {
 	
 	EVENT(1),
 	FRIEND(2),
-	PHOTO(3),
-	EVENT_MESSAGE(4);
+	PHOTO_COMMENT(3),
+	PHOTO_LIKE(4),
+	EVENT_MESSAGE(5);
 	
 	private final int value;
 	private NotificationObjectType(int value)

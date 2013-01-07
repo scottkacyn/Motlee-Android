@@ -1,5 +1,7 @@
 package com.motlee.android.fragment;
 
+import java.util.Arrays;
+
 import com.facebook.widget.LoginButton;
 import com.facebook.android.*;
 import com.facebook.android.Facebook.*;
@@ -25,6 +27,8 @@ public class LoginPageFragment extends BaseMotleeFragment {
 
     	facebookButton = (LoginButton) view.findViewById(R.id.auth_button);
     	facebookButton.setApplicationId(getString(R.string.app_id));
+    	//facebookButton.setFragment(this);
+    	facebookButton.setPublishPermissions(Arrays.asList("publish_actions"));
 
         return view;
 	}

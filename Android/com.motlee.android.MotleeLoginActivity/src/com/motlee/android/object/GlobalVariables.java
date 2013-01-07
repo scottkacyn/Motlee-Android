@@ -90,8 +90,6 @@ public class GlobalVariables {
     
     private ExecutorService threadPool = Executors.newCachedThreadPool();
     
-    public boolean firstUse = true;
-    
     private int maxEventListImageHeight;
     
     private Location userLocation;

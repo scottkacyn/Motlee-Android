@@ -51,7 +51,7 @@ import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
-import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.event.UpdatedLikeEvent;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -338,7 +338,7 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 			boolean hasLiked = false;
 			for (Like like : likes)
 			{
-				if (like.user_id == SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID))
+				if (like.user_id == SharePref.getIntPref(getActivity().getApplicationContext(), SharePref.USER_ID))
 				{
 					hasLiked = true;
 				}
@@ -427,7 +427,7 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		
 		for (Like like : likes)
 		{
-			if (like.user_id == SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID))
+			if (like.user_id == SharePref.getIntPref(getActivity().getApplicationContext(), SharePref.USER_ID))
 			{
 				thumbIcon.setPressed(true);
 			}

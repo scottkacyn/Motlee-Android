@@ -16,7 +16,7 @@ import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
-import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
 import com.devsmart.android.ui.HorizontalListView;
 import com.emilsjolander.components.StickyListHeaders.StickyListHeadersBaseAdapter;
@@ -124,7 +124,6 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 	         if (!this.data.contains(eventID))
 	         {
 				this.data.add(eventID);
-				this.notifyDataSetChanged();
 	         }
         }
         
@@ -135,7 +134,7 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
          {
          this.data.add(SPACE);
          }
-         this.notifyDataSetChanged();
+         //this.notifyDataSetChanged();
         }
         
         public void clear()
@@ -143,7 +142,7 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
          Log.w(tag, "clear");
          this.data.clear();
         
-         this.notifyDataSetChanged();
+         //this.notifyDataSetChanged();
         }
         
         
@@ -151,8 +150,7 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 * Return a generated view for a position.
 */
         public View getView(int position, View convertView, ViewGroup parent) {
-                // reuse a given view, or inflate a new one from the xml
-                 
+        	
                 ViewHolder holder = new ViewHolder();
                 
                 if (convertView == null) {
@@ -235,9 +233,9 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				CharSequence charSequence = Integer.toString(item.getEventID());
 				holder.event_header_button.setContentDescription(charSequence);
 				
-				boolean isAttending = SharedPreferencesWrapper.getIntArrayPref(getContext(), SharedPreferencesWrapper.MY_EVENT_DETAILS).contains(item.getEventID());
+				boolean isAttending = SharePref.getIntArrayPref(getContext(), SharePref.MY_EVENT_DETAILS).contains(item.getEventID());
 				
-				if (item.getOwnerID() == SharedPreferencesWrapper.getIntPref(getContext().getApplicationContext(), SharedPreferencesWrapper.USER_ID))
+				if (item.getOwnerID() == SharePref.getIntPref(getContext().getApplicationContext(), SharePref.USER_ID))
 				{
 					holder.event_header_icon.setVisibility(View.VISIBLE);
 					holder.event_header_icon.setImageDrawable(this.mContext.getResources().getDrawable(R.drawable.icon_button_gear));
@@ -295,7 +293,12 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				//holder.event_footer_owner.setText(item.getEventOwner().first_name.substring(0, 1) + ". CrazyAssMotherFuckinLongLastName");
 				holder.event_footer_owner.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 				
-				LocationInfo location = dbWrapper.getLocation(item.getLocationID());
+				LocationInfo location = new LocationInfo();
+				
+				if (item.getLocationID() != null)
+				{
+					location = dbWrapper.getLocation(item.getLocationID());
+				}
 				
 				if (location != null)
 				{
@@ -324,6 +327,14 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				if (!eventPhotos.containsKey(item.getEventID()))
 				{
 					eventPhotos.put(item.getEventID(), new ArrayList<PhotoItem>(dbWrapper.getPhotos(item.getEventID())));
+				}
+				else
+				{
+					long photoCount = dbWrapper.getPhotoCount(item.getEventID());
+					if (!Long.valueOf(eventPhotos.get(item.getEventID()).size()).equals(photoCount))
+					{
+						eventPhotos.put(item.getEventID(), new ArrayList<PhotoItem>(dbWrapper.getPhotos(item.getEventID())));
+					}
 				}
 
 				ArrayList<PhotoItem> photos = eventPhotos.get(item.getEventID());

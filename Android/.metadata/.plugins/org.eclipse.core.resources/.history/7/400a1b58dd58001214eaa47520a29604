@@ -1,0 +1,18 @@
+package com.motlee.android.object;
+
+public class Settings {
+
+	public boolean fb_on_event_create;
+	public boolean fb_on_event_invite;
+	public boolean on_event_invite;
+	public boolean on_event_message;
+	public boolean on_friend_join;
+	public boolean on_photo_comment;
+	public boolean on_photo_like;
+	
+	public Settings()
+	{
+		
+	}
+	
+}

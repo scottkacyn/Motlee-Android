@@ -21,7 +21,7 @@ import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.PhotoItem;
-import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.DeletePhotoListener;
@@ -96,7 +96,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 	        
 	        EventServiceBuffer.getPhotosForEventFromService(mEventItem.event_id);
 	        
-	        progressDialog = ProgressDialogWithTimeout.show(EventItemDetailActivity.this, "", "Loading Photos");
+	        progressDialog = ProgressDialog.show(EventItemDetailActivity.this, "", "Loading Photos");
         }
         else
         {
@@ -188,7 +188,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
     	{
 	    	//EventServiceBuffer.addCommentToEventItem(mEventItem, fragment.getCommentText());
 	    	
-    		Comment comment = new Comment(currentPhoto.event_id, EventItemType.COMMENT, SharedPreferencesWrapper.getIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID), new Date(), fragment.getCommentText());
+    		Comment comment = new Comment(currentPhoto.event_id, EventItemType.COMMENT, SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID), new Date(), fragment.getCommentText());
     		
     		if (newComments.containsKey(currentPhoto))
     		{
@@ -201,6 +201,15 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
     		}
     		
     		comment.photo = currentPhoto;
+    		
+    		int id = comment.id;
+    		
+    		while (dbWrapper.getComment(id) != null)
+    		{
+    			id--;
+    		}
+    		
+    		comment.id = id;
     		
     		dbWrapper.createComment(comment);
     		
@@ -229,7 +238,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 		
 		for (Like like : likes)
 		{
-			if (like.user_id.equals(SharedPreferencesWrapper.getIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID)))
+			if (like.user_id.equals(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID)))
 			{
 				hasLiked = true;
 				break;
@@ -242,7 +251,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 			{
 				Like like = it.next();
 				
-				if (like.user_id == SharedPreferencesWrapper.getIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID))
+				if (like.user_id == SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID))
 				{
 					dbWrapper.deleteLike(like);
 				}
@@ -255,7 +264,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 		}
 		else
 		{
-			Like newLike = new Like(photo.event_id, EventItemType.LIKE, SharedPreferencesWrapper.getIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID), new Date());
+			Like newLike = new Like(photo.event_id, EventItemType.LIKE, SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID), new Date());
 			
 			newLike.photo = photo;
 			

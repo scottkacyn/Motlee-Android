@@ -11,6 +11,8 @@ import java.util.Set;
 
 import shared.ui.actionscontentview.ActionsContentView;
 
+import com.facebook.Session;
+import com.facebook.SessionState;
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
@@ -30,7 +32,8 @@ import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoItem;
-import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.SharePref;
+import com.motlee.android.object.StopWatch;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
@@ -52,6 +55,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -67,6 +71,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class EventListActivity extends BaseMotleeActivity {
 
@@ -76,6 +81,7 @@ public class EventListActivity extends BaseMotleeActivity {
 	private static String EVENT_RESPONDER = "EventResponderFragment";
 	public static String ATTENDING = "attending";
 	public static String NOT_ATTENDING = "not attending";
+	public static int SPLASH_PAGE = 1;
 	
 	private EventListAdapter eAdapter;
 	private EventListParams eventListParams = new EventListParams("All Events", EventServiceBuffer.NO_EVENT_FILTER);
@@ -84,11 +90,11 @@ public class EventListActivity extends BaseMotleeActivity {
 	
 	private EventListFragment mEventListFragment;
 	
-	private FragmentActivity mActivity;
-	
 	private DatabaseWrapper dbWrapper;
 	
 	private Handler handler = new Handler();
+	
+	private StopWatch sw = new StopWatch();
 	
 	@Override
 	public void onResume()
@@ -96,9 +102,33 @@ public class EventListActivity extends BaseMotleeActivity {
 		Log.d(this.toString(), "onResume");
 		super.onResume();
 		
-		UpdateEventDetails update = new UpdateEventDetails();
+		if (eAdapter != null && SharePref.getStringPref(getApplicationContext(), SharePref.AUTH_TOKEN) != "" && SharePref.getStringPref(getApplicationContext(), SharePref.ACCESS_TOKEN) != "")
+		{
+			if (eAdapter.getData().size() > 1)
+			{
+				mEventListFragment.setDoneLoading();
+				requestNewDataForList(eventListParams.dataContent, eventListParams.headerText);
+			}
+			else
+			{
+				initializeListData();
+			}
+		}
+	
+        /*FragmentManager     fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        
+    	if (mEventListFragment != null)
+    	{
+    		if (mEventListFragment.getPullToRefreshListView() != null)
+    		{
+    			mEventListFragment.getPullToRefreshListView().onRefresh();
+    		}
+    	}*/
 		
-		update.execute("");		
+		//UpdateEventDetails update = new UpdateEventDetails();
+		
+		//update.execute("");		
 		
 		//mEventListFragment.setPageHeader(eventListParams.headerText);
 		//requestNewDataForList(eventListParams.dataContent, eventListParams.headerText);
@@ -118,9 +148,19 @@ public class EventListActivity extends BaseMotleeActivity {
 		Log.d("EventListActivity", "onNewIntent");
 		
         Object listType = null;
+        boolean startSplash = false;
         if (intent.getExtras() != null)
         {
         	listType = intent.getExtras().get("ListType");
+        	startSplash = intent.getExtras().getBoolean("StartSplash", false);
+        }
+        
+        if (startSplash)
+        {
+    		Log.d(tag, "starting splash page");
+    		
+    		Intent splashIntent = new Intent(EventListActivity.this, MotleeLoginActivity.class);
+    		startActivityForResult(splashIntent, 0);
         }
         
         if (listType != null)
@@ -129,10 +169,12 @@ public class EventListActivity extends BaseMotleeActivity {
 	        {
 	        	if (listType.toString().equals(BaseMotleeFragment.ALL_EVENTS))
 	        	{
+	        		progressDialog = ProgressDialog.show(this, "", "Loading " + BaseMotleeFragment.ALL_EVENTS);
 	        		requestNewDataForList(EventServiceBuffer.NO_EVENT_FILTER, BaseMotleeFragment.ALL_EVENTS);
 	        	}
 	        	else if (listType.toString().equals(BaseMotleeFragment.MY_EVENTS))
 	        	{
+	        		progressDialog = ProgressDialog.show(this, "", "Loading " + BaseMotleeFragment.MY_EVENTS);
 	        		requestNewDataForList(EventServiceBuffer.MY_EVENTS, BaseMotleeFragment.MY_EVENTS);
 	        	}
 	        }
@@ -142,11 +184,24 @@ public class EventListActivity extends BaseMotleeActivity {
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
+    	
         super.onCreate(savedInstanceState);
+    	
+        Log.d(tag, "onCreate");
         
+        GlobalVariables instance = GlobalVariables.getInstance();
+        
+        EventServiceBuffer.getInstance(getApplicationContext());
+        
+        DrawableCache.getInstance(getResources());
+        
+        instance.setDisplay(getWindowManager().getDefaultDisplay());
+        instance.setGothamLigtFont(Typeface.createFromAsset(getAssets(), "fonts/gotham_light.ttf"));
+        instance.setHelveticaNeueRegularFont(Typeface.createFromAsset(getAssets(), "fonts/helvetica_neue_bold.ttf"));
+        instance.setHelveticaNeueRegularFont(Typeface.createFromAsset(getAssets(), "fonts/helvetica_neue_regular.ttf"));
+        instance.calculateEventListImageSize();
+    	
         setContentView(R.layout.main);
-        
-        Log.d("EventListAcitivity", getIntent().toString());
         
         menu = GlobalActivityFunctions.setUpSlidingMenu(this);
         
@@ -158,8 +213,25 @@ public class EventListActivity extends BaseMotleeActivity {
         
         GlobalVariables.getInstance().initializeImageLoader(this);
         
-        mActivity = this;
-        
+    	boolean needToStartSplashPage = getNeedToStartSplashPage();
+    	
+    	if (needToStartSplashPage)
+    	{
+    		Log.d(tag, "starting splash page");
+    		
+    		Intent intent = new Intent(EventListActivity.this, MotleeLoginActivity.class);
+    		startActivityForResult(intent, 0);
+    	}
+    	else
+    	{
+			Session.openActiveSession(this, true, new Session.StatusCallback() {
+				
+				public void call(Session session, SessionState state, Exception exception) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+    	}
         FragmentManager     fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         
@@ -173,10 +245,14 @@ public class EventListActivity extends BaseMotleeActivity {
         
         mEventListFragment = new EventListFragment();
         
-        eAdapter = new EventListAdapter(this, R.layout.event_list_item, new ArrayList<EventDetail>());
+        ArrayList<EventDetail> events = new ArrayList<EventDetail>(dbWrapper.getAllEvents());
+        
+        Collections.sort(events);
+        
+        eAdapter = new EventListAdapter(this, R.layout.event_list_item, events);
         
         mEventListFragment.addEventListAdapter(eAdapter);
-       
+
         mEventListFragment.setHeaderView(findViewById(R.id.header));
         
         
@@ -204,19 +280,32 @@ public class EventListActivity extends BaseMotleeActivity {
         
         mEventListFragment.setEventListParams(eventListParams);
         
-        initializeListData();
-        
         //requestNewDataForList(eventListParams.dataContent, eventListParams.headerText);
         
         ft.add(R.id.fragment_content, mEventListFragment)
         .commit();
+    	
     }
     
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent){
+        super.onActivityResult(requestCode, resultCode, intent);
+
+        SharePref.setBoolPref(getApplicationContext(), SharePref.FIRST_USE, false);
+
+    }
+    
+	private boolean getNeedToStartSplashPage() {
+		return SharePref.getBoolPref(getApplicationContext(), SharePref.FIRST_USE) ||
+				(SharePref.getStringPref(getApplicationContext(), SharePref.ACCESS_TOKEN) == "") ||
+				(SharePref.getStringPref(getApplicationContext(), SharePref.AUTH_TOKEN) == "");
+	}
+
 	private OnClickListener plusMenuClick = new OnClickListener(){
 
 		public void onClick(View v) {
 			
-			MenuFunctions.showCreateEventPage(v, mActivity);
+			MenuFunctions.showCreateEventPage(v, EventListActivity.this);
 			
 		}
 		
@@ -227,6 +316,8 @@ public class EventListActivity extends BaseMotleeActivity {
     	Log.d(tag, "initializeListData()");
     	
     	EventServiceBuffer.setEventDetailListener(initialEventListener);
+    	
+    	sw.start();
     	
     	EventServiceBuffer.getEventsFromService();
 		//updateEventAdapter(GlobalEventList.eventDetailMap.keySet());
@@ -243,6 +334,11 @@ public class EventListActivity extends BaseMotleeActivity {
     {
     	Log.d(tag, "requestNewDataForList");
     	
+    	if (!eventListParams.headerText.equals(headerText))
+    	{
+    		progressDialog = ProgressDialog.show(this, "", "Loading " + headerText);
+    	}
+    	
     	eventListParams.headerText = headerText;
     	eventListParams.dataContent = dataContent;
     	
@@ -252,7 +348,7 @@ public class EventListActivity extends BaseMotleeActivity {
         
         EventServiceBuffer.setPhotoListener(photoListener);
         
-        progressDialog = ProgressDialog.show(EventListActivity.this, "", "Loading");
+        //progressDialog = ProgressDialog.show(EventListActivity.this, "", "Loading");
         
         EventServiceBuffer.getEventsFromService(dataContent);
     }
@@ -262,13 +358,17 @@ public class EventListActivity extends BaseMotleeActivity {
 
 		public void myEventOccurred(UpdatedEventDetailEvent evt) {
 			
-			Log.d(tag, "initialEventListener");
+			
+			
+			Log.d(tag, "initialEventListener took " + sw.getElapsedTime() + " ms");
 			
 			EventServiceBuffer.removeEventDetailListener(initialEventListener);
 			
 			updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getAllEvents()));
 			
 			mEventListFragment.setDoneLoading();
+			
+			Log.d(tag, "ready to go " + sw.getElapsedTime() + " ms");
 			
 		}
     	
@@ -288,15 +388,19 @@ public class EventListActivity extends BaseMotleeActivity {
 			}
 			else if (eventListParams.dataContent.equals(EventServiceBuffer.MY_EVENTS))
 			{
-				Set<Integer> myEventIds = SharedPreferencesWrapper.getIntArrayPref(getApplicationContext(), SharedPreferencesWrapper.MY_EVENT_DETAILS);
+				Set<Integer> myEventIds = SharePref.getIntArrayPref(getApplicationContext(), SharePref.MY_EVENT_DETAILS);
 				
 				updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getEvents(myEventIds)));
 			}
 			
-			mEventListFragment.getPullToRefreshListView().setSelection(1);
-			mEventListFragment.getPullToRefreshListView().onRefreshComplete();
-			
-	        progressDialog.dismiss();
+			//mEventListFragment.getPullToRefreshListView().setSelection(1);
+			//mEventListFragment.getPullToRefreshListView().onRefreshComplete();
+	        if (progressDialog != null && progressDialog.isShowing())
+	        {
+	        	progressDialog.dismiss();
+				mEventListFragment.getPullToRefreshListView().setSelection(1);
+				mEventListFragment.getPullToRefreshListView().onRefreshComplete();
+	        }
 		}
     };
     
@@ -306,7 +410,6 @@ public class EventListActivity extends BaseMotleeActivity {
     	
     	if (upcomingEvents.size() > 0)
     	{
-    	
 	    	Set<Integer> events = new HashSet<Integer>(upcomingEvents);
 	    	
 	        FragmentManager     fm = getSupportFragmentManager();
@@ -355,8 +458,6 @@ public class EventListActivity extends BaseMotleeActivity {
 		
 		Log.d(tag, "updateEventAdapter");
 		
-		eAdapter.clear();
-		
 		ArrayList<EventDetail> eventsToDisplay = new ArrayList<EventDetail>();
 		
 		ArrayList<EventDetail> upcomingEvents = new ArrayList<EventDetail>();
@@ -376,7 +477,9 @@ public class EventListActivity extends BaseMotleeActivity {
 		Collections.sort(eventsToDisplay);
 		Collections.sort(upcomingEvents);
 		
+		eAdapter.clear();
 		eAdapter.addAll(eventsToDisplay);
+		eAdapter.notifyDataSetChanged();
 		
 		ArrayList<Integer> upcomingIntegers = new ArrayList<Integer>();
 		
@@ -390,8 +493,7 @@ public class EventListActivity extends BaseMotleeActivity {
 			upcomingIntegers.add(eDetail.getEventID());
 		}
 		
-		mEventListFragment.setListAdapter(eAdapter);
-		mEventListFragment.updateListAdapter(eAdapter);
+		//setPosition(firstEventDetailVisible);
 		
 		if (eventListParams.dataContent.equals(EventServiceBuffer.MY_EVENTS))
 		{
@@ -403,6 +505,18 @@ public class EventListActivity extends BaseMotleeActivity {
 		}
 	}
 	
+	private void setPosition(EventDetail eDetail) {
+		
+		ArrayList<EventDetail> eventDetails = new ArrayList<EventDetail>(eAdapter.getData());
+		
+		Integer eventDetailIndex = eventDetails.indexOf(eDetail);
+		
+		if (eventDetailIndex > 0)
+		{
+			mEventListFragment.getListView().setSelection(eventDetailIndex);
+		}
+	}
+
 	private UpdatedPhotoListener photoListener = new UpdatedPhotoListener(){
 
 		public void photoEvent(UpdatedPhotoEvent e) {
@@ -440,6 +554,8 @@ public class EventListActivity extends BaseMotleeActivity {
     		ft.remove(fragment);
     		ft.show(mEventListFragment);
     		mEventListFragment.hideBackButton();
+    		TextView text = (TextView) findViewById(R.id.header_textView);
+    		text.setText(BaseMotleeFragment.MY_EVENTS);
     		ft.commit();
     	}
     	else

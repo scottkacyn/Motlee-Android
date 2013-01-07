@@ -1,0 +1,39 @@
+package com.motlee.android.object;
+
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
+@DatabaseTable(tableName = "settings")
+public class Settings {
+
+	@DatabaseField(columnName = "id", id = true, dataType = DataType.INTEGER_OBJ)
+	public Integer id; 
+	
+	@DatabaseField(columnName = "fb_on_event_create", dataType = DataType.BOOLEAN)
+	public boolean fb_on_event_create;
+	
+	@DatabaseField(columnName = "fb_on_event_invite", dataType = DataType.BOOLEAN)
+	public boolean fb_on_event_invite;
+	
+	@DatabaseField(columnName = "on_event_invite", dataType = DataType.BOOLEAN)
+	public boolean on_event_invite;
+	
+	@DatabaseField(columnName = "on_event_message", dataType = DataType.BOOLEAN)
+	public boolean on_event_message;
+	
+	@DatabaseField(columnName = "on_friend_join", dataType = DataType.BOOLEAN)
+	public boolean on_friend_join;
+	
+	@DatabaseField(columnName = "on_photo_comment", dataType = DataType.BOOLEAN)
+	public boolean on_photo_comment;
+	
+	@DatabaseField(columnName = "on_photo_like", dataType = DataType.BOOLEAN)
+	public boolean on_photo_like;
+	
+	public Settings()
+	{
+		
+	}
+	
+}

@@ -320,11 +320,7 @@ public class SearchPlacesFragment extends ListFragmentWithHeader
 								List<Address> address;
 
 								try {
-								    address = coder.getFromLocationName(mSearchText,5);
-								    
-								    Address location = address.get(0);
-
-								    setLocationAndCloseFragment(new LocationInfo(mSearchText, location.getLatitude(), location.getLongitude(), null));
+								    setLocationAndCloseFragment(new LocationInfo(mSearchText, GlobalVariables.getInstance().getLocationInfo().lat, GlobalVariables.getInstance().getLocationInfo().lon, null));
 								}
 								catch (Exception e)
 								{

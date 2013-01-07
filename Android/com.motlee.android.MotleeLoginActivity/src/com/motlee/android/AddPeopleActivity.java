@@ -27,7 +27,7 @@ import com.motlee.android.fragment.SearchPeopleFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
@@ -116,7 +116,7 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
         	toParam.substring(0, toParam.length() - 1);
         }
         
-        UserInfo user = dbWrapper.getUser(SharedPreferencesWrapper.getIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+        UserInfo user = dbWrapper.getUser(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
         
         Bundle params = new Bundle();
         params.putString("message", user.name 

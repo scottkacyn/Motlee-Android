@@ -29,5 +29,12 @@
     <string name="public_event_false">Shows event to invitees only</string>
     <string name="no_photo_text">How boring... no one has added any photos yet. Why don\'t you be the first?</string>
     <string name="no_message_text">Have something you want to share with everyone? Post a story here!</string>
+    <string name="fb_on_create_settings_message">Automatically post an event you created on timeline.</string>
+    <string name="fb_on_join_settings_message">Automatically post an event you joined on timeline.</string>
+    <string name="not_event_invitations">Event invitations</string>
+    <string name="not_event_messages">Event messages</string>
+    <string name="not_photo_comments">Photo comments</string>
+    <string name="not_photo_likes">Photo likes</string>
+    <string name="not_friends_joining">Friends joining Motlee</string>
     
 </resources>

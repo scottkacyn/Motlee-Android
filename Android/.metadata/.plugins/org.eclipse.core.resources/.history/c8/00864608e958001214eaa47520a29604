@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+	<LinearLayout	    
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:orientation="vertical" 
+	    android:padding="10dp"
+	    android:background="@android:color/transparent">
+		        
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingBottom="10dp">
+	        
+	        <TextView
+	            android:id="@+id/settings_basic_header"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:gravity="center_vertical"
+	            style="@style/CodeFont"
+	            android:text="Basic"
+	            android:textColor="@color/orange" />
+	        
+	    </LinearLayout>
+	    
+	    <com.motlee.android.layouts.StretchedBackgroundTableLayout
+	        android:id="@+id/settings_basic_table_layout"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingTop="10dp"
+	        android:paddingBottom="10dp"
+	        android:shrinkColumns="*"/>
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingTop="10dp"
+	        android:paddingBottom="10dp" >
+	        
+	        <TextView
+	            android:id="@+id/settings_social_header"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:gravity="center_vertical"
+	            style="@style/CodeFont"
+	            android:text="Social"
+	            android:textColor="@color/orange" />
+	        
+	    </LinearLayout>
+	    
+	    <com.motlee.android.layouts.StretchedBackgroundTableLayout
+	        android:id="@+id/settings_social_table_layout"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingTop="10dp"
+	        android:paddingBottom="10dp"
+	        android:shrinkColumns="*"/>
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingTop="10dp"
+	        android:paddingBottom="10dp">
+	        
+	        <TextView
+	            android:id="@+id/settings_miscellaneous_header"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:gravity="center_vertical"
+	            style="@style/CodeFont"
+	            android:text="Miscellaneous"
+	            android:textColor="@color/orange" />
+	        
+	    </LinearLayout>
+	    
+	    <com.motlee.android.layouts.StretchedBackgroundTableLayout
+	        android:id="@+id/settings_social_table_layout"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingTop="10dp"
+	        android:paddingBottom="10dp"
+	        android:shrinkColumns="*"/>
+	    
+	    <FrameLayout 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingTop="10dp"
+	        android:paddingBottom="10dp" >
+	    
+		    <com.facebook.widget.LoginButton
+			        android:id="@+id/auth_button"
+			        android:layout_gravity="center_vertical|center_horizontal"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:gravity="center_vertical|center_horizontal"
+			        android:width="140dp"
+			        android:height="24dp"
+			        android:contentDescription="FacebookLogin" />
+		    
+	    </FrameLayout>
+		    
+	    <FrameLayout 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingTop="10dp"
+	        android:paddingBottom="10dp">
+	    
+		    <com.facebook.widget.LoginButton
+			        android:id="@+id/auth_button"
+			        android:layout_gravity="center_vertical|center_horizontal"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:gravity="center_vertical|center_horizontal"
+			        android:width="140dp"
+			        android:height="24dp"
+			        android:contentDescription="FacebookLogin" />
+		    
+	    </FrameLayout>
+	    
+	</LinearLayout>
+</ScrollView>

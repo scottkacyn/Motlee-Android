@@ -151,7 +151,11 @@ public class LocationFragment extends BaseDetailFragment {
 		{
 			location = dbWrapper.getLocation(mEventList.get(0).getLocationID());
 			
-			if (!location.name.equals(LocationInfo.NO_LOCATION))
+			if (location == null)
+			{
+				point = new GeoPoint((int) (GlobalVariables.getInstance().getLocationInfo().lat * locMultiplier), (int) (GlobalVariables.getInstance().getLocationInfo().lon * locMultiplier));
+			}
+			else if (!location.name.equals(LocationInfo.NO_LOCATION))
 			{
 				point = new GeoPoint((int) (location.lat * locMultiplier), (int) (location.lon * locMultiplier));
 			}
@@ -188,7 +192,11 @@ public class LocationFragment extends BaseDetailFragment {
 		{
 			location = dbWrapper.getLocation(item.getLocationID());
 			
-			if (!location.name.equals(LocationInfo.NO_LOCATION))
+			if (location == null)
+			{
+				point = new GeoPoint((int) (GlobalVariables.getInstance().getLocationInfo().lat * locMultiplier), (int) (GlobalVariables.getInstance().getLocationInfo().lon * locMultiplier));
+			}
+			else if (!location.name.equals(LocationInfo.NO_LOCATION))
 			{
 				point = new GeoPoint((int) (location.lat * locMultiplier), (int) (location.lon * locMultiplier));
 			}

@@ -40,7 +40,7 @@ import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedFriendsEvent;
 import com.motlee.android.object.event.UpdatedFriendsListener;
@@ -118,7 +118,7 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
 		
 		EventServiceBuffer.setFriendsListener(this);
 		
-		EventServiceBuffer.requestMotleeFriends(SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+		EventServiceBuffer.requestMotleeFriends(SharePref.getIntPref(getActivity().getApplicationContext(), SharePref.USER_ID));
 
 		progressDialog = ProgressDialogWithTimeout.show(getActivity(), "", "Loading Friends");
 		

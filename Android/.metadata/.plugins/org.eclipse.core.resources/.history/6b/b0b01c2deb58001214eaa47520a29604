@@ -1,0 +1,87 @@
+package com.motlee.android;
+
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.view.View;
+
+import com.motlee.android.fragment.SettingsFragment;
+import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.Settings;
+import com.motlee.android.object.SharePref;
+import com.motlee.android.object.event.SettingsListener;
+
+public class SettingsActivity extends BaseMotleeActivity implements SettingsListener {
+	
+	public static final String FACEBOOK = "Facebook";
+	public static final String NOTIFICATIONS = "Notifications";
+	public static final String TERMS_OF_USE = "Terms & Conditions";
+	public static final String ABOUT = "About Motlee";
+	public static final String PROFILE = "My Public Profile";
+	
+	public Settings settings;
+	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		settings = SharePref.getSettings(getApplicationContext());
+	}
+	
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.main);
+        
+        settings = SharePref.getSettings(getApplicationContext());
+
+        FragmentManager     fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        
+        SettingsFragment settingsFragment = new SettingsFragment();
+        
+        settingsFragment.setHeaderView(findViewById(R.id.header));
+        
+        ft.add(R.id.fragment_content, settingsFragment)
+        .commit();
+        
+        /*progressDialog = ProgressDialog.show(this, "", "Loading Settings");
+
+        EventServiceBuffer.setSettigsListener(this);
+        
+        EventServiceBuffer.getSettings();*/
+        
+    }
+    
+    public void seeMoreDetail(View view)
+    {
+    	String description = view.getTag().toString();
+    	
+    	Intent eventDetail = new Intent(SettingsActivity.this, SettingsDetailActivity.class);
+    	
+    	eventDetail.putExtra("DetailDescription", description);
+    	eventDetail.putExtra("Settings", settings);
+    	
+    	startActivity(eventDetail);
+    }
+
+	public void settingsUpdated() {
+		
+		/*EventServiceBuffer.removeSettingsListener(this);
+		
+        FragmentManager     fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        
+        SettingsFragment settingsFragment = new SettingsFragment();
+        
+        settingsFragment.setHeaderView(findViewById(R.id.header));
+        
+        ft.add(R.id.fragment_content, settingsFragment)
+        .commit();*/
+		
+	}
+}

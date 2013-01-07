@@ -58,7 +58,7 @@ import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.FacebookPerson;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.GraphUserComparator;
-import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.SharePref;
 
 public class SearchPeopleFragment extends ListFragmentWithHeader {
 	private String tag = "SearchFragment";
@@ -102,6 +102,7 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
 		
 		
 		facebookSession = Session.getActiveSession();
+		
 		if (facebookSession.isOpened())
 		{
 			request = new Request(facebookSession, "/fql", params, HttpMethod.GET, graphUserListCallback);              
@@ -247,6 +248,28 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
     public void setInitialFriendList(ArrayList<Long> attendees)
     {
     	this.initialPeople = attendees;
+    }
+    
+    public ArrayList<Long> getNewAttendees()
+    {
+    	ArrayList<Long> newPeople = new ArrayList<Long>();
+    	
+    	try
+    	{
+	    	for (JSONObject person : peopleToAdd)
+	    	{
+	    		if (!initialPeople.contains(person.getLong("uid")))
+	    		{
+	    			newPeople.add(person.getLong("uid"));
+	    		}
+	    	}
+    	}
+    	catch (Exception e)
+    	{
+    		Log.e(tag, "Failed to person JSONObject", e);
+    	}
+    	
+    	return newPeople;
     }
     
     private Callback graphUserListCallback = new Callback(){

@@ -153,7 +153,7 @@ public class EventDetail implements Comparable<EventDetail> {
 		this.user_id = userID;
 	}
 	
-	public int getLocationID()
+	public Integer getLocationID()
 	{
 		return this.location_id;
 	}
@@ -257,6 +257,28 @@ public class EventDetail implements Comparable<EventDetail> {
 		this.description = description;
 	}
 
+	
+    @Override
+    public int hashCode() {
+        int hashCode = 23 * id;
+        return hashCode;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (obj == this)
+            return true;
+        if (obj.getClass() != getClass())
+            return false;
+
+        EventDetail that = (EventDetail) obj;
+        
+        return
+			( this.id == that.id);
+    }
+	
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)

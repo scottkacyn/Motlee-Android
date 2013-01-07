@@ -49,7 +49,7 @@ import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.GridPictures;
 import com.motlee.android.object.PhotoItem;
-import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.event.UpdatedLikeEvent;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
@@ -235,7 +235,7 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 		
 		public void onClick(View v)
 		{
-			Attendee attendee = new Attendee(SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+			Attendee attendee = new Attendee(SharePref.getIntPref(getActivity().getApplicationContext(), SharePref.USER_ID));
 			
 			if (dbWrapper.getAttendees(mEventDetail.getEventID()).contains(attendee))
 			{
@@ -305,7 +305,7 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 					listViewLayout.removeHeaderView(headerView);
 				}
 				
-				StoryItem newMessage = new StoryItem(mEventDetail.getEventID(), EventItemType.STORY, SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID), new Date(), storyText);
+				StoryItem newMessage = new StoryItem(mEventDetail.getEventID(), EventItemType.STORY, SharePref.getIntPref(getActivity().getApplicationContext(), SharePref.USER_ID), new Date(), storyText);
 				
 				newMessage.event_detail = mEventDetail;
 				

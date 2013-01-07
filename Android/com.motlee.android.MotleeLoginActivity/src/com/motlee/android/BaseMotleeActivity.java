@@ -9,9 +9,13 @@ import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.NotificationList;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 import com.motlee.android.object.event.UpdatedNotificationListener;
+import com.motlee.android.object.event.UserInfoEvent;
+import com.motlee.android.object.event.UserInfoListener;
+import com.motlee.android.object.event.UserWithEventsPhotosEvent;
 import com.motlee.android.service.RubyService;
 import com.readystatesoftware.viewbadger.BadgeView;
 import com.slidingmenu.lib.SlidingMenu;
@@ -38,7 +42,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class BaseMotleeActivity extends FragmentActivity implements UpdatedEventDetailListener, UpdatedNotificationListener {
+public class BaseMotleeActivity extends FragmentActivity implements UserInfoListener, UpdatedEventDetailListener, UpdatedNotificationListener {
 
 	public static String tag = "BaseMotleeActivity";
 	
@@ -103,7 +107,10 @@ public class BaseMotleeActivity extends FragmentActivity implements UpdatedEvent
         	
         	setUpNotificationIconBadge();
         	
-            EventServiceBuffer.getNewNotificationsFromServer();
+        	if (SharePref.getStringPref(getApplicationContext(), SharePref.AUTH_TOKEN) != "")
+        	{
+        		EventServiceBuffer.getNewNotificationsFromServer();
+        	}
         }
         
         super.onResume();
@@ -288,7 +295,7 @@ public class BaseMotleeActivity extends FragmentActivity implements UpdatedEvent
 	{
 		Log.d(tag, "onDestroy");
 		EventServiceBuffer.setAttendeeListener(null);
-		EventServiceBuffer.setUserInfoListener(null);
+		EventServiceBuffer.removeUserInfoListener(this);
 		EventServiceBuffer.removeEventDetailListener(this);
 		unbindDrawables(this.findViewById(android.R.id.content));
 		System.gc();
@@ -409,6 +416,16 @@ public class BaseMotleeActivity extends FragmentActivity implements UpdatedEvent
 	}
 
 	public void receivedAllNotifications() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void raised(UserInfoEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void userWithEventsPhotos(UserWithEventsPhotosEvent e) {
 		// TODO Auto-generated method stub
 		
 	}

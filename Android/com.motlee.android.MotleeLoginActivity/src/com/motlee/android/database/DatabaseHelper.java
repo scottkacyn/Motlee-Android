@@ -21,6 +21,7 @@ import com.motlee.android.object.Friend;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.Settings;
 import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.UserInfo;
 
@@ -29,7 +30,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "motlee.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 8;
+	private static final int DATABASE_VERSION = 10;
 
 	// the DAO object we use to access the EventDetail table
 	private Dao<EventDetail, Integer> eventDao = null;
@@ -103,6 +104,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Comment.class, true);
 			TableUtils.dropTable(connectionSource, Like.class, true);
 			TableUtils.dropTable(connectionSource, LocationInfo.class, true);
+
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
 		} 

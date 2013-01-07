@@ -1,0 +1,148 @@
+package com.motlee.android.fragment;
+
+import java.sql.SQLException;
+
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.TableLayout.LayoutParams;
+
+import com.motlee.android.R;
+import com.motlee.android.database.DatabaseHelper;
+import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.SharePref;
+import com.motlee.android.object.UserInfo;
+
+public class FacebookSettingsFragment extends BaseMotleeFragment {
+	
+	private LayoutInflater inflater;
+	private View view;
+	
+	private StretchedBackgroundTableLayout settingsLayout;
+	
+	private DatabaseHelper helper;
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+		
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.activity_settings, null);
+		
+		settingsLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.settings_table_layout);
+		settingsLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		
+		helper = new DatabaseHelper(this.getActivity().getApplicationContext());
+		
+		setNavigationButtons();
+		
+		setPageHeader("Settings");
+		showRightHeaderButton("Save");
+		
+		showLeftHeaderButton();
+		
+		return view;
+	}
+
+	private void setNavigationButtons() {
+		
+		//setLogoutButton();
+		setSettingToggleLabel("Automatically post photos to my timeline.", false);
+		setSettingToggleLabel("Automatically share events I'm apart of in my timeline", false);
+		setSettingToggleLabel("Automatically create a new Motlee event when I join a Facebook event.", true);
+	}
+
+	private void setLogoutButton() {
+		
+		view.findViewById(R.id.auth_button).setVisibility(View.VISIBLE);
+		
+		View labelButton = this.inflater.inflate(R.layout.facebook_logout, null);
+		
+		settingsLayout.setShrinkAllColumns(true);
+		
+		
+		
+		UserInfo userInfo = null;
+		try {
+			userInfo = helper.getUserDao().queryForId(SharePref.getIntPref(getActivity().getApplicationContext(), SharePref.USER_ID));
+		} catch (SQLException e) {
+			Log.e("DatabaseHelper", "Failed to queryForId for user", e);
+		}
+		
+		ImageView imageView = (ImageView) labelButton.findViewById(R.id.facebook_profile_pic);
+		String facebookURL = GlobalVariables.getInstance().getFacebookPictureUrl(userInfo.uid);
+		
+		GlobalVariables.getInstance().downloadImage(imageView, facebookURL);
+		
+		TextView textView = (TextView) labelButton.findViewById(R.id.facebook_user_name);
+		textView.setText(userInfo.name);
+		
+		labelButton.findViewById(R.id.facebook_content).setPadding(0, 10, 0, 10);
+		
+		TableRow tr = new TableRow(getActivity());
+		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tr.setLayoutParams(lp);
+		tr.addView(labelButton);
+		settingsLayout.addView(tr);
+	}
+	
+	private void setSettingToggleLabel(String description, boolean isLastLabel)
+	{
+		settingsLayout.setShrinkAllColumns(true);
+		
+		View labelButton = this.inflater.inflate(R.layout.settings_table_row, null);
+		
+		TextView textView = (TextView) labelButton.findViewById(R.id.facebook_setting_description);
+		textView.setText(description);
+		
+		ImageView switcher = (ImageView) labelButton.findViewById(R.id.facebook_switcher);
+		switcher.setTag(true);
+		switcher.setOnClickListener(toggleListener);
+		
+		if (isLastLabel)
+		{
+			labelButton.findViewById(R.id.divider).setVisibility(View.GONE);
+			labelButton.findViewById(R.id.facebook_content).setPadding(0, 10, 0, 0);
+		}
+		else
+		{
+			labelButton.findViewById(R.id.facebook_content).setPadding(0, 10, 0, 10);
+		}
+		
+		TableRow tr = new TableRow(getActivity());
+		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tr.setLayoutParams(lp);
+		tr.addView(labelButton);
+		settingsLayout.addView(tr);
+	}
+	
+	private OnClickListener toggleListener = new OnClickListener(){
+
+		public void onClick(View v) {
+			
+			boolean switcherState = (Boolean) v.getTag();
+			
+			if (switcherState)
+			{
+				((ImageView) v).setImageResource(R.drawable.switcher_button_off);
+				v.setTag(false);
+			}
+			else
+			{
+				((ImageView) v).setImageResource(R.drawable.switcher_button_on);
+				v.setTag(true);
+			}
+			
+		}
+		
+	};
+}

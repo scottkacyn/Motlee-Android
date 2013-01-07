@@ -83,7 +83,7 @@ public class NotificationActivity extends BaseMotleeActivity {
     		
     		startActivity(intent);
     	}
-    	else if (notification.objectType == NotificationObjectType.PHOTO)
+    	else if (notification.objectType == NotificationObjectType.PHOTO_COMMENT || notification.objectType == NotificationObjectType.PHOTO_LIKE)
     	{
     		Intent intent = new Intent(this, EventItemDetailActivity.class);
     		intent.putExtra("EventItem", GlobalVariables.getInstance().getUserPhotos().get(notification.objectId));

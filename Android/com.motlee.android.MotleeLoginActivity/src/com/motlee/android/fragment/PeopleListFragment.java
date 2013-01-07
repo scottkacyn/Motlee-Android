@@ -20,7 +20,7 @@ import com.motlee.android.object.Attendee;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -92,7 +92,7 @@ public class PeopleListFragment extends BaseDetailFragment {
 		eventDetailPeopleList = (ListView) view.findViewById(R.id.event_detail_people_list);
 		//eventDetailPeopleList.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
 		
-		Attendee attendee = new Attendee(SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+		Attendee attendee = new Attendee(SharePref.getIntPref(getActivity().getApplicationContext(), SharePref.USER_ID));
 		
 		if (eventDetailPeopleList.getHeaderViewsCount() == 0 && dbWrapper.getAttendees(mEventDetail.getEventID()).contains(attendee))
 		{

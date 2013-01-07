@@ -2,10 +2,23 @@ package com.motlee.android;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.facebook.FacebookRequestError;
+import com.facebook.HttpMethod;
+import com.facebook.Request;
+import com.facebook.RequestAsyncTask;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.model.GraphUser;
 import com.google.android.maps.MapView;
 import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
@@ -27,7 +40,7 @@ import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoItem;
-import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
@@ -66,6 +79,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
+import android.widget.Toast;
 
 public class EventDetailActivity extends BaseDetailActivity implements OnFragmentAttachedListener, UpdatedEventDetailListener, UpdatedPhotoListener {
 
@@ -75,6 +89,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	public static final String PHOTOS = "photos";
 	public static final String MESSAGES = "messages";
 	
+	private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
 	
 	private EventDetailFragment photosFragment;
 	private PeopleListFragment peopleListFragment;
@@ -112,6 +127,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
 		mEventID = intent.getExtras().getInt("EventID");
 		mNewPhoto = intent.getParcelableExtra("NewPhoto");
+		firstScreen = getIntent().getExtras().getString("Page");
 		
 		eDetail = dbWrapper.getEvent(mEventID);
 		
@@ -127,7 +143,14 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
 		if (progressDialog == null || !progressDialog.isShowing())
 		{
-			progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading " + eDetail.getEventName());
+			if (eDetail != null)
+			{
+				progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading " + eDetail.getEventName());
+			}
+			else
+			{
+				progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading...");
+			}
 		}//setUpFragments();
 		
 		if (findViewById(R.id.header) == null)
@@ -224,13 +247,15 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	public DialogInterface.OnClickListener joinListener = new DialogInterface.OnClickListener() {
 		public void onClick(DialogInterface dialog, int id) {
 			
+			publishStoryOnFacebookFeed();
+			
 			EventServiceBuffer.setAttendeeListener(attendeeListener);
 
 			progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Joining Event");
 			
 			ArrayList<Long> attendees = new ArrayList<Long>();
 			
-			UserInfo user = dbWrapper.getUser(SharedPreferencesWrapper.getIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+			UserInfo user = dbWrapper.getUser(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
 			
 			attendees.add(user.uid);
 			
@@ -268,7 +293,70 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		startActivity(userProfile);
 	}
 	
-    @Override
+    protected void publishStoryOnFacebookFeed() {
+    	Session session = Session.getActiveSession();
+
+        if (session != null){
+
+            // Check for publish permissions    
+            List<String> permissions = session.getPermissions();
+            if (!isSubsetOf(PERMISSIONS, permissions)) {
+                Session.NewPermissionsRequest newPermissionsRequest = new Session
+                        .NewPermissionsRequest(this, PERMISSIONS);
+            session.requestNewPublishPermissions(newPermissionsRequest);
+                return;
+            }
+
+            Bundle postParams = new Bundle();
+            
+            UserInfo user = dbWrapper.getUser(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
+            
+            postParams.putString("event", "http://www.motleeapp.com/events/" + mEventID);
+            
+            String friendTag = "";
+            
+            
+
+            Request.Callback callback= new Request.Callback() {
+                public void onCompleted(Response response) {
+                    JSONObject graphResponse = response
+                                               .getGraphObject()
+                                               .getInnerJSONObject();
+                    String postId = null;
+                    try {
+                        postId = graphResponse.getString("id");
+                    } catch (JSONException e) {
+                        Log.i("EventDetailActivity",
+                            "JSON error "+ e.getMessage());
+                    }
+                    FacebookRequestError error = response.getError();
+                    if (error != null) {
+                        Toast.makeText(getApplicationContext(),
+                             error.getErrorMessage(),
+                             Toast.LENGTH_SHORT).show();
+                    }
+                }
+            };
+
+            Request request = new Request(session, "me/motleeapp:join", postParams, 
+                                  HttpMethod.POST, callback);
+
+            RequestAsyncTask task = new RequestAsyncTask(request);
+            task.execute();
+        }
+		
+	}
+
+    private boolean isSubsetOf(Collection<String> subset, Collection<String> superset) {
+        for (String string : subset) {
+            if (!superset.contains(string)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+	@Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
@@ -293,7 +381,10 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         
         messageFragment.setHeaderView(header);
         
-        messageFragment.addEventDetail(eDetail);
+        if (eDetail != null)
+        {
+        	messageFragment.addEventDetail(eDetail);
+        }
         
         messageFragment.setMessageButton(findViewById(R.id.menu_buttons));
         
@@ -306,7 +397,10 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 
         dateDetailFragment.setHeaderView(findViewById(R.id.header));
         
-        dateDetailFragment.addEventDetail(eDetail);
+        if (eDetail != null)
+        {
+        	dateDetailFragment.addEventDetail(eDetail);
+        }
         
         return dateDetailFragment;
     }
@@ -319,7 +413,10 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         
         locationFragment.setHeaderView(findViewById(R.id.header));
 
-        locationFragment.addEventDetail(eDetail);
+        if (eDetail != null)
+        {
+        	locationFragment.addEventDetail(eDetail);
+        }
         
         locationFragment.showPageHeader();
         
@@ -336,7 +433,10 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         
         eventDetailFragment.setHeaderView(header);
         
-        eventDetailFragment.addEventDetail(eDetail);
+        if (eDetail != null)
+        {
+        	eventDetailFragment.addEventDetail(eDetail);
+        }
         
         return eventDetailFragment;
 	}
@@ -349,7 +449,10 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         
     	fragment.setHeaderView(findViewById(R.id.header));
     	
-    	fragment.setEventDetail(eDetail);
+    	if (eDetail != null)
+    	{
+    		fragment.setEventDetail(eDetail);
+    	}
         
         return fragment;
 	}
@@ -547,15 +650,15 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         
         setUpFragments();
         
-        Attendee attendee = new Attendee(SharedPreferencesWrapper.getIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+        Attendee attendee = new Attendee(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
         
         if (dbWrapper.getAttendees(mEventID).contains(attendee))
         {
-        	Set<Integer> myEvents = SharedPreferencesWrapper.getIntArrayPref(getApplicationContext(), SharedPreferencesWrapper.MY_EVENT_DETAILS);
+        	Set<Integer> myEvents = SharePref.getIntArrayPref(getApplicationContext(), SharePref.MY_EVENT_DETAILS);
             
         	myEvents.add(mEventID);
         	
-        	SharedPreferencesWrapper.setIntArrayPref(getApplicationContext(), SharedPreferencesWrapper.MY_EVENT_DETAILS, myEvents);
+        	SharePref.setIntArrayPref(getApplicationContext(), SharePref.MY_EVENT_DETAILS, myEvents);
 
         	setActionForRightMenu(takePhotoListener);
             showMenuButtons(BaseMotleeActivity.TAKE_PICTURE);
@@ -583,14 +686,17 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
     	{
     		if (firstScreen.equals(PHOTOS))
     		{
+    			firstScreen = null;
     			showPhotos(null);
     		}
     		else if (firstScreen.equals(MESSAGES))
     		{
+    			firstScreen = null;
     			showComments(null);
     		}
     		else
     		{
+    			firstScreen = null;
     			showPhotos(null);
     		}
     	}
@@ -705,7 +811,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 
 		EventServiceBuffer.removePhotoListener(this);
 		EventServiceBuffer.removeEventDetailListener(this);
-		
+		EventServiceBuffer.setStoryListener(null);
 		super.onPause();
 	}
 	

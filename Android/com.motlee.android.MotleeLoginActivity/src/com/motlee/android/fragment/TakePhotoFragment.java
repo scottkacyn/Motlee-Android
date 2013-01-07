@@ -48,11 +48,12 @@ import com.motlee.android.R;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.EventItemType;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
-import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
 
@@ -61,7 +62,7 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	private LayoutInflater inflater;
 	private View view;
 	
-	private String pageTitle = "Take Photo";
+	private String pageTitle = "Add Caption";
 	
 	private Bitmap takenPhoto;
 	
@@ -121,6 +122,10 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 		//TextView textView = (TextView) view.findViewById(R.id.scroll_view_text);
 		//textView.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 		
+		EventDetail eDetail = dbWrapper.getEvent(mEventID);
+		
+		pageTitle = eDetail.getEventName();
+		
 		setPageHeader(pageTitle);
 		showRightHeaderButton("Upload", headerRightButtonClick);
 		showLeftHeaderButton();
@@ -161,7 +166,7 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 			else
 			{*/
 
-				PhotoItem photo = new PhotoItem(mEventID, EventItemType.PICTURE, SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID), 
+				PhotoItem photo = new PhotoItem(mEventID, EventItemType.PICTURE, SharePref.getIntPref(getActivity().getApplicationContext(), SharePref.USER_ID), 
 						new Date(), photoDescriptionEdit.getText().toString(), mCurrentPhotoPath);
 				
 				photo.event_detail = dbWrapper.getEvent(mEventID);
@@ -272,7 +277,6 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 		photoDescriptionEdit.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		photoDescriptionEdit.setTextColor(R.color.label_color);
 		photoDescriptionEdit.setHint("Photo Description...");
-		photoDescriptionEdit.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 		//mEventName = editText.getText();
 		
 		photoDescriptionEdit.setOnEditorActionListener(new OnEditorActionListener() {

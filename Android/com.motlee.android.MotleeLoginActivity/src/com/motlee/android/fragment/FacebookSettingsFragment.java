@@ -17,8 +17,10 @@ import android.widget.TableLayout.LayoutParams;
 import com.motlee.android.R;
 import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.Settings;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
 
 public class FacebookSettingsFragment extends BaseMotleeFragment {
@@ -29,6 +31,10 @@ public class FacebookSettingsFragment extends BaseMotleeFragment {
 	private StretchedBackgroundTableLayout settingsLayout;
 	
 	private DatabaseHelper helper;
+	
+	private Settings settings;
+	
+	private View rightHeaderButton;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
@@ -45,8 +51,10 @@ public class FacebookSettingsFragment extends BaseMotleeFragment {
 		
 		setNavigationButtons();
 		
-		setPageHeader("Settings");
+		setPageHeader("Facebook Settings");
 		showRightHeaderButton("Save");
+		
+		rightHeaderButton = mHeaderView.findViewById(R.id.header_right_button);
 		
 		showLeftHeaderButton();
 		
@@ -55,23 +63,21 @@ public class FacebookSettingsFragment extends BaseMotleeFragment {
 
 	private void setNavigationButtons() {
 		
-		setLogoutButton();
-		setSettingToggleLabel("Automatically post photos to my timeline.", false);
-		setSettingToggleLabel("Automatically share events I'm apart of in my timeline", false);
-		setSettingToggleLabel("Automatically create a new Motlee event when I join a Facebook event.", true);
+		setSettingToggleLabel(getActivity().getResources().getString(R.string.fb_on_create_settings_message), settings.fb_on_event_create, false);
+		setSettingToggleLabel(getActivity().getResources().getString(R.string.fb_on_join_settings_message), settings.fb_on_event_invite, true);
 	}
 
 	private void setLogoutButton() {
+		
+		view.findViewById(R.id.auth_button).setVisibility(View.VISIBLE);
 		
 		View labelButton = this.inflater.inflate(R.layout.facebook_logout, null);
 		
 		settingsLayout.setShrinkAllColumns(true);
 		
-		
-		
 		UserInfo userInfo = null;
 		try {
-			userInfo = helper.getUserDao().queryForId(SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+			userInfo = helper.getUserDao().queryForId(SharePref.getIntPref(getActivity().getApplicationContext(), SharePref.USER_ID));
 		} catch (SQLException e) {
 			Log.e("DatabaseHelper", "Failed to queryForId for user", e);
 		}
@@ -93,7 +99,7 @@ public class FacebookSettingsFragment extends BaseMotleeFragment {
 		settingsLayout.addView(tr);
 	}
 	
-	private void setSettingToggleLabel(String description, boolean isLastLabel)
+	private void setSettingToggleLabel(String description, boolean defaultValue, boolean isLastLabel)
 	{
 		settingsLayout.setShrinkAllColumns(true);
 		
@@ -103,17 +109,30 @@ public class FacebookSettingsFragment extends BaseMotleeFragment {
 		textView.setText(description);
 		
 		ImageView switcher = (ImageView) labelButton.findViewById(R.id.facebook_switcher);
-		switcher.setTag(true);
+		
+		switcher.setContentDescription(description);
+		
+		if (defaultValue)
+		{
+			switcher.setTag(true);
+			switcher.setImageResource(R.drawable.switcher_button_on);
+		}
+		else
+		{
+			switcher.setTag(false);
+			switcher.setImageResource(R.drawable.switcher_button_off);
+		}
+
 		switcher.setOnClickListener(toggleListener);
 		
 		if (isLastLabel)
 		{
 			labelButton.findViewById(R.id.divider).setVisibility(View.GONE);
-			labelButton.findViewById(R.id.facebook_content).setPadding(0, 10, 0, 0);
+			labelButton.findViewById(R.id.facebook_content).setPadding(0, DrawableCache.convertDpToPixel(8), 0, 0);
 		}
 		else
 		{
-			labelButton.findViewById(R.id.facebook_content).setPadding(0, 10, 0, 10);
+			labelButton.findViewById(R.id.facebook_content).setPadding(0, DrawableCache.convertDpToPixel(8), 0, DrawableCache.convertDpToPixel(8));
 		}
 		
 		TableRow tr = new TableRow(getActivity());
@@ -133,14 +152,38 @@ public class FacebookSettingsFragment extends BaseMotleeFragment {
 			{
 				((ImageView) v).setImageResource(R.drawable.switcher_button_off);
 				v.setTag(false);
+				
+				updateSettings(v.getContentDescription().toString(), false);
 			}
 			else
 			{
 				((ImageView) v).setImageResource(R.drawable.switcher_button_on);
 				v.setTag(true);
+				
+				updateSettings(v.getContentDescription().toString(), true);
 			}
 			
 		}
 		
 	};
+	
+	private void updateSettings(String description, boolean value)
+	{
+		if (description.equals(getActivity().getResources().getString(R.string.fb_on_create_settings_message)))
+		{
+			settings.fb_on_event_create = value;
+		}
+		else if (description.equals(getActivity().getResources().getString(R.string.fb_on_join_settings_message)))
+		{
+			settings.fb_on_event_invite = value;
+		}	
+		
+		rightHeaderButton.setTag(settings);
+	}
+
+	public void setSettings(Settings settings) {
+		
+		this.settings = settings;
+		
+	}
 }

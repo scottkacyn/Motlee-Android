@@ -7,7 +7,7 @@ import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
@@ -33,7 +33,7 @@ public abstract class BaseDetailActivity extends BaseMotleeActivity {
 			
 			UserInfo user = null;
 			try {
-				user = helper.getUserDao().queryForId(SharedPreferencesWrapper.getIntPref(getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+				user = helper.getUserDao().queryForId(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
 			} catch (SQLException e1) {
 				Log.e("DatabaseHelper", "Failed to queryForId for user", e1);
 			}

@@ -9,13 +9,13 @@ import com.motlee.android.R;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.SharePref;
 
 public class BaseDetailFragment extends BaseMotleeFragment {
 	
 	public void showRightHeaderButton(EventDetail eDetail, Context context)
 	{
-		if (eDetail.getOwnerID() == SharedPreferencesWrapper.getIntPref(context, SharedPreferencesWrapper.USER_ID))
+		if (eDetail.getOwnerID() == SharePref.getIntPref(context, SharePref.USER_ID))
 		{
 			super.showRightHeaderButton(BaseDetailActivity.EDIT);
 		}

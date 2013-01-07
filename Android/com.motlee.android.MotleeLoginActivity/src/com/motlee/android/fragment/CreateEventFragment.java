@@ -17,7 +17,7 @@ import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
-import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.view.DateTimePicker;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -161,7 +161,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		{
 			for (Attendee attendee : dbWrapper.getAttendees(mEventDetail.getEventID()))
 			{
-				UserInfo phoneUser = dbWrapper.getUser(SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+				UserInfo phoneUser = dbWrapper.getUser(SharePref.getIntPref(getActivity().getApplicationContext(), SharePref.USER_ID));
 				UserInfo user = dbWrapper.getUser(attendee.user_id);
 				
 				if (user.uid != phoneUser.uid)
@@ -276,7 +276,15 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		}
 		else
 		{
-			locationTextView.setText(dbWrapper.getLocation(mEventDetail.getLocationID()).name);
+			LocationInfo location = dbWrapper.getLocation(mEventDetail.getLocationID());
+			if (location != null)
+			{
+				locationTextView.setText(dbWrapper.getLocation(mEventDetail.getLocationID()).name);
+			}
+			else
+			{
+				locationTextView.setText("My Location");
+			}
 		}
 		
 		labelButton.findViewById(R.id.divider).setVisibility(View.GONE);
@@ -382,20 +390,18 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		
 		if (mStartTime.get(Calendar.MINUTE) <= 30)
 		{
-			mStartTime.set(Calendar.MINUTE, 30);
+			mStartTime.set(Calendar.MINUTE, 00);
 			mStartTime.set(Calendar.SECOND, 00);
 			
-			mEndTime.set(Calendar.MINUTE, 30);
+			mEndTime.set(Calendar.MINUTE, 00);
 			mEndTime.set(Calendar.SECOND, 00);
 		}
 		else 
 		{
-			mStartTime.set(Calendar.MINUTE, 0);
-			mStartTime.add(Calendar.HOUR, 1);
+			mStartTime.set(Calendar.MINUTE, 30);
 			mStartTime.set(Calendar.SECOND, 0);
 			
-			mEndTime.set(Calendar.MINUTE, 0);
-			mEndTime.add(Calendar.HOUR, 1);
+			mEndTime.set(Calendar.MINUTE, 30);
 			mEndTime.set(Calendar.SECOND, 00);
 		}
 		

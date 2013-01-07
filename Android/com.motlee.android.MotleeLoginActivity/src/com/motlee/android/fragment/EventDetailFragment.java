@@ -22,7 +22,7 @@ import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoItem;
-import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.GridPictures;
 import com.motlee.android.object.EventListParams;
@@ -446,7 +446,7 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 
 		public void onClick(View v) {
 			
-			Attendee attendee = new Attendee(SharedPreferencesWrapper.getIntPref(getActivity().getApplicationContext(), SharedPreferencesWrapper.USER_ID));
+			Attendee attendee = new Attendee(SharePref.getIntPref(getActivity().getApplicationContext(), SharePref.USER_ID));
 			
 			if (dbWrapper.getAttendees(mEventDetail.getEventID()).contains(attendee))
 			{

@@ -5,11 +5,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.NotificationObjectType;
 
 public class NotificationList 
@@ -48,9 +50,42 @@ public class NotificationList
 		return mNotifications;
 	}
 	
-	public void setNotificationList(String notificationJson)
+	public void setNewNotificationNumber(String notificationJson, Context context)
+	{
+		Settings settings = SharePref.getSettings(context);
+		
+		DatabaseWrapper dbWrapper = new DatabaseWrapper(context);
+		
+		JsonParser parser = new JsonParser();
+		
+		JsonArray array = parser.parse(notificationJson).getAsJsonArray();
+		
+		numUnreadNotifications = 0; 
+		
+		for (JsonElement element : array)
+		{
+			try
+			{
+				Notification notification = getNotification(element.getAsString());
+				if (dbWrapper.getUser(notification.userId) != null && filterNotification(notification, settings))
+				{
+					numUnreadNotifications++;
+				}
+			}
+			catch (ClassCastException ex)
+			{
+				Log.e("NotificationList", "Ran into problem parsing notification");
+			}
+		}
+	}
+	
+	public void setNotificationList(String notificationJson, Context context)
 	{
 		mNotifications.clear();
+		
+		Settings settings = SharePref.getSettings(context);
+		
+		DatabaseWrapper dbWrapper = new DatabaseWrapper(context);
 		
 		JsonParser parser = new JsonParser();
 		
@@ -61,7 +96,10 @@ public class NotificationList
 			try
 			{
 				Notification notification = getNotification(element.getAsString());
-				mNotifications.add(notification);
+				if (dbWrapper.getUser(notification.userId) != null && filterNotification(notification, settings))
+				{
+					mNotifications.add(notification);
+				}
 			}
 			catch (ClassCastException ex)
 			{
@@ -81,7 +119,7 @@ public class NotificationList
 			returnNotification.message = splitString[0];
 			returnNotification.objectType = getNotificationObjectType(splitString[1]);
 			returnNotification.objectId = Integer.parseInt(splitString[2]);
-			returnNotification.userId = Integer.parseInt(splitString[3]);
+			returnNotification.userId = Integer.parseInt(splitString[3]);			
 			returnNotification.timeCreated = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(splitString[4]);
 		}
 		catch (ClassCastException ex)
@@ -129,9 +167,13 @@ public class NotificationList
 		{
 			type = NotificationObjectType.FRIEND;
 		}
-		else if (string.contains("photo"))
+		else if (string.contains("photo_comment"))
 		{
-			type = NotificationObjectType.PHOTO;
+			type = NotificationObjectType.PHOTO_COMMENT;
+		}
+		else if (string.contains("photo_like"))
+		{
+			type = NotificationObjectType.PHOTO_LIKE;
 		}
 		else
 		{
@@ -139,5 +181,65 @@ public class NotificationList
 		}
 		
 		return type;
+	}
+	
+	private boolean filterNotification(Notification notification, Settings settings)
+	{
+		if (notification.objectType == NotificationObjectType.EVENT)
+		{
+			if (settings.on_event_invite)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if (notification.objectType == NotificationObjectType.EVENT_MESSAGE)
+		{
+			if (settings.on_event_message)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if (notification.objectType == NotificationObjectType.FRIEND)
+		{
+			if (settings.on_friend_join)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if (notification.objectType == NotificationObjectType.PHOTO_COMMENT)
+		{
+			if (settings.on_photo_comment)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if (notification.objectType == NotificationObjectType.PHOTO_LIKE)
+		{
+			if (settings.on_photo_like)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 }

@@ -12,6 +12,8 @@ import android.widget.TableLayout.LayoutParams;
 
 import com.motlee.android.R;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.Settings;
 
 public class NotificationSettingsFragment extends BaseMotleeFragment {
 
@@ -19,6 +21,10 @@ public class NotificationSettingsFragment extends BaseMotleeFragment {
 	private View view;
 	
 	private StretchedBackgroundTableLayout settingsLayout;
+	
+	private Settings settings;
+	
+	private View rightHeaderButton;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
@@ -33,8 +39,10 @@ public class NotificationSettingsFragment extends BaseMotleeFragment {
 		
 		setNavigationButtons();
 		
-		setPageHeader("Settings");
+		setPageHeader("Notificaiton Settings");
 		showRightHeaderButton("Save");
+		
+		rightHeaderButton = mHeaderView.findViewById(R.id.header_right_button);
 		
 		showLeftHeaderButton();
 		
@@ -43,14 +51,14 @@ public class NotificationSettingsFragment extends BaseMotleeFragment {
 	
 	private void setNavigationButtons() {
 
-		setSettingToggleLabel("New Facebook Event", false);
-		setSettingToggleLabel("You are added to an Event", false);
-		setSettingToggleLabel("New Photo Added", false);
-		setSettingToggleLabel("New Comment Added", false);
-		setSettingToggleLabel("New FOMOs", true);
+		setSettingToggleLabel(getActivity().getResources().getString(R.string.not_event_invitations), settings.on_event_invite, false);
+		setSettingToggleLabel(getActivity().getResources().getString(R.string.not_event_messages), settings.on_event_message, false);
+		setSettingToggleLabel(getActivity().getResources().getString(R.string.not_photo_comments), settings.on_photo_comment, false);
+		setSettingToggleLabel(getActivity().getResources().getString(R.string.not_photo_likes), settings.on_photo_like, false);
+		setSettingToggleLabel(getActivity().getResources().getString(R.string.not_friends_joining), settings.on_friend_join, true);
 	}
 	
-	private void setSettingToggleLabel(String description, boolean isLastLabel)
+	private void setSettingToggleLabel(String description, boolean defaultValue, boolean isLastLabel)
 	{
 		settingsLayout.setShrinkAllColumns(true);
 		
@@ -60,17 +68,30 @@ public class NotificationSettingsFragment extends BaseMotleeFragment {
 		textView.setText(description);
 		
 		ImageView switcher = (ImageView) labelButton.findViewById(R.id.facebook_switcher);
-		switcher.setTag(true);
+		
+		switcher.setContentDescription(description);
+		
+		if (defaultValue)
+		{
+			switcher.setTag(true);
+			switcher.setImageResource(R.drawable.switcher_button_on);
+		}
+		else
+		{
+			switcher.setTag(false);
+			switcher.setImageResource(R.drawable.switcher_button_off);
+		}
+		
 		switcher.setOnClickListener(toggleListener);
 		
 		if (isLastLabel)
 		{
 			labelButton.findViewById(R.id.divider).setVisibility(View.GONE);
-			labelButton.findViewById(R.id.facebook_content).setPadding(0, 20, 0, 20);
+			labelButton.findViewById(R.id.facebook_content).setPadding(0, DrawableCache.convertDpToPixel(8), 0, 0);
 		}
 		else
 		{
-			labelButton.findViewById(R.id.facebook_content).setPadding(0, 20, 0, 20);
+			labelButton.findViewById(R.id.facebook_content).setPadding(0, DrawableCache.convertDpToPixel(8), 0, DrawableCache.convertDpToPixel(8));
 		}
 		
 		TableRow tr = new TableRow(getActivity());
@@ -90,14 +111,50 @@ public class NotificationSettingsFragment extends BaseMotleeFragment {
 			{
 				((ImageView) v).setImageResource(R.drawable.switcher_button_off);
 				v.setTag(false);
+				
+				updateSettings(v.getContentDescription().toString(), false);
 			}
 			else
 			{
 				((ImageView) v).setImageResource(R.drawable.switcher_button_on);
 				v.setTag(true);
+				
+				updateSettings(v.getContentDescription().toString(), true);
 			}
 			
 		}
 		
 	};
+	
+	private void updateSettings(String description, boolean value)
+	{
+		if (description.equals(getActivity().getResources().getString(R.string.not_event_invitations)))
+		{
+			settings.on_event_invite = value;
+		}
+		else if (description.equals(getActivity().getResources().getString(R.string.not_event_messages)))
+		{
+			settings.on_event_message = value;
+		}	
+		else if (description.equals(getActivity().getResources().getString(R.string.not_friends_joining)))
+		{
+			settings.on_friend_join = value;
+		}	
+		else if (description.equals(getActivity().getResources().getString(R.string.not_photo_comments)))
+		{
+			settings.on_photo_comment = value;
+		}	
+		else if (description.equals(getActivity().getResources().getString(R.string.not_photo_likes)))
+		{
+			settings.on_photo_like = value;
+		}	
+		
+		rightHeaderButton.setTag(settings);
+	}
+
+	public void setSettings(Settings settings) {
+		
+		this.settings = settings;
+		
+	}
 }

@@ -10,7 +10,7 @@ import com.motlee.android.object.Comment;
 import com.motlee.android.object.DateStringFormatter;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.SharedPreferencesWrapper;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.UserInfo;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -139,7 +139,7 @@ public class MessageAdapter extends ArrayAdapter<StoryItem> {
 				Log.e("DatabaseHelper", "Failed to queryForId for user", e);
 			}
             
-            if (story.user_id == SharedPreferencesWrapper.getIntPref(getContext().getApplicationContext(), SharedPreferencesWrapper.USER_ID))
+            if (story.user_id == SharePref.getIntPref(getContext().getApplicationContext(), SharePref.USER_ID))
             {
             	holder.message_friend.setVisibility(View.GONE);
             	holder.message_owner.setVisibility(View.VISIBLE);

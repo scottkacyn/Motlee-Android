@@ -52,6 +52,7 @@ import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.EventItemType;
 import com.motlee.android.fragment.EventListFragment;
 import com.motlee.android.object.event.DeletePhotoListener;
+import com.motlee.android.object.event.SettingsListener;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.object.event.UpdatedCommentEvent;
@@ -92,8 +93,6 @@ public class EventServiceBuffer extends Object {
     
     public static final String MY_EVENTS = "me";
     public static final String NO_EVENT_FILTER = "none";
-    
-    private static Calendar lastUpdated;
 
     private static SimpleDateFormat railsDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     // HTTP Success code is 200. We add a constant to that code to in RubyService
@@ -116,30 +115,35 @@ public class EventServiceBuffer extends Object {
     public static final int deletePhotoSuccessCode = HttpStatus.SC_OK + RubyService.DELETE_PHOTO;
     public static final int newNotificationSuccessCode = HttpStatus.SC_OK + RubyService.NEW_NOTIFICATION;
     public static final int allNotificationSuccessCode = HttpStatus.SC_OK + RubyService.ALL_NOTIFICATION;
+    public static final int settingsSuccessCode = HttpStatus.SC_OK + RubyService.SETTINGS;
     
     private static Vector<UpdatedEventDetailListener> mEventDetailListener;
     private static Vector<UpdatedLikeListener> mLikeListener;
     private static Vector<UpdatedCommentListener> mCommentListener;
     private static Vector<UpdatedFomoListener> mFomoListener;
-    private static UserInfoListener mUserInfoListener;
+    private static Vector<UserInfoListener> mUserInfoListener;
     private static UpdatedAttendeeListener mAttendeeListener;
 	private static Vector<UpdatedPhotoListener> mPhotoListener;
 	private static UpdatedStoryListener mStoryListener;
 	private static Vector<UpdatedFriendsListener> mFriendsListener;
 	private static Vector<UpdatedNotificationListener> mNotificationListener;
 	private static DeletePhotoListener mDeletePhotoListener; 
+	private static Vector<SettingsListener> mSettingsListener;
 	
 	private static ArrayList<Bundle> photosToSend = new ArrayList<Bundle>();
 	
 	private static DatabaseHelper helper;
 	private static DatabaseWrapper dbWrapper;
 	
+	private static StopWatch sw = new StopWatch();
+	
+	private static Handler handler = new Handler();
+	
 	public static synchronized EventServiceBuffer getInstance(Context context)
 	{
 		mContext = context;
 		helper = new DatabaseHelper(context);
 		dbWrapper = new DatabaseWrapper(context);
-		helper.getWritableDatabase();
 		return instance;
 	}
 	
@@ -200,6 +204,23 @@ public class EventServiceBuffer extends Object {
 		mAttendeeListener = listener;
 	}
 	
+	public static void setSettigsListener(SettingsListener listener)
+	{
+		if (mSettingsListener == null)
+			mSettingsListener = new Vector<SettingsListener>();
+		if (!mSettingsListener.contains(listener))
+		{
+			mSettingsListener.addElement(listener);
+		}
+	}
+	
+	public static void removeSettingsListener(SettingsListener listener)
+	{
+		if (mSettingsListener == null)
+			mSettingsListener = new Vector<SettingsListener>();
+		mSettingsListener.removeElement(listener);
+	}
+	
 	public static void setNotificationListener(UpdatedNotificationListener listener) {
 		
 		if (mNotificationListener == null)
@@ -236,12 +257,19 @@ public class EventServiceBuffer extends Object {
 	
 	public static void setUserInfoListener(UserInfoListener listener)
 	{
-		mUserInfoListener = listener;
+		if (mUserInfoListener == null)
+			mUserInfoListener = new Vector<UserInfoListener>();
+		if (!mUserInfoListener.contains(listener))
+		{
+			mUserInfoListener.addElement(listener);
+		}
 	}
 	
-	public static void removeUserInfoListener()
+	public static void removeUserInfoListener(UserInfoListener listener)
 	{
-		mUserInfoListener = null;
+		if (mUserInfoListener == null)
+			mUserInfoListener = new Vector<UserInfoListener>();
+		mUserInfoListener.removeElement(listener);
 	}
 	
 	public static void setLikeInfoListener(UpdatedLikeListener listener)
@@ -325,14 +353,45 @@ public class EventServiceBuffer extends Object {
 		
 	}
 	
+	public static void deleteAccount(Integer userID)
+	{
+		Bundle params = new Bundle();
+		
+		Intent intent = new Intent(mContext, RubyService.class);
+		intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + SharePref.getIntPref(mContext, SharePref.USER_ID) + "/delete"));
+		
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.POST);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.USER);
+        intent.putExtra(RubyService.EXTRA_PARAMS, params);
+        
+        //mContext.startService(intent);
+	}
+	
+	public static void getSettings()
+	{
+		Bundle params = new Bundle();
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+		
+		Intent intent = new Intent(mContext, RubyService.class);
+		intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + SharePref.getIntPref(mContext, SharePref.USER_ID) + "/settings"));
+		
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.SETTINGS);
+        intent.putExtra(RubyService.EXTRA_PARAMS, params);
+        
+        mContext.startService(intent);
+	}
+	
 	public static void getAllNotifications()
 	{
 		Bundle params = new Bundle();
-		params.putString(AUTH_TOK, SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
 		params.putString("type", "all");
 		
 		Intent intent = new Intent(mContext, RubyService.class);
-		intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + SharedPreferencesWrapper.getIntPref(mContext, SharedPreferencesWrapper.USER_ID) + "/notifications"));
+		intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + SharePref.getIntPref(mContext, SharePref.USER_ID) + "/notifications"));
 		
         intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
         intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
@@ -345,11 +404,11 @@ public class EventServiceBuffer extends Object {
 	public static void getNewNotificationsFromServer()
 	{
 		Bundle params = new Bundle();
-		params.putString(AUTH_TOK, SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
 		params.putString("type", "unread");
 		
 		Intent intent = new Intent(mContext, RubyService.class);
-		intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + SharedPreferencesWrapper.getIntPref(mContext, SharedPreferencesWrapper.USER_ID) + "/notifications"));
+		intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + SharePref.getIntPref(mContext, SharePref.USER_ID) + "/notifications"));
 		
         intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
         intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
@@ -362,7 +421,7 @@ public class EventServiceBuffer extends Object {
 	public static void deletePhotoFromEvent(PhotoItem photo)
 	{
 		Bundle params = new Bundle();
-		params.putString(AUTH_TOK, SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
 		
 		Intent intent = new Intent(mContext, RubyService.class);
 		intent.setData(Uri.parse(WEB_SERVICE_URL + "events/" + photo.event_id + "/photos/" + photo.id));
@@ -378,7 +437,7 @@ public class EventServiceBuffer extends Object {
 	public static void addCommentToEventItem(EventItem item, String body)
 	{
 		Bundle params = new Bundle();
-		params.putString(AUTH_TOK, SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
 		params.putString("comment[body]", body);
 		
         Intent intent = new Intent(mContext, RubyService.class);
@@ -402,8 +461,8 @@ public class EventServiceBuffer extends Object {
 	public static void requestMotleeFriends(int userId)
 	{
 		Bundle params = new Bundle();
-		params.putString(AUTH_TOK, SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
-		params.putString("access_token", SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.ACCESS_TOKEN));
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+		params.putString("access_token", SharePref.getStringPref(mContext, SharePref.ACCESS_TOKEN));
 		
         Intent intent = new Intent(mContext, RubyService.class);
     	intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + userId + "/friends"));
@@ -419,7 +478,7 @@ public class EventServiceBuffer extends Object {
 	public static void sendFomoToDatabase(int eventId)
 	{
 		Bundle params = new Bundle();
-		params.putString(AUTH_TOK, SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
 		
         Intent intent = new Intent(mContext, RubyService.class);
     	intent.setData(Uri.parse(WEB_SERVICE_URL + "events/" + eventId + "/fomos"));
@@ -435,7 +494,7 @@ public class EventServiceBuffer extends Object {
 	public static void likeEventItem(EventItem item)
 	{
 		Bundle params = new Bundle();
-		params.putString(AUTH_TOK, SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
 		
         Intent intent = new Intent(mContext, RubyService.class);
         if (item instanceof PhotoItem)
@@ -458,10 +517,10 @@ public class EventServiceBuffer extends Object {
 	public static void sendStoryToDatabase(Integer eventID, String body, StoryItem story)
 	{
 		Bundle params = new Bundle();
-		params.putString(AUTH_TOK, SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
 		params.putInt("story[event_id]", eventID);
 		params.putString("story[body]", body);
-		params.putInt("story[user_id]", SharedPreferencesWrapper.getIntPref(mContext, SharedPreferencesWrapper.USER_ID));
+		params.putInt("story[user_id]", SharePref.getIntPref(mContext, SharePref.USER_ID));
 		
 		//image.recycle();
 		
@@ -483,12 +542,12 @@ public class EventServiceBuffer extends Object {
 	public static void addPhotoToCache(Integer eventID, String mCurrentPhotoPath, LocationInfo location, String caption, PhotoItem photo)
 	{
 		Bundle params = new Bundle();
-		params.putString(AUTH_TOK, SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
 		params.putInt("photo[event_id]", eventID);
 		params.putDouble("photo[lat]", location.lat);
 		params.putDouble("photo[lon]", location.lon);
 		params.putString("photo[caption]", caption);
-		params.putInt("photo[user_id]", SharedPreferencesWrapper.getIntPref(mContext, SharedPreferencesWrapper.USER_ID));
+		params.putInt("photo[user_id]", SharePref.getIntPref(mContext, SharePref.USER_ID));
 		params.putString("photo[image]", mCurrentPhotoPath);
 		params.putParcelable("photoObject", photo);
 		
@@ -529,12 +588,12 @@ public class EventServiceBuffer extends Object {
 	public static void sendPhotoToDatabase(Integer eventID, String mCurrentPhotoPath, LocationInfo location, String caption, PhotoItem photo) {
 
 		Bundle params = new Bundle();
-		params.putString(AUTH_TOK, SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
 		params.putInt("photo[event_id]", eventID);
 		params.putDouble("photo[lat]", location.lat);
 		params.putDouble("photo[lon]", location.lon);
 		params.putString("photo[caption]", caption);
-		params.putInt("photo[user_id]", SharedPreferencesWrapper.getIntPref(mContext, SharedPreferencesWrapper.USER_ID));
+		params.putInt("photo[user_id]", SharePref.getIntPref(mContext, SharePref.USER_ID));
 		params.putString("photo[image]", mCurrentPhotoPath);
 		
 		//image.recycle();
@@ -559,7 +618,7 @@ public class EventServiceBuffer extends Object {
 	{
 		ArrayList<Long> attendees = new ArrayList<Long>();
 		
-		UserInfo user = dbWrapper.getUser(SharedPreferencesWrapper.getIntPref(mContext, SharedPreferencesWrapper.USER_ID));
+		UserInfo user = dbWrapper.getUser(SharePref.getIntPref(mContext, SharePref.USER_ID));
 		
 		attendees.add(user.uid);
 		sendAttendeesForEvent(eventID, attendees);
@@ -568,7 +627,7 @@ public class EventServiceBuffer extends Object {
 	public static void sendAttendeesForEvent(Integer eventID, ArrayList<Long> attendees) 
 	{
 		Bundle params = new Bundle();
-		params.putString(AUTH_TOK, SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
 		
 		if (attendees.size() > 0)
 		{
@@ -623,7 +682,7 @@ public class EventServiceBuffer extends Object {
 			eventDetailBundle.putString("location[uid]", "0");
 		}
 		eventDetailBundle.putString("location[fsid]", "0");
-		eventDetailBundle.putString(AUTH_TOK, SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
+		eventDetailBundle.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
 		
         Intent intent = new Intent(mContext, RubyService.class);
         intent.setData(Uri.parse(WEB_SERVICE_URL + "events/" + eDetail.getEventID()));
@@ -662,7 +721,7 @@ public class EventServiceBuffer extends Object {
 			eventDetailBundle.putString("location[uid]", "0");
 		}
 		eventDetailBundle.putString("location[fsid]", "0");
-		eventDetailBundle.putString(AUTH_TOK, SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
+		eventDetailBundle.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
 		
         Intent intent = new Intent(mContext, RubyService.class);
         intent.setData(Uri.parse(WEB_SERVICE_URL + "events"));
@@ -680,7 +739,7 @@ public class EventServiceBuffer extends Object {
 	
 	public static void getUserInfoFromFacebookAccessToken(String accessToken)
 	{
-		SharedPreferencesWrapper.setStringPref(mContext, SharedPreferencesWrapper.ACCESS_TOKEN, accessToken);
+		SharePref.setStringPref(mContext, SharePref.ACCESS_TOKEN, accessToken);
 		
         Intent intent = new Intent(mContext, RubyService.class);
         intent.setData(Uri.parse(WEB_SERVICE_URL + "tokens"));
@@ -693,7 +752,7 @@ public class EventServiceBuffer extends Object {
         intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.USER_AUTH);
         
         Bundle formData = new Bundle();
-        formData.putString("access_token", SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.ACCESS_TOKEN));
+        formData.putString("access_token", SharePref.getStringPref(mContext, SharePref.ACCESS_TOKEN));
         
         intent.putExtra(RubyService.EXTRA_PARAMS, formData);
         // Here we send our Intent to our RESTService.
@@ -714,7 +773,7 @@ public class EventServiceBuffer extends Object {
         intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + userID));
         
         Bundle formData = new Bundle();
-        formData.putString(AUTH_TOK, SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
+        formData.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
         if (verbose)
         {
         	formData.putString("type", "verbose");
@@ -734,7 +793,7 @@ public class EventServiceBuffer extends Object {
         intent.setData(Uri.parse(WEB_SERVICE_URL + "users"));
         
         Bundle formData = new Bundle();
-        formData.putString(AUTH_TOK, SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
+        formData.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
         formData.putString("type", "verbose");
         
         intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
@@ -763,8 +822,8 @@ public class EventServiceBuffer extends Object {
         intent.setData(Uri.parse(WEB_SERVICE_URL + "events"));
         
         Bundle formData = new Bundle();
-        formData.putString(AUTH_TOK, SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
-        formData.putString("access_token", SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.ACCESS_TOKEN));
+        formData.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+        formData.putString("access_token", SharePref.getStringPref(mContext, SharePref.ACCESS_TOKEN));
         // Here we are going to place our REST call parameters. Note that
         // we could have just used Uri.Builder and appendQueryParameter()
         // here, but I wanted to illustrate how to use the Bundle params.
@@ -774,7 +833,7 @@ public class EventServiceBuffer extends Object {
 			formData.putString("page", eventParam);
 		}
 		
-		if (lastUpdated != null)
+		if (SharePref.getStringPref(mContext.getApplicationContext(), SharePref.LAST_UPDATED) != "")
 		{
 			/*java.text.DateFormat dateFormatter = java.text.DateFormat.getInstance();
 	        dateFormatter.setTimeZone (TimeZone.getTimeZone("GMT"));  
@@ -787,16 +846,21 @@ public class EventServiceBuffer extends Object {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} */ 
-			formData.putString("updatedAfter", railsDateFormatter.format(lastUpdated.getTime()));
+			
+			formData.putString("updatedAfter", SharePref.getStringPref(mContext.getApplicationContext(), SharePref.LAST_UPDATED));
 		}
 		
-		lastUpdated = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+		String railsDateString = railsDateFormatter.format(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTime());
+		
+		SharePref.setStringPref(mContext.getApplicationContext(), SharePref.LAST_UPDATED, railsDateString);
 		
         intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
         intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
         intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.EVENT);
         intent.putExtra(RubyService.EXTRA_PARAMS, formData);
         // Here we send our Intent to our RESTService.
+        sw.start();
+        
         mContext.startService(intent);
 	}
     
@@ -807,8 +871,8 @@ public class EventServiceBuffer extends Object {
         
         
         Bundle formData = new Bundle();
-        formData.putString(AUTH_TOK, SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
-        formData.putString("access_token", SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.ACCESS_TOKEN));
+        formData.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+        formData.putString("access_token", SharePref.getStringPref(mContext, SharePref.ACCESS_TOKEN));
         // Here we are going to place our REST call parameters. Note that
         // we could have just used Uri.Builder and appendQueryParameter()
         // here, but I wanted to illustrate how to use the Bundle params.
@@ -829,6 +893,31 @@ public class EventServiceBuffer extends Object {
         mContext.startService(intent);
 	}
 	
+	public static void updateSettingsOnDatabase()
+	{
+		Settings settings = SharePref.getSettings(mContext);
+		
+		Intent intent = new Intent(mContext, RubyService.class);
+		intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + SharePref.getIntPref(mContext, SharePref.USER_ID) + "/settings"));
+		
+        Bundle formData = new Bundle();
+        formData.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+        formData.putBoolean("settings[fb_on_event_create]", settings.fb_on_event_create);
+        formData.putBoolean("settings[fb_on_event_invite]", settings.fb_on_event_invite);
+        formData.putBoolean("settings[on_event_invite]", settings.on_event_invite);
+        formData.putBoolean("settings[on_event_message]", settings.on_event_message);
+        formData.putBoolean("settings[on_friend_join]", settings.on_friend_join);
+        formData.putBoolean("settings[on_photo_comment]", settings.on_photo_comment);
+        formData.putBoolean("settings[on_photo_like]", settings.on_photo_like);
+        
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.PUT);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.SETTINGS);
+        intent.putExtra(RubyService.EXTRA_PARAMS, formData);
+        // Here we send our Intent to our RESTService.
+        mContext.startService(intent);
+	}
+	
 	public static void getEventsFromService(Integer eventID)
 	{
         Intent intent = new Intent(mContext, RubyService.class);
@@ -836,8 +925,8 @@ public class EventServiceBuffer extends Object {
         
         
         Bundle formData = new Bundle();
-        formData.putString(AUTH_TOK, SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
-        formData.putString("access_token", SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.ACCESS_TOKEN));
+        formData.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+        formData.putString("access_token", SharePref.getStringPref(mContext, SharePref.ACCESS_TOKEN));
 		
         intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
         intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
@@ -856,7 +945,7 @@ public class EventServiceBuffer extends Object {
         intent.setData(Uri.parse(uri));
         
         Bundle formData = new Bundle();
-        formData.putString(AUTH_TOK, SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
+        formData.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
         
         // Here we are going to place our REST call parameters. Note that
         // we could have just used Uri.Builder and appendQueryParameter()
@@ -964,6 +1053,10 @@ public class EventServiceBuffer extends Object {
         {
         	getAllNotificationFromJson(result);
         }
+        else if (code == settingsSuccessCode && result != null)
+        {
+        	getSettingsFromJson(result);
+        }
         else {
         	
             if (mContext instanceof Activity) {
@@ -978,9 +1071,31 @@ public class EventServiceBuffer extends Object {
         }
     }
 
-    private void getAllNotificationFromJson(String result) {
+    private void getSettingsFromJson(String result) {
+	
+    	Gson gson = new Gson();
+    	
+    	JsonParser parser = new JsonParser();
+    	
+    	JsonArray array = parser.parse(result).getAsJsonArray();
+    	
+    	if (array.size() > 0)
+    	{
+    		JsonObject object = array.get(0).getAsJsonObject();
+    		
+    		JsonElement element = object.get("setting");
+    		
+    		Settings setting = gson.fromJson(element, Settings.class);
+    		
+    		SharePref.setSettings(mContext.getApplicationContext(), setting);
+    	}
+    	
+    	getUserInfoFromService();
+	}
+
+	private void getAllNotificationFromJson(String result) {
 		
-    	NotificationList.getInstance().setNotificationList(result);
+    	NotificationList.getInstance().setNotificationList(result, mContext);
     	
 		Vector<UpdatedNotificationListener> targets;
 	    synchronized (this) {
@@ -997,12 +1112,8 @@ public class EventServiceBuffer extends Object {
 	}
 
 	private void getNewNotificationFromJson(String result) {
-		
-    	JsonParser parser = new JsonParser();
     	
-    	JsonArray array = parser.parse(result).getAsJsonArray();
-    	
-    	NotificationList.getInstance().setNumUnreadNotifications(array.size());
+    	NotificationList.getInstance().setNewNotificationNumber(result, mContext);
     	
 		Vector<UpdatedNotificationListener> targets;
 	    synchronized (this) {
@@ -1624,17 +1735,17 @@ public class EventServiceBuffer extends Object {
 		
 		if (!parser.parse(json).isJsonObject())
 		{			
-			ACRA.getErrorReporter().putCustomData("Auth Token", SharedPreferencesWrapper.getStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN));
+			ACRA.getErrorReporter().putCustomData("Auth Token", SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
 			ACRA.getErrorReporter().putCustomData("Json", json);
 		}
 		
 		String authTok = gson.fromJson(json, AuthTokenHolder.class).token;
     	
-		SharedPreferencesWrapper.setStringPref(mContext, SharedPreferencesWrapper.AUTH_TOKEN, authTok);
+		SharePref.setStringPref(mContext, SharePref.AUTH_TOKEN, authTok);
     	
     	//AUTH_TOK = AUTH_TOK + authTok;
     	
-    	getUserInfoFromService();
+		getSettings();
 	}
 
     //TODO: Want a better solution.
@@ -1681,14 +1792,14 @@ public class EventServiceBuffer extends Object {
     	{
     		EventDetail eDetail = gson.fromJson(element, EventDetail.class);
     		
-   		    dbWrapper.createIfNotExistsEvent(eDetail);
+   		    //dbWrapper.createIfNotExistsEvent(eDetail);
    		    
     		eventIds.add(eDetail.getEventID());
     	}
     	
-	    if (SharedPreferencesWrapper.getIntPref(mContext.getApplicationContext(), SharedPreferencesWrapper.USER_ID) == userInfo.id)
+	    if (SharePref.getIntPref(mContext.getApplicationContext(), SharePref.USER_ID) == userInfo.id)
 	    {
-	    	SharedPreferencesWrapper.setIntArrayPref(mContext, SharedPreferencesWrapper.MY_EVENT_DETAILS, eventIds);
+	    	SharePref.setIntArrayPref(mContext, SharePref.MY_EVENT_DETAILS, eventIds);
 	    }
     	
     	JsonArray photoJson = parseJson.getAsJsonObject("user").getAsJsonArray("photos");
@@ -1707,7 +1818,18 @@ public class EventServiceBuffer extends Object {
     		ArrayList<Integer> ids = new ArrayList<Integer>(eventIds);
     		
     		UserWithEventsPhotosEvent event = new UserWithEventsPhotosEvent(this, userInfo, photos, ids);
-    		mUserInfoListener.userWithEventsPhotos(event);
+    		
+    		Vector<UserInfoListener> targets;
+    	    synchronized (this) {
+    	        targets = (Vector<UserInfoListener>) mUserInfoListener.clone();
+    	    }
+    		
+    		Enumeration e = targets.elements();
+	        while (e.hasMoreElements()) 
+	        {
+	        	UserInfoListener l = (UserInfoListener) e.nextElement();
+	        	l.userWithEventsPhotos(event);
+	        }
     	}
     }
     
@@ -1716,97 +1838,122 @@ public class EventServiceBuffer extends Object {
     	public UserInfo user;
     }
 	
-    private void getEventsFromJson(String json) 
+    private void getEventsFromJson(final String json) 
     {        
-        try {
-        	//json = getMockJson();
-        	
-        	JsonParser parser = new JsonParser();
-        	
-        	JsonArray array = new JsonArray();
-        	
-        	Gson gson = new GsonBuilder()
-        	.addDeserializationExclusionStrategy(new NoExposeExclusionStrategy())
-        	.create();
-        	
-        	Set<Integer> eventIDs = new HashSet<Integer>();
-        	Set<Integer> myEventIDs = new HashSet<Integer>();
-        	
-        	if (json.length() > 0)
-        	{
-        		JsonElement elem = parser.parse(json);
-        		
-    			EventDetail eDetail;
-        		
-        		if (elem.isJsonArray())
-        		{
-        			array = elem.getAsJsonArray();
-        			
-        			ExecutorService execs = Executors.newFixedThreadPool(10);  
-        			  
-        		    List<Future<Integer>> results = new ArrayList<Future<Integer>>(); 
-        			
-                	for (JsonElement element : array)
-                	{
-                		Future<Integer> result = execs.submit(new MyTask(element));  
-            	        results.add(result);  
-                	}
-                	
-                	execs.shutdown();  
-                	
-                	for (Future<Integer> result : results)
-                	{
-                		eventIDs.add(result.get());
-                	}
-        		}
-        		else
-        		{
-        			eDetail = gson.fromJson(elem, EventDetailHolder.class).event;
-           		    
-        			helper.getEventDao().createIfNotExists(eDetail);
-           		    
-            		if (eDetail.getOwnerID() == SharedPreferencesWrapper.getIntPref(mContext.getApplicationContext(), SharedPreferencesWrapper.USER_ID))
-            		{
-            			myEventIDs.add(eDetail.getEventID());
-            		}
-            		
-            		UserInfo user = helper.getUserDao().queryForId(eDetail.getOwnerID());
-            		
-            		if (user == null)
-            		{
-            			getUserInfoFromService(eDetail.getOwnerID());
-            		}
-            		
-            		eventIDs.add(eDetail.getEventID());
-        		}
-        	}
-        	
-        	Set<Integer> currentMyEvents = SharedPreferencesWrapper.getIntArrayPref(mContext, SharedPreferencesWrapper.MY_EVENT_DETAILS);
-        	
-        	currentMyEvents.addAll(myEventIDs);
-        	
-        	SharedPreferencesWrapper.setIntArrayPref(mContext, SharedPreferencesWrapper.MY_EVENT_DETAILS, currentMyEvents);
-        	
-        	if (mEventDetailListener != null && mEventDetailListener.size() > 0)
-        	{
-	        	UpdatedEventDetailEvent event = new UpdatedEventDetailEvent(this, eventIDs);
-	        	
-	    		Vector<UpdatedEventDetailListener> targets;
-	    	    synchronized (this) {
-	    	        targets = (Vector<UpdatedEventDetailListener>) mEventDetailListener.clone();
-	    	    }
-	    		
-	    		Enumeration e = targets.elements();
-		        while (e.hasMoreElements()) 
-		        {
-		        	UpdatedEventDetailListener l = (UpdatedEventDetailListener) e.nextElement();
-		        	l.myEventOccurred(event);
+    	Log.d("EventServiceBuffer", "events call: " + sw.getElapsedTime() + " ms");
+    	
+    	Log.d("getEventsFromJson", "Thread: " + Thread.currentThread().getName());
+    	
+    	Thread thread = new Thread(new Runnable(){
+
+			public void run() {
+		        try {
+		        	//json = getMockJson();
+		        	
+		        	JsonParser parser = new JsonParser();
+		        	
+		        	JsonArray array = new JsonArray();
+		        	
+		        	Gson gson = new GsonBuilder()
+		        	.addDeserializationExclusionStrategy(new NoExposeExclusionStrategy())
+		        	.create();
+		        	
+		        	Set<Integer> eventIDs = new HashSet<Integer>();
+		        	Set<Integer> myEventIDs = new HashSet<Integer>();
+		        	
+		        	if (json.length() > 0)
+		        	{
+		        		JsonElement elem = parser.parse(json);
+		        		
+		    			EventDetail eDetail;
+		        		
+		        		if (elem.isJsonArray())
+		        		{
+		        			array = elem.getAsJsonArray();
+		        			
+		        			ExecutorService execs = Executors.newFixedThreadPool(10);  
+		        			  
+		        		    List<Future<Integer>> results = new ArrayList<Future<Integer>>(); 
+		        			
+		                	for (JsonElement element : array)
+		                	{
+		                		Future<Integer> result = execs.submit(new MyTask(element));  
+		            	        results.add(result);  
+		                	}
+		                	
+		                	execs.shutdown();  
+		                	
+		                	for (Future<Integer> result : results)
+		                	{
+		                		eventIDs.add(result.get());
+		                	}
+		        		}
+		        		else
+		        		{
+		        			eDetail = gson.fromJson(elem, EventDetailHolder.class).event;
+		           		    
+		        			helper.getEventDao().createIfNotExists(eDetail);
+		           		    
+		            		if (eDetail.getOwnerID() == SharePref.getIntPref(mContext.getApplicationContext(), SharePref.USER_ID))
+		            		{
+		            			myEventIDs.add(eDetail.getEventID());
+		            		}
+		            		
+		            		UserInfo user = helper.getUserDao().queryForId(eDetail.getOwnerID());
+		            		
+		            		if (user == null)
+		            		{
+		            			getUserInfoFromService(eDetail.getOwnerID());
+		            		}
+		            		
+		            		eventIDs.add(eDetail.getEventID());
+		        		}
+		        	}
+		        	
+		        	Log.d("EventServiceBuffer", "Finished populating db: " + sw.getElapsedTime() + " ms");
+		        	
+		        	sw.stop();
+		        	sw = new StopWatch();
+		        	
+		        	Set<Integer> currentMyEvents = SharePref.getIntArrayPref(mContext, SharePref.MY_EVENT_DETAILS);
+		        	
+		        	currentMyEvents.addAll(myEventIDs);
+		        	
+		        	SharePref.setIntArrayPref(mContext, SharePref.MY_EVENT_DETAILS, currentMyEvents);
+		        	
+		        	if (mEventDetailListener != null && mEventDetailListener.size() > 0)
+		        	{
+		        		
+			        	final UpdatedEventDetailEvent event = new UpdatedEventDetailEvent(this, eventIDs);
+			        	
+			        	handler.post(new Runnable(){
+
+							public void run() {
+					    		Vector<UpdatedEventDetailListener> targets;
+					    	    synchronized (this) {
+					    	        targets = (Vector<UpdatedEventDetailListener>) mEventDetailListener.clone();
+					    	    }
+					    		
+					    		Enumeration e = targets.elements();
+						        while (e.hasMoreElements()) 
+						        {
+						        	UpdatedEventDetailListener l = (UpdatedEventDetailListener) e.nextElement();
+						        	l.myEventOccurred(event);
+						        }
+							}
+			        		
+			        	});
+		        	}
 		        }
-        	}
-        }
-        catch (Exception e) {
-            Log.e("EventServiceBuffer", "Failed to parse JSON.", e);
-        }
+		        catch (Exception e) {
+		            Log.e("EventServiceBuffer", "Failed to parse JSON.", e);
+		        }
+				
+			}
+    		
+    	});
+    	
+    	thread.start();
     }
 
     private static void setOwner(JsonElement userObject)
