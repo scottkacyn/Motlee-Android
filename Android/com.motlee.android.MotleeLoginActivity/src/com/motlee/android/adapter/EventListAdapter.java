@@ -18,18 +18,25 @@ import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
-import com.devsmart.android.ui.HorizontalListView;
+import com.motlee.android.view.HorizontalListView;
 import com.emilsjolander.components.StickyListHeaders.StickyListHeadersBaseAdapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Gallery;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -42,8 +49,13 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 	private String tag = "EventListAdapter";
 	        // store the context (as an inflated layout)
 	
+	private GestureDetector gestureDetector;
+	private OnTouchListener gestureListener;
+	
 	//Default Integer to represent the "Load More Button"
 	private static final Integer LOAD_MORE_BUTTON = -9999;
+	
+	private static final int SWIPE_MAX_OFF_PATH = 250;
 	
 	private static final Integer LOAD_MORE = 1;
 	private static final Integer EVENT_ITEM = 2;

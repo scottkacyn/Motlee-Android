@@ -30,7 +30,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "motlee.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 10;
+	private static final int DATABASE_VERSION = 11;
 
 	// the DAO object we use to access the EventDetail table
 	private Dao<EventDetail, Integer> eventDao = null;
@@ -72,6 +72,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		try 
 		{
 			Log.i(DatabaseHelper.class.getName(), "onCreate");
+			db.setLockingEnabled(false);
 			TableUtils.createTable(connectionSource, EventDetail.class);TableUtils.dropTable(connectionSource, Like.class, true);
 			TableUtils.createTable(connectionSource, UserInfo.class);
 			TableUtils.createTable(connectionSource, Friend.class);

@@ -51,7 +51,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 
-public class UserProfilePageActivity extends BaseMotleeActivity implements UserInfoListener, OnFragmentAttachedListener, UpdatedFriendsListener {
+public class UserProfilePageActivity extends BaseMotleeActivity implements OnFragmentAttachedListener, UpdatedFriendsListener {
     
 	private int mUserID;
 	private Long facebookID;

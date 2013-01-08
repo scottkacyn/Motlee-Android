@@ -95,7 +95,20 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
         	Log.e(this.toString(), e.getMessage());
         }
         
-        EventDetail eDetail = dbWrapper.getEvent(eventId);
+        if (peopleToAdd.size() > 0)
+        {
+        	progressDialog = ProgressDialog.show(AddPeopleActivity.this, "", "Adding Friends");
+        
+        	EventServiceBuffer.setAttendeeListener(AddPeopleActivity.this);
+        
+        	EventServiceBuffer.sendAttendeesForEvent(eventId, peopleToAdd);
+        }
+        else
+        {
+    		finish();
+        }
+        
+        /*EventDetail eDetail = dbWrapper.getEvent(eventId);
         
         String eventName = "an event";
         
@@ -137,18 +150,7 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
                                 Toast.LENGTH_SHORT).show();
                     } 
                     
-                    if (peopleToAdd.size() > 0)
-                    {
-                    	progressDialog = ProgressDialog.show(AddPeopleActivity.this, "", "Adding Friends");
-                    
-                    	EventServiceBuffer.setAttendeeListener(AddPeopleActivity.this);
-                    
-                    	EventServiceBuffer.sendAttendeesForEvent(eventId, peopleToAdd);
-                    }
-                    else
-                    {
-                		finish();
-                    }
+
                     
                 }
 
@@ -156,7 +158,7 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
             .build();
         
         requestsDialog.show();
-            
+            */
 	}
 
 	public void raised(UpdatedAttendeeEvent e) {

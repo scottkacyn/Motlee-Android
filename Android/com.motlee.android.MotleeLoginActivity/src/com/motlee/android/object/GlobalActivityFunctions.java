@@ -27,7 +27,7 @@ public class GlobalActivityFunctions {
 	{
         SlidingMenu menu = new SlidingMenu(activity);
         menu.setMode(SlidingMenu.LEFT);
-        menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+        menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
         menu.setFadeEnabled(false);
         menu.setBehindScrollScale(0f);
         menu.setBehindWidth((int) (GlobalVariables.DISPLAY_HEIGHT * 0.24864));

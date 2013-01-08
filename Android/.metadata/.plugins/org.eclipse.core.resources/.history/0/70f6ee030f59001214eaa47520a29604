@@ -1,0 +1,29 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
+
+    <CheckBox
+        android:id="@+id/checkbox"
+        style="?android:attr/textAppearanceMedium"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_weight=".25" />
+    
+    <TextView
+        android:id="@+id/facebook_post_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|left"
+        android:text="Post on Facebook?"
+        android:paddingLeft="5dp"
+        android:layout_weight=".57" />
+    
+    <ImageView 
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/facebook_icon_small"
+        android:layout_weight=".18"
+        android:scaleType="fitCenter"/>
+
+</LinearLayout>

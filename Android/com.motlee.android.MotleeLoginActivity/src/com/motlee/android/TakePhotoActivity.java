@@ -44,6 +44,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 	private static final int ACTION_TAKE_PHOTO = 1;
 	private static final int PIC_CROP = 2;
 	private static final int ACTION_GET_PHOTO = 3;
+	private static final int CROP_IMAGE = 4;
 	
 	private static final String JPEG_FILE_PREFIX = "IMG_";
 	private static final String JPEG_FILE_SUFFIX = ".jpg";
@@ -74,7 +75,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 		
 		if (mCurrentCroppedPhotoPath != null)
 		{
-			File croppedPhoto = new File(mCurrentCroppedPhotoPath);
+			/*File croppedPhoto = new File(mCurrentCroppedPhotoPath);
 			if (croppedPhoto.exists())
 			{
 				handleCameraPic();
@@ -88,7 +89,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 				    	mTakenPhoto = false;
 				    }
 				});
-			}
+			}*/
 		}
 	}
 	
@@ -220,6 +221,36 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			{
 				finish();
 			}
+			break;
+		}
+		case CROP_IMAGE: {
+			
+			if (data != null)
+			{
+				File croppedPhoto = new File(mCurrentCroppedPhotoPath);
+				if (croppedPhoto.exists())
+				{
+					handleCameraPic();
+	
+					System.gc();
+					
+					mHandler.post(new Runnable() {
+					    
+					    public void run() {
+					    	setUpFragmentWithPicture();
+					    	mTakenPhoto = false;
+					    }
+					});
+				}
+			}
+			else
+			{
+				Toast toast = Toast.makeText(getApplicationContext(), "Cannot load photo from camera", 3000);
+				toast.show();
+				
+				finish();
+			}
+
 			break;
 		}
 		default: {
@@ -359,6 +390,16 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			
 		} else {
 			Log.v(getString(R.string.app_name), "External storage is not mounted READ/WRITE.");
+			storageDir = getInternalAlbumStorageDir(getAlbumName());
+
+			if (storageDir != null) {
+				if (! storageDir.mkdirs()) {
+					if (! storageDir.exists()){
+						Log.d("CameraSample", "failed to create directory");
+						return null;
+					}
+				}
+			}
 		}
 		
 		return storageDir;
@@ -388,6 +429,12 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 		);
 	}
 	
+	private File getInternalAlbumStorageDir(String albumName)
+	{
+		return new File(
+				getFilesDir() + CAMERA_DIR + albumName);
+	}
+	
     /**
      * Helper method to carry out crop operation
      */
@@ -408,7 +455,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			intent.putExtra("outputX", outputSize);
 			intent.putExtra("outputY", outputSize);
 			intent.putExtra("scale", true);
-			startActivity(intent); 
+			startActivityForResult(intent, CROP_IMAGE); 
     	}
     	//respond to users whose devices do not support the crop action
     	catch(ActivityNotFoundException anfe){

@@ -380,7 +380,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     	
     }
     
-    private void createRequestDialog(String eventName)
+    /*private void createRequestDialog(String eventName)
     {
  
         String toParam = "";
@@ -434,7 +434,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
             .build();
         
         requestsDialog.show();
-    }
+    }*/
     
     private UpdatedAttendeeListener attendeeListener = new UpdatedAttendeeListener(){
 
@@ -466,14 +466,18 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 					
 					progressDialog.dismiss();
 					
-					if (mEventAttendees.size() > 0)
-					{
-						createRequestDialog(dbWrapper.getEvent(mEventID).getEventName());
-					}
-					else
-					{
-						endCreateEventActivity();
-					}
+                    if (mEventAttendees.size() > 0)
+                    {
+	                    progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Inviting Friends");
+	                    
+	                    EventServiceBuffer.setAttendeeListener(attendeeListener);
+	                    
+	                    EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees);
+                    }
+                    else
+                    {
+                    	endCreateEventActivity();
+                    }
 					
 				}
 			}
@@ -495,15 +499,19 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 			mEventID = mCreatedEvent.getEventID();
 			
 			progressDialog.dismiss();
-			
-			if (mEventAttendees.size() > 0)
-			{
-				createRequestDialog(dbWrapper.getEvent(mEventID).getEventName());
-			}
-			else
-			{
-				endCreateEventActivity();
-			}
+
+            if (mEventAttendees.size() > 0)
+            {
+                progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Inviting Friends");
+                
+                EventServiceBuffer.setAttendeeListener(attendeeListener);
+                
+                EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees);
+            }
+            else
+            {
+            	endCreateEventActivity();
+            }
 		}
 	}
     

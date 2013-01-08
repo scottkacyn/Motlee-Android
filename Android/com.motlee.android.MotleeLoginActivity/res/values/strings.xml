@@ -36,5 +36,7 @@
     <string name="not_photo_comments">Photo comments</string>
     <string name="not_photo_likes">Photo likes</string>
     <string name="not_friends_joining">Friends joining Motlee</string>
+    <string name="facebook_event_true">Post event on your Facebook wall</string>
+    <string name="facebook_event_false">Do not post event on Facebook</string>
     
 </resources>

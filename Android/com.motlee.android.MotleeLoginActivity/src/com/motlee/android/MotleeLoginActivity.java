@@ -200,7 +200,6 @@ public class MotleeLoginActivity extends FragmentActivity implements UserInfoLis
     {
 		Log.d(this.toString(), "onDestroy");
 		EventServiceBuffer.setAttendeeListener(null);
-		EventServiceBuffer.setUserInfoListener(null);
 		EventServiceBuffer.removeEventDetailListener(this);
 		unbindDrawables(this.findViewById(android.R.id.content));
 		super.onDestroy();

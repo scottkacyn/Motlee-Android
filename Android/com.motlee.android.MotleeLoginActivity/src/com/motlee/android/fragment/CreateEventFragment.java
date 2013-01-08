@@ -17,6 +17,7 @@ import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
+import com.motlee.android.object.Settings;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.view.DateTimePicker;
@@ -86,6 +87,8 @@ public class CreateEventFragment extends BaseMotleeFragment {
     
     private boolean isPrivate = false;
     
+    private boolean isFacebookEvent = true;
+    
     @Override
     public void onResume()
     {
@@ -141,6 +144,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		setFriendLayout();
 		setLocationLabel();
 		setPublicEventToggle();
+		setFacebookEventToggle();
 		
 		ImageScaleType ist = ImageScaleType.IN_SAMPLE_POWER_OF_2;
 		
@@ -179,7 +183,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		if (mEventDetail ==  null)
 		{
 			ImageButton toggle = (ImageButton) view.findViewById(R.id.event_create_public_switcher);
-			toggle.setOnClickListener(toggleListener);
+			toggle.setOnClickListener(publicToggleListener);
 			toggle.setTag(true);
 		}
 		else
@@ -188,6 +192,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 			{
 				ImageButton toggle = (ImageButton) view.findViewById(R.id.event_create_public_switcher);
 				toggle.setImageResource(R.drawable.switcher_button_off);
+				toggle.setOnClickListener(publicToggleListener);
 				TextView text = (TextView) view.findViewById(R.id.event_create_public_event_text);
 				text.setText(R.string.public_event_false);
 				toggle.setTag(false);
@@ -196,14 +201,64 @@ public class CreateEventFragment extends BaseMotleeFragment {
 			else
 			{
 				ImageButton toggle = (ImageButton) view.findViewById(R.id.event_create_public_switcher);
-				toggle.setOnClickListener(toggleListener);
+				toggle.setOnClickListener(publicToggleListener);
 				toggle.setTag(true);
 			}
 		}
 		
 	}
+	
+	private void setFacebookEventToggle() {
+		
+		Settings settings = SharePref.getSettings(getActivity().getApplicationContext());
 
-	private OnClickListener toggleListener = new OnClickListener()
+		if (!settings.fb_on_event_create)
+		{
+			ImageButton toggle = (ImageButton) view.findViewById(R.id.event_create_facebook_switcher);
+			toggle.setImageResource(R.drawable.switcher_button_off);
+			toggle.setOnClickListener(facebookToggleListener);
+			TextView text = (TextView) view.findViewById(R.id.event_create_facebook_event_text);
+			text.setText(R.string.facebook_event_false);
+			toggle.setTag(false);
+			isFacebookEvent = false;
+		}
+		else
+		{
+			ImageButton toggle = (ImageButton) view.findViewById(R.id.event_create_facebook_switcher);
+			toggle.setOnClickListener(facebookToggleListener);
+			toggle.setTag(true);
+			isFacebookEvent = true;
+		}
+		
+	}
+	
+	private OnClickListener facebookToggleListener = new OnClickListener()
+	{
+		public void onClick(View v) {
+			
+			boolean switcherState = (Boolean) v.getTag();
+			
+			if (switcherState)
+			{
+				((ImageView) v).setImageResource(R.drawable.switcher_button_off);
+				TextView text = (TextView) view.findViewById(R.id.event_create_facebook_event_text);
+				text.setText(R.string.facebook_event_false);
+				v.setTag(false);
+				isPrivate = true;
+			}
+			else
+			{
+				((ImageView) v).setImageResource(R.drawable.switcher_button_on);
+				TextView text = (TextView) view.findViewById(R.id.event_create_facebook_event_text);
+				text.setText(R.string.facebook_event_true);
+				v.setTag(true);
+				isPrivate = false;
+			}
+			
+		}
+	};
+
+	private OnClickListener publicToggleListener = new OnClickListener()
 	{
 
 		public void onClick(View v) {

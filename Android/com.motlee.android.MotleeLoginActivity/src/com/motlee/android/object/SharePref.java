@@ -24,6 +24,7 @@ public class SharePref {
 	public static final String FIRST_USE = "firstUse";
 	public static final String LAST_UPDATED = "motleeLastUpdated";
 	public static final String FIRST_EXPERIENCE = "firstExperience";
+	public static final String JOIN_FB_POST = "joinFBPost";
 	
 	//Settings key
 	private static final String FB_ON_CREATE = "fb_on_create";
@@ -53,6 +54,12 @@ public class SharePref {
 	{
 	    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 	    return prefs.getBoolean(key, true);
+	}
+	
+	public static boolean getBoolPref(Context context, String key, boolean defaultBool)
+	{
+	    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+	    return prefs.getBoolean(key, defaultBool);
 	}
 	
 	public static void setStringPref(Context context, String key, String value)

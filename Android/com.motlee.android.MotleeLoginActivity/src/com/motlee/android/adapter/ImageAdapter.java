@@ -56,7 +56,7 @@ public class ImageAdapter extends BaseAdapter {
 	private static final int MAX_SIZE = 10;
 	private static final int MIN_SIZE = 4;
 	
-	private static final PhotoItem NO_PHOTO = null;
+	private static final PhotoItem NO_PHOTO = new PhotoItem(-10, EventItemType.PICTURE, -10, null, null, null);
 	private static final PhotoItem FIRST_PHOTO = new PhotoItem(-5, EventItemType.PICTURE, -5, null, null, null);
 	
     private ArrayList<PhotoItem> mPhotoList = new ArrayList<PhotoItem>();
@@ -170,23 +170,6 @@ public class ImageAdapter extends BaseAdapter {
     	else
     	{
     		holder.imagePlaceHolder.setVisibility(View.GONE);
-			String tag = "ImageAdapter";
-    		if (holder == null)
-    		{
-    			Log.d(tag, "holder is null");
-    		}
-    		else if (holder.imageView == null)
-    		{
-    			Log.d(tag, "imageView is null");
-    		}
-    		if (mPhotoList == null)
-    		{
-    			Log.d(tag, "mPhotoList is null");
-    		}
-    		else if (mPhotoList.get(position) == null)
-    		{
-    			Log.d(tag, "mPhotoList.get(position) is null");
-    		}
     		
     		holder.imageView.setMaxHeight(GlobalVariables.getInstance().getMaxEventListImageHeight());
     		holder.imageView.setMaxWidth(GlobalVariables.getInstance().getMaxEventListImageHeight());

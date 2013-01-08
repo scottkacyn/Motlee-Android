@@ -40,6 +40,7 @@ import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.Settings;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.UserInfo;
@@ -74,6 +75,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -114,6 +116,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	private DatabaseWrapper dbWrapper;
 	
 	private String firstScreen;
+	
+	private View checkBox;
 	
 	/*
 	 * (non-Javadoc)
@@ -228,10 +232,33 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 
 		public void onClick(View v) {
 			
+			checkBox = getLayoutInflater().inflate(R.layout.check_box, null);
+			
+			CheckBox checkBoxView = (CheckBox) checkBox.findViewById(R.id.checkbox);
+			
+			Settings settings = SharePref.getSettings(getApplicationContext());
+			
+			if (settings.fb_on_event_invite)
+			{
+				checkBoxView.setChecked(true);
+			}
+			else
+			{
+				checkBoxView.setChecked(false);
+			}
+			
 			AlertDialog.Builder builder = new AlertDialog.Builder(EventDetailActivity.this);
 			builder.setMessage("Join This Event?")
 			.setCancelable(true)
-			.setPositiveButton("Join!", joinListener)
+			.setView(checkBox)
+			.setPositiveButton("Join!", new DialogInterface.OnClickListener() {
+				
+				public void onClick(DialogInterface dialog, int which) {
+					
+					joinAction();
+					
+				}
+			})
 			.setNegativeButton("Nope", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
 					dialog.cancel();
@@ -244,22 +271,29 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
 	};
 	
+	public void joinAction()
+	{
+		CheckBox check = (CheckBox) checkBox.findViewById(R.id.checkbox);
+		
+		publishStoryOnFacebookFeed();
+		
+		EventServiceBuffer.setAttendeeListener(attendeeListener);
+
+		progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Joining Event");
+		
+		ArrayList<Long> attendees = new ArrayList<Long>();
+		
+		UserInfo user = dbWrapper.getUser(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
+		
+		attendees.add(user.uid);
+		
+		EventServiceBuffer.joinEvent(eDetail.getEventID(), check.isChecked());
+	}
+	
 	public DialogInterface.OnClickListener joinListener = new DialogInterface.OnClickListener() {
 		public void onClick(DialogInterface dialog, int id) {
 			
-			publishStoryOnFacebookFeed();
-			
-			EventServiceBuffer.setAttendeeListener(attendeeListener);
-
-			progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Joining Event");
-			
-			ArrayList<Long> attendees = new ArrayList<Long>();
-			
-			UserInfo user = dbWrapper.getUser(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
-			
-			attendees.add(user.uid);
-			
-			EventServiceBuffer.joinEvent(eDetail.getEventID());
+			joinAction();
 		}
 	};
 	
