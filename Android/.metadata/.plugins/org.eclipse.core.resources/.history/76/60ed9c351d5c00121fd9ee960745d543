@@ -1,0 +1,7 @@
+package com.motlee.android.object;
+
+import android.os.AsyncTask;
+
+public class GetFriendsFromFacebook extends AsyncTask<Params, Progress, Result> {
+
+}

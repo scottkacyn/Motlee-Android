@@ -275,8 +275,6 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	{
 		CheckBox check = (CheckBox) checkBox.findViewById(R.id.checkbox);
 		
-		publishStoryOnFacebookFeed();
-		
 		EventServiceBuffer.setAttendeeListener(attendeeListener);
 
 		progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Joining Event");
@@ -341,42 +339,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
                 return;
             }
 
-            Bundle postParams = new Bundle();
-            
-            UserInfo user = dbWrapper.getUser(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
-            
-            postParams.putString("event", "http://www.motleeapp.com/events/" + mEventID);
-            
-            String friendTag = "";
-            
-            
 
-            Request.Callback callback= new Request.Callback() {
-                public void onCompleted(Response response) {
-                    JSONObject graphResponse = response
-                                               .getGraphObject()
-                                               .getInnerJSONObject();
-                    String postId = null;
-                    try {
-                        postId = graphResponse.getString("id");
-                    } catch (JSONException e) {
-                        Log.i("EventDetailActivity",
-                            "JSON error "+ e.getMessage());
-                    }
-                    FacebookRequestError error = response.getError();
-                    if (error != null) {
-                        Toast.makeText(getApplicationContext(),
-                             error.getErrorMessage(),
-                             Toast.LENGTH_SHORT).show();
-                    }
-                }
-            };
-
-            Request request = new Request(session, "me/motleeapp:join", postParams, 
-                                  HttpMethod.POST, callback);
-
-            RequestAsyncTask task = new RequestAsyncTask(request);
-            task.execute();
         }
 		
 	}
@@ -688,12 +651,6 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         
         if (dbWrapper.getAttendees(mEventID).contains(attendee))
         {
-        	Set<Integer> myEvents = SharePref.getIntArrayPref(getApplicationContext(), SharePref.MY_EVENT_DETAILS);
-            
-        	myEvents.add(mEventID);
-        	
-        	SharePref.setIntArrayPref(getApplicationContext(), SharePref.MY_EVENT_DETAILS, myEvents);
-
         	setActionForRightMenu(takePhotoListener);
             showMenuButtons(BaseMotleeActivity.TAKE_PICTURE);
         }

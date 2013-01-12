@@ -1,5 +1,6 @@
 package com.motlee.android.adapter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,31 +21,35 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class UserProfileAdapter extends ArrayAdapter<Integer> {
+public class UserProfileAdapter extends ArrayAdapter<EventDetail> {
 
-	private ArrayList<Integer> mEventIds;
+	private ArrayList<EventDetail> mEvents;
 	private LayoutInflater inflater;
 	private int resource;
 	
 	private DatabaseWrapper dbWrapper;
 	
-	public UserProfileAdapter(Context context, int textViewResourceId, List<Integer> objects) {
-		super(context, textViewResourceId, objects);
+	private SimpleDateFormat formatter;
+	
+	public UserProfileAdapter(Context context, int textViewResourceId, List<EventDetail> events) {
+		super(context, textViewResourceId, events);
 		
 		inflater = LayoutInflater.from(context);
 		resource = textViewResourceId;
-		mEventIds = new ArrayList<Integer>(objects);
+		mEvents = new ArrayList<EventDetail>(events);
 		
 		dbWrapper = new DatabaseWrapper(context.getApplicationContext());
+		
+		formatter = new SimpleDateFormat("M/d");
 	}
 
 	public int getCount() {
-		return mEventIds.size();
+		return mEvents.size();
 	}
 
-	public Integer getItem(int position) {
+	public EventDetail getItem(int position) {
 		
-		return mEventIds.get(position);
+		return mEvents.get(position);
 	}
 
 	public long getItemId(int position) {
@@ -73,7 +78,7 @@ public class UserProfileAdapter extends ArrayAdapter<Integer> {
         	convertView.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH).getDrawable());
         }
         
-        EventDetail event = dbWrapper.getEvent(this.mEventIds.get(position));
+        EventDetail event = this.mEvents.get(position);
     	
         convertView.setContentDescription(event.getEventID().toString());
         
@@ -96,6 +101,10 @@ public class UserProfileAdapter extends ArrayAdapter<Integer> {
         holder.search_event_name.setText(event.getEventName());
         holder.search_event_name.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
         
+        holder.search_event_time.setText(formatter.format(event.getEndTime()));
+        holder.search_event_time.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+        holder.search_event_time.setVisibility(View.VISIBLE);
+        
         holder.search_attendee_count.setText(event.getAttendeeCount() + " Attendees");
         holder.search_attendee_count.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 	            
@@ -110,6 +119,7 @@ public class UserProfileAdapter extends ArrayAdapter<Integer> {
 		
 		eventHolder.search_event_picture = (ImageView) convertView.findViewById(R.id.search_event_picture);
 		eventHolder.search_event_name = (TextView) convertView.findViewById(R.id.search_event_name);
+		eventHolder.search_event_time = (TextView) convertView.findViewById(R.id.search_event_time);
 		eventHolder.search_attendee_count = (TextView) convertView.findViewById(R.id.search_attendee_count);
 		eventHolder.search_button = convertView.findViewById(R.id.search_button);
 		
@@ -121,6 +131,7 @@ public class UserProfileAdapter extends ArrayAdapter<Integer> {
 	{
 		public ImageView search_event_picture;
 		public TextView search_event_name;
+		public TextView search_event_time;
 		public TextView search_attendee_count;
 		public View search_button;
 	}

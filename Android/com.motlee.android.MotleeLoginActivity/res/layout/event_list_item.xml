@@ -4,7 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@android:color/transparent">
+    android:background="@android:color/transparent" xmlns:app="http://schemas.android.com/apk/res/com.motlee.android">
 	<RelativeLayout
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content" 
@@ -24,7 +24,8 @@
 		            android:layout_weight=".05"
 		            android:layout_height="match_parent"
 		            android:src="@drawable/icon_button_gear"
-		            android:scaleType="fitCenter"  />
+		            android:scaleType="fitCenter"
+		            android:paddingLeft="3dp"  />
 		        
 		        <TextView android:id="@+id/event_header_name"
 					android:layout_width="0dp"
@@ -34,7 +35,7 @@
 		            style="@style/CodeFont.Small"
 		            android:ellipsize="end"
 		            android:singleLine="true"
-		            android:paddingLeft="3dp" />
+		            android:paddingLeft="5dp" />
 		        
 		        
 		        <TextView android:id="@+id/event_header_time"
@@ -67,11 +68,29 @@
 		        android:layout_above="@id/event_footer"
 		        android:weightSum="1.0">
 
-		        <com.motlee.android.view.HorizontalListView
-		          	android:id="@+id/listview"
-		  			android:layout_width="match_parent"
-		  			android:layout_height="match_parent"
-		  			android:background="@android:color/transparent" />
+		        <!-- <com.motlee.android.view.EcoGallery
+		            xmlns:blah="http://schemas.android.com/apk/res/com.motlee.android"
+	          		android:id="@+id/listview"
+					android:layout_width="0dp"
+					android:layout_weight="1"
+					android:layout_height="match_parent"
+					blah:gravity="left"
+					blah:spacing="0px"
+			        blah:unselectedAlpha="1"
+			        blah:animationDuration="200"
+					android:background="@android:color/transparent" /> -->
+		        
+   		        <com.motlee.android.view.HorizontalListViewDisallowIntercept
+		            xmlns:blah="http://schemas.android.com/apk/res/com.motlee.android"
+	          		android:id="@+id/listview"
+					android:layout_width="0dp"
+					android:layout_weight="1"
+					android:layout_height="match_parent"
+					blah:gravity="left"
+					blah:spacing="0px"
+			        blah:unselectedAlpha="1"
+			        blah:animationDuration="200"
+					android:background="@android:color/transparent" />
 		            
 		    </LinearLayout>
 		    

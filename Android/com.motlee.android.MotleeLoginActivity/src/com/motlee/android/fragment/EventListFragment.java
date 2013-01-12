@@ -49,7 +49,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
-public class EventListFragment extends ListFragmentWithHeader {
+public class EventListFragment extends ListFragmentWithHeader implements UpdatedEventDetailListener {
 	
 	private String tag = "EventListFragment";
 	
@@ -69,8 +69,6 @@ public class EventListFragment extends ListFragmentWithHeader {
 	
 	private boolean showBackButton = false;
 	private boolean hideProgressBar = false;
-	
-	private View firstUseHeader;
 	
 	private View progressBar;
 	
@@ -103,28 +101,6 @@ public class EventListFragment extends ListFragmentWithHeader {
 		
 		//view.findViewById(R.id.buffer).setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, GlobalVariables.getInstance().getMenuButtonsHeight()));
 		ListView listView = (ListView) view.findViewById(android.R.id.list);
-		
-		if (SharePref.getBoolPref(getActivity().getApplicationContext(), SharePref.FIRST_EXPERIENCE))
-		{
-			try
-			{
-				firstUseHeader = getActivity().getLayoutInflater().inflate(R.layout.first_use_header, null);
-				
-				ImageButton closeFirstUse = (ImageButton) firstUseHeader.findViewById(R.id.first_message_close);
-				closeFirstUse.setOnClickListener(closeFirstUseMessage);
-				
-				
-				listView.addHeaderView(firstUseHeader);
-				
-				firstUseHeader.findViewById(R.id.first_use_header_content).setVisibility(View.VISIBLE);
-				SharePref.setBoolPref(getActivity().getApplicationContext(), SharePref.FIRST_EXPERIENCE, false);
-			}
-			catch (OutOfMemoryError e)
-			{
-				Log.e(tag, "OutOfMemory", e);
-				SharePref.setBoolPref(getActivity().getApplicationContext(), SharePref.FIRST_EXPERIENCE, false);
-			}
-		}
 		
 		if (!this.hideProgressBar)
 		{
@@ -184,33 +160,14 @@ public class EventListFragment extends ListFragmentWithHeader {
 		listView.addFooterView(blank);
 		
 	}
-
-	private OnClickListener closeFirstUseMessage = new OnClickListener(){
-
-		public void onClick(View v) {
-			
-			hideFirstUseHeader();
-			
-			// Create dummy file to indicate someon closed first message
-			// so we can end the first message
-			try {
-				GlobalVariables.file.createNewFile();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}
-		
-	};
 	
 	private void setLoadingHeader() {
 		
-		progressBar = getActivity().getLayoutInflater().inflate(R.layout.progress_bar, null);
+		progressBar = getActivity().getLayoutInflater().inflate(R.layout.event_list_progress_bar, null);
 		
-		ProgressBar bar = (ProgressBar) progressBar.findViewById(R.id.marker_progress);
+		LinearLayout bar = (LinearLayout) progressBar.findViewById(R.id.marker_progress);
 		
-		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(DrawableCache.convertDpToPixel(30), DrawableCache.convertDpToPixel(30));
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 		
 		params.topMargin = DrawableCache.convertDpToPixel(10);
 		params.addRule(RelativeLayout.CENTER_HORIZONTAL);
@@ -219,56 +176,31 @@ public class EventListFragment extends ListFragmentWithHeader {
 		bar.setLayoutParams(params);
 		
 		ListView listView = (ListView) view.findViewById(android.R.id.list);
-		//listView.addHeaderView(progressBar);
-	}
-
-	public void hideFirstUseHeader()
-	{
-		ListView listView = (ListView) view.findViewById(android.R.id.list);
-		listView.removeHeaderView(firstUseHeader);
-		
-		unbindDrawables(firstUseHeader);
-	}
-	
-	private void unbindDrawables(View view) {
-	    if (view.getBackground() != null) {
-	        view.getBackground().setCallback(null);
-	    }
-	    if (view instanceof ViewGroup) {
-	        for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-	            unbindDrawables(((ViewGroup) view).getChildAt(i));
-	        }
-	        ((ViewGroup) view).removeAllViews();
-	    }
+		listView.addHeaderView(progressBar);
 	}
 	
 	public void setDoneLoading()
 	{
-		if (firstUseHeader != null)
-		{
-			if (firstUseHeader.findViewById(R.id.progress_bar) != null)
-			{
-				firstUseHeader.findViewById(R.id.progress_bar).setVisibility(View.GONE);
-			}
-			if (firstUseHeader.findViewById(R.id.text_done) != null)
-			{
-				firstUseHeader.findViewById(R.id.text_done).setVisibility(View.VISIBLE);
-			}
-		}
 		
 		ListView listView = (ListView) view.findViewById(android.R.id.list);
-		listView.removeHeaderView(progressBar);
+		if (listView != null)
+		{
+			listView.removeHeaderView(progressBar);
+		}
 	}
 	
 	public void showUpcomingHeader(ArrayList<Integer> upcomingEvents)
 	{
-		TextView labelButtonText = (TextView) upcomingHeader.findViewById(R.id.label_button_text);
-		labelButtonText.setText(upcomingEvents.size() + " Upcoming Events");
-		
-		ImageButton labelButton = (ImageButton) upcomingHeader.findViewById(R.id.label_button);
-		labelButton.setTag(upcomingEvents);
-		
-		upcomingHeader.findViewById(R.id.label_button_content).setVisibility(View.VISIBLE);
+		if (upcomingEvents.size() > 0)
+		{
+			TextView labelButtonText = (TextView) upcomingHeader.findViewById(R.id.label_button_text);
+			labelButtonText.setText(upcomingEvents.size() + " Upcoming Events");
+			
+			ImageButton labelButton = (ImageButton) upcomingHeader.findViewById(R.id.label_button);
+			labelButton.setTag(upcomingEvents);
+			
+			upcomingHeader.findViewById(R.id.label_button_content).setVisibility(View.VISIBLE);
+		}
 	}
 	
 	public void hideUpcomingHeader()
@@ -311,33 +243,33 @@ public class EventListFragment extends ListFragmentWithHeader {
             
             public void onRefresh() {
             	
-            	EventServiceBuffer.setEventDetailListener(new UpdatedEventDetailListener(){
-
-					public void myEventOccurred(UpdatedEventDetailEvent evt) {
-						
-						if (params.dataContent == EventServiceBuffer.MY_EVENTS)
-						{
-							Set<Integer> myEventIds = SharePref.getIntArrayPref(getActivity(), SharePref.MY_EVENT_DETAILS);
-							((EventListActivity) getActivity()).updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getEvents(myEventIds)));
-						}
-						else if (params.dataContent == EventServiceBuffer.NO_EVENT_FILTER)
-						{
-							((EventListActivity) getActivity()).updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getAllEvents()));
-						}
-						
-						/*for (Integer eventID : evt.getEventIds())
-						{
-							mEventListAdapter.add(eventID);
-						}*/
-						
-						getPullToRefreshListView().setSelection(1);
-						getPullToRefreshListView().onRefreshComplete();
-					}
-		        });
+            	EventServiceBuffer.setEventDetailListener(EventListFragment.this);
             	
             	EventServiceBuffer.getEventsFromService(params.dataContent);
             }
         });
+	}
+
+	public void myEventOccurred(UpdatedEventDetailEvent evt) {
+		
+		EventServiceBuffer.removeEventDetailListener(this);
+		
+		if (params.dataContent == EventServiceBuffer.MY_EVENTS)
+		{
+			((EventListActivity) getActivity()).updateEventAdapter(dbWrapper.getMyEvents());
+		}
+		else if (params.dataContent == EventServiceBuffer.NO_EVENT_FILTER)
+		{
+			((EventListActivity) getActivity()).updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getAllEvents()));
+		}
+		
+		/*for (Integer eventID : evt.getEventIds())
+		{
+			mEventListAdapter.add(eventID);
+		}*/
+		
+		getPullToRefreshListView().setSelection(1);
+		getPullToRefreshListView().onRefreshComplete();
 	}
 	
 	public PullToRefreshListView getPullToRefreshListView()
@@ -383,4 +315,5 @@ public class EventListFragment extends ListFragmentWithHeader {
 		this.hideProgressBar = true;
 		
 	}
+
 }

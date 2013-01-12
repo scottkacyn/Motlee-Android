@@ -1,0 +1,6 @@
+package com.motlee.android.view;
+
+public abstract class CustomAbsSpinner extends
+		CustomAdapterView<SpinnerAdapter> {
+
+}

@@ -1,0 +1,608 @@
+package com.motlee.android.view;
+
+import java.util.HashMap;
+
+import android.content.Context;
+import android.os.Handler;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.animation.RotateAnimation;
+import android.widget.AbsListView;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+
+public class HorizontalPhotoView extends EcoGallery {
+	
+	  private String mFeedTitle;
+	  private String mFeedUrl;
+	  private RotateAnimation mFlipAnimation;
+	  private Handler mHandler;
+	  private boolean mIsFlinging;
+	  private RelativeLayout mLoadMoreContainer;
+	  private int mMovementCeiling = 0;
+	  private int mMovementFloor = 0;
+	  private AbsListView.OnScrollListener mOnScrollListener;
+	  private HashMap<Integer, Integer> mPersistentLoggedPositions;
+	  private int mPosition;
+	  private RelativeLayout mRefreshContainer;
+	  private ImageView mRefreshImage;
+	  private RefreshMode mRefreshMode;
+	  private ProgressBar mRefreshProgress;
+	  private int mRefreshThresh;
+	  private RotateAnimation mReverseFlipAnimation;
+	  private int mScrollingState = 0;
+	  private HashMap<Integer, Integer> mTempLoggedPositions;
+	  private int nTotalImpressions = 0;
+
+	  public HorizontalPhotoView(Context paramContext, AttributeSet paramAttributeSet)
+	  {
+	    super(paramContext, paramAttributeSet);
+	    setup(paramContext);
+	  }
+
+	  public HorizontalPhotoView(NewsRackActivity paramNewsRackActivity)
+	  {
+	    super(paramNewsRackActivity);
+	    setup(paramNewsRackActivity);
+	  }
+
+	  private void addTempLogsToPersistentLogs()
+	  {
+	    Iterator localIterator;
+	    if (this.mTempLoggedPositions != null)
+	      localIterator = new ArrayList(this.mTempLoggedPositions.keySet()).iterator();
+	    while (true)
+	    {
+	      if (!localIterator.hasNext())
+	        return;
+	      int i = ((Integer)localIterator.next()).intValue();
+	      int j = ((Integer)this.mTempLoggedPositions.get(Integer.valueOf(i))).intValue();
+	      if (this.mPersistentLoggedPositions.containsKey(Integer.valueOf(i)))
+	      {
+	        int k = j + ((Integer)this.mPersistentLoggedPositions.get(Integer.valueOf(i))).intValue();
+	        this.mPersistentLoggedPositions.put(Integer.valueOf(i), Integer.valueOf(k));
+	      }
+	      else
+	      {
+	        this.mPersistentLoggedPositions.put(Integer.valueOf(i), Integer.valueOf(j));
+	      }
+	    }
+	  }
+
+	  public static HorizontalPhotoView createRow(NewsRackActivity paramNewsRackActivity, long paramLong, String paramString1, String paramString2, boolean paramBoolean, int paramInt)
+	  {
+	    HorizontalTileView localHorizontalTileView = new HorizontalTileView(paramNewsRackActivity);
+	    localHorizontalTileView.setId(64206);
+	    localHorizontalTileView.setTag(Integer.valueOf(paramInt));
+	    localHorizontalTileView.setFeedTitle(paramString1);
+	    localHorizontalTileView.setFeedUrl(paramString2);
+	    boolean bool1 = ABTestController.getInstance(paramNewsRackActivity).isEnabled("infinite_scrolling-cardigan2");
+	    if ((!paramBoolean) && ((!bool1) || (!Source.isUrlGatekeeper(paramNewsRackActivity, paramString2))));
+	    for (boolean bool2 = false; ; bool2 = true)
+	    {
+	      localHorizontalTileView.setRightOverscrollEnabled(bool2);
+	      return localHorizontalTileView;
+	    }
+	  }
+
+	  private int getNumTiles()
+	  {
+	    DimensionCalculator localDimensionCalculator = DimensionCalculator.getInstance(getContext());
+	    int i = localDimensionCalculator.getTileSize();
+	    if (PulseDeviceUtils.isLandscape());
+	    for (int j = localDimensionCalculator.getMaxScreenWidth(); ; j = localDimensionCalculator.getMinScreenWidth())
+	      return j / i;
+	  }
+
+	  private void resetPersistentLogs()
+	  {
+	    this.mPersistentLoggedPositions.clear();
+	    this.nTotalImpressions = 0;
+	  }
+
+	  private void setFeedTitle(String paramString)
+	  {
+	    this.mFeedTitle = paramString;
+	  }
+
+	  private void setFeedUrl(String paramString)
+	  {
+	    this.mFeedUrl = paramString;
+	  }
+
+	  private void setup(Context paramContext)
+	  {
+	    this.mTempLoggedPositions = new HashMap(25);
+	    this.mPersistentLoggedPositions = new HashMap(25);
+	    this.mIsFlinging = false;
+	    this.mHandler = new Handler();
+	    for (boolean bool = true; ; bool = false)
+	    {
+	      setScrollToSlots(bool);
+	      setFadingEdgeLength(0);
+	      setHapticFeedbackEnabled(false);
+	      setCallbackDuringFling(false);
+	      setBackgroundColor(getResources().getColor(2131165196));
+	      setUnselectedAlpha(1.0F);
+	      RelativeLayout.LayoutParams localLayoutParams = new RelativeLayout.LayoutParams(-1, localDimensionCalculator.getTileRowHeight());
+	      localLayoutParams.addRule(3, 2131558571);
+	      setLayoutParams(localLayoutParams);
+	      setOnItemSelectedListener(new CustomAdapterView.OnItemSelectedListener()
+	      {
+	        public void onItemSelected(CustomAdapterView<?> paramAnonymousRecyclableAdapterView, View paramAnonymousView, int paramAnonymousInt, long paramAnonymousLong)
+	        {
+	          if (HorizontalPhotoView.this.mIsFlinging)
+	          {
+	            if (HorizontalPhotoView.this.mOnScrollListener != null)
+	            	HorizontalPhotoView.this.mSetIdleRunnable.scheduleRun();
+	            HorizontalPhotoView.this.mIsFlinging = false;
+	          }
+	          ImageAdapter localNewsTileRowAdapter = HorizontalPhotoView.this.getAdapter();
+	          int i = localNewsTileRowAdapter.getCount();
+	          if ((i >= 25) && (paramAnonymousInt > -1 + (i - 2 * HorizontalPhotoView.this.getNumTiles())) && (HorizontalPhotoView.this.mOnLoadMoreListener != null))
+	          {
+	            List localList = localNewsTileRowAdapter.getStories();
+	            if ((localList != null) && (!localList.isEmpty()))
+	            {
+	              BaseNewsStory localBaseNewsStory = (BaseNewsStory)localList.get(-1 + localList.size());
+	              HorizontalTileView.this.mOnLoadMoreListener.onLoad(localBaseNewsStory.getLastUpdated(), localBaseNewsStory.getPublishedTimestamp(paramAnonymousView.getContext()));
+	            }
+	          }
+	        }
+
+	        public void onNothingSelected(CustomAdapterView<?> paramAnonymousRecyclableAdapterView)
+	        {
+	        }
+	      });
+	      this.mRefreshThresh = (localDimensionCalculator.getTileSize() / 2);
+	      this.mPendingRefreshRunnable = new DelayedRunnable(750L)
+	      {
+	        public void run()
+	        {
+	          HorizontalTileView.this.mHandler.post(new Runnable()
+	          {
+	            public void run()
+	            {
+	              HorizontalTileView.this.resetPullToRefresh();
+	            }
+	          });
+	        }
+	      };
+	      setupViews(paramContext);
+	      setupAnimations();
+	      return;
+	    }
+	  }
+
+	  private void setupAnimations()
+	  {
+	    this.mFlipAnimation = new RotateAnimation(0.0F, -180.0F, 1, 0.5F, 1, 0.5F);
+	    this.mFlipAnimation.setInterpolator(new LinearInterpolator());
+	    this.mFlipAnimation.setDuration(250L);
+	    this.mFlipAnimation.setFillAfter(true);
+	    this.mReverseFlipAnimation = new RotateAnimation(-180.0F, 0.0F, 1, 0.5F, 1, 0.5F);
+	    this.mReverseFlipAnimation.setInterpolator(new LinearInterpolator());
+	    this.mReverseFlipAnimation.setDuration(250L);
+	    this.mReverseFlipAnimation.setFillAfter(true);
+	  }
+
+	  private void setupViews(Context paramContext)
+	  {
+	    int i = DimensionCalculator.getInstance(paramContext).getTileSize();
+	    setMaxOverscrollLeft(i * 3 / 4);
+	    setMaxOverscrollRight(i + 2 * this.mSpacing);
+	    LayoutInflater localLayoutInflater = (LayoutInflater)paramContext.getSystemService("layout_inflater");
+	    this.mRefreshContainer = ((RelativeLayout)localLayoutInflater.inflate(2130903089, null, false));
+	    EcoGallery.LayoutParams localLayoutParams1 = new EcoGallery.LayoutParams(-1, -1);
+	    this.mRefreshContainer.setLayoutParams(localLayoutParams1);
+	    int j = i / 5;
+	    this.mRefreshImage = ((ImageView)this.mRefreshContainer.findViewById(2131558566));
+	    RelativeLayout.LayoutParams localLayoutParams2 = (RelativeLayout.LayoutParams)this.mRefreshImage.getLayoutParams();
+	    localLayoutParams2.rightMargin = j;
+	    this.mRefreshImage.setLayoutParams(localLayoutParams2);
+	    this.mRefreshProgress = ((ProgressBar)this.mRefreshContainer.findViewById(2131558537));
+	    RelativeLayout.LayoutParams localLayoutParams3 = (RelativeLayout.LayoutParams)this.mRefreshProgress.getLayoutParams();
+	    localLayoutParams3.rightMargin = j;
+	    this.mRefreshProgress.setLayoutParams(localLayoutParams3);
+	    setOverscrollView(this.mRefreshContainer);
+	    this.mLoadMoreContainer = ((RelativeLayout)localLayoutInflater.inflate(2130903088, null, false));
+	    EcoGallery.LayoutParams localLayoutParams4 = new EcoGallery.LayoutParams(i + 2 * this.mSpacing, -1);
+	    this.mLoadMoreContainer.setLayoutParams(localLayoutParams4);
+	    setRightOverscrollView(this.mLoadMoreContainer);
+	  }
+
+	  public void clearColors()
+	  {
+	    for (int i = 0; ; i++)
+	    {
+	      if (i >= getChildCount())
+	        return;
+	      getChildAt(i).setBackgroundResource(2130837710);
+	    }
+	  }
+
+	  public void dumpPersistentLogs()
+	  {
+	    Logger.logRowOfImpressions(getContext(), this.mFeedUrl, this.mFeedTitle, (Integer)getTag(), this.mPersistentLoggedPositions, Integer.valueOf(this.nTotalImpressions));
+	    resetPersistentLogs();
+	  }
+
+	  public void dumpTempLogs()
+	  {
+	    addTempLogsToPersistentLogs();
+	    this.mTempLoggedPositions.clear();
+	  }
+
+	  public NewsTileRowAdapter getAdapter()
+	  {
+	    return (NewsTileRowAdapter)super.getAdapter();
+	  }
+
+	  protected void logTile(int paramInt, boolean paramBoolean)
+	  {
+	    this.mPosition = ((Integer)getTag()).intValue();
+	    if (!this.mTempLoggedPositions.containsKey(Integer.valueOf(paramInt)))
+	    {
+	      NewsRackActivity localNewsRackActivity = (NewsRackActivity)getContext();
+	      int i = localNewsRackActivity.getNewsRackListView().getFirstHalfVisibleRowPosition();
+	      int j = localNewsRackActivity.getNewsRackListView().getLastHalfVisibleRowPosition();
+	      if ((1 + this.mPosition < i) || (this.mPosition > j))
+	        break label167;
+	    }
+	    label167: for (int k = 1; ; k = 0)
+	    {
+	      if ((!paramBoolean) || (k != 0))
+	      {
+	        this.mTempLoggedPositions.put(Integer.valueOf(paramInt), Integer.valueOf(1));
+	        this.nTotalImpressions = (1 + this.nTotalImpressions);
+	        if (getAdapter() != null)
+	        {
+	          BaseNewsStory localBaseNewsStory = getAdapter().getItem(paramInt);
+	          if ((localBaseNewsStory != null) && ((localBaseNewsStory instanceof NewsStory)) && (localBaseNewsStory.isAd()))
+	          {
+	            NewsStory localNewsStory = (NewsStory)localBaseNewsStory;
+	            Logger.logAdImpressionEvent(getContext(), localNewsStory);
+	          }
+	        }
+	      }
+	      return;
+	    }
+	  }
+
+	  protected void logVisibleTiles(int paramInt)
+	  {
+	    int i = ((NewsRackActivity)getContext()).getNewsRackListView().getNumVisibleTiles();
+	    for (int j = 0; ; j++)
+	    {
+	      if (j >= i)
+	        return;
+	      logTile(paramInt + j, true);
+	    }
+	  }
+
+	  protected View makeAndAddView(int paramInt1, int paramInt2, int paramInt3, boolean paramBoolean)
+	  {
+	    View localView1 = this.mRecycler.get();
+	    if (this.mOverscrollViewActivated);
+	    while (true)
+	    {
+	      if ((localView1 != this.mOverscrollView) && (localView1 != this.mRightOverscrollView))
+	      {
+	        View localView2 = this.mAdapter.getView(paramInt1, localView1, this);
+	        setUpChild(localView2, paramInt2, paramInt3, paramBoolean);
+	        return localView2;
+	      }
+	      localView1 = this.mRecycler.get();
+	    }
+	  }
+
+	  public void onDraw(Canvas paramCanvas)
+	  {
+	    super.onDraw(paramCanvas);
+	  }
+
+	  public boolean onFling(MotionEvent paramMotionEvent1, MotionEvent paramMotionEvent2, float paramFloat1, float paramFloat2)
+	  {
+	    if (this.mOnScrollListener != null)
+	    {
+	      this.mScrollingState = 1;
+	      this.mOnScrollListener.onScrollStateChanged(null, 1);
+	      this.mSetIdleRunnable.cancelRun();
+	    }
+	    this.mIsFlinging = true;
+	    return super.onFling(paramMotionEvent1, paramMotionEvent2, 2.0F * paramFloat1 / 3.0F, paramFloat2);
+	  }
+
+	  protected void onMovementEnd(int paramInt)
+	  {
+	    updateRange(paramInt);
+	    int i = this.mMovementCeiling - this.mMovementFloor;
+	    int k;
+	    if (i > 0)
+	    {
+	      k = this.mMovementFloor;
+	      if (k <= this.mMovementCeiling);
+	    }
+	    while (true)
+	    {
+	      return;
+	      if (k == this.mMovementCeiling)
+	        logVisibleTiles(k);
+	      while (true)
+	      {
+	        k++;
+	        break;
+	        logTile(k, true);
+	      }
+	      if (i < 0)
+	        for (int j = this.mMovementCeiling; j > this.mMovementFloor; j--)
+	          logTile(j, true);
+	    }
+	  }
+
+	  protected void onMovementStart(int paramInt)
+	  {
+	    this.mMovementFloor = paramInt;
+	    this.mMovementCeiling = paramInt;
+	    updateRange(paramInt);
+	  }
+
+	  protected void onRecycledView(View paramView)
+	  {
+	    NewsTileRowAdapter localNewsTileRowAdapter = getAdapter();
+	    if ((paramView instanceof TileView))
+	      localNewsTileRowAdapter.removedView((TileView)paramView);
+	    super.onRecycledView(paramView);
+	  }
+
+	  public boolean onSingleTapUp(MotionEvent paramMotionEvent)
+	  {
+	    int i = pointToPosition((int)paramMotionEvent.getX(), (int)paramMotionEvent.getY());
+	    int j = i - getFirstVisiblePosition();
+	    if (j < getChildCount())
+	    {
+	      View localView = getChildAt(j);
+	      if (localView != null)
+	      {
+	        if (getChildAt(0) == this.mRefreshContainer)
+	          i--;
+	        performItemClick(localView, i, getItemIdAtPosition(i));
+	      }
+	    }
+	    return false;
+	  }
+
+	  public boolean onTouchEvent(MotionEvent paramMotionEvent)
+	  {
+	    int i = paramMotionEvent.getAction();
+	    if (this.mOnScrollListener != null);
+	    switch (i)
+	    {
+	    default:
+	    case 0:
+	    case 2:
+	      while (true)
+	      {
+	        return super.onTouchEvent(paramMotionEvent);
+	        this.mIsFlinging = false;
+	        this.mSetIdleRunnable.cancelRun();
+	        this.mScrollingState = 1;
+	        this.mOnScrollListener.onScrollStateChanged(null, 1);
+	        continue;
+	        handlePullToRefresh(paramMotionEvent);
+	      }
+	    case 3:
+	      this.mScrollingState = 0;
+	    case 1:
+	    }
+	    if (this.mPendingRefreshRunnable != null)
+	      this.mPendingRefreshRunnable.cancelRun();
+	    if ((this.mRefreshMode == RefreshMode.RELEASE_TO_REFRESH) && (this.mOnRefreshListener != null))
+	    {
+	      this.mOnRefreshListener.onRefresh();
+	      this.mRefreshMode = RefreshMode.REFRESHING;
+	      setPullToRefreshToPending();
+	    }
+	    while (true)
+	    {
+	      this.mSetIdleRunnable.scheduleRun();
+	      break;
+	      if (this.mRefreshMode != RefreshMode.REFRESHING)
+	      {
+	        this.mRefreshMode = RefreshMode.PULL_TO_REFRESH;
+	        resetPullToRefresh();
+	      }
+	    }
+	  }
+
+	  public void refreshTile(long paramLong1, long paramLong2)
+	  {
+	    NewsTileRowAdapter localNewsTileRowAdapter = getAdapter();
+	    if (localNewsTileRowAdapter != null)
+	      localNewsTileRowAdapter.refreshTile(paramLong1, paramLong2);
+	  }
+
+	  public void resetPullToLoadMore()
+	  {
+	    new HideRightOverscrollTask(null).executePooled(new Void[0]);
+	  }
+
+	  public void setCurrentTileBlue(long paramLong)
+	  {
+	    int i = 0;
+	    if (i >= getChildCount())
+	      return;
+	    View localView = getChildAt(i);
+	    TileViewContainer localTileViewContainer;
+	    if ((localView != this.mRefreshContainer) && (localView != this.mRightOverscrollView))
+	    {
+	      localTileViewContainer = (TileViewContainer)localView;
+	      if (localTileViewContainer.getTile().getStoryId() != paramLong)
+	        break label74;
+	    }
+	    label74: for (int j = 2131165203; ; j = 2130837710)
+	    {
+	      localTileViewContainer.setBackgroundResource(j);
+	      i++;
+	      break;
+	    }
+	  }
+
+	  public void setOnLoadMoreListener(OnLoadMoreListener paramOnLoadMoreListener)
+	  {
+	    this.mOnLoadMoreListener = paramOnLoadMoreListener;
+	  }
+
+	  public void setOnRefreshListener(OnRefreshListener paramOnRefreshListener)
+	  {
+	    this.mOnRefreshListener = paramOnRefreshListener;
+	  }
+
+	  public void setOnScrollListener(AbsListView.OnScrollListener paramOnScrollListener)
+	  {
+	    this.mOnScrollListener = paramOnScrollListener;
+	  }
+
+	  public void setRefreshComplete()
+	  {
+	    this.mRefreshProgress.setVisibility(4);
+	    this.mRefreshImage.setVisibility(0);
+	    this.mRefreshMode = RefreshMode.PULL_TO_REFRESH;
+	  }
+
+	  public void setRefreshing()
+	  {
+	    this.mRefreshMode = RefreshMode.REFRESHING;
+	    this.mRefreshProgress.setVisibility(0);
+	    this.mRefreshImage.setVisibility(4);
+	  }
+
+	  protected void updateRange(int paramInt)
+	  {
+	    if (paramInt == -1)
+	      paramInt = 0;
+	    if (paramInt >= this.mItemCount)
+	      paramInt--;
+	    if (paramInt < this.mMovementFloor)
+	      this.mMovementFloor = paramInt;
+	    while (true)
+	    {
+	      return;
+	      if (paramInt > this.mMovementCeiling)
+	        this.mMovementCeiling = paramInt;
+	    }
+	  }
+
+	  public boolean updateSourcesWithCursor(Cursor paramCursor, boolean paramBoolean)
+	  {
+	    NewsTileRowAdapter localNewsTileRowAdapter = getAdapter();
+	    if (localNewsTileRowAdapter != null)
+	    {
+	      localNewsTileRowAdapter.clearItems();
+	      localNewsTileRowAdapter.notifyDataSetChanged();
+	      if (paramCursor.isAfterLast())
+	        if ((!paramBoolean) || (paramCursor.getCount() <= 0) || (localNewsTileRowAdapter.getCount() != 0))
+	          break label94;
+	    }
+	    label94: for (boolean bool = true; ; bool = false)
+	    {
+	      return bool;
+	      BaseNewsStory localBaseNewsStory = BaseNewsStory.loadStoryWithCursor(paramCursor);
+	      paramCursor.moveToNext();
+	      if ((paramBoolean) && ((!paramBoolean) || (localBaseNewsStory.isRead())))
+	        break;
+	      localNewsTileRowAdapter.append(localBaseNewsStory);
+	      localNewsTileRowAdapter.notifyDataSetChanged();
+	      break;
+	    }
+	  }
+
+	  public boolean updateTwitterSourcesWithCursor(Cursor paramCursor, boolean paramBoolean, int paramInt)
+	  {
+	    NewsTileRowAdapter localNewsTileRowAdapter = getAdapter();
+	    int i;
+	    int j;
+	    if (localNewsTileRowAdapter != null)
+	    {
+	      if (paramInt == 0)
+	        localNewsTileRowAdapter.clearItems();
+	      i = 1;
+	      j = 5;
+	      if (paramCursor.isAfterLast())
+	        if ((!paramBoolean) || (paramCursor.getCount() <= 0) || (localNewsTileRowAdapter.getStories().size() != 0))
+	          break label123;
+	    }
+	    label123: for (boolean bool = true; ; bool = false)
+	    {
+	      return bool;
+	      BaseNewsStory localBaseNewsStory = BaseNewsStory.loadStoryWithCursor(paramCursor);
+	      paramCursor.moveToNext();
+	      if ((i > paramInt) && (j != 0))
+	      {
+	        if ((!paramBoolean) || ((paramBoolean) && (!localBaseNewsStory.isRead())))
+	          localNewsTileRowAdapter.append(localBaseNewsStory);
+	        j--;
+	      }
+	      i++;
+	      break;
+	    }
+	  }
+
+	  private class HideRightOverscrollTask extends AsyncTaskPooled<Void, Void, Void>
+	  {
+	    private HideRightOverscrollTask()
+	    {
+	    }
+
+	    protected Void doInBackground(Void[] paramArrayOfVoid)
+	    {
+	      try
+	      {
+	        Thread.sleep(1000L);
+	        label6: return null;
+	      }
+	      catch (InterruptedException localInterruptedException)
+	      {
+	        break label6;
+	      }
+	    }
+
+	    protected void onPostExecute(Void paramVoid)
+	    {
+	      if (HorizontalTileView.this.isLoadMoreShowing())
+	      {
+	        if (PulseDeviceUtils.isLandscape())
+	          break label45;
+	        HorizontalTileView.this.setSelection(HorizontalTileView.this.mItemCount - HorizontalTileView.this.getNumTiles(), true);
+	      }
+	      while (true)
+	      {
+	        super.onPostExecute(paramVoid);
+	        return;
+	        label45: int i = HorizontalTileView.this.getNumTiles();
+	        View localView = HorizontalTileView.this.getChildAt(i + 1);
+	        if ((localView != null) && (localView.getRight() < HorizontalTileView.this.getRight() - HorizontalTileView.this.getPaddingRight()))
+	          i++;
+	        HorizontalTileView.this.scrollToChildRight(i);
+	      }
+	    }
+
+	    protected void onPreExecute()
+	    {
+	      super.onPreExecute();
+	    }
+	  }
+
+	  private static enum RefreshMode
+	  {
+	    static
+	    {
+	      REFRESHING = new RefreshMode("REFRESHING", 2);
+	      RefreshMode[] arrayOfRefreshMode = new RefreshMode[3];
+	      arrayOfRefreshMode[0] = PULL_TO_REFRESH;
+	      arrayOfRefreshMode[1] = RELEASE_TO_REFRESH;
+	      arrayOfRefreshMode[2] = REFRESHING;
+	    }
+	  }
+	}

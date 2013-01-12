@@ -209,6 +209,10 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 		    		holder.touch_overlay.setVisibility(View.VISIBLE);
 		    		holder.touch_overlay.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.photo_detail_overlay, GlobalVariables.DISPLAY_WIDTH).getDrawable());
 		    	}
+		    	else
+		    	{
+		    		holder.touch_overlay.setVisibility(View.GONE);
+		    	}
 		    	
 		    	holder.photo_detail_delete_button.setTag(photo);
 		    	
@@ -301,6 +305,8 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 			holder.photo_detail_likes_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 			
 			Collection<Like> likes = dbWrapper.getLikes(item.id);
+			
+			holder.photo_detail_likes.setTag(item);
 			
 			if (likes.size() > 0)
 			{

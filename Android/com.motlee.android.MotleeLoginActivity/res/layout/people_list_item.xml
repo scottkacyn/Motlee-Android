@@ -16,14 +16,14 @@
 	        android:layout_height="wrap_content"
 	        android:scaleType="fitCenter"
 	        android:adjustViewBounds="true"
-	        android:src="@drawable/label_button_no_arrow"
+	        android:src="@drawable/label_button"
 	        android:onClick="showProfilePage"
 	        android:background="@android:color/transparent"
 	        android:focusable="false" />
 	    
 	    <LinearLayout
 	        android:layout_width="match_parent"
-	        android:layout_height="match_parent" 
+	        android:layout_height="wrap_content" 
 	        android:layout_gravity="left|center_vertical"
 	        android:weightSum="1">
 	        <ImageView
@@ -32,6 +32,7 @@
 	            android:layout_height="match_parent"
 	            android:layout_gravity="center_vertical"
 	            android:paddingLeft="10dp"
+	            android:adjustViewBounds="true"
 	            android:layout_weight=".20" />
 		    <TextView 
 		        android:id="@+id/search_button_name"
@@ -40,16 +41,7 @@
 		        android:layout_weight=".60"
 		        android:gravity="left|center_vertical"
 		        android:paddingLeft="15dp"
-		        android:background="@android:color/transparent" />
-		    <ImageView
-		        android:id="@+id/check_mark"
-		        android:layout_weight=".2"
-		        android:layout_width="0dp"
-		        android:layout_height="match_parent"
-		        android:gravity="center"
-		        android:padding="4dp"
-		        android:src="@drawable/check_mark"
-		        android:visibility="gone"
+		        sytle="@style/CodeFont.Small"
 		        android:background="@android:color/transparent" />
 		    
 	    </LinearLayout>

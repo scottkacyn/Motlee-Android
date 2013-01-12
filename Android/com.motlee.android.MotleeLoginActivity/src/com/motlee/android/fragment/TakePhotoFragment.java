@@ -1,6 +1,7 @@
 package com.motlee.android.fragment;
 
 import java.io.File;
+import java.net.URI;
 import java.util.Date;
 
 import kankan.wheel.widget.WheelView;
@@ -80,7 +81,7 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	
 	private EditText photoDescriptionEdit;
 	
-	private String mCurrentPhotoPath;
+	private URI photoURI;
 	
 	private boolean cameFromEventDetail;
 	
@@ -166,14 +167,16 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 			else
 			{*/
 
+			File photoFile = new File(photoURI);
+			
 				PhotoItem photo = new PhotoItem(mEventID, EventItemType.PICTURE, SharePref.getIntPref(getActivity().getApplicationContext(), SharePref.USER_ID), 
-						new Date(), photoDescriptionEdit.getText().toString(), mCurrentPhotoPath);
+						new Date(), photoDescriptionEdit.getText().toString().trim(), photoFile.getAbsolutePath());
 				
 				photo.event_detail = dbWrapper.getEvent(mEventID);
 				
 				dbWrapper.createPhoto(photo);
 				
-				EventServiceBuffer.addPhotoToCache(mEventID, mCurrentPhotoPath, mLocation, photoDescriptionEdit.getText().toString(), photo);
+				EventServiceBuffer.addPhotoToCache(mEventID, photoFile.getAbsolutePath(), mLocation, photoDescriptionEdit.getText().toString(), photo);
 				
 				if (!cameFromEventDetail)
 				{
@@ -324,14 +327,7 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	private void setUpPicture()
 	{
 		ImageView imageView = (ImageView) view.findViewById(R.id.taken_picture);
-		imageView.setImageURI(Uri.fromFile(new File(mCurrentPhotoPath)));
-		
-	}
-
-	public void setPhotoPath(String currentPhotoPath) {
-		
-		this.mCurrentPhotoPath = currentPhotoPath;
-		
+		imageView.setImageURI(Uri.fromFile(new File(photoURI)));
 	}
 	
 	@Override
@@ -350,6 +346,12 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	public void setCameFromEventDetail(boolean cameFromEventDetail) {
 		
 		this.cameFromEventDetail = cameFromEventDetail;
+		
+	}
+
+	public void setPhotoURI(URI photoURI) {
+		
+		this.photoURI = photoURI;
 		
 	}
 }

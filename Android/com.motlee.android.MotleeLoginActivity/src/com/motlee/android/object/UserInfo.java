@@ -107,8 +107,20 @@ public class UserInfo implements Comparable<UserInfo> {
 	        ( this.uid == that.uid ) ;
     }
 
-	public int compareTo(UserInfo another) {		
-		return this.name.compareTo(another.name);
+	public int compareTo(UserInfo another) {
+		
+		if (this.name == null)
+		{
+			return -1;
+		}
+		else if (another.name == null)
+		{
+			return 1;
+		}
+		else
+		{
+			return this.name.compareTo(another.name);
+		}
 	}
 }
 

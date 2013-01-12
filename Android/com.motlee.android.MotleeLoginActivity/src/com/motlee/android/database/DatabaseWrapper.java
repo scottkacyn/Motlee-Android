@@ -20,6 +20,7 @@ import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.UserInfo;
 
@@ -31,9 +32,13 @@ public class DatabaseWrapper {
 	
 	private DatabaseHelper helper;
 
+	private Context mContext;
+	
 	public DatabaseWrapper(Context context) {
 		
 		helper = new DatabaseHelper(context.getApplicationContext());
+		
+		mContext = context;
 	}
 	
 	public void createOrUpdateEvent(EventDetail eDetail)
@@ -52,16 +57,23 @@ public class DatabaseWrapper {
 	{
 		try
 		{
-			QueryBuilder<EventDetail, Integer> qb = helper.getEventDao().queryBuilder();
-			Where<EventDetail, Integer> where = qb.where();
-			Iterator<Integer> iterator = eventIds.iterator();
-			
-			while (iterator.hasNext())
+			if (eventIds.size() > 0)
 			{
-				where.eq("id", iterator.next());
+				QueryBuilder<EventDetail, Integer> qb = helper.getEventDao().queryBuilder();
+				Where<EventDetail, Integer> where = qb.where();
+				Iterator<Integer> iterator = eventIds.iterator();
+				
+				while (iterator.hasNext())
+				{
+					where.eq("id", iterator.next());
+				}
+				where.or(eventIds.size());
+				return helper.getEventDao().query(qb.prepare());
 			}
-			where.or(eventIds.size());
-			return helper.getEventDao().query(qb.prepare());
+			else
+			{
+				return new ArrayList<EventDetail>();
+			}
 		}
 		catch (SQLException e)
 		{
@@ -187,13 +199,68 @@ public class DatabaseWrapper {
 		}
 	}
 	
-	public Friend getFriend(Integer userId)
+	public void updateFriendsList(ArrayList<Long> uids)
 	{
 		try {
-			return helper.getFriendsDao().queryForId(userId);
+			ArrayList<Friend> friends = new ArrayList<Friend>(helper.getFriendsDao().queryForAll());
+			
+			for (Friend friend : friends)
+			{
+				if (uids.contains(friend.uid))
+				{
+					uids.remove(friend.uid);
+				}
+			}
+			
+			for (Long uid : uids)
+			{
+				Friend friend = new Friend(uid);
+				
+				helper.getFriendsDao().createOrUpdate(friend);
+			}
+		} catch (SQLException e) {
+			Log.e("DatabaseWrapper", "Failed to updateFriendsList for user", e);
+		}
+	}
+	
+	public boolean isFriend(Integer userId)
+	{
+		try {
+			QueryBuilder<Friend, Integer> queryBuilder = helper.getFriendsDao().queryBuilder();
+			queryBuilder.where().eq("user_id", userId);
+			ArrayList<Friend> friends = new ArrayList<Friend>(helper.getFriendsDao().query(queryBuilder.prepare()));
+			if (friends.size() == 1)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		} catch (SQLException e) {
 			Log.e("DatabaseWrapper", "Failed to getFriend for user", e);
-			return null;
+			return false;
+		}
+	}
+	
+	public boolean isFriend(Long uid)
+	{
+		try {
+			QueryBuilder<Friend, Integer> queryBuilder = helper.getFriendsDao().queryBuilder();
+			queryBuilder.where().eq("uid", uid);
+			ArrayList<Friend> friends = new ArrayList<Friend>(helper.getFriendsDao().query(queryBuilder.prepare()));
+			if (friends.size() > 0)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+
+		} catch (SQLException e) {
+			Log.e("DatabaseWrapper", "Failed to getFriend for user", e);
+			return false;
 		}
 	}
 	
@@ -256,11 +323,51 @@ public class DatabaseWrapper {
 	
 	public Collection<EventDetail> getAllEvents()
 	{
-		try {
+		try {	
 			return helper.getEventDao().queryForAll();
 		} catch (SQLException e) {
 			Log.e("DatabaseWrapper", "Failed to getAllEvents", e);
 			return null;
+		}
+	}
+	
+	public Collection<EventDetail> getEventsForUser(Integer userId)
+	{
+		try
+		{
+			QueryBuilder<Attendee, Integer> queryBuilder = helper.getAttendeeDao().queryBuilder();
+			queryBuilder.where().eq("user_id", userId);
+			Collection<Attendee> attendees = helper.getAttendeeDao().query(queryBuilder.prepare());
+			
+			Collection<Attendee> allAttendees = helper.getAttendeeDao().queryForAll();
+			
+			Collection<EventDetail> eDetails = new ArrayList<EventDetail>();
+			
+			for (Attendee attendee : attendees)
+			{
+				eDetails.add(getEvent(attendee.event_detail.getEventID()));
+			}
+			return eDetails;
+		}
+	    catch (SQLException e) 
+	    {
+			Log.e("DatabaseWrapper", "Failed to getPhotosForUser", e);
+			return new ArrayList<EventDetail>();
+		}
+	}
+	
+	public Collection<PhotoItem> getPhotosForUser(Integer userId)
+	{
+		try
+		{
+			QueryBuilder<PhotoItem, Integer> queryBuilder = helper.getPhotoDao().queryBuilder();
+			queryBuilder.where().eq("user_id", userId);
+			return helper.getPhotoDao().query(queryBuilder.prepare());
+		}
+	    catch (SQLException e) 
+	    {
+			Log.e("DatabaseWrapper", "Failed to getPhotosForUser", e);
+			return new ArrayList<PhotoItem>();
 		}
 	}
 	
@@ -278,6 +385,55 @@ public class DatabaseWrapper {
 		finally
 		{
 			return user;
+		}
+	}
+	
+	public ArrayList<EventDetail> getMyEvents()
+	{
+		try 
+		{
+			Integer userId = SharePref.getIntPref(mContext.getApplicationContext(), SharePref.USER_ID);
+			
+			QueryBuilder <Attendee, Integer> queryBuilder = helper.getAttendeeDao().queryBuilder();
+			queryBuilder.where().eq("user_id", userId); // Here is the problem
+			Collection<Attendee> attendees = helper.getAttendeeDao().query(queryBuilder.prepare());
+			
+			Collection<EventDetail> eDetails = new ArrayList<EventDetail>();
+			
+			for (Attendee attendee : attendees)
+			{
+				eDetails.add(getEvent(attendee.event_detail.getEventID()));
+			}
+			return new ArrayList<EventDetail>(eDetails);
+		} 
+		catch (SQLException e) {
+			Log.e("DatabaseWrapper", "Failed to getAttendees for event", e);
+			return null;
+		}
+	}
+	
+	public boolean isAttending(Integer eventId)
+	{
+		try 
+		{
+			QueryBuilder <Attendee, Integer> queryBuilder = helper.getAttendeeDao().queryBuilder();
+			queryBuilder.where().eq("event_detail", eventId); // Here is the problem
+			Collection<Attendee> attendees = helper.getAttendeeDao().query(queryBuilder.prepare());
+			
+			Integer userId = SharePref.getIntPref(mContext.getApplicationContext(), SharePref.USER_ID);			
+			
+			for (Attendee attendee : attendees)
+			{
+				if (attendee.user_id == userId)
+				{
+					return true;
+				}
+			}
+			return false;
+		} 
+		catch (SQLException e) {
+			Log.e("DatabaseWrapper", "Failed to getAttendees for event", e);
+			return false;
 		}
 	}
 	
@@ -307,10 +463,18 @@ public class DatabaseWrapper {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void createAttendee(Attendee attendee)
 	{
 		try {
-			helper.getAttendeeDao().createOrUpdate(attendee);
+			QueryBuilder <Attendee, Integer> queryBuilder = helper.getAttendeeDao().queryBuilder();
+			Where<Attendee, Integer> where = queryBuilder.where();
+			where.and(where.eq("user_id", attendee.user_id), where.eq("event_detail", attendee.event_detail.getEventID()));
+			Collection<Attendee> attendees = helper.getAttendeeDao().query(queryBuilder.prepare());
+			if (attendees.size() == 0)
+			{
+				helper.getAttendeeDao().create(attendee);
+			}
 		} catch (SQLException e) {
 			Log.e("DatabaseWrapper", "Failed to createAttendee for event", e);
 		}

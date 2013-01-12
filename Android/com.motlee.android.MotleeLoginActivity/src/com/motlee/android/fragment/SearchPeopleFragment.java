@@ -73,6 +73,7 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
 	//private ArrayList<Integer> mUserIDs = new ArrayList<Integer>();
 	
 	private ArrayList<JSONObject> peopleToAdd;
+	private ArrayList<JSONObject> originalAttendeeList;
 	private ArrayList<Long> initialPeople;
 	
 	private SearchPeopleAdapter mAdapter;
@@ -116,6 +117,7 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
 		view.findViewById(R.id.search_text_box_background).setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.search_text_box, GlobalVariables.DISPLAY_WIDTH).getDrawable());
 		
 		peopleToAdd = new ArrayList<JSONObject>();
+		originalAttendeeList = new ArrayList<JSONObject>();
 		
 		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
 		tv.setText(pageTitle);
@@ -276,39 +278,44 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
 
 		public void onCompleted(Response response) {
 			
-			
-			ArrayList<JSONObject> jsonObjectList = new ArrayList<JSONObject>();
-			
-			JSONArray users = (JSONArray) response.getGraphObject().getProperty("data");
-			try
+			if (getActivity() != null)
 			{
-				for (int i = 0; i < users.length(); i++)
+			
+				ArrayList<JSONObject> jsonObjectList = new ArrayList<JSONObject>();
+				
+				JSONArray users = (JSONArray) response.getGraphObject().getProperty("data");
+				try
 				{
-					JSONObject user = users.getJSONObject(i);
-					if (initialPeople.contains(user.getLong("uid")))
+					for (int i = 0; i < users.length(); i++)
 					{
-						peopleToAdd.add(user);
+						JSONObject user = users.getJSONObject(i);
+						if (initialPeople.contains(user.getLong("uid")))
+						{
+							peopleToAdd.add(user);
+							originalAttendeeList.add(user);
+						}
+						jsonObjectList.add(users.getJSONObject(i));
 					}
-					jsonObjectList.add(users.getJSONObject(i));
 				}
-			}
-			catch (JSONException e)
-			{
-				Log.e(this.toString(), e.getMessage());
-			}
-			
-			mAdapter = new SearchPeopleAdapter(getActivity(), R.layout.search_people_item, jsonObjectList, peopleToAdd);
-	    	setListAdapter(mAdapter);
+				catch (JSONException e)
+				{
+					Log.e(this.toString(), e.getMessage());
+				}
+				
+				mAdapter = new SearchPeopleAdapter(getActivity(), R.layout.search_people_item, jsonObjectList, peopleToAdd);
+		    	setListAdapter(mAdapter);
+		    	
+		    	mHandler.post(new Runnable() {
+		    	    
+		    		public void run() { 
+		    			
+		    	    	view.findViewById(R.id.search_progress_bar).setVisibility(View.GONE);
+		    	    	
+		    	    	view.findViewById(R.id.search_list).setVisibility(View.VISIBLE); 
+	    	    	}
+	    	    });
 	    	
-	    	mHandler.post(new Runnable() {
-	    	    
-	    		public void run() { 
-	    			
-	    	    	view.findViewById(R.id.search_progress_bar).setVisibility(View.GONE);
-	    	    	
-	    	    	view.findViewById(R.id.search_list).setVisibility(View.VISIBLE); 
-    	    	}
-    	    });
+			}
 		}
     };
 
@@ -322,6 +329,13 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
     		if (this.mCanDeleteFriends)
     		{
     			peopleToAdd.remove(person);
+    		}
+    		else
+    		{
+    			if (!originalAttendeeList.contains(person))
+    			{
+    				peopleToAdd.remove(person);
+    			}
     		}
     	}
     	else

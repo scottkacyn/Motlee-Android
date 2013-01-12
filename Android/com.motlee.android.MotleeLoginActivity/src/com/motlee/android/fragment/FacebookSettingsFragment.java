@@ -56,6 +56,8 @@ public class FacebookSettingsFragment extends BaseMotleeFragment {
 		
 		rightHeaderButton = mHeaderView.findViewById(R.id.header_right_button);
 		
+		rightHeaderButton.setTag(settings);
+		
 		showLeftHeaderButton();
 		
 		return view;

@@ -121,7 +121,7 @@ public class PeopleListAdapter extends ArrayAdapter<UserInfo> {
         holder.search_people_profile_pic.setMaxHeight(background.getHeight() - DrawableCache.convertDpToPixel(5));
         holder.search_people_profile_pic.setMaxWidth(background.getHeight() - DrawableCache.convertDpToPixel(5));
         
-        GlobalVariables.getInstance().downloadImage(holder.search_people_profile_pic, GlobalVariables.getInstance().getFacebookPictureUrl(person.uid));
+        GlobalVariables.getInstance().downloadImage(holder.search_people_profile_pic, GlobalVariables.getInstance().getFacebookPictureUrlLarge(person.uid));
         // bind the data to the view object
         return convertView;
     }

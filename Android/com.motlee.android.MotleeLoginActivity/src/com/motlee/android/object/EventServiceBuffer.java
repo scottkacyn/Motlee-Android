@@ -348,8 +348,38 @@ public class EventServiceBuffer extends Object {
 		mFriendsListener.removeElement(listener);
 	}	
 	
-	public static void deleteAttendeeFromEvent(Integer id) {
-		// TODO Auto-generated method stub
+	public static void deleteAttendeeFromEvent(Integer eventId, ArrayList<Integer> removedAttendees) {
+		
+		Bundle params = new Bundle();
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+		
+		if (removedAttendees.size() > 0)
+		{
+		
+			String attendeeUIDs = "";
+			
+			for (Integer attendeeID : removedAttendees)
+			{
+				attendeeUIDs = attendeeUIDs + attendeeID + ",";
+			}
+			
+			attendeeUIDs = attendeeUIDs.substring(0, attendeeUIDs.length() - 1);
+			
+			params.putString("ids", attendeeUIDs);
+		}
+		
+        Intent intent = new Intent(mContext, RubyService.class);
+        intent.setData(Uri.parse(WEB_SERVICE_URL + "events/" + eventId + "/unjoin"));
+		
+        // Here we are going to place our REST call parameters. Note that
+        // we could have just used Uri.Builder and appendQueryParameter()
+        // here, but I wanted to illustrate how to use the Bundle params.
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.POST);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.ADD_ATTENDEE);
+        intent.putExtra(RubyService.EXTRA_PARAMS, params);
+        
+        mContext.startService(intent);
 		
 	}
 	
@@ -1090,7 +1120,7 @@ public class EventServiceBuffer extends Object {
     		SharePref.setSettings(mContext.getApplicationContext(), setting);
     	}
     	
-    	getUserInfoFromService();
+    	//getUserInfoFromService();
 	}
 
 	private void getAllNotificationFromJson(String result) {
@@ -1200,7 +1230,7 @@ public class EventServiceBuffer extends Object {
 						Log.e("DatabaseHelper", "Failed to createOrUpdate userInfo", e);
 					}
 		    		
-		    		Friend friend = new Friend(userInfo.id);
+		    		Friend friend = new Friend(userInfo.uid, userInfo.id);
 		    		
 		    		try {
 						helper.getFriendsDao().createOrUpdate(friend);
@@ -1674,6 +1704,7 @@ public class EventServiceBuffer extends Object {
 		    		for (JsonElement likeElement : jsonElement.getAsJsonObject().getAsJsonObject("photo").getAsJsonArray("likes"))
 		    		{
 		    			Like like = gson.fromJson(likeElement, Like.class);
+		    			setOwner(likeElement.getAsJsonObject().get("owner"));
 		    			like.event_id = photo.event_id;
 		    			like.photo = photo;
 		    			dbWrapper.createLike(like);
@@ -1739,13 +1770,19 @@ public class EventServiceBuffer extends Object {
 			ACRA.getErrorReporter().putCustomData("Json", json);
 		}
 		
+		JsonElement user = parser.parse(json).getAsJsonObject().getAsJsonObject("user").get("user");
+		
+		UserInfo currentUser = gson.fromJson(user, UserInfo.class);
+		
 		String authTok = gson.fromJson(json, AuthTokenHolder.class).token;
     	
 		SharePref.setStringPref(mContext, SharePref.AUTH_TOKEN, authTok);
+		
+		SharePref.setIntPref(mContext, SharePref.USER_ID, currentUser.id);
     	
     	//AUTH_TOK = AUTH_TOK + authTok;
     	
-		getSettings();
+		getUserInfoFromService();
 	}
 
     //TODO: Want a better solution.
@@ -1774,7 +1811,6 @@ public class EventServiceBuffer extends Object {
     	
     	JsonObject parseJson = parser.parse(json).getAsJsonObject();
     	
-    	ArrayList<EventDetail> myEvents = new ArrayList<EventDetail>();
     	
     	try {
 			helper.getUserDao().createOrUpdate(userInfo);
@@ -1788,25 +1824,26 @@ public class EventServiceBuffer extends Object {
 		Set<Integer> eventIds = new HashSet<Integer>();
 		ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>();
 		
+		boolean isCurrentUser = SharePref.getIntPref(mContext.getApplicationContext(), SharePref.USER_ID) == userInfo.id;
+		
     	for (JsonElement element : eventsAttended)
     	{
     		EventDetail eDetail = gson.fromJson(element, EventDetail.class);
     		
-   		    //dbWrapper.createIfNotExistsEvent(eDetail);
-   		    
+    		
+    		/*if (!isCurrentUser)
+    		{
+    			dbWrapper.createIfNotExistsEvent(eDetail);
+    		}*/
+    		
     		eventIds.add(eDetail.getEventID());
     	}
     	
-	    if (SharePref.getIntPref(mContext.getApplicationContext(), SharePref.USER_ID) == userInfo.id)
-	    {
-	    	SharePref.setIntArrayPref(mContext, SharePref.MY_EVENT_DETAILS, eventIds);
-	    }
-    	
-    	JsonArray photoJson = parseJson.getAsJsonObject("user").getAsJsonArray("photos");
+    	JsonArray photoJson = parseJson.getAsJsonObject("user").getAsJsonArray("recent_photos");
     	
     	for (JsonElement element : photoJson) 
     	{
-    		PhotoItem photo = gson.fromJson(element, PhotoItem.class);
+    		PhotoItem photo = gson.fromJson(element.getAsJsonObject().get("photo"), PhotoItem.class);
     		
     		GlobalVariables.getInstance().getUserPhotos().put(photo.id, photo);
     		
@@ -1814,10 +1851,8 @@ public class EventServiceBuffer extends Object {
     	}
     	
     	if (mUserInfoListener != null) 
-    	{
-    		ArrayList<Integer> ids = new ArrayList<Integer>(eventIds);
-    		
-    		UserWithEventsPhotosEvent event = new UserWithEventsPhotosEvent(this, userInfo, photos, ids);
+    	{   		
+    		UserWithEventsPhotosEvent event = new UserWithEventsPhotosEvent(this, userInfo, photos, new ArrayList<Integer>(eventIds));
     		
     		Vector<UserInfoListener> targets;
     	    synchronized (this) {
@@ -1915,12 +1950,6 @@ public class EventServiceBuffer extends Object {
 		        	sw.stop();
 		        	sw = new StopWatch();
 		        	
-		        	Set<Integer> currentMyEvents = SharePref.getIntArrayPref(mContext, SharePref.MY_EVENT_DETAILS);
-		        	
-		        	currentMyEvents.addAll(myEventIDs);
-		        	
-		        	SharePref.setIntArrayPref(mContext, SharePref.MY_EVENT_DETAILS, currentMyEvents);
-		        	
 		        	if (mEventDetailListener != null && mEventDetailListener.size() > 0)
 		        	{
 		        		
@@ -2017,11 +2046,19 @@ public class EventServiceBuffer extends Object {
    		    
    		    JsonArray attendees = event.getAsJsonArray("people_attending");
    		    
-		    	dbWrapper.clearAttendees(eDetail.getEventID());
+	    	dbWrapper.clearAttendees(eDetail.getEventID());
    		    
+		    boolean isAttending = false;	
+		    	
    		    for (JsonElement attendee : attendees)
    		    {
    		    	UserInfo user = gson.fromJson(attendee, UserInfo.class);
+   		    	
+   		    	if (user.id == SharePref.getIntPref(mContext.getApplicationContext(), SharePref.USER_ID))
+   		    	{
+   		    		isAttending = true;
+
+   		    	}
    		    	
    		    	dbWrapper.createAttendee(new Attendee(user.id, eDetail));
    		    }

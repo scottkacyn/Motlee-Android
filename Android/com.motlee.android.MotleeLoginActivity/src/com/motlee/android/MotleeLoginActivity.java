@@ -13,6 +13,7 @@ import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
 import com.facebook.android.Facebook.DialogListener;
+import com.google.analytics.tracking.android.EasyTracker;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -34,12 +35,16 @@ import com.motlee.android.object.event.UserWithEventsPhotosEvent;
 import com.motlee.android.service.RubyService;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
@@ -71,6 +76,22 @@ public class MotleeLoginActivity extends FragmentActivity implements UserInfoLis
         }
     };
 	
+	@Override
+	public void onStart()
+	{
+		super.onStart();
+		
+		EasyTracker.getInstance().activityStart(this);
+	}
+	
+	@Override
+	public void onStop()
+	{
+		super.onStop();
+		
+		EasyTracker.getInstance().activityStart(this);
+	}
+    
     private void showToast(){
     	Toast toast = Toast.makeText(MotleeLoginActivity.this, "Whoops. There seems to be a connection issue.  Try again in one sec.", Toast.LENGTH_LONG);
     	TextView v = (TextView)toast.getView().findViewById(android.R.id.message);
@@ -95,6 +116,15 @@ public class MotleeLoginActivity extends FragmentActivity implements UserInfoLis
         uiHelper.onPause();
     }
     
+	private boolean isNetworkConnected() {
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo ni = cm.getActiveNetworkInfo();
+		if (ni == null) {
+			// There are no active networks.
+		    return false;
+		} else
+		    return true;
+	}
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -102,6 +132,32 @@ public class MotleeLoginActivity extends FragmentActivity implements UserInfoLis
         
         setContentView(R.layout.first_screen);
         // Get existing access_token if any
+        
+        if (!isNetworkConnected())
+        {
+    		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+    				this);
+    		
+    		alertDialogBuilder
+    		.setMessage("Can't connect to internet. Check your settings and restart.")
+    		.setCancelable(true)
+    		.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+    			public void onClick(DialogInterface dialog,int id) {
+    				
+    				dialog.cancel();
+    				
+    				setResult(RESULT_CANCELED);
+    				
+    				finish();
+    			}
+    		  });
+    		
+    		// create alert dialog
+    		AlertDialog alertDialog = alertDialogBuilder.create();
+     
+    				// show it
+    		alertDialog.show();
+        }
         
         Session.StatusCallback callback = new Session.StatusCallback() {
 
@@ -146,6 +202,13 @@ public class MotleeLoginActivity extends FragmentActivity implements UserInfoLis
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
       super.onActivityResult(requestCode, resultCode, data);
       uiHelper.onActivityResult(requestCode, resultCode, data);
+      
+      if (requestCode == 1)
+      {
+    	  setResult(RESULT_OK);
+    	  finish();
+      
+      }
     }
     
     public void onSessionChange(Session session, SessionState state, Exception exception)
@@ -184,7 +247,7 @@ public class MotleeLoginActivity extends FragmentActivity implements UserInfoLis
     //Starts EventListActivity and finishes this one
     private void startEventListActivity()
     {
-    	setResult(0);
+    	setResult(RESULT_OK);
     	
     	finish();
     }
@@ -242,13 +305,23 @@ public class MotleeLoginActivity extends FragmentActivity implements UserInfoLis
 
 		SharePref.setIntPref(getApplicationContext(), SharePref.USER_ID, e.getUserInfo().id);
 		
-		SharePref.setIntArrayPref(getApplicationContext(), SharePref.MY_EVENT_DETAILS, new HashSet<Integer>(e.getEventIds()));
+		//SharePref.setIntArrayPref(getApplicationContext(), SharePref.MY_EVENT_DETAILS, new HashSet<Integer>(e.getEventIds()));
 		
     	EventServiceBuffer.removeUserInfoListener(this);
     	
-    	EventServiceBuffer.requestMotleeFriends(e.getUserInfo().id);
+    	//EventServiceBuffer.requestMotleeFriends(e.getUserInfo().id);
     	
-		startEventListActivity();
+    	if (SharePref.getBoolPref(getApplicationContext(), SharePref.FIRST_EXPERIENCE))
+    	{
+    		EventServiceBuffer.getEventsFromService();
+    		
+	    	Intent firstUsePage = new Intent(this, FirstUseActivity.class);
+	    	startActivityForResult(firstUsePage, 1);
+    	}
+    	else
+    	{
+    		startEventListActivity();
+    	}
     	//EventServiceBuffer.getEventsFromService();
 	}
 }

@@ -1,0 +1,57 @@
+package com.motlee.android;
+
+import java.util.ArrayList;
+
+import greendroid.widget.PagedAdapter;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+
+public class FirstUseActivity extends BaseMotleeActivity {
+
+	@Override
+	public void onCreate(Bundle savedInstance)
+	{
+		
+	}
+	
+	private class PagedViewAdapter extends PagedAdapter
+	{
+		ArrayList<Integer> drawableList = new ArrayList<Integer>();
+
+		public PagedViewAdapter()
+		{
+			drawableList.add(R.drawable.first_use_1);
+			drawableList.add(R.drawable.first_use_2);
+			drawableList.add(R.drawable.first_use_3);
+			drawableList.add(R.drawable.first_use_4);
+			drawableList.add(R.drawable.first_use_5);
+		}
+		
+		@Override
+		public int getCount() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public Object getItem(int position) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public long getItemId(int position) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+	}
+	
+}

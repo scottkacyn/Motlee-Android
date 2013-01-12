@@ -2,6 +2,7 @@ package com.motlee.android;
 
 import java.io.File;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventServiceBuffer;
@@ -73,7 +74,7 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
     };
 	
     private void showToast(){
-    	Toast toast = Toast.makeText(this, "Whoops. There seems to be a connection issue.  Try again in one sec.", Toast.LENGTH_LONG);
+    	Toast toast = Toast.makeText(this, "Whoops. There seems to be a connection issue.  Try again in one sec.", Toast.LENGTH_SHORT);
     	TextView v = (TextView)toast.getView().findViewById(android.R.id.message);
     	if( v != null) v.setGravity(Gravity.CENTER);
     	toast.show();
@@ -124,6 +125,15 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
     	DrawableCache.getInstance(this.getApplicationContext().getResources());
     	
     	super.onStart();
+    	
+    	EasyTracker.getInstance().activityStart(this);
+    }
+    
+    @Override
+    public void onStop() 
+    {
+    	super.onStop();
+    	EasyTracker.getInstance().activityStop(this);
     }
     
     @Override
@@ -297,6 +307,7 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
 		EventServiceBuffer.setAttendeeListener(null);
 		EventServiceBuffer.removeUserInfoListener(this);
 		EventServiceBuffer.removeEventDetailListener(this);
+		EventServiceBuffer.removeNotificationListener(this);
 		unbindDrawables(this.findViewById(android.R.id.content));
 		System.gc();
 		

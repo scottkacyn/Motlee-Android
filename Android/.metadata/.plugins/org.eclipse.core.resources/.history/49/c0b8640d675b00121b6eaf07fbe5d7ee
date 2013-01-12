@@ -1,0 +1,9 @@
+package com.motlee.android.object;
+
+public class TempEventDetailList {
+
+	public TempEventDetailList() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

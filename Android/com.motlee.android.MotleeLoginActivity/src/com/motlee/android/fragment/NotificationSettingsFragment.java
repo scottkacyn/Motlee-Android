@@ -43,6 +43,7 @@ public class NotificationSettingsFragment extends BaseMotleeFragment {
 		showRightHeaderButton("Save");
 		
 		rightHeaderButton = mHeaderView.findViewById(R.id.header_right_button);
+		rightHeaderButton.setTag(settings);
 		
 		showLeftHeaderButton();
 		

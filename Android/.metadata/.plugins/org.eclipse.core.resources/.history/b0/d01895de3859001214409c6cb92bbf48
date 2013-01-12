@@ -1,0 +1,74 @@
+package com.motlee.android;
+
+import java.util.ArrayList;
+
+import greendroid.widget.PagedAdapter;
+import greendroid.widget.PagedView;
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+
+public class FirstUseActivity extends Activity {
+
+	@Override
+	public void onCreate(Bundle savedInstance)
+	{
+		super.onCreate(savedInstance);
+		setContentView(R.layout.first_use_paged_view);
+		
+		PagedView pagedView = (PagedView) findViewById(R.id.first_use_paged_view);
+		
+		PagedViewAdapter adapter = new PagedViewAdapter();
+		
+		pagedView.setAdapter(adapter);
+		
+		
+	}
+	
+	private class PagedViewAdapter extends PagedAdapter
+	{
+		ArrayList<Integer> drawableList = new ArrayList<Integer>();
+
+		public PagedViewAdapter()
+		{
+			drawableList.add(R.drawable.first_use_1);
+			drawableList.add(R.drawable.first_use_2);
+			drawableList.add(R.drawable.first_use_3);
+			drawableList.add(R.drawable.first_use_4);
+			drawableList.add(R.drawable.first_use_5);
+		}
+		
+		@Override
+		public int getCount() {
+			// TODO Auto-generated method stub
+			return drawableList.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			// TODO Auto-generated method stub
+			return drawableList.get(position);
+		}
+
+		@Override
+		public long getItemId(int position) {
+			// TODO Auto-generated method stub
+			return drawableList.get(position);
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			
+			convertView = getLayoutInflater().inflate(R.layout.first_use_item, null);
+			
+			ImageView image = (ImageView) convertView.findViewById(R.id.first_use_image);
+			image.setImageResource(drawableList.get(position));
+			
+			return convertView;
+		}
+		
+	}
+	
+}

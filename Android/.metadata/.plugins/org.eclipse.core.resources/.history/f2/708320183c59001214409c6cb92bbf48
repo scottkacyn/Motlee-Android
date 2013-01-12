@@ -1,0 +1,69 @@
+package com.motlee.android;
+
+import java.util.ArrayList;
+
+import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.SharePref;
+
+import greendroid.widget.PagedAdapter;
+import greendroid.widget.PagedView;
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+
+public class FirstUseActivity extends Activity {
+
+	private int currentPage = 1;
+	private ImageView image;
+	
+	@Override
+	public void onCreate(Bundle savedInstance)
+	{
+		super.onCreate(savedInstance);
+		setContentView(R.layout.first_use_item);
+		
+		image = (ImageView) findViewById(R.id.first_use_image);
+		image.setImageDrawable(DrawableCache.getDrawable(R.drawable.first_use_1, SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH)).getDrawable());
+		
+		image.setOnClickListener(switchPage);
+		
+		
+	}
+
+	private OnClickListener switchPage = new OnClickListener(){
+
+		public void onClick(View arg0) {
+			
+			if (currentPage == 1)
+			{
+				currentPage = 2;
+				image.setImageDrawable(DrawableCache.getDrawable(R.drawable.first_use_2, SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH)).getDrawable());
+			}
+			else if (currentPage == 2)
+			{
+				currentPage = 3;
+				image.setImageDrawable(DrawableCache.getDrawable(R.drawable.first_use_3, SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH)).getDrawable());
+			}
+			else if (currentPage == 3)
+			{
+				currentPage = 4;
+				image.setImageDrawable(DrawableCache.getDrawable(R.drawable.first_use_4, SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH)).getDrawable());
+			}
+			else if (currentPage == 4)
+			{
+				currentPage = 5;
+				image.setImageDrawable(DrawableCache.getDrawable(R.drawable.first_use_5, SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH)).getDrawable());
+			}
+			else if (currentPage == 5)
+			{
+				finish();
+			}
+			
+		}
+		
+	};
+	
+}

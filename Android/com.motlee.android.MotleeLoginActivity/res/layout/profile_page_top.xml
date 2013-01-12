@@ -50,7 +50,7 @@
              android:id="@+id/profile_photos_text"
         	 android:gravity="top|center_horizontal"
         	 android:paddingBottom="5dp"
-        	 android:text="photos"
+        	 android:text="shared photos"
         	 style="@style/CodeFont.Small" />        
      </LinearLayout>
      
@@ -90,7 +90,7 @@
              android:id="@+id/profile_events_text"
         	 android:gravity="top|center_horizontal"
         	 android:paddingBottom="5dp"
-        	 android:text="events"
+        	 android:text="shared events"
         	 style="@style/CodeFont.Small" />
          
      </LinearLayout>

@@ -101,7 +101,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	
 	private DatabaseWrapper dbWrapper;
 	
-	private Vector<Long> removedAttendees = new Vector<Long>();
+	private ArrayList<Integer> removedAttendees = new ArrayList<Integer>();
 	
 	private ArrayList<Attendee> currentAttendees = new ArrayList<Attendee>();
 	
@@ -136,7 +136,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 		        Log.e("CreateEventActivity", "No Location Was Found");
 		    }
 		} catch (Exception ex) {
-		    Log.e("CreateEventActivity", ex.getMessage());
+		    Log.e("CreateEventActivity", "Something failed");
 		}
 		
 	}
@@ -164,13 +164,17 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
         if (mCreatedEvent != null)
         {
         	isEditing = true;
+        	
+        	selectLocation = dbWrapper.getLocation(mCreatedEvent.getLocationID());
+        }
+        else
+        {
+            setUpLocationListener();
+            
+            selectLocation = new LocationInfo("My Location", mLocation.getLatitude(), mLocation.getLongitude(), null);
         }
         
         searchPlacesFragment = new SearchPlacesFragment();
-        
-        setUpLocationListener();
-        
-        selectLocation = new LocationInfo("My Location", mLocation.getLatitude(), mLocation.getLongitude(), null);
         
         //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
         
@@ -227,9 +231,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     {
     	CreateEventFragment fragment = (CreateEventFragment) getSupportFragmentManager().findFragmentByTag(MAIN_FRAGMENT);
     	
-    	fragment.removePersonFromEvent(Integer.parseInt((String) view.getContentDescription()));
-    
-    	removedAttendees.add(Long.parseLong((String) view.getContentDescription()));
+    	fragment.removePersonFromEvent(Long.parseLong((String) view.getContentDescription()));
     }
     
     /*
@@ -355,12 +357,21 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	    	CreateEventFragment fragment = (CreateEventFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
 	    	mEventAttendees = fragment.getAttendeeList();
 	    	
+	    	removedAttendees = new ArrayList<Integer>();
+	    	
 	    	for (Attendee attendee : currentAttendees)
 	    	{
-	    		UserInfo user = dbWrapper.getUser(attendee.user_id);
-	    		if (mEventAttendees.contains(user.uid))
+	    		if (attendee.user_id != SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID))
 	    		{
-	    			mEventAttendees.remove(user.uid);
+		    		UserInfo user = dbWrapper.getUser(attendee.user_id);
+		    		if (mEventAttendees.contains(user.uid))
+		    		{
+		    			mEventAttendees.remove(user.uid);
+		    		}
+		    		else
+		    		{
+		    			removedAttendees.add(user.id);
+		    		}
 	    		}
 	    	}
 	    	
@@ -436,22 +447,30 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
         requestsDialog.show();
     }*/
     
-    private UpdatedAttendeeListener attendeeListener = new UpdatedAttendeeListener(){
+    private UpdatedAttendeeListener attendeeListener = new UpdatedAttendeeListener()
+    {
+		public void raised(UpdatedAttendeeEvent e) {
+			
+			if (removedAttendees.size() > 0)
+			{
+				EventServiceBuffer.setAttendeeListener(deleteAttendeeListener);
+				
+				EventServiceBuffer.deleteAttendeeFromEvent(mEventID, removedAttendees);
+			}
+			else
+			{
+				endCreateEventActivity();
+			}
+		}
+	};
+    
+    private UpdatedAttendeeListener deleteAttendeeListener = new UpdatedAttendeeListener(){
 
 		public void raised(UpdatedAttendeeEvent e) {
 			
 			endCreateEventActivity();
 		}
 	};
-    
-    private boolean isSubsetOf(Collection<String> subset, Collection<String> superset) {
-        for (String string : subset) {
-            if (!superset.contains(string)) {
-                return false;
-            }
-        }
-        return true;
-    }
 	
 	public void myEventOccurred(UpdatedEventDetailEvent evt) {
 
@@ -473,7 +492,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	                    EventServiceBuffer.setAttendeeListener(attendeeListener);
 	                    
 	                    EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees);
-                    }
+                    } 
                     else
                     {
                     	endCreateEventActivity();
@@ -502,11 +521,19 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 
             if (mEventAttendees.size() > 0)
             {
-                progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Inviting Friends");
+                progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Updating Friends");
                 
                 EventServiceBuffer.setAttendeeListener(attendeeListener);
                 
                 EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees);
+            }
+            else if (removedAttendees.size() > 0)
+            {
+            	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Updating Friends");
+            	
+            	EventServiceBuffer.setAttendeeListener(deleteAttendeeListener);
+            	
+            	EventServiceBuffer.deleteAttendeeFromEvent(mEventID, removedAttendees);
             }
             else
             {

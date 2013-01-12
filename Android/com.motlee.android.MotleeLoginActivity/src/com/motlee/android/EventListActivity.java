@@ -7,12 +7,21 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import shared.ui.actionscontentview.ActionsContentView;
 
+import com.facebook.HttpMethod;
+import com.facebook.Request;
+import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
+import com.facebook.Request.Callback;
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
@@ -28,6 +37,7 @@ import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventListParams;
 import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GetFriendsFromFacebook;
 import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.MenuFunctions;
@@ -44,6 +54,8 @@ import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
 import com.slidingmenu.lib.SlidingMenu;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -51,6 +63,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -78,15 +91,12 @@ public class EventListActivity extends BaseMotleeActivity {
 	private static String tag = "EventListActivity";
 	
 	// Fragment Tag Strings
-	private static String EVENT_RESPONDER = "EventResponderFragment";
 	public static String ATTENDING = "attending";
 	public static String NOT_ATTENDING = "not attending";
 	public static int SPLASH_PAGE = 1;
 	
 	private EventListAdapter eAdapter;
 	private EventListParams eventListParams = new EventListParams("All Events", EventServiceBuffer.NO_EVENT_FILTER);
-
-	private HashMap<Integer, ImageButton> fomoButtons = new HashMap<Integer, ImageButton>();
 	
 	private EventListFragment mEventListFragment;
 	
@@ -114,24 +124,6 @@ public class EventListActivity extends BaseMotleeActivity {
 				initializeListData();
 			}
 		}
-	
-        /*FragmentManager     fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        
-    	if (mEventListFragment != null)
-    	{
-    		if (mEventListFragment.getPullToRefreshListView() != null)
-    		{
-    			mEventListFragment.getPullToRefreshListView().onRefresh();
-    		}
-    	}*/
-		
-		//UpdateEventDetails update = new UpdateEventDetails();
-		
-		//update.execute("");		
-		
-		//mEventListFragment.setPageHeader(eventListParams.headerText);
-		//requestNewDataForList(eventListParams.dataContent, eventListParams.headerText);
 	}
 	
 	@Override 
@@ -142,6 +134,13 @@ public class EventListActivity extends BaseMotleeActivity {
 		super.onStart();
 	}
 	
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.google.android.maps.MapActivity#onNewIntent(android.content.Intent)
+	 * Since we have only one instance of this activity, we need to handle onNewIntent
+	 * when necessary. Change in list content and start splash page.
+	 */
 	@Override
 	public void onNewIntent(Intent intent)
 	{
@@ -169,18 +168,15 @@ public class EventListActivity extends BaseMotleeActivity {
 	        {
 	        	if (listType.toString().equals(BaseMotleeFragment.ALL_EVENTS))
 	        	{
-	        		progressDialog = ProgressDialog.show(this, "", "Loading " + BaseMotleeFragment.ALL_EVENTS);
 	        		requestNewDataForList(EventServiceBuffer.NO_EVENT_FILTER, BaseMotleeFragment.ALL_EVENTS);
 	        	}
 	        	else if (listType.toString().equals(BaseMotleeFragment.MY_EVENTS))
 	        	{
-	        		progressDialog = ProgressDialog.show(this, "", "Loading " + BaseMotleeFragment.MY_EVENTS);
 	        		requestNewDataForList(EventServiceBuffer.MY_EVENTS, BaseMotleeFragment.MY_EVENTS);
 	        	}
 	        }
         }
 	}
-
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -195,7 +191,9 @@ public class EventListActivity extends BaseMotleeActivity {
         
         DrawableCache.getInstance(getResources());
         
-        instance.setDisplay(getWindowManager().getDefaultDisplay());
+        instance.setDisplay(getWindowManager().getDefaultDisplay()); 
+        SharePref.setIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH, getWindowManager().getDefaultDisplay().getWidth());
+        SharePref.setIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH, getWindowManager().getDefaultDisplay().getHeight());
         instance.setGothamLigtFont(Typeface.createFromAsset(getAssets(), "fonts/gotham_light.ttf"));
         instance.setHelveticaNeueRegularFont(Typeface.createFromAsset(getAssets(), "fonts/helvetica_neue_bold.ttf"));
         instance.setHelveticaNeueRegularFont(Typeface.createFromAsset(getAssets(), "fonts/helvetica_neue_regular.ttf"));
@@ -227,10 +225,11 @@ public class EventListActivity extends BaseMotleeActivity {
 			Session.openActiveSession(this, true, new Session.StatusCallback() {
 				
 				public void call(Session session, SessionState state, Exception exception) {
-					// TODO Auto-generated method stub
+					
+					getFriendsFromFacebook();
 					
 				}
-			});
+			});	        
     	}
         FragmentManager     fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
@@ -249,7 +248,7 @@ public class EventListActivity extends BaseMotleeActivity {
         
         Collections.sort(events);
         
-        eAdapter = new EventListAdapter(this, R.layout.event_list_item, events);
+        updateEventAdapter(events);
         
         mEventListFragment.addEventListAdapter(eAdapter);
 
@@ -290,8 +289,17 @@ public class EventListActivity extends BaseMotleeActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent){
         super.onActivityResult(requestCode, resultCode, intent);
-
-        SharePref.setBoolPref(getApplicationContext(), SharePref.FIRST_USE, false);
+        
+        if (resultCode == RESULT_CANCELED)
+        {
+        	finish();
+        }
+        else
+        {
+        	getFriendsFromFacebook();
+        	
+        	SharePref.setBoolPref(getApplicationContext(), SharePref.FIRST_USE, false);
+        }
 
     }
     
@@ -387,10 +395,8 @@ public class EventListActivity extends BaseMotleeActivity {
 				updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getAllEvents()));
 			}
 			else if (eventListParams.dataContent.equals(EventServiceBuffer.MY_EVENTS))
-			{
-				Set<Integer> myEventIds = SharePref.getIntArrayPref(getApplicationContext(), SharePref.MY_EVENT_DETAILS);
-				
-				updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getEvents(myEventIds)));
+			{				
+				updateEventAdapter(dbWrapper.getMyEvents());
 			}
 			
 			//mEventListFragment.getPullToRefreshListView().setSelection(1);
@@ -417,7 +423,20 @@ public class EventListActivity extends BaseMotleeActivity {
 	        
 	        EventListFragment upcomingFragment = new EventListFragment();
 	        
-	        EventListAdapter upcomingListAdapter = new EventListAdapter(this, R.layout.event_list_item, new ArrayList<EventDetail>(dbWrapper.getEvents(events)));
+	        ArrayList<EventDetail> eventDetails = new ArrayList<EventDetail>(dbWrapper.getEvents(events));
+	        
+	        for (EventDetail eDetail : eventDetails)
+	        {
+				eDetail.setPhotos(dbWrapper.getPhotos(eDetail.getEventID()));
+				eDetail.setOwnerInfo(dbWrapper.getUser(eDetail.getOwnerID()));
+				
+				if (eDetail.getLocationID() != null)
+				{
+					eDetail.setLocationInfo(dbWrapper.getLocation(eDetail.getLocationID()));
+				}
+	        }
+	        
+	        EventListAdapter upcomingListAdapter = new EventListAdapter(this, R.layout.event_list_item, eventDetails);
 	        
 	        EventListParams params = new EventListParams("Upcoming Events", EventServiceBuffer.MY_EVENTS);
 	    	upcomingFragment.setHeaderView(findViewById(R.id.header));
@@ -464,6 +483,14 @@ public class EventListActivity extends BaseMotleeActivity {
 		
 		for (EventDetail eDetail : eventsToShow)
 		{
+			eDetail.setPhotos(dbWrapper.getPhotos(eDetail.getEventID()));
+			eDetail.setOwnerInfo(dbWrapper.getUser(eDetail.getOwnerID()));
+			
+			if (eDetail.getLocationID() != null)
+			{
+				eDetail.setLocationInfo(dbWrapper.getLocation(eDetail.getLocationID()));
+			}
+
 			if (eDetail.getStartTime().compareTo(new Date()) < 0)
 			{
 				eventsToDisplay.add(eDetail);
@@ -477,9 +504,16 @@ public class EventListActivity extends BaseMotleeActivity {
 		Collections.sort(eventsToDisplay);
 		Collections.sort(upcomingEvents);
 		
-		eAdapter.clear();
-		eAdapter.addAll(eventsToDisplay);
-		eAdapter.notifyDataSetChanged();
+		if (eAdapter == null)
+		{
+			eAdapter = new EventListAdapter(this, R.layout.event_list_item, eventsToDisplay);
+		}
+		else
+		{
+			eAdapter.clear();
+			eAdapter.addAll(eventsToDisplay);
+			eAdapter.notifyDataSetChanged();
+		}
 		
 		ArrayList<Integer> upcomingIntegers = new ArrayList<Integer>();
 		
@@ -595,33 +629,50 @@ public class EventListActivity extends BaseMotleeActivity {
 		MenuFunctions.takePictureOnPhone(view, this);
 	}
 	
-	private class UpdateEventDetails extends AsyncTask<String, Void, String> {
-
-		@Override
-		protected String doInBackground(String... params) {
+	protected void getFriendsFromFacebook() {
+		
+		Session facebookSession = Session.getActiveSession();
+		
+		if (facebookSession != null && facebookSession.isOpened())
+		{			
+			String query = "select name, uid, pic_square from user where uid in (select uid2 from friend where uid1=me()) order by name";
+			Bundle bundleParams = new Bundle();
+			bundleParams.putString("q", query);
 			
-			if (eAdapter != null)
+			Request request = new Request(facebookSession, "/fql", bundleParams, HttpMethod.GET, graphUserListCallback);              
+
+			Request.executeBatchAsync(request);
+		}
+	}
+	
+    private Callback graphUserListCallback = new Callback(){
+		
+		public void onCompleted(Response response) {
+						
+			try
 			{
-				for (EventDetail eDetail : eAdapter.getData())
+				JSONArray users = (JSONArray) response.getGraphObject().getProperty("data");
+				
+				ArrayList<Long> uids = new ArrayList<Long>();
+				
+				for (int i = 0; i < users.length(); i++)
 				{
-					if (eDetail != null)
-					{
-						eDetail = dbWrapper.getEvent(eDetail.getEventID());
-					}
+					JSONObject user = users.getJSONObject(i);
+					uids.add(Long.valueOf(user.getLong("uid")));
 				}
 				
-				handler.post(new Runnable(){
-
-					public void run() {
-						eAdapter.notifyDataSetChanged();
-					}
-				});
-
+				dbWrapper.updateFriendsList(uids);
 			}
-			return "";
+			catch (JSONException e)
+			{
+				Log.e(this.toString(), "Failed to get friends");
+			}
+			catch (Exception e)
+			{
+				Log.e(this.toString(), "Failed to get friends");
+			}
 		}
-		
-	}
+    };
 }
 
 

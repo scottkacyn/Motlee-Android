@@ -19,16 +19,22 @@ public class LoginPageFragment extends BaseMotleeFragment {
 
 	private LoginButton facebookButton;
 	
+	private View progressBar;
+	
     @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 	        Bundle savedInstanceState)
 	{
     	View view = inflater.inflate(R.layout.login_page, null);
 
+    	progressBar = view.findViewById(R.id.progress);
+    	
     	facebookButton = (LoginButton) view.findViewById(R.id.auth_button);
     	facebookButton.setApplicationId(getString(R.string.app_id));
     	//facebookButton.setFragment(this);
-    	facebookButton.setPublishPermissions(Arrays.asList("publish_actions"));
+       	facebookButton.setReadPermissions(Arrays.asList("read_friendlists"));
+    	//facebookButton.setPublishPermissions(Arrays.asList("publish_actions"));
+
 
         return view;
 	}
@@ -37,5 +43,6 @@ public class LoginPageFragment extends BaseMotleeFragment {
 		
 		facebookButton.setVisibility(View.GONE);
 		
+		progressBar.setVisibility(View.VISIBLE);
 	}
 }

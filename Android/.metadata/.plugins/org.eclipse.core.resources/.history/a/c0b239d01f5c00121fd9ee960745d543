@@ -1,0 +1,101 @@
+package com.motlee.android.object;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.facebook.HttpMethod;
+import com.facebook.Request;
+import com.facebook.Request.GraphUserListCallback;
+import com.facebook.Response;
+import com.facebook.Request.Callback;
+import com.facebook.Session;
+import com.facebook.model.GraphUser;
+import com.motlee.android.R;
+import com.motlee.android.adapter.SearchPeopleAdapter;
+import com.motlee.android.database.DatabaseWrapper;
+
+import android.os.AsyncTask;
+import android.util.Log;
+import android.view.View;
+
+public class GetFriendsFromFacebook extends AsyncTask<DatabaseWrapper, Void, Boolean> {
+
+	private DatabaseWrapper dbWrapper;
+	
+	@Override
+	protected Boolean doInBackground(Session... params) {
+		
+		Session facebookSession = params[0];
+		
+		if (facebookSession.isOpened())
+		{
+			
+			//Request request = new Request(facebookSession, "/fql", params, HttpMethod.GET, graphUserListCallback);              
+
+			Request request = Request.newMyFriendsRequest(facebookSession, graphUserListCallback);
+			
+			Request.executeBatchAsync(request);
+		}
+		
+	}
+	
+    private GraphUserListCallback graphUserListCallback = new GraphUserListCallback(){
+
+		public void onCompleted(Response response) {
+			
+				ArrayList<JSONObject> jsonObjectList = new ArrayList<JSONObject>();
+				
+				JSONArray users = (JSONArray) response.getGraphObject().getProperty("data");
+				try
+				{
+					for (int i = 0; i < users.length(); i++)
+					{
+						JSONObject user = users.getJSONObject(i);
+						
+						Friend friend = new Friend(user.getLong("uid"));
+						
+						
+					}
+				}
+				catch (JSONException e)
+				{
+					Log.e(this.toString(), e.getMessage());
+				}
+			}
+
+		public void onCompleted(List<GraphUser> users, Response response) {
+			
+			for (GraphUser user : users)
+			{
+				Friend friend = new Friend(Long.valueOf(user.getId()));
+				
+				
+			}
+			
+		}
+    };
+
+	@Override
+	protected Boolean doInBackground(DatabaseWrapper... params) {
+		
+		Session facebookSession = Session.getActiveSession();
+		
+		dbWrapper = params[0];
+		
+		if (facebookSession.isOpened())
+		{
+			
+			//Request request = new Request(facebookSession, "/fql", params, HttpMethod.GET, graphUserListCallback);              
+
+			Request request = Request.newMyFriendsRequest(facebookSession, graphUserListCallback);
+			
+			Request.executeBatchAsync(request);
+		}
+		
+		return true;
+	}
+}

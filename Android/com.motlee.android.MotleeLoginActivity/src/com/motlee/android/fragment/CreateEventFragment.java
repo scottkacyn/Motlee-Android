@@ -331,10 +331,10 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		}
 		else
 		{
-			LocationInfo location = dbWrapper.getLocation(mEventDetail.getLocationID());
-			if (location != null)
+			mLocation = dbWrapper.getLocation(mEventDetail.getLocationID());
+			if (mLocation != null)
 			{
-				locationTextView.setText(dbWrapper.getLocation(mEventDetail.getLocationID()).name);
+				locationTextView.setText(mLocation.name);
 			}
 			else
 			{
@@ -483,7 +483,14 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		
 		mDatePickerEndView.setBackgroundDrawable(drawable.getDrawable());
 		
-		setDateTimePicker(mDatePickerStartView, GlobalVariables.getInstance().getDateFormatter().format(mStartTime.getTime()), "Start");
+		if (mEventDetail == null)
+		{
+			setDateTimePicker(mDatePickerStartView, "Now", "Start");
+		}
+		else
+		{
+			setDateTimePicker(mDatePickerStartView, GlobalVariables.getInstance().getDateFormatter().format(mStartTime.getTime()), "Start");
+		}
 		setDateTimePicker(mDatePickerEndView, GlobalVariables.getInstance().getDateFormatter().format(mEndTime.getTime()), "End");
 	}
 	
@@ -567,7 +574,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		return mAttendees;
 	}
 	
-	public void removePersonFromEvent(Integer facebookID)
+	public void removePersonFromEvent(Long facebookID)
 	{
 		for (int i = 0; i < eventFriendLayout.getChildCount(); i++)
 		{

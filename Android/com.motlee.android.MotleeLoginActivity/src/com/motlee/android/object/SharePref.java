@@ -15,7 +15,6 @@ import android.util.Log;
 
 public class SharePref {
 
-	public static final String MY_EVENT_DETAILS = "MyEventDetails";
 	public static final String USER_ID = "userId";
 	public static final String AUTH_TOKEN = "auth_token";
 	public static final String ACCESS_TOKEN = "access_token";
@@ -156,13 +155,13 @@ public class SharePref {
 	{
 		Settings settings = new Settings();
 		
-		settings.fb_on_event_create = getBoolPref(context, FB_ON_CREATE);
-		settings.fb_on_event_invite = getBoolPref(context, FB_ON_INVITE);
-		settings.on_event_invite = getBoolPref(context, NOT_INVITE);
-		settings.on_event_message = getBoolPref(context, NOT_MESSAGE);
-		settings.on_friend_join = getBoolPref(context, NOT_JOIN);
-		settings.on_photo_comment = getBoolPref(context, NOT_COMMENT);
-		settings.on_photo_like = getBoolPref(context, NOT_LIKE);
+		settings.fb_on_event_create = getBoolPref(context, FB_ON_CREATE, true);
+		settings.fb_on_event_invite = getBoolPref(context, FB_ON_INVITE, true);
+		settings.on_event_invite = getBoolPref(context, NOT_INVITE, true);
+		settings.on_event_message = getBoolPref(context, NOT_MESSAGE, true);
+		settings.on_friend_join = getBoolPref(context, NOT_JOIN, true);
+		settings.on_photo_comment = getBoolPref(context, NOT_COMMENT, true);
+		settings.on_photo_like = getBoolPref(context, NOT_LIKE, true);
 		
 		return settings;
 	}

@@ -2,27 +2,27 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="1590" key="DIALOG_WIDTH"/>
-		<item value="215" key="DIALOG_Y_ORIGIN"/>
+		<item value="626" key="DIALOG_Y_ORIGIN"/>
+		<item value="10" key="DIALOG_X_ORIGIN"/>
 		<item value="226" key="DIALOG_HEIGHT"/>
-		<item value="283" key="DIALOG_X_ORIGIN"/>
 		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
-		<item value="false" key="isRegEx"/>
 		<item value="false" key="casesensitive"/>
+		<item value="false" key="isRegEx"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="PullToRefresh" key="selection"/>
+		<item value="getEvents" key="selection"/>
 		<list key="findhistory">
-			<item value="PullToRefresh"/>
-			<item value="new EventListAdapter"/>
-			<item value="updateListAdapter"/>
-			<item value="setListAdapter"/>
-			<item value="addEventListAdapter"/>
-			<item value="setEventListA"/>
-			<item value="setEventList"/>
 			<item value="getEvents"/>
+			<item value="MY_EVENT_DETAILS"/>
+			<item value="getEventDetail"/>
+			<item value="mLocation"/>
+			<item value="setLocationInfo"/>
+			<item value="isEditing"/>
+			<item value="removedAttendees"/>
+			<item value="delete"/>
 		</list>
 		<list key="replacehistory">
 			<item value="EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);"/>

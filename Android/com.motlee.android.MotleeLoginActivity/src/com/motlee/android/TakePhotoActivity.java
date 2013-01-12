@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -51,6 +53,8 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 	private static final String TAKEN_PHOTO = "TakenPhoto";
 	private static final String CURRENT_PATH = "CurrentPath";
 	private static final String EVENT_ID = "EventId";
+	
+	private static URI photoURI;
 	
 	private static final String MOTLEE_PATH = "Pictures/Motlee/";
 	
@@ -227,20 +231,38 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			
 			if (data != null)
 			{
-				File croppedPhoto = new File(mCurrentCroppedPhotoPath);
-				if (croppedPhoto.exists())
+				try {
+					photoURI = new URI(data.getAction());
+				} catch (URISyntaxException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				if (photoURI != null)
 				{
-					handleCameraPic();
-	
-					System.gc();
+
+					File croppedPhoto = new File(photoURI);
+					if (croppedPhoto.exists())
+					{
+						handleCameraPic();
+		
+						System.gc();
+						
+						mHandler.post(new Runnable() {
+						    
+						    public void run() {
+						    	setUpFragmentWithPicture();
+						    	mTakenPhoto = false;
+						    }
+						});
+					}
+				}
+				else
+				{
+					Toast toast = Toast.makeText(getApplicationContext(), "Cannot load photo from camera", 3000);
+					toast.show();
 					
-					mHandler.post(new Runnable() {
-					    
-					    public void run() {
-					    	setUpFragmentWithPicture();
-					    	mTakenPhoto = false;
-					    }
-					});
+					finish();
 				}
 			}
 			else
@@ -295,7 +317,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			TakePhotoFragment takePhotoFragment = new TakePhotoFragment();
 			takePhotoFragment.setHeaderView(findViewById(R.id.header));
 			//takePhotoFragment.setScrollWheelAdapter(mAdapter);
-			takePhotoFragment.setPhotoPath(mCurrentCroppedPhotoPath);
+			takePhotoFragment.setPhotoURI(photoURI);
 			takePhotoFragment.setCameFromEventDetail(cameFromEventDetail);
 			
 			ft.replace(R.id.fragment_content, takePhotoFragment, TAKE_PHOTO_FRAGMENT)
@@ -333,7 +355,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			TakePhotoFragment takePhotoFragment = new TakePhotoFragment();
 			takePhotoFragment.setHeaderView(findViewById(R.id.header));
 			//takePhotoFragment.setScrollWheelAdapter(mAdapter);
-			takePhotoFragment.setPhotoPath(mCurrentCroppedPhotoPath);
+			takePhotoFragment.setPhotoURI(photoURI);
 			takePhotoFragment.setDefaultEvent(mEventId);
 			takePhotoFragment.setCameFromEventDetail(cameFromEventDetail);
 			

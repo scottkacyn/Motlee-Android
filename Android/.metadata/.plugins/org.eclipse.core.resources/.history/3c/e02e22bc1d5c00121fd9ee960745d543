@@ -1,0 +1,14 @@
+package com.motlee.android.object;
+
+import com.facebook.Session;
+
+import android.os.AsyncTask;
+
+public class GetFriendsFromFacebook extends AsyncTask<Session, Void, Boolean> {
+
+	@Override
+	protected Boolean doInBackground(Session... params) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}

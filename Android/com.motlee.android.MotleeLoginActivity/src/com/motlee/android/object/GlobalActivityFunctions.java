@@ -41,6 +41,11 @@ public class GlobalActivityFunctions {
 	{
 		PhotoItem photo = (PhotoItem) view.getTag();
 		
+		showPictureDetail(photo, activity, getPhotoInfo);
+	}
+	
+	public static void showPictureDetail(PhotoItem photo, Activity activity, boolean getPhotoInfo)
+	{
 		Intent showPictureIntent = new Intent(activity, EventItemDetailActivity.class);
 		showPictureIntent.putExtra("EventItem", photo);
 		showPictureIntent.putExtra("GetPhotoInfo", getPhotoInfo);

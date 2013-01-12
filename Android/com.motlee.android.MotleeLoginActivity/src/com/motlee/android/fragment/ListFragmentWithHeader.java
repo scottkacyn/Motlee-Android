@@ -60,33 +60,45 @@ public class ListFragmentWithHeader extends ListFragment {
 		{
 			Log.d("ListFragmentWithHeader", "HeaderView == null");
 		}
-		TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
-		tv.setText(headerText);
-		tv.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		else
+		{
+			TextView tv = (TextView) mHeaderView.findViewById(R.id.header_textView);
+			tv.setText(headerText);
+			tv.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		}
 	}
 	
 	protected void showLeftHeaderButton()
 	{
-		View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
-		headerLeftButton.setVisibility(View.VISIBLE);
+		if (mHeaderView != null)
+		{
+			View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
+			headerLeftButton.setVisibility(View.VISIBLE);
+		}
 	}
 	
 	protected void showRightHeaderButton(String buttonText)
 	{
-		View headerRightButtonlayout = mHeaderView.findViewById(R.id.header_right_layout_button);
-		headerRightButtonlayout.setVisibility(View.VISIBLE);
-		
-		View headerRightButton = mHeaderView.findViewById(R.id.header_right_button);
-		headerRightButton.setTag(buttonText);
-		
-		TextView headerRightButtonText = (TextView) mHeaderView.findViewById(R.id.header_right_text);
-		headerRightButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		headerRightButtonText.setText(buttonText);
+		if (mHeaderView != null)
+		{
+			View headerRightButtonlayout = mHeaderView.findViewById(R.id.header_right_layout_button);
+			headerRightButtonlayout.setVisibility(View.VISIBLE);
+			
+			View headerRightButton = mHeaderView.findViewById(R.id.header_right_button);
+			headerRightButton.setTag(buttonText);
+			
+			TextView headerRightButtonText = (TextView) mHeaderView.findViewById(R.id.header_right_text);
+			headerRightButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+			headerRightButtonText.setText(buttonText);
+		}
 	}
 	
 	protected void showRightHeaderButton(String buttonText, OnClickListener onClickListener)
 	{
 		showRightHeaderButton(buttonText);
-		mHeaderView.findViewById(R.id.header_right_button).setOnClickListener(onClickListener);
+		if (mHeaderView != null)
+		{
+			mHeaderView.findViewById(R.id.header_right_button).setOnClickListener(onClickListener);
+		}
 	}
 }

@@ -184,7 +184,8 @@ public class PeopleListFragment extends BaseDetailFragment {
 				
 		for (Attendee user : dbWrapper.getAttendees(mEventDetail.getEventID()))
 		{		
-			mUsers.add(dbWrapper.getUser(user.user_id));
+			UserInfo userInfo = dbWrapper.getUser(user.user_id);
+			mUsers.add(userInfo);
 		}
 		
 		if (mUsers.size() > 0)
@@ -193,6 +194,7 @@ public class PeopleListFragment extends BaseDetailFragment {
 		}
 		
 		mAdapter = new PeopleListAdapter(getActivity(), R.layout.people_list_item, mUsers);
+
 		
 		eventDetailPeopleList.setAdapter(mAdapter);
 

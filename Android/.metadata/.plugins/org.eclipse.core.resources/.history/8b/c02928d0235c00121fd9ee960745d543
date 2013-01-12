@@ -1,0 +1,60 @@
+package com.motlee.android.object;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.facebook.HttpMethod;
+import com.facebook.Request;
+import com.facebook.Request.GraphUserListCallback;
+import com.facebook.Response;
+import com.facebook.Request.Callback;
+import com.facebook.Session;
+import com.facebook.model.GraphUser;
+import com.motlee.android.R;
+import com.motlee.android.adapter.SearchPeopleAdapter;
+import com.motlee.android.database.DatabaseWrapper;
+
+import android.os.AsyncTask;
+import android.util.Log;
+import android.view.View;
+
+public class GetFriendsFromFacebook extends AsyncTask<DatabaseWrapper, Void, Boolean> {
+
+	private DatabaseWrapper dbWrapper;
+	
+    private GraphUserListCallback graphUserListCallback = new GraphUserListCallback(){
+
+		public void onCompleted(List<GraphUser> users, Response response) {
+			
+			ArrayList<Long> uids = new ArrayList<Long>();
+			
+			for (GraphUser user : users)
+			{
+				uids.add(Long.valueOf(user.getId()));
+			}
+			
+			dbWrapper.updateFriendsList(uids);
+		}
+    };
+
+	@Override
+	protected Boolean doInBackground(DatabaseWrapper... params) {
+		
+		Session facebookSession = Session.getActiveSession();
+		
+		dbWrapper = params[0];
+		
+		if (facebookSession != null && facebookSession.isOpened())
+		{
+			Request request = Request.newMyFriendsRequest(facebookSession, graphUserListCallback);
+			
+			Request.executeBatchAsync(request);
+		}
+		
+		return true;
+	}
+}

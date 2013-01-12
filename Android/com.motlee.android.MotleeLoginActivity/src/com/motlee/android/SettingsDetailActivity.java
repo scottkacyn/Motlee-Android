@@ -71,7 +71,7 @@ public class SettingsDetailActivity extends BaseMotleeActivity {
 		
 		SharePref.setSettings(getApplicationContext(), settings);
 		
-		EventServiceBuffer.updateSettingsOnDatabase();
+		//EventServiceBuffer.updateSettingsOnDatabase();
 		
 		finish();
 	}

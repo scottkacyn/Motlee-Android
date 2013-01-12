@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import com.facebook.Request;
 import com.facebook.Request.GraphUserCallback;
@@ -15,6 +19,7 @@ import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
 import com.facebook.android.AsyncFacebookRunner.RequestListener;
 import com.motlee.android.database.DatabaseHelper;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.CreateEventFragment;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
@@ -59,6 +64,8 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
 	
 	private ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>();
 	
+	private DatabaseWrapper dbWrapper;
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,29 +78,31 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
         
         setContentView(R.layout.main);
         
+        dbWrapper = new DatabaseWrapper(this.getApplicationContext());
+        
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         
         ft.add(new EmptyFragmentWithCallbackOnResume(), "EmptyFragment")
         .commit();
         
-        DatabaseHelper helper = new DatabaseHelper(this.getApplicationContext());
+        //DatabaseHelper helper = new DatabaseHelper(this.getApplicationContext());
         
-        UserInfo user = null;
+        /*UserInfo user = null;
 		try {
 			user = helper.getUserDao().queryForId(mUserID);
 		} catch (SQLException e) {
 			Log.e("DatabaseHelper", "Failed to queryForId for user", e);
-		}
+		}*/
         
-        progressDialog = ProgressDialog.show(UserProfilePageActivity.this, "", "Loading " + user.name + "'s Profile");
+        //progressDialog = ProgressDialog.show(UserProfilePageActivity.this, "", "Loading " + user.name + "'s Profile");
     }
 	
-	private void setUpProfilePageFragment(UserProfilePageFragment userProfileFragment, ArrayList<PhotoItem> photos, ArrayList<Integer> eventIds, ArrayList<UserInfo> friends) 
+	private void setUpProfilePageFragment(UserProfilePageFragment userProfileFragment, ArrayList<PhotoItem> photos, ArrayList<EventDetail> events, ArrayList<UserInfo> friends) 
 	{
 		userProfileFragment.setPhotos(photos);
 		
-		userProfileFragment.setEventIds(eventIds);
+		userProfileFragment.setEvents(events);
 		
 		userProfileFragment.setFriends(friends);
 		
@@ -121,9 +130,37 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
 	
 	public void OnFragmentAttached() {
 		
-        EventServiceBuffer.setUserInfoListener(this);
+		photos = new ArrayList<PhotoItem>(dbWrapper.getPhotosForUser(mUserID));
+		
+		Collections.sort(photos);
+		
+		ArrayList<EventDetail> friendEvents = new ArrayList<EventDetail>(dbWrapper.getEventsForUser(mUserID));
+		
+		Collections.sort(friendEvents);
+		
+        FragmentManager     fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
         
-        EventServiceBuffer.getUserInfoFromService(mUserID, true);
+        UserProfilePageFragment userProfileFragment = (UserProfilePageFragment) fm.findFragmentById(R.id.fragment_content);
+        
+        if (userProfileFragment == null)
+        {
+        	userProfileFragment = new UserProfilePageFragment();
+    
+	        setUpProfilePageFragment(userProfileFragment, photos, friendEvents, friends);
+        	
+	        ft.add(R.id.fragment_content, userProfileFragment);
+	        
+	        ft.commit();
+        }
+        else
+        {
+	        setUpProfilePageFragment(userProfileFragment, photos, friendEvents, friends);
+        }
+		
+        //EventServiceBuffer.setUserInfoListener(this);
+        
+        //EventServiceBuffer.getUserInfoFromService(mUserID, true);
 		
         //EventServiceBuffer.setFriendsListener(this);
         
@@ -150,8 +187,17 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
 
 	public void userWithEventsPhotos(UserWithEventsPhotosEvent e) {
 		
+		DatabaseWrapper dbWrapper = new DatabaseWrapper(this);
+		
 		photos = e.getPhotos();
-		final ArrayList<Integer> eventIds = e.getEventIds();
+		
+		Collections.sort(photos);
+		
+		final Set<Integer> events = new HashSet<Integer>(e.getEvents());
+		
+		ArrayList<EventDetail> friendEvents = new ArrayList<EventDetail>(dbWrapper.getEvents(events));
+		
+		Collections.sort(friendEvents);
 		
 		EventServiceBuffer.removeUserInfoListener(this);
 		
@@ -164,7 +210,7 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
         {
         	userProfileFragment = new UserProfilePageFragment();
     
-	        setUpProfilePageFragment(userProfileFragment, photos, eventIds, friends);
+	        setUpProfilePageFragment(userProfileFragment, photos, friendEvents, friends);
         	
 	        ft.add(R.id.fragment_content, userProfileFragment);
 	        
@@ -172,7 +218,7 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
         }
         else
         {
-	        setUpProfilePageFragment(userProfileFragment, photos, eventIds, friends);
+	        setUpProfilePageFragment(userProfileFragment, photos, friendEvents, friends);
         }
         
         progressDialog.dismiss();

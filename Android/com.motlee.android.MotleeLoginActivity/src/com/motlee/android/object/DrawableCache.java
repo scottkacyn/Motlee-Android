@@ -33,6 +33,11 @@ public class DrawableCache {
 	private DrawableCache() {
 		
 	}
+	
+	public static void deleteDrawable(int resource)
+	{
+		drawables.remove(resource);
+	}
 
 	public static DrawableWithHeight getDrawable(int resource, int width)
 	{

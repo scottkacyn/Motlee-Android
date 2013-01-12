@@ -219,6 +219,20 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
     	}
     }
 	
+    public void onShowLikes(View view)
+    {
+    	PhotoItem photo = (PhotoItem) view.getTag();
+    	
+    	Collection<Like> likes = dbWrapper.getLikes(photo.id);
+    	
+    	if (likes != null && dbWrapper.getLikes(photo.id).size() > 0)
+    	{
+	    	Intent startLikeList = new Intent(EventItemDetailActivity.this, LikeListActivity.class);
+	    	startLikeList.putExtra("Photo", photo);
+	    	startActivity(startLikeList);
+    	}
+    }
+    
 	public void onLikeClick(View view)
 	{
 		PhotoItem photo = (PhotoItem) view.getTag();

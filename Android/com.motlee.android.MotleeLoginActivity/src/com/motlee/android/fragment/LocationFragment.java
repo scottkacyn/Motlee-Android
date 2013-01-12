@@ -209,18 +209,8 @@ public class LocationFragment extends BaseDetailFragment {
 				point = new GeoPoint((int) (userLocation.getLatitude() * locMultiplier), (int) (userLocation.getLongitude() * locMultiplier));
 			}
 			
-			int friendsCount = 0;
-			
-			for (Attendee attendee : dbWrapper.getAttendees(item.getEventID()))
-			{				
-				Friend friend = dbWrapper.getFriend(attendee.user_id);
-				
-				if (friend != null)
-				{
-					friendsCount++;
-				}
-			}
-			
+			int friendsCount = dbWrapper.getAttendees(item.getEventID()).size();
+
 			OverlayItemWithEventID overlay = new OverlayItemWithEventID(point, item.getEventName(), friendsCount + " Friends Here", item.getEventID());
 
 			Drawable drawable = this.getResources().getDrawable(R.drawable.map_pin_for_google);

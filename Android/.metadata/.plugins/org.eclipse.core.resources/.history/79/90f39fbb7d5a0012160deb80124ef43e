@@ -1,0 +1,37 @@
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent" >
+    
+    <ImageView
+        android:id="@+id/imageThumbnail"
+        android:paddingLeft="1dp"
+        android:paddingRight="1dp"
+        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:adjustViewBounds="true"
+        <!--  android:onClick="showPictureDetail"
+        android:clickable="false"
+        android:longClickable="true" -->
+        android:scaleType="fitCenter" />
+    
+    <ImageView
+        android:id="@+id/imagePlaceHolder"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignLeft="@+id/myImageView"
+        android:layout_alignTop="@+id/myImageView"
+        android:layout_alignRight="@+id/myImageView"
+        android:layout_alignBottom="@+id/myImageView"
+        android:paddingLeft="1dp"
+        android:paddingRight="1dp"
+        android:scrollHorizontally="false"
+        android:ellipsize="none"
+        android:gravity="center"
+        android:visibility="gone"
+        android:clickable="true"
+        android:adjustViewBounds="true"
+        android:onClick="joinOrAddContent" />
+    
+</RelativeLayout>

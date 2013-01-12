@@ -1,0 +1,11 @@
+package com.motlee.android.view;
+
+public class EcoGallery extends CustomAbsSpinner {
+
+	@Override
+	void layout(int delta, boolean animate) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

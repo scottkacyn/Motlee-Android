@@ -11,6 +11,7 @@ import android.util.Log;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.NotificationObjectType;
 
@@ -58,7 +59,15 @@ public class NotificationList
 		
 		JsonParser parser = new JsonParser();
 		
-		JsonArray array = parser.parse(notificationJson).getAsJsonArray();
+		JsonArray array = new JsonArray();
+		try
+		{
+			array = parser.parse(notificationJson).getAsJsonArray();
+		}
+		catch (JsonSyntaxException e)
+		{
+			Log.e("NotificationList", "Failed to parse json.", e);
+		}
 		
 		numUnreadNotifications = 0; 
 		
@@ -89,7 +98,15 @@ public class NotificationList
 		
 		JsonParser parser = new JsonParser();
 		
-		JsonArray array = parser.parse(notificationJson).getAsJsonArray();
+		JsonArray array = new JsonArray();
+		try
+		{
+			array = parser.parse(notificationJson).getAsJsonArray();
+		}
+		catch (JsonSyntaxException e)
+		{
+			Log.e("NotificationList", "Failed to parse json.", e);
+		}
 		
 		for (JsonElement element : array)
 		{

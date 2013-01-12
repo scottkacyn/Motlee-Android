@@ -57,6 +57,10 @@ public class EventDetail implements Comparable<EventDetail> {
 	@DatabaseField(columnName = "id", dataType = DataType.INTEGER, id = true, index = true)
 	private int id;
 	
+	private ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>();
+	private LocationInfo location = new LocationInfo();
+	private UserInfo ownerInfo = new UserInfo();
+	
 	public EventDetail()
 	{
 		this.user_id = -1;
@@ -122,6 +126,36 @@ public class EventDetail implements Comparable<EventDetail> {
 			}
 		}
 	}*/
+	
+	public ArrayList<PhotoItem> getPhotos()
+	{
+		return photos;
+	}
+	
+	public void setPhotos(Collection<PhotoItem> photos)
+	{
+		this.photos = new ArrayList<PhotoItem>(photos);
+	}
+	
+	public LocationInfo getLocationInfo()
+	{
+		return location;
+	}
+	
+	public void setLocationInfo(LocationInfo location)
+	{
+		this.location = location;
+	}
+	
+	public UserInfo getOwnerInfo()
+	{
+		return ownerInfo;
+	}
+	
+	public void setOwnerInfo(UserInfo ownerInfo)
+	{
+		this.ownerInfo = ownerInfo;
+	}
 	
 	public Boolean getIsPrivate()
 	{
@@ -292,7 +326,14 @@ public class EventDetail implements Comparable<EventDetail> {
 		
 		if (thisIsHappeningNow && anotherIsHappeningNow)
 		{
-			return another.created_at.compareTo(this.created_at);
+			if (another.created_at != null && this.created_at != null)
+			{
+				return another.created_at.compareTo(this.created_at);
+			}
+			else
+			{
+				return another.getEndTime().compareTo(this.getEndTime());
+			}
 		}
 		else if (thisIsHappeningNow)
 		{

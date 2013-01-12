@@ -1,0 +1,30 @@
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true" 
+        android:id="@+id/marker_progress" >
+    
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:text="Syncing friends events..."
+            android:paddingRight="10dp"
+            style="@style/CodeFont" />
+        
+	    <ProgressBar 
+	        android:indeterminate="true"
+	        android:layout_width="30dp" 
+	        android:layout_height="30dp"
+	        
+	        style="?android:attr/progressBarStyle"
+	        android:layout_centerHorizontal="true"
+	        android:layout_alignParentTop="true"/>
+	    
+    </LinearLayout>
+</RelativeLayout>

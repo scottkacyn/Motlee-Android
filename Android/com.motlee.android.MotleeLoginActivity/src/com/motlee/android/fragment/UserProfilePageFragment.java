@@ -28,9 +28,11 @@ import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.Friend;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.GridPictures;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UserInfoEvent;
 import com.motlee.android.object.event.UserInfoListener;
@@ -91,15 +93,19 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
     
     private ArrayList<PhotoItem> photos;
     
-    private ArrayList<Integer> eventIds;
+    private ArrayList<EventDetail> events;
     
     private ArrayList<UserInfo> friends;
     
     private View headerView;
     
+    private View notFriendHeader;
+    
     private DatabaseWrapper dbWrapper;
 	
     private int maxHeightPic;
+    
+    private boolean isFriend = true;
     
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
@@ -123,7 +129,7 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 		headerView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, drawable.getHeight()));
 		
 		photoGridAdapter = new EventDetailGridAdapter(getActivity(), R.layout.event_detail_page_grid, new ArrayList<GridPictures>());
-		eventAdapter = new UserProfileAdapter(getActivity(), R.layout.search_event_item, eventIds);
+		eventAdapter = new UserProfileAdapter(getActivity(), R.layout.search_event_item, events);
 		friendsAdapter = new PeopleListAdapter(getActivity(), R.layout.people_list_item, friends);
 		
 		profilePictures = (LinearLayout) headerView.findViewById(R.id.profile_photos);
@@ -135,6 +141,15 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 		profileFriends.setOnClickListener(showFriendsList);
 		
 		user = dbWrapper.getUser(mUserID);
+		
+		if (!dbWrapper.isFriend(facebookID) && mUserID != SharePref.getIntPref(getActivity(), SharePref.USER_ID))
+		{
+			isFriend = false;
+		}
+		else
+		{
+			isFriend = true;
+		}
 		
 		setPageHeader(user.name);
 		showLeftHeaderButton();
@@ -177,13 +192,36 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 		
 		setAttendeePictureCount();
 		
-		setGridAdapter();
-		
-		headerView.findViewById(R.id.profile_number_glow).setVisibility(View.VISIBLE);
-		
-		headerView.findViewById(R.id.profile_events_glow).setVisibility(View.GONE);
-		
-		headerView.findViewById(R.id.profile_friends_glow).setVisibility(View.GONE);
+		if (isFriend)
+		{
+			setGridAdapter();
+			
+			headerView.findViewById(R.id.profile_number_glow).setVisibility(View.VISIBLE);
+			
+			headerView.findViewById(R.id.profile_events_glow).setVisibility(View.GONE);
+			
+			headerView.findViewById(R.id.profile_friends_glow).setVisibility(View.GONE);
+		}
+		else
+		{
+			notFriendHeader = inflater.inflate(R.layout.user_profile_not_friend, null);
+			((TextView) notFriendHeader.findViewById(R.id.event_detail_no_photo_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+			
+			if (userInfoList.getHeaderViewsCount() == 0)
+			{
+				userInfoList.addHeaderView(notFriendHeader);
+			}
+			
+			headerView.findViewById(R.id.profile_number_glow).setVisibility(View.GONE);
+			
+			headerView.findViewById(R.id.profile_events_glow).setVisibility(View.GONE);
+			
+			headerView.findViewById(R.id.profile_friends_glow).setVisibility(View.GONE);
+			
+			profilePictures.setClickable(false);
+			profileEvents.setClickable(false);
+			profileFriends.setClickable(false);
+		}
 		
 		userInfoList.setAdapter(photoGridAdapter);
 	}
@@ -203,7 +241,7 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 	{
 		TextView textView = (TextView) headerView.findViewById(R.id.profile_number_events_text);
 		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-		textView.setText(Integer.toString(this.eventIds.size()));
+		textView.setText(Integer.toString(this.events.size()));
 		
 		textView = (TextView) headerView.findViewById(R.id.profile_events_text);
 		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
@@ -334,9 +372,9 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 		
 	};
 	
-	public void setEventIds(ArrayList<Integer> eventIds) {
+	public void setEvents(ArrayList<EventDetail> events) {
 		
-		this.eventIds = eventIds;
+		this.events = events;
 		
 	}
 

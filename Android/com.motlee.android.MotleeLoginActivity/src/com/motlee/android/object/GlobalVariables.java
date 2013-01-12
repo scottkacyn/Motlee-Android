@@ -43,6 +43,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Typeface;
 import android.location.Criteria;
 import android.location.Location;
@@ -347,11 +348,12 @@ public class GlobalVariables {
 		File cacheDir = StorageUtils.getOwnCacheDirectory(context, "motlee/Cache");
 		
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context.getApplicationContext())
-		.threadPoolSize(3)
-		.threadPriority(Thread.NORM_PRIORITY - 2)
+		.threadPoolSize(1)
+		.threadPriority(Thread.MIN_PRIORITY + 1)
 		.memoryCache(new WeakMemoryCache())
 		.denyCacheImageMultipleSizesInMemory()
         .discCache(new UnlimitedDiscCache(cacheDir))
+        .discCacheExtraOptions(800, 800, CompressFormat.JPEG, 75)
 		.build();
 		
 		imageLoader.init(config);
@@ -362,7 +364,6 @@ public class GlobalVariables {
 		.bitmapConfig(Bitmap.Config.RGB_565)
 		.cacheInMemory()
 		.cacheOnDisc()
-		.displayer(new SimpleBitmapDisplayer())
 		.build();
 	}
 	

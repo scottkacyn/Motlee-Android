@@ -1,0 +1,65 @@
+package com.motlee.android.object;
+
+import java.util.ArrayList;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.facebook.HttpMethod;
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.Request.Callback;
+import com.facebook.Session;
+import com.motlee.android.R;
+import com.motlee.android.adapter.SearchPeopleAdapter;
+
+import android.os.AsyncTask;
+import android.util.Log;
+import android.view.View;
+
+public class GetFriendsFromFacebook extends AsyncTask<Session, Void, Boolean> {
+
+	private Callback graphUserListCallback = new Callback(){
+		
+	};
+
+	@Override
+	protected Boolean doInBackground(Session... params) {
+		
+		Session facebookSession = params[0];
+		
+		if (facebookSession.isOpened())
+		{
+			Request request = new Request(facebookSession, "/fql", params, HttpMethod.GET, graphUserListCallback);              
+
+			Request.executeBatchAsync(request);
+		}
+		
+	}
+	
+    private Callback graphUserListCallback = new Callback(){
+
+		public void onCompleted(Response response) {
+			
+				ArrayList<JSONObject> jsonObjectList = new ArrayList<JSONObject>();
+				
+				JSONArray users = (JSONArray) response.getGraphObject().getProperty("data");
+				try
+				{
+					for (int i = 0; i < users.length(); i++)
+					{
+						JSONObject user = users.getJSONObject(i);
+						
+						Friend friend = new Friend(user.getLong("uid"));
+						
+						
+					}
+				}
+				catch (JSONException e)
+				{
+					Log.e(this.toString(), e.getMessage());
+				}
+			}
+    };
+}

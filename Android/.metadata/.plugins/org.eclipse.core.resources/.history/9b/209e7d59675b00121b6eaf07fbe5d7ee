@@ -1,0 +1,11 @@
+package com.motlee.android.object;
+
+public class TempEventDetailList {
+
+	private HashMap<Integer, EventDetail> eventDetails = new HashMap<Integer, EventDetail>();
+	
+	public TempEventDetailList() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

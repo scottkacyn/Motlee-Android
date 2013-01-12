@@ -1,13 +1,21 @@
 package com.motlee.android.view;
 
+import android.app.Activity;
 import android.content.Context;
+import android.support.v4.app.FragmentActivity;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
+import android.view.View;
+import android.widget.AdapterView;
 
 import com.devsmart.android.ui.HorizontalListView;
+import com.motlee.android.adapter.ImageAdapter;
+import com.motlee.android.object.GlobalActivityFunctions;
+import com.motlee.android.object.MenuFunctions;
+import com.motlee.android.object.PhotoItem;
 
-public class HorizontalListViewDisallowIntercept extends HorizontalListView {
+public class HorizontalListViewDisallowIntercept extends HorizontalListView implements android.widget.AdapterView.OnItemClickListener {
 
 	private VelocityTracker mVelocityTracker;
 	
@@ -16,12 +24,26 @@ public class HorizontalListViewDisallowIntercept extends HorizontalListView {
 	private int endX = 0;
 	private int endY = 0;
 	
+	private boolean mIsAttending;
+	private int mEventId;
+	
 	public HorizontalListViewDisallowIntercept(Context context,
 			AttributeSet attrs) {
 		super(context, attrs);
-		// TODO Auto-generated constructor stub
+		
+		setOnItemClickListener(this);
+	}
+	
+	public void setIsAttending(boolean isAttending)
+	{
+		mIsAttending = isAttending;
 	}
 
+	public void setEventId(int eventId)
+	{
+		mEventId = eventId;
+	}
+	
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent event)
 	{
@@ -55,5 +77,29 @@ public class HorizontalListViewDisallowIntercept extends HorizontalListView {
 		}
 		return ret;
 	}
+
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+		PhotoItem photo = (PhotoItem) getItemAtPosition(position);
+		
+		if (photo == ImageAdapter.NO_PHOTO)
+		{
+			if (mIsAttending)
+			{
+				if (getContext() instanceof FragmentActivity)
+				{
+					MenuFunctions.takePictureOnPhone(mEventId, (FragmentActivity) getContext());
+				}
+			}
+		}
+		else
+		{
+			if (getContext() instanceof Activity)
+			{
+				GlobalActivityFunctions.showPictureDetail(photo, (Activity) getContext(), true);
+			}
+		}
+	}
+		
 	
 }

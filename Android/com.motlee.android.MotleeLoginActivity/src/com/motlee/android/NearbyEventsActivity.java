@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
@@ -16,6 +18,7 @@ import com.motlee.android.fragment.LocationFragment;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 
@@ -35,6 +38,8 @@ public class NearbyEventsActivity extends BaseMotleeActivity implements UpdatedE
         
         showMenuButtons(BaseMotleeActivity.CREATE_EVENT);
         
+        setActionForRightMenu(plusMenuClick);
+        
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         
@@ -44,6 +49,16 @@ public class NearbyEventsActivity extends BaseMotleeActivity implements UpdatedE
         progressDialog = ProgressDialog.show(NearbyEventsActivity.this, "", "Loading");
     }
 	
+	private OnClickListener plusMenuClick = new OnClickListener(){
+
+		public void onClick(View v) {
+			
+			MenuFunctions.showCreateEventPage(v, NearbyEventsActivity.this);
+			
+		}
+		
+	};
+    
     @Override
     public void myEventOccurred(UpdatedEventDetailEvent evt)
     {

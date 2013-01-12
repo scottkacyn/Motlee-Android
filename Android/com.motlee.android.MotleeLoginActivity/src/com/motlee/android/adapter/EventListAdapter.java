@@ -3,44 +3,41 @@ package com.motlee.android.adapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.Vector;
 
 import com.motlee.android.R;
 import com.motlee.android.database.DatabaseWrapper;
-import com.motlee.android.layouts.HorizontalRatioLinearLayout;
 import com.motlee.android.object.DateStringFormatter;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
+import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
-import com.motlee.android.view.HorizontalListView;
-import com.emilsjolander.components.StickyListHeaders.StickyListHeadersBaseAdapter;
+import com.motlee.android.view.CustomAdapterView;
+import com.motlee.android.view.CustomAdapterView.OnItemLongClickListener;
+import com.motlee.android.view.EcoGallery;
+import com.motlee.android.view.HorizontalListViewDisallowIntercept;
+import com.devsmart.android.ui.HorizontalListView;
 
+import android.app.Activity;
 import android.content.Context;
-import android.graphics.Typeface;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.GestureDetector.SimpleOnGestureListener;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.Gallery;
-import android.widget.HorizontalScrollView;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -174,7 +171,7 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				holder.event_header_button = (LinearLayout) convertView.findViewById(R.id.event_header);
 				holder.event_header_name = (TextView) convertView.findViewById(R.id.event_header_name);
 				holder.event_header_time = (TextView) convertView.findViewById(R.id.event_header_time);
-				holder.list_view = (HorizontalListView) convertView.findViewById(R.id.listview);
+				holder.list_view = (HorizontalListViewDisallowIntercept) convertView.findViewById(R.id.listview);
 				holder.event_footer_owner = (TextView) convertView.findViewById(R.id.event_footer_owner);
 				holder.event_footer_location = (TextView) convertView.findViewById(R.id.event_footer_location);
 				holder.imageAdapter = new ImageAdapter(mContext, R.layout.thumbnail);
@@ -186,7 +183,6 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
                 } else {
                         holder = (ViewHolder) convertView.getTag();
                 }
-
 
                 this.bindData(holder, position, convertView);
 
@@ -245,7 +241,7 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				CharSequence charSequence = Integer.toString(item.getEventID());
 				holder.event_header_button.setContentDescription(charSequence);
 				
-				boolean isAttending = SharePref.getIntArrayPref(getContext(), SharePref.MY_EVENT_DETAILS).contains(item.getEventID());
+				boolean isAttending = dbWrapper.isAttending(item.getEventID());
 				
 				if (item.getOwnerID() == SharePref.getIntPref(getContext().getApplicationContext(), SharePref.USER_ID))
 				{
@@ -260,6 +256,7 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				else
 				{
 					holder.event_header_icon.setVisibility(View.GONE);
+					//holder.event_header_icon.setImageResource(android.R.color.transparent);
 				}
 				
 				// set the value
@@ -281,9 +278,13 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 					holder.event_footer_people.setVisibility(View.GONE);
 				}
 				
-				UserInfo eventOwner = dbWrapper.getUser(item.getOwnerID());
+				UserInfo eventOwner = item.getOwnerInfo();
 				
-				if (eventOwner.first_name == null || eventOwner.last_name == null)
+				if (eventOwner.id == SharePref.getIntPref(mContext.getApplicationContext(), SharePref.USER_ID))
+				{
+					holder.event_footer_owner.setText("You");
+				}
+				else if (eventOwner.first_name == null || eventOwner.last_name == null)
 				{
 					String[] ownerArray = eventOwner.name.split("\\s+");
 					
@@ -305,12 +306,7 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				//holder.event_footer_owner.setText(item.getEventOwner().first_name.substring(0, 1) + ". CrazyAssMotherFuckinLongLastName");
 				holder.event_footer_owner.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 				
-				LocationInfo location = new LocationInfo();
-				
-				if (item.getLocationID() != null)
-				{
-					location = dbWrapper.getLocation(item.getLocationID());
-				}
+				LocationInfo location = item.getLocationInfo();
 				
 				if (location != null)
 				{
@@ -335,21 +331,8 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				}
 				
 				ArrayList<String> imageURLs = new ArrayList<String>();
-				
-				if (!eventPhotos.containsKey(item.getEventID()))
-				{
-					eventPhotos.put(item.getEventID(), new ArrayList<PhotoItem>(dbWrapper.getPhotos(item.getEventID())));
-				}
-				else
-				{
-					long photoCount = dbWrapper.getPhotoCount(item.getEventID());
-					if (!Long.valueOf(eventPhotos.get(item.getEventID()).size()).equals(photoCount))
-					{
-						eventPhotos.put(item.getEventID(), new ArrayList<PhotoItem>(dbWrapper.getPhotos(item.getEventID())));
-					}
-				}
 
-				ArrayList<PhotoItem> photos = eventPhotos.get(item.getEventID());
+				ArrayList<PhotoItem> photos = item.getPhotos();
 				
 				for (PhotoItem photo : photos)
 				{
@@ -357,6 +340,9 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				}
 
 				holder.imageAdapter.setURLs(photos);
+				
+				holder.list_view.setEventId(item.getEventID());
+				holder.list_view.setIsAttending(isAttending);
 				
 				if (holder.list_view.getAdapter() == null)
 				{					
@@ -372,7 +358,7 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
             public TextView event_header_time;
             public TextView event_footer_owner;
             public TextView event_footer_location;
-            public HorizontalListView list_view;
+            public HorizontalListViewDisallowIntercept list_view;
             public ImageAdapter imageAdapter;
             public RelativeLayout event_background;
             public LinearLayout event_footer_background;
