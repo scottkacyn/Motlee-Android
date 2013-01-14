@@ -265,10 +265,7 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 	private void setProfilePicture() {
 		final ImageView imageView = (ImageView) headerView.findViewById(R.id.profile_picture);
 		
-		imageView.setMaxHeight(maxHeightPic);
-		imageView.setMaxWidth(maxHeightPic);
-		
-		GlobalVariables.getInstance().downloadImage(imageView, GlobalVariables.getInstance().getFacebookPictureUrlLarge(facebookID));
+		GlobalVariables.getInstance().downloadImage(imageView, GlobalVariables.getInstance().getFacebookPictureUrlLarge(facebookID), maxHeightPic);
 		//TableRow tr = new TableRow(getActivity());
 		//LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		//tr.setLayoutParams(lp);

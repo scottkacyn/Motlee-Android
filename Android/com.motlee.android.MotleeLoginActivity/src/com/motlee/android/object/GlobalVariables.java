@@ -33,6 +33,8 @@ import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
@@ -351,7 +353,6 @@ public class GlobalVariables {
 		.threadPoolSize(1)
 		.threadPriority(Thread.MIN_PRIORITY + 1)
 		.memoryCache(new WeakMemoryCache())
-		.denyCacheImageMultipleSizesInMemory()
         .discCache(new UnlimitedDiscCache(cacheDir))
         .discCacheExtraOptions(800, 800, CompressFormat.JPEG, 75)
 		.build();
@@ -359,7 +360,6 @@ public class GlobalVariables {
 		imageLoader.init(config);
 		
 		options = new DisplayImageOptions.Builder()
-		.showStubImage(R.drawable.watermark)
 		.imageScaleType(ImageScaleType.EXACTLY)
 		.bitmapConfig(Bitmap.Config.RGB_565)
 		.cacheInMemory()
@@ -383,9 +383,19 @@ public class GlobalVariables {
 		return this.maxEventListImageHeight;
 	}
 	
-	public void downloadImage(ImageView imageView, String url)
+	public void downloadImage(ImageView imageView, String url, Integer width)
 	{
-    	imageLoader.displayImage(url, imageView, options);
+		if (imageLoader == null)
+		{
+			this.initializeImageLoader(imageView.getContext().getApplicationContext());
+		}
+		
+		WatermarkCache.getInstance(imageView.getContext().getApplicationContext().getResources());
+		
+		imageView.setMaxHeight(width);
+		imageView.setMaxWidth(width);
+		
+    	imageLoader.displayImage(url, imageView, options, WatermarkCache.getWatermark(width));
 	}
 	
 	public int getDisplayHeight()

@@ -124,7 +124,9 @@ public class NotificationAdapter extends StickyListHeadersBaseAdapter {
         holder.notification_profile.setMaxHeight(drawable.getHeight() - DrawableCache.convertDpToPixel(5));
         holder.notification_profile.setMaxWidth(drawable.getHeight() - DrawableCache.convertDpToPixel(5));
         
-        GlobalVariables.getInstance().downloadImage(holder.notification_profile, GlobalVariables.getInstance().getFacebookPictureUrlLarge(notificationOwner.uid));
+        GlobalVariables.getInstance().downloadImage(holder.notification_profile, 
+        		GlobalVariables.getInstance().getFacebookPictureUrlLarge(notificationOwner.uid), 
+        		drawable.getHeight() - DrawableCache.convertDpToPixel(5));
         // bind the data to the view object
         return convertView;
     }

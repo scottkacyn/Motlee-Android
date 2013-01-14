@@ -16,7 +16,9 @@ import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.GridPictures;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.StoryItem;
+import com.motlee.android.object.WatermarkCache;
 
 import android.content.Context;
 import android.util.Log;
@@ -65,6 +67,8 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
             this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             this.resource = resource;
             this.data.addAll(data);
+            
+            WatermarkCache.getInstance(context.getApplicationContext().getResources());
     }
 
     
@@ -164,14 +168,17 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
             
     	GridPictures item = this.data.get(position);
     	
+		Integer imageWidth = (int) (SharePref.getIntPref(getContext(), SharePref.DISPLAY_WIDTH) / 3);
+    	
     	if (!(item.image1 == GridPictures.NO_PICTURE))
     	{
-    		holder.image1.setMaxHeight(GlobalVariables.DISPLAY_WIDTH / 3);
-    		holder.image1.setMaxWidth(GlobalVariables.DISPLAY_WIDTH / 3);
+    		
+    		holder.image1.setMaxHeight(imageWidth);
+    		holder.image1.setMaxWidth(imageWidth);
     		
 	    	if (item.image1.id == -1)
 	    	{
-				holder.image1.setImageDrawable(DrawableCache.getDrawable(R.drawable.watermark, GlobalVariables.DISPLAY_WIDTH / 3).getDrawable());
+				holder.image1.setImageDrawable(WatermarkCache.getWatermark(imageWidth));
 				holder.grid_spinner_1.setVisibility(View.VISIBLE);
 				holder.grid_upload_text_1.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 				holder.grid_upload_text_1.setVisibility(View.VISIBLE);
@@ -179,7 +186,9 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
 	    	}
 	    	else
 	    	{
-	    		GlobalVariables.getInstance().downloadImage(holder.image1, GlobalVariables.getInstance().getAWSUrlThumbnail(item.image1));
+	    		GlobalVariables.getInstance().downloadImage(holder.image1, 
+	    				GlobalVariables.getInstance().getAWSUrlThumbnail(item.image1), 
+	    				imageWidth);
 		    	
 		    	holder.image1.getLayoutParams().height = (GlobalVariables.DISPLAY_WIDTH / 3);
 		    	
@@ -204,12 +213,12 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
     	
     	if (!(item.image2 == GridPictures.NO_PICTURE))
     	{
-    		holder.image2.setMaxHeight(GlobalVariables.DISPLAY_WIDTH / 3);
-    		holder.image2.setMaxWidth(GlobalVariables.DISPLAY_WIDTH / 3);
+    		holder.image2.setMaxHeight(imageWidth);
+    		holder.image2.setMaxWidth(imageWidth);
     		
 	    	if (item.image2.id == -1)
 	    	{
-				holder.image2.setImageDrawable(DrawableCache.getDrawable(R.drawable.watermark, GlobalVariables.DISPLAY_WIDTH / 3).getDrawable());
+				holder.image2.setImageDrawable(WatermarkCache.getWatermark(imageWidth));
 				holder.grid_spinner_2.setVisibility(View.VISIBLE);
 				holder.grid_upload_text_2.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 				holder.grid_upload_text_2.setVisibility(View.VISIBLE);
@@ -217,7 +226,7 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
 	    	}
 	    	else
 	    	{
-	    		GlobalVariables.getInstance().downloadImage(holder.image2, GlobalVariables.getInstance().getAWSUrlThumbnail(item.image2));
+	    		GlobalVariables.getInstance().downloadImage(holder.image2, GlobalVariables.getInstance().getAWSUrlThumbnail(item.image2), imageWidth);
 		    	
 		    	holder.image2.getLayoutParams().height = (GlobalVariables.DISPLAY_WIDTH / 3);
 		    	
@@ -242,12 +251,12 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
     	
     	if (!(item.image3 == GridPictures.NO_PICTURE))
     	{
-    		holder.image3.setMaxHeight(GlobalVariables.DISPLAY_WIDTH / 3);
-    		holder.image3.setMaxWidth(GlobalVariables.DISPLAY_WIDTH / 3);
+    		holder.image3.setMaxHeight(imageWidth);
+    		holder.image3.setMaxWidth(imageWidth);
     		
 	    	if (item.image3.id == -1)
 	    	{
-				holder.image3.setImageDrawable(DrawableCache.getDrawable(R.drawable.watermark, GlobalVariables.DISPLAY_WIDTH / 3).getDrawable());
+				holder.image3.setImageDrawable(WatermarkCache.getWatermark(imageWidth));
 				holder.grid_spinner_3.setVisibility(View.VISIBLE);
 				holder.grid_upload_text_3.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 				holder.grid_upload_text_3.setVisibility(View.VISIBLE);
@@ -255,7 +264,7 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
 	    	}
 	    	else
 	    	{
-	    		GlobalVariables.getInstance().downloadImage(holder.image3, GlobalVariables.getInstance().getAWSUrlThumbnail(item.image3));
+	    		GlobalVariables.getInstance().downloadImage(holder.image3, GlobalVariables.getInstance().getAWSUrlThumbnail(item.image3), imageWidth);
 		    	
 		    	holder.image3.getLayoutParams().height = (GlobalVariables.DISPLAY_WIDTH / 3);
 		    	

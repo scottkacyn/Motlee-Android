@@ -185,7 +185,10 @@ public class PeopleListFragment extends BaseDetailFragment {
 		for (Attendee user : dbWrapper.getAttendees(mEventDetail.getEventID()))
 		{		
 			UserInfo userInfo = dbWrapper.getUser(user.user_id);
-			mUsers.add(userInfo);
+			if (userInfo != null)
+			{
+				mUsers.add(userInfo);
+			}
 		}
 		
 		if (mUsers.size() > 0)

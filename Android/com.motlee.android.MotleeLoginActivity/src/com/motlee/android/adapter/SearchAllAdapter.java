@@ -24,7 +24,9 @@ import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
+import com.motlee.android.object.WatermarkCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -47,6 +49,8 @@ public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
     
     private DatabaseHelper helper;
     private DatabaseWrapper dbWrapper;
+    
+    private Integer mEventPictureHeight;
 	
 	public SearchAllAdapter(Context context, LayoutInflater inflater, ArrayList<Integer> listItems, int splitSection) {
 		super(context);
@@ -58,6 +62,9 @@ public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
 		
 		helper = new DatabaseHelper(context.getApplicationContext());
 		dbWrapper = new DatabaseWrapper(context.getApplicationContext());
+		
+		mEventPictureHeight = DrawableCache.getDrawable(R.drawable.label_button_no_arrow, 
+				SharePref.getIntPref(context.getApplicationContext(), SharePref.DISPLAY_WIDTH)).getHeight();
 		
 		this.inflater = inflater;
 		
@@ -188,17 +195,15 @@ public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
 	            holder.search_button.setContentDescription(event.getEventID().toString());
 	            holder.search_button.setTag(event);
 	            
-	            holder.search_event_picture.setMaxHeight(DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH).getHeight());
-	            
 	            ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>(dbWrapper.getPhotos(event.getEventID()));
 	            
 	            if (photos.size() > 0)
 	            {
-	            	GlobalVariables.getInstance().downloadImage(holder.search_event_picture, GlobalVariables.getInstance().getAWSUrlThumbnail(photos.get(0)));
+	            	GlobalVariables.getInstance().downloadImage(holder.search_event_picture, GlobalVariables.getInstance().getAWSUrlThumbnail(photos.get(0)), mEventPictureHeight);
 	            }
 	            else
 	            {
-	            	holder.search_event_picture.setImageDrawable(getContext().getResources().getDrawable(R.drawable.watermark));
+	            	holder.search_event_picture.setImageDrawable(WatermarkCache.getWatermark(mEventPictureHeight));
 	            }
 	            
 	            holder.search_event_name.setText(event.getEventName());

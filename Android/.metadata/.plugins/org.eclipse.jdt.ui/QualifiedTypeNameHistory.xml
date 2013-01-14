@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="com.facebook.Request"/>
-<fullyQualifiedTypeName name="com.facebook.Response"/>
-<fullyQualifiedTypeName name="org.json.JSONObject"/>
-<fullyQualifiedTypeName name="org.json.JSONException"/>
-<fullyQualifiedTypeName name="com.facebook.FacebookRequestError"/>
-<fullyQualifiedTypeName name="android.widget.Toast"/>
-<fullyQualifiedTypeName name="com.facebook.HttpMethod"/>
 <fullyQualifiedTypeName name="com.facebook.RequestAsyncTask"/>
 <fullyQualifiedTypeName name="com.facebook.model.GraphUser"/>
 <fullyQualifiedTypeName name="java.util.Arrays"/>
@@ -48,16 +41,23 @@
 <fullyQualifiedTypeName name="android.widget.AdapterView.OnItemClickListener"/>
 <fullyQualifiedTypeName name="com.motlee.android.view.HorizontalListViewDisallowIntercept"/>
 <fullyQualifiedTypeName name="com.motlee.android.R.id"/>
-<fullyQualifiedTypeName name="java.util.HashMap"/>
 <fullyQualifiedTypeName name="java.util.HashSet"/>
 <fullyQualifiedTypeName name="java.util.Set"/>
 <fullyQualifiedTypeName name="com.google.analytics.tracking.android.EasyTracker"/>
-<fullyQualifiedTypeName name="com.motlee.android.R.drawable"/>
 <fullyQualifiedTypeName name="android.graphics.drawable.BitmapDrawable"/>
 <fullyQualifiedTypeName name="com.j256.ormlite.field.DataType"/>
 <fullyQualifiedTypeName name="com.facebook.Session"/>
 <fullyQualifiedTypeName name="com.facebook.Request.GraphUserListCallback"/>
 <fullyQualifiedTypeName name="com.motlee.android.database.DatabaseWrapper"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.GetFriendsFromFacebook"/>
+<fullyQualifiedTypeName name="android.graphics.Bitmap.CompressFormat"/>
+<fullyQualifiedTypeName name="android.graphics.BitmapFactory"/>
+<fullyQualifiedTypeName name="java.util.HashMap"/>
+<fullyQualifiedTypeName name="android.graphics.drawable.Drawable"/>
+<fullyQualifiedTypeName name="java.lang.ref.WeakReference"/>
+<fullyQualifiedTypeName name="com.motlee.android.R"/>
+<fullyQualifiedTypeName name="com.motlee.android.R.drawable"/>
+<fullyQualifiedTypeName name="com.nostra13.universalimageloader.core.assist.ImageLoadingListener"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.SharePref"/>
+<fullyQualifiedTypeName name="com.motlee.android.object.WatermarkCache"/>
 </qualifiedTypeNameHistroy>

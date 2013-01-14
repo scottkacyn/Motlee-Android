@@ -227,10 +227,9 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 		    	
 		    	final View touchOverlay = holder.touch_overlay;
 		    	
-		    	holder.photo_detail_picture.setMaxHeight(GlobalVariables.DISPLAY_WIDTH);
-		    	holder.photo_detail_picture.setMaxWidth(GlobalVariables.DISPLAY_WIDTH);
-		    	
-		        GlobalVariables.getInstance().downloadImage(holder.photo_detail_picture, GlobalVariables.getInstance().getAWSUrlCompressed(photo));
+		        GlobalVariables.getInstance().downloadImage(holder.photo_detail_picture, 
+		        		GlobalVariables.getInstance().getAWSUrlCompressed(photo), 
+		        		SharePref.getIntPref(context.getApplicationContext(), SharePref.DISPLAY_WIDTH));
 		        
 				holder.photo_detail_caption.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 				holder.photo_detail_caption.setText(photo.caption);
@@ -280,9 +279,6 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 		
 		holder.photo_detail_thumbnail.setTag(photoOwner);
 		
-		holder.photo_detail_thumbnail.setMaxHeight(background.getHeight());
-		holder.photo_detail_thumbnail.setMaxWidth(background.getHeight());
-		
 		holder.photo_detail_thumbnail_bg.setMaxHeight(background.getHeight());
 		holder.photo_detail_thumbnail_bg.setMaxWidth(background.getHeight());
 		
@@ -291,7 +287,9 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 		
 			Long facebookID = photoOwner.uid;
 			
-			GlobalVariables.getInstance().downloadImage(holder.photo_detail_thumbnail, GlobalVariables.getInstance().getFacebookPictureUrlLarge(facebookID));
+			GlobalVariables.getInstance().downloadImage(holder.photo_detail_thumbnail, 
+					GlobalVariables.getInstance().getFacebookPictureUrlLarge(facebookID), 
+					background.getHeight());
 
 			holder.photo_detail_name_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 			holder.photo_detail_name_text.setText(photoOwner.name);

@@ -171,10 +171,7 @@ public class ImageAdapter extends BaseAdapter {
     	{
     		holder.imagePlaceHolder.setVisibility(View.GONE);
     		
-    		holder.imageView.setMaxHeight(GlobalVariables.getInstance().getMaxEventListImageHeight());
-    		holder.imageView.setMaxWidth(GlobalVariables.getInstance().getMaxEventListImageHeight());
-    		
-    		GlobalVariables.getInstance().downloadImage(holder.imageView, GlobalVariables.getInstance().getAWSUrlThumbnail(mPhotoList.get(position)));
+    		GlobalVariables.getInstance().downloadImage(holder.imageView, GlobalVariables.getInstance().getAWSUrlThumbnail(mPhotoList.get(position)), GlobalVariables.getInstance().getMaxEventListImageHeight());
         	holder.imageView.setVisibility(View.VISIBLE);
         	holder.imageView.setTag(mPhotoList.get(position));
     	}

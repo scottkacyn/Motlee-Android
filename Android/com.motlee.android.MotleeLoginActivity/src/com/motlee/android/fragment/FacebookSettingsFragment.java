@@ -87,7 +87,7 @@ public class FacebookSettingsFragment extends BaseMotleeFragment {
 		ImageView imageView = (ImageView) labelButton.findViewById(R.id.facebook_profile_pic);
 		String facebookURL = GlobalVariables.getInstance().getFacebookPictureUrl(userInfo.uid);
 		
-		GlobalVariables.getInstance().downloadImage(imageView, facebookURL);
+		//GlobalVariables.getInstance().downloadImage(imageView, facebookURL);
 		
 		TextView textView = (TextView) labelButton.findViewById(R.id.facebook_user_name);
 		textView.setText(userInfo.name);

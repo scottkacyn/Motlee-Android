@@ -60,14 +60,14 @@ public class FirstUseActivity extends Activity {
 		super.onCreate(savedInstance);
 		setContentView(R.layout.first_use_item);
 		
+		DrawableCache.getInstance(getResources());
+		
 		image = (ImageView) findViewById(R.id.first_use_image);
 		image.setImageDrawable(DrawableCache.getDrawable(R.drawable.first_use_1, SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH)).getDrawable());
 		
 		gestureDetector = new GestureDetector(new MyGestureDetector());
 		
 		image.setOnTouchListener(onTouchListener);
-		
-		
 		
 	}
 	

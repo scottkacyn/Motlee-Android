@@ -13,16 +13,16 @@
 		<item value="false" key="isRegEx"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="getEvents" key="selection"/>
+		<item value="updateFriends" key="selection"/>
 		<list key="findhistory">
+			<item value="updateFriends"/>
+			<item value="image"/>
 			<item value="getEvents"/>
 			<item value="MY_EVENT_DETAILS"/>
 			<item value="getEventDetail"/>
 			<item value="mLocation"/>
 			<item value="setLocationInfo"/>
 			<item value="isEditing"/>
-			<item value="removedAttendees"/>
-			<item value="delete"/>
 		</list>
 		<list key="replacehistory">
 			<item value="EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);"/>

@@ -1,0 +1,12 @@
+package com.motlee.android.object;
+
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+
+import android.graphics.drawable.Drawable;
+
+public class WatermarkCache {
+	
+	HashMap<Integer, WeakReference<Drawable>> mDrawables = new HashMap<Integer, WeakReference<Drawable>>();
+
+}
