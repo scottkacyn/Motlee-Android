@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -61,7 +62,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 	private boolean recropping = false;
 	
 	private String mCurrentPhotoPath;
-	private String mCurrentCroppedPhotoPath;
+	//private String mCurrentCroppedPhotoPath;
 	private Uri picUri;
 	private int mEventId;
 	
@@ -76,25 +77,6 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 	public void onResume()
 	{
 		super.onResume();
-		
-		if (mCurrentCroppedPhotoPath != null)
-		{
-			/*File croppedPhoto = new File(mCurrentCroppedPhotoPath);
-			if (croppedPhoto.exists())
-			{
-				handleCameraPic();
-
-				System.gc();
-				
-				mHandler.post(new Runnable() {
-				    
-				    public void run() {
-				    	setUpFragmentWithPicture();
-				    	mTakenPhoto = false;
-				    }
-				});
-			}*/
-		}
 	}
 	
 	@Override
@@ -196,7 +178,16 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 				{
 					mCurrentPhotoPath = getPath(picUri);
 				}
-				performCrop();
+				
+				MediaScannerConnection.scanFile(this,
+				          new String[] { mCurrentPhotoPath }, null,
+				          new MediaScannerConnection.OnScanCompletedListener() {
+				      public void onScanCompleted(String path, Uri uri) {
+				          performCrop();
+				      }
+				 });
+				
+				//performCrop();
 			}
 			else
 			{
@@ -380,81 +371,13 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 	    this.sendBroadcast(mediaScanIntent);
 	}
 	
-	/*
-	 * createImageFile as a temporary placeholder for our taken image
-	 */
-	private File createImageFile() throws IOException {
-		// Create an image file name
-		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-		String imageFileName = JPEG_FILE_PREFIX + timeStamp + "_";
-		File albumF = getAlbumDir();
-		File imageF = File.createTempFile(imageFileName, JPEG_FILE_SUFFIX, albumF);
-		return imageF;
-	}
-
-	private File getAlbumDir() 
-	{
-		File storageDir = null;
-
-		if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) 
-		{
-			
-			storageDir = getAlbumStorageDir(getAlbumName());
-
-			if (storageDir != null) {
-				if (! storageDir.mkdirs()) {
-					if (! storageDir.exists()){
-						Log.d("CameraSample", "failed to create directory");
-						return null;
-					}
-				}
-			}
-			
-		} else {
-			Log.v(getString(R.string.app_name), "External storage is not mounted READ/WRITE.");
-			storageDir = getInternalAlbumStorageDir(getAlbumName());
-
-			if (storageDir != null) {
-				if (! storageDir.mkdirs()) {
-					if (! storageDir.exists()){
-						Log.d("CameraSample", "failed to create directory");
-						return null;
-					}
-				}
-			}
-		}
-		
-		return storageDir;
-	}
-	
-	/* Photo album for this application */
-	private String getAlbumName() 
-	{
-		return getString(R.string.album_name);
-	}
-	
 	private File setUpPhotoFile() throws IOException 
 	{
 		
-		File f = createImageFile();
+		File f = GlobalVariables.createImageFile(this.getApplicationContext());
 		mCurrentPhotoPath = f.getAbsolutePath();
 		
 		return f;
-	}
-	
-	private File getAlbumStorageDir(String albumName) 
-	{
-		return new File (
-				Environment.getExternalStorageDirectory()
-				+ CAMERA_DIR
-				+ albumName
-		);
-	}
-	
-	private File getInternalAlbumStorageDir(String albumName)
-	{
-		return new File(
-				getFilesDir() + CAMERA_DIR + albumName);
 	}
 	
     /**
@@ -469,8 +392,8 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			
 			String[] splitFile = mCurrentPhotoPath.split("/");	
 			String fileName = splitFile[splitFile.length - 1];
-			mCurrentCroppedPhotoPath = getCroppedPhotoPath(fileName);
-			intent.putExtra("image-save", mCurrentCroppedPhotoPath);
+			//mCurrentCroppedPhotoPath = getCroppedPhotoPath(fileName);
+			intent.putExtra("image-save", mCurrentPhotoPath);
 			intent.putExtra("aspectX", 1);
 			intent.putExtra("aspectY", 1);
 			int outputSize = GlobalVariables.DISPLAY_WIDTH > 720 ? GlobalVariables.DISPLAY_WIDTH : 720;

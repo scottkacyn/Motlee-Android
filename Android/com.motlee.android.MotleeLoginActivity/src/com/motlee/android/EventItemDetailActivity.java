@@ -18,6 +18,7 @@ import com.motlee.android.object.Comment;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventServiceBuffer;
 
+import com.motlee.android.object.Attendee;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.PhotoItem;
@@ -25,10 +26,14 @@ import com.motlee.android.object.SharePref;
 import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.DeletePhotoListener;
+import com.motlee.android.object.event.UpdatedCommentEvent;
+import com.motlee.android.object.event.UpdatedCommentListener;
 import com.motlee.android.object.event.UpdatedLikeEvent;
 import com.motlee.android.object.event.UpdatedLikeListener;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
+import com.motlee.android.service.DownloadImage;
+import com.motlee.android.service.RubyService;
 import com.motlee.android.view.ProgressDialogWithTimeout;
 
 import android.app.AlertDialog;
@@ -38,12 +43,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.InputMethodManager;
@@ -51,8 +60,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 
-public class EventItemDetailActivity extends BaseMotleeActivity implements UpdatedPhotoListener, DeletePhotoListener {
+public class EventItemDetailActivity extends BaseMotleeActivity implements UpdatedPhotoListener, DeletePhotoListener, UpdatedCommentListener {
 	
 	private EventItem mEventItem;
 	private EventItemDetailFragment fragment;
@@ -67,6 +77,12 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 	
 	private DatabaseWrapper dbWrapper;
 	
+	boolean isApartOfEvent = false;
+	
+	private static final int DELETE = 1;
+	private static final int REPORT = 2;
+	private static final int DOWNLOAD = 3;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -80,7 +96,11 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
         
         getPhotoInformation = true;
         
+		EventServiceBuffer.setCommentListener(EventItemDetailActivity.this);
+		
         dbWrapper = new DatabaseWrapper(getApplicationContext());
+        
+        setIsApartOfEvent();
         
         ArrayList<PhotoItem> photos = getIntent().getParcelableArrayListExtra("Photos");
         
@@ -100,7 +120,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
         }
         else
         {
-        	DatabaseHelper helper = new DatabaseHelper(this.getApplicationContext());
+        	DatabaseHelper helper = DatabaseHelper.getInstance(this.getApplicationContext());
         	
         	UserInfo user = null;
 			try {
@@ -151,9 +171,147 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
         }*/
 	}
 	
-	public void onDeletePhoto(View view)
+	public void deleteComment(View view)
 	{
-		final PhotoItem currentPhoto = (PhotoItem) view.getTag();
+		
+		
+		final Comment comment = (Comment) view.getTag();
+		AlertDialog.Builder builder = new AlertDialog.Builder(EventItemDetailActivity.this);
+		builder.setMessage("Delete your comment?")
+		.setCancelable(true)
+		.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				
+				if (comment.id < 0)
+				{
+					dbWrapper.deleteComment(comment);
+					
+					fragment.getAdapter().notifyDataSetChanged();
+				}
+				else
+				{
+				
+					comment.body = "Deleting...";
+					
+					dbWrapper.updateComment(comment);
+					
+					fragment.getAdapter().notifyDataSetChanged();
+					
+					EventServiceBuffer.setCommentListener(EventItemDetailActivity.this);
+					
+					EventServiceBuffer.deleteComment(comment);
+				}
+				
+				dialog.cancel();
+			}
+		})
+		.setNegativeButton("Nope", new DialogInterface.OnClickListener() {
+			
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
+				
+			}
+		});
+		
+		builder.create().show();
+		
+	}
+	
+	private void setIsApartOfEvent()
+	{
+		Collection<Attendee> attendees = dbWrapper.getAttendees(mEventItem.event_id);
+		
+		for (Attendee attendee : attendees)		
+		{
+			if (attendee.user_id == SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID))
+			{
+				isApartOfEvent = true;
+				break;
+			}
+		}
+	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		
+		menu.clear();
+		
+    	PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+		PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
+	
+		boolean isOwner = currentPhoto.user_id == SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID);
+		
+		if (isOwner) 
+		{
+			menu.add(0, DELETE, 0, "Delete");
+		} 
+		else if (isApartOfEvent)
+		{
+			menu.add(0, DOWNLOAD, 0, "Download");
+			menu.add(0, REPORT, 1, "Report");
+		}
+		else
+		{
+			menu.add(0, REPORT, 0, "Report");
+		}
+	
+		return super.onPrepareOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	        case DELETE:
+	            deleteCurrentPhoto();
+	            return true;
+	        case REPORT:
+	            reportCurrentPhoto();
+	            return true;
+	        case DOWNLOAD:
+	        	downloadCurrentPhoto();
+	        	return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
+	
+	public void downloadCurrentPhoto()
+	{
+		Toast.makeText(getApplicationContext(), "Starting download...", 2000).show();	
+		
+    	PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+		final PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
+		
+        Intent intent = new Intent(this, DownloadImage.class);
+		
+        // Here we are going to place our REST call parameters. Note that
+        // we could have just used Uri.Builder and appendQueryParameter()
+        // here, but I wanted to illustrate how to use the Bundle params.
+        intent.putExtra("PictureURL", GlobalVariables.getInstance().getAWSUrlCompressed(currentPhoto));
+        
+        startService(intent);
+	}
+	
+	public void reportCurrentPhoto()
+	{
+		AlertDialog.Builder builder = new AlertDialog.Builder(EventItemDetailActivity.this);
+		builder.setMessage("This photo has been reported. We will take a look as soon as possible.")
+		.setTitle("Photo Reported")
+		.setCancelable(true)
+		.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+			}
+		});
+		
+		builder.create().show();
+	}
+	
+	public void deleteCurrentPhoto()
+	{
+    	PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+		final PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(EventItemDetailActivity.this);
 		builder.setMessage("Delete This Photo?")
@@ -294,6 +452,8 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 	@Override
 	public void onDestroy()
 	{
+		EventServiceBuffer.removeCommentListener(this);
+		
 		for (PhotoItem photo : newComments.keySet())
 		{
 			for (Comment comment : newComments.get(photo))
@@ -341,6 +501,12 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 		progressDialog.dismiss();
 		
 		finish();
+		
+	}
+
+	public void commentSuccess(UpdatedCommentEvent params) {
+		
+		fragment.getAdapter().notifyDataSetChanged();
 		
 	}
 }

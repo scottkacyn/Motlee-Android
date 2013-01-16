@@ -60,7 +60,7 @@ public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
 		mSplitSectionOriginal = splitSection;
 		mSplitSection = splitSection;
 		
-		helper = new DatabaseHelper(context.getApplicationContext());
+		helper = DatabaseHelper.getInstance(context.getApplicationContext());
 		dbWrapper = new DatabaseWrapper(context.getApplicationContext());
 		
 		mEventPictureHeight = DrawableCache.getDrawable(R.drawable.label_button_no_arrow, 

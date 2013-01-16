@@ -50,7 +50,7 @@ public class MessageAdapter extends ArrayAdapter<StoryItem> {
         this.resource = resource;
         this.mData = new ArrayList<StoryItem>(arrayList);
         
-        helper = new DatabaseHelper(context.getApplicationContext());
+        helper = DatabaseHelper.getInstance(context.getApplicationContext());
         
 		ImageScaleType ist = ImageScaleType.IN_SAMPLE_POWER_OF_2;
 		

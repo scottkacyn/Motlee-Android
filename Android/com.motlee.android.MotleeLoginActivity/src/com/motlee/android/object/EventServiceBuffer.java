@@ -116,6 +116,8 @@ public class EventServiceBuffer extends Object {
     public static final int newNotificationSuccessCode = HttpStatus.SC_OK + RubyService.NEW_NOTIFICATION;
     public static final int allNotificationSuccessCode = HttpStatus.SC_OK + RubyService.ALL_NOTIFICATION;
     public static final int settingsSuccessCode = HttpStatus.SC_OK + RubyService.SETTINGS;
+    public static final int deleteEventSuccessCode = HttpStatus.SC_OK + RubyService.DELETE_EVENT;
+    public static final int deleteCommentSuccessCode = HttpStatus.SC_OK + RubyService.DELETE_COMMENT;
     
     private static Vector<UpdatedEventDetailListener> mEventDetailListener;
     private static Vector<UpdatedLikeListener> mLikeListener;
@@ -142,7 +144,7 @@ public class EventServiceBuffer extends Object {
 	public static synchronized EventServiceBuffer getInstance(Context context)
 	{
 		mContext = context;
-		helper = new DatabaseHelper(context);
+		helper = DatabaseHelper.getInstance(context.getApplicationContext());
 		dbWrapper = new DatabaseWrapper(context);
 		return instance;
 	}
@@ -348,6 +350,25 @@ public class EventServiceBuffer extends Object {
 		mFriendsListener.removeElement(listener);
 	}	
 	
+	public static void deleteComment(Comment comment)
+	{
+		Bundle params = new Bundle();
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+		
+        Intent intent = new Intent(mContext, RubyService.class);
+        intent.setData(Uri.parse(WEB_SERVICE_URL + "events/" + comment.event_id + "/photos/" + comment.photo.id + "/comments/" + comment.id));
+		
+        // Here we are going to place our REST call parameters. Note that
+        // we could have just used Uri.Builder and appendQueryParameter()
+        // here, but I wanted to illustrate how to use the Bundle params.
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.DELETE);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.DELETE_COMMENT);
+        intent.putExtra(RubyService.EXTRA_PARAMS, params);
+        
+        mContext.startService(intent);
+	}
+	
 	public static void deleteAttendeeFromEvent(Integer eventId, ArrayList<Integer> removedAttendees) {
 		
 		Bundle params = new Bundle();
@@ -381,6 +402,22 @@ public class EventServiceBuffer extends Object {
         
         mContext.startService(intent);
 		
+	}
+	
+	public static void deleteEvent(Integer eventId)
+	{
+		Bundle params = new Bundle();
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+		
+		Intent intent = new Intent(mContext, RubyService.class);
+		intent.setData(Uri.parse(WEB_SERVICE_URL + "events/" + eventId));
+		
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.DELETE);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.DELETE_EVENT);
+        intent.putExtra(RubyService.EXTRA_PARAMS, params);
+        
+        mContext.startService(intent);
 	}
 	
 	public static void deleteAccount(Integer userID)
@@ -1087,6 +1124,14 @@ public class EventServiceBuffer extends Object {
         {
         	getSettingsFromJson(result);
         }
+        else if (code == deleteEventSuccessCode && result != null)
+        {
+        	getDeleteEventFromJson(result);
+        }
+        else if (code == deleteCommentSuccessCode && result != null)
+        {
+        	getDeleteCommentFromJson(result);
+        }
         else {
         	
             if (mContext instanceof Activity) {
@@ -1101,7 +1146,71 @@ public class EventServiceBuffer extends Object {
         }
     }
 
-    private void getSettingsFromJson(String result) {
+    private void getDeleteCommentFromJson(String result) {
+		
+    	Gson gson = new Gson();
+    	
+    	JsonParser parser = new JsonParser();
+    	
+    	JsonObject object = parser.parse(result).getAsJsonObject();
+    	
+    	JsonObject event = object.getAsJsonObject("comment");
+    	
+    	Comment comment = gson.fromJson(event, Comment.class);
+    	
+    	dbWrapper.deleteComment(comment);
+		
+		UpdatedCommentEvent params = new UpdatedCommentEvent(this, comment, EventItemType.COMMENT, -1);
+		
+		if (mCommentListener != null)
+		{
+			Vector<UpdatedCommentListener> targets;
+		    synchronized (this) {
+		        targets = (Vector<UpdatedCommentListener>) mCommentListener.clone();
+		    }
+			
+			Enumeration e = targets.elements();
+	        while (e.hasMoreElements()) 
+	        {
+	        	UpdatedCommentListener l = (UpdatedCommentListener) e.nextElement();
+	        	l.commentSuccess(params);
+	        }
+		}
+	}
+
+	private void getDeleteEventFromJson(String result) {
+		
+    	Gson gson = new Gson();
+    	
+    	JsonParser parser = new JsonParser();
+    	
+    	JsonObject object = parser.parse(result).getAsJsonObject();
+    	
+    	JsonObject event = object.getAsJsonObject("event");
+    	
+    	EventDetail eDetail = gson.fromJson(event, EventDetail.class);
+	
+    	dbWrapper.deleteEvent(eDetail);
+    	
+    	if (mEventDetailListener != null && mEventDetailListener.size() > 0)
+    	{
+        	UpdatedEventDetailEvent eventParam = new UpdatedEventDetailEvent(this, null);
+        	
+    		Vector<UpdatedEventDetailListener> targets;
+    	    synchronized (this) {
+    	        targets = (Vector<UpdatedEventDetailListener>) mEventDetailListener.clone();
+    	    }
+    		
+    		Enumeration e = targets.elements();
+	        while (e.hasMoreElements()) 
+	        {
+	        	UpdatedEventDetailListener l = (UpdatedEventDetailListener) e.nextElement();
+	        	l.myEventOccurred(eventParam);
+	        }
+    	}
+	}
+
+	private void getSettingsFromJson(String result) {
 	
     	Gson gson = new Gson();
     	
@@ -1487,27 +1596,28 @@ public class EventServiceBuffer extends Object {
     		
     		EventDetail eDetail = gson.fromJson(eventObject, EventDetail.class);
     		
-    		dbWrapper.clearAttendees(eDetail.getEventID());
-    		for (JsonElement element : attendingElement)
-    		{
-    			UserInfo user = gson.fromJson(element, UserInfo.class);
-    			
-    			Attendee attendee = new Attendee(user.id, eDetail);
-    			
-    			dbWrapper.createAttendee(attendee);
-    			
+	    	Collection<Attendee> newAttendees = new ArrayList<Attendee>();
+	    	
+   		    for (JsonElement attendee : attendingElement)
+   		    {
+   		    	UserInfo user = gson.fromJson(attendee, UserInfo.class);
+   		    	
+   		    	newAttendees.add(new Attendee(user.id, eDetail));
+   		    	
     			try {
 					helper.getUserDao().createOrUpdate(user);
 				} catch (SQLException e1) {
 					Log.e("DatabaseHelper", "Failed to createOrUpdate user", e1);
 				}
-    		}
+   		    }
+   		    
+   		    dbWrapper.updateAttendees(eDetail.getEventID(), newAttendees);
     		
     		eDetail.setAttendeeCount(attendingElement.size());
     		
     		dbWrapper.createOrUpdateEvent(eDetail);
     		
-    		dbWrapper.clearStories(eDetail.getEventID());
+    		/*dbWrapper.clearStories(eDetail.getEventID());
     		for (JsonElement element : stories)
     		{
     			StoryItem story = gson.fromJson(element, StoryItem.class);
@@ -1515,7 +1625,9 @@ public class EventServiceBuffer extends Object {
     			story.event_detail = eDetail;
     			
     			dbWrapper.createStory(story);
-    		}
+    		}*/
+    		
+    		Collection<PhotoItem> newPhotos = new ArrayList<PhotoItem>();
     		
     		dbWrapper.clearPhotos(eDetail.getEventID());
     		for (JsonElement element : photos)
@@ -2044,50 +2156,51 @@ public class EventServiceBuffer extends Object {
 
    		    EventDetail eDetail = gson.fromJson(event, EventDetail.class);
    		    
-   		    JsonArray attendees = event.getAsJsonArray("people_attending");
-   		    
-	    	dbWrapper.clearAttendees(eDetail.getEventID());
-   		    
-		    boolean isAttending = false;	
+   		    if (eDetail.is_deleted)
+   		    {
+   		    	dbWrapper.deleteEvent(eDetail);
+   		    }
+   		    else
+   		    {
+   		    	JsonArray attendees = event.getAsJsonArray("people_attending");
+			    	
+		    	Collection<Attendee> newAttendees = new ArrayList<Attendee>();
 		    	
-   		    for (JsonElement attendee : attendees)
-   		    {
-   		    	UserInfo user = gson.fromJson(attendee, UserInfo.class);
-   		    	
-   		    	if (user.id == SharePref.getIntPref(mContext.getApplicationContext(), SharePref.USER_ID))
-   		    	{
-   		    		isAttending = true;
-
-   		    	}
-   		    	
-   		    	dbWrapper.createAttendee(new Attendee(user.id, eDetail));
+	   		    for (JsonElement attendee : attendees)
+	   		    {
+	   		    	UserInfo user = gson.fromJson(attendee, UserInfo.class);
+	   		    	
+	   		    	newAttendees.add(new Attendee(user.id, eDetail));
+	   		    }
+	   		    
+	   		    dbWrapper.updateAttendees(eDetail.getEventID(), newAttendees);
+	   		    
+	   		    JsonArray photos = event.getAsJsonArray("photos");
+	   		    
+	   		    dbWrapper.clearPhotos(eDetail.getEventID());
+	   		    
+	   		    for (JsonElement photo : photos)
+	   		    {
+	   		    	PhotoItem photoItem = gson.fromJson(photo, PhotoItem.class);
+	   		    	
+	   		    	photoItem.event_detail = eDetail;
+	   		    	
+	   		    	dbWrapper.createPhoto(photoItem);
+	   		    }
+	   		    
+	   		    JsonElement locationElement = event.get("location");
+	   		    
+	   		    if (locationElement != null)
+	   		    {
+	   		    	LocationInfo location = gson.fromJson(locationElement, LocationInfo.class);
+	   		    	
+	   		    	dbWrapper.createLocation(location);
+	   		    }
+	   		    
+	   		    eDetail.updated = new Date();
+	
+	   		    dbWrapper.createOrUpdateEvent(eDetail);
    		    }
-   		    
-   		    JsonArray photos = event.getAsJsonArray("photos");
-   		    
-   		    dbWrapper.clearPhotos(eDetail.getEventID());
-   		    
-   		    for (JsonElement photo : photos)
-   		    {
-   		    	PhotoItem photoItem = gson.fromJson(photo, PhotoItem.class);
-   		    	
-   		    	photoItem.event_detail = eDetail;
-   		    	
-   		    	dbWrapper.createPhoto(photoItem);
-   		    }
-   		    
-   		    JsonElement locationElement = event.get("location");
-   		    
-   		    if (locationElement != null)
-   		    {
-   		    	LocationInfo location = gson.fromJson(locationElement, LocationInfo.class);
-   		    	
-   		    	dbWrapper.createLocation(location);
-   		    }
-   		    
-   		    eDetail.updated = new Date();
-
-   		    dbWrapper.createOrUpdateEvent(eDetail);
    		    
    		    return eDetail.getEventID();
     		/*if (eDetail.getOwnerID() == SharedPreferencesWrapper.getIntPref(mContext.getApplicationContext(), SharedPreferencesWrapper.USER_ID))

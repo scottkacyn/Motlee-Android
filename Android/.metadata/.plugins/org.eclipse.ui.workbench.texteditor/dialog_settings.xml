@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item value="1590" key="DIALOG_WIDTH"/>
-		<item value="626" key="DIALOG_Y_ORIGIN"/>
-		<item value="10" key="DIALOG_X_ORIGIN"/>
+		<item value="530" key="DIALOG_WIDTH"/>
+		<item value="583" key="DIALOG_Y_ORIGIN"/>
 		<item value="226" key="DIALOG_HEIGHT"/>
+		<item value="1070" key="DIALOG_X_ORIGIN"/>
 		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
-		<item value="false" key="casesensitive"/>
 		<item value="false" key="isRegEx"/>
+		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="updateFriends" key="selection"/>
+		<item value="getComment" key="selection"/>
 		<list key="findhistory">
-			<item value="updateFriends"/>
-			<item value="image"/>
-			<item value="getEvents"/>
-			<item value="MY_EVENT_DETAILS"/>
-			<item value="getEventDetail"/>
-			<item value="mLocation"/>
-			<item value="setLocationInfo"/>
-			<item value="isEditing"/>
+			<item value="getComment"/>
+			<item value="startActivity"/>
+			<item value="eventListener"/>
+			<item value="myEvent"/>
+			<item value="getEvent"/>
+			<item value="eventListener&apos;"/>
+			<item value="deleteEvent"/>
+			<item value="disallow"/>
 		</list>
 		<list key="replacehistory">
 			<item value="EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);"/>

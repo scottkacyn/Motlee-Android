@@ -1,0 +1,513 @@
+package com.motlee.android;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import com.motlee.android.adapter.PhotoDetailPagedViewAdapter;
+import com.motlee.android.database.DatabaseHelper;
+import com.motlee.android.database.DatabaseWrapper;
+import com.motlee.android.enums.EventItemType;
+import com.motlee.android.fragment.EventDetailFragment;
+import com.motlee.android.fragment.EventItemDetailFragment;
+import com.motlee.android.object.Comment;
+import com.motlee.android.object.EventItem;
+import com.motlee.android.object.EventServiceBuffer;
+
+import com.motlee.android.object.Attendee;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.Like;
+import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharePref;
+import com.motlee.android.object.StoryItem;
+import com.motlee.android.object.UserInfo;
+import com.motlee.android.object.event.DeletePhotoListener;
+import com.motlee.android.object.event.UpdatedCommentEvent;
+import com.motlee.android.object.event.UpdatedCommentListener;
+import com.motlee.android.object.event.UpdatedLikeEvent;
+import com.motlee.android.object.event.UpdatedLikeListener;
+import com.motlee.android.object.event.UpdatedPhotoEvent;
+import com.motlee.android.object.event.UpdatedPhotoListener;
+import com.motlee.android.service.DownloadImage;
+import com.motlee.android.service.RubyService;
+import com.motlee.android.view.ProgressDialogWithTimeout;
+
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.text.InputType;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnFocusChangeListener;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
+
+public class EventItemDetailActivity extends BaseMotleeActivity implements UpdatedPhotoListener, DeletePhotoListener, UpdatedCommentListener {
+	
+	private EventItem mEventItem;
+	private EventItemDetailFragment fragment;
+	
+	private boolean likeChanged = false;
+	
+	private HashMap<PhotoItem, ArrayList<Comment>> newComments = new HashMap<PhotoItem, ArrayList<Comment>>();
+	private HashMap<PhotoItem, Boolean> likeMap = new HashMap<PhotoItem, Boolean>();
+	
+	private EditText editText;
+	private boolean getPhotoInformation = true;
+	
+	private DatabaseWrapper dbWrapper;
+	
+	boolean isApartOfEvent = false;
+	
+	private static final int DELETE = 1;
+	private static final int REPORT = 2;
+	private static final int DOWNLOAD = 3;
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+        
+        //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
+        
+        mEventItem = (EventItem) getIntent().getParcelableExtra("EventItem");
+        getPhotoInformation = getIntent().getBooleanExtra("GetPhotoInfo", true);
+        
+        getPhotoInformation = true;
+        
+		EventServiceBuffer.setCommentListener(EventItemDetailActivity.this);
+		
+        dbWrapper = new DatabaseWrapper(getApplicationContext());
+        
+        setIsApartOfEvent();
+        
+        ArrayList<PhotoItem> photos = getIntent().getParcelableArrayListExtra("Photos");
+        
+        if (photos != null)
+        {
+            getPhotoInformation = false;
+        }
+        
+        //setEditText();
+        if (getPhotoInformation)
+        {
+	        EventServiceBuffer.setPhotoListener(this);
+	        
+	        EventServiceBuffer.getPhotosForEventFromService(mEventItem.event_id);
+	        
+	        progressDialog = ProgressDialog.show(EventItemDetailActivity.this, "", "Loading Photos");
+        }
+        else
+        {
+        	DatabaseHelper helper = DatabaseHelper.getInstance(this.getApplicationContext());
+        	
+        	UserInfo user = null;
+			try {
+				user = helper.getUserDao().queryForId(mEventItem.user_id);
+			} catch (SQLException e) {
+				Log.e("DatabaseHelper", "Failed to queryForId for user", e);
+			}
+        	
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            
+            fragment = new EventItemDetailFragment();
+            fragment.setHeaderView(findViewById(R.id.header));
+            
+            fragment.setDetailImage((PhotoItem)mEventItem);
+            fragment.setPhotoList(photos);
+            fragment.setPageTitle(user.name);
+            
+            ft.add(R.id.fragment_content, fragment)
+            .commit();
+        }
+        /*if (mEventItem instanceof PhotoItem)
+        {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            
+            fragment = new EventItemDetailFragment();
+            fragment.setHeaderView(findViewById(R.id.header));
+            
+            fragment.setDetailImage((PhotoItem)mEventItem);
+            
+            ft.add(R.id.fragment_content, fragment)
+            .commit();
+        }
+        
+        if (mEventItem instanceof StoryItem)
+        {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            
+            fragment = new EventItemDetailFragment();
+            fragment.setHeaderView(findViewById(R.id.header));
+            
+            fragment.setDetailStory((StoryItem)mEventItem);
+            
+            ft.add(R.id.fragment_content, fragment)
+            .commit();
+        }*/
+	}
+	
+	public void deleteComment(View view)
+	{
+		
+		
+		final Comment comment = (Comment) view.getTag();
+		AlertDialog.Builder builder = new AlertDialog.Builder(EventItemDetailActivity.this);
+		builder.setMessage("This photo has been reported. We will take a look as soon as possible.")
+		.setTitle("Photo Reported")
+		.setCancelable(true)
+		.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				
+				if (comment.id < 0)
+				{
+					dbWrapper.deleteComment(comment);
+					
+					fragment.getAdapter().notifyDataSetChanged();
+				}
+				else
+				{
+				
+					comment.body = "Deleting...";
+					
+					dbWrapper.updateComment(comment);
+					
+					fragment.getAdapter().notifyDataSetChanged();
+					
+					EventServiceBuffer.setCommentListener(EventItemDetailActivity.this);
+					
+					EventServiceBuffer.deleteComment(comment);
+				}
+				
+				dialog.cancel();
+			}
+		})
+		.setNegativeButton("Nope", new DialogInterface.OnClickListener() {
+			
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
+				
+			}
+		});
+		
+		builder.create().show();
+		
+	}
+	
+	private void setIsApartOfEvent()
+	{
+		Collection<Attendee> attendees = dbWrapper.getAttendees(mEventItem.event_id);
+		
+		for (Attendee attendee : attendees)		
+		{
+			if (attendee.user_id == SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID))
+			{
+				isApartOfEvent = true;
+				break;
+			}
+		}
+	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		
+		menu.clear();
+		
+    	PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+		PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
+	
+		boolean isOwner = currentPhoto.user_id == SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID);
+		
+		if (isOwner) 
+		{
+			menu.add(0, DELETE, 0, "Delete");
+		} 
+		else if (isApartOfEvent)
+		{
+			menu.add(0, DOWNLOAD, 0, "Download");
+			menu.add(0, REPORT, 1, "Report");
+		}
+		else
+		{
+			menu.add(0, REPORT, 0, "Report");
+		}
+	
+		return super.onPrepareOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	        case DELETE:
+	            deleteCurrentPhoto();
+	            return true;
+	        case REPORT:
+	            reportCurrentPhoto();
+	            return true;
+	        case DOWNLOAD:
+	        	downloadCurrentPhoto();
+	        	return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
+	
+	public void downloadCurrentPhoto()
+	{
+		Toast.makeText(getApplicationContext(), "Starting download...", 2000).show();	
+		
+    	PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+		final PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
+		
+        Intent intent = new Intent(this, DownloadImage.class);
+		
+        // Here we are going to place our REST call parameters. Note that
+        // we could have just used Uri.Builder and appendQueryParameter()
+        // here, but I wanted to illustrate how to use the Bundle params.
+        intent.putExtra("PictureURL", GlobalVariables.getInstance().getAWSUrlCompressed(currentPhoto));
+        
+        startService(intent);
+	}
+	
+	public void reportCurrentPhoto()
+	{
+		AlertDialog.Builder builder = new AlertDialog.Builder(EventItemDetailActivity.this);
+		builder.setMessage("This photo has been reported. We will take a look as soon as possible.")
+		.setTitle("Photo Reported")
+		.setCancelable(true)
+		.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+			}
+		});
+		
+		builder.create().show();
+	}
+	
+	public void deleteCurrentPhoto()
+	{
+    	PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+		final PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(EventItemDetailActivity.this);
+		builder.setMessage("Delete This Photo?")
+		.setCancelable(true)
+		.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+			
+			public void onClick(DialogInterface dialog, int which) {
+				
+				progressDialog = ProgressDialog.show(EventItemDetailActivity.this, "", "Deleting your photo");
+				
+				EventServiceBuffer.setDeletePhotoListener(EventItemDetailActivity.this);
+				
+				EventServiceBuffer.deletePhotoFromEvent(currentPhoto);
+				
+			}
+		})
+		.setNegativeButton("No Way!", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+			}
+		});
+		
+		builder.create().show();
+	}
+	
+    public void sendComment(View view)
+    {
+    	PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+		PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
+    	
+    	if (!fragment.getCommentText().equals(""))
+    	{
+	    	//EventServiceBuffer.addCommentToEventItem(mEventItem, fragment.getCommentText());
+	    	
+    		Comment comment = new Comment(currentPhoto.event_id, EventItemType.COMMENT, SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID), new Date(), fragment.getCommentText());
+    		
+    		if (newComments.containsKey(currentPhoto))
+    		{
+    			newComments.get(currentPhoto).add(comment);
+    		}
+    		else
+    		{
+    			newComments.put(currentPhoto, new ArrayList<Comment>());
+    			newComments.get(currentPhoto).add(comment);
+    		}
+    		
+    		comment.photo = currentPhoto;
+    		
+    		int id = comment.id;
+    		
+    		while (dbWrapper.getComment(id) != null)
+    		{
+    			id--;
+    		}
+    		
+    		comment.id = id;
+    		
+    		dbWrapper.createComment(comment);
+    		
+	    	fragment.removeTextAndKeyboard();
+	    	
+	    	adapter.notifyDataSetChanged();
+    	}
+    }
+	
+    public void onShowLikes(View view)
+    {
+    	PhotoItem photo = (PhotoItem) view.getTag();
+    	
+    	Collection<Like> likes = dbWrapper.getLikes(photo.id);
+    	
+    	if (likes != null && dbWrapper.getLikes(photo.id).size() > 0)
+    	{
+	    	Intent startLikeList = new Intent(EventItemDetailActivity.this, LikeListActivity.class);
+	    	startLikeList.putExtra("Photo", photo);
+	    	startActivity(startLikeList);
+    	}
+    }
+    
+	public void onLikeClick(View view)
+	{
+		PhotoItem photo = (PhotoItem) view.getTag();
+		// toggle if we changed user's like status
+		if (likeMap.containsKey(photo))
+		{
+			likeMap.put(photo, !likeMap.get(photo));
+		}
+		else
+		{
+			likeMap.put(photo, true);
+		}
+		
+		boolean hasLiked = false;
+		
+		Collection<Like> likes = dbWrapper.getLikes(photo.id);
+		
+		for (Like like : likes)
+		{
+			if (like.user_id.equals(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID)))
+			{
+				hasLiked = true;
+				break;
+			}
+		}
+		
+		if (hasLiked)
+		{
+			for (Iterator<Like> it = likes.iterator(); it.hasNext(); )
+			{
+				Like like = it.next();
+				
+				if (like.user_id == SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID))
+				{
+					dbWrapper.deleteLike(like);
+				}
+			}
+			
+			PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+			PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
+			currentPhoto = photo;
+			adapter.notifyDataSetChanged();
+		}
+		else
+		{
+			Like newLike = new Like(photo.event_id, EventItemType.LIKE, SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID), new Date());
+			
+			newLike.photo = photo;
+			
+			dbWrapper.createLike(newLike);
+			
+			PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+			PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
+			currentPhoto = photo;
+			adapter.notifyDataSetChanged();
+		}
+	}
+	
+	@Override
+	public void onDestroy()
+	{
+		EventServiceBuffer.removeCommentListener(this);
+		
+		for (PhotoItem photo : newComments.keySet())
+		{
+			for (Comment comment : newComments.get(photo))
+			{
+				EventServiceBuffer.addCommentToEventItem(photo, comment.body);
+			}
+		}
+		
+		for (PhotoItem photo : likeMap.keySet())
+		{
+			if (likeMap.get(photo))
+			{
+				EventServiceBuffer.likeEventItem(photo);
+			}
+		}
+		
+		super.onDestroy();
+	}
+
+	public void photoEvent(UpdatedPhotoEvent e) {
+		
+		EventServiceBuffer.removePhotoListener(this);
+		
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        
+        fragment = new EventItemDetailFragment();
+        fragment.setHeaderView(findViewById(R.id.header));
+        
+        fragment.setDetailImage((PhotoItem)mEventItem);
+        
+        fragment.setPhotoList(new ArrayList<PhotoItem>(dbWrapper.getPhotos(mEventItem.event_id)));
+        
+        fragment.setPageTitle(dbWrapper.getEvent(mEventItem.event_id).getEventName());
+        
+        ft.add(R.id.fragment_content, fragment)
+        .commit();
+        
+        progressDialog.dismiss();
+		
+	}
+
+	public void photoDeleted(UpdatedPhotoEvent photo) {
+		
+		progressDialog.dismiss();
+		
+		finish();
+		
+	}
+
+	public void commentSuccess(UpdatedCommentEvent params) {
+		
+		fragment.getAdapter().notifyDataSetChanged();
+		
+	}
+}

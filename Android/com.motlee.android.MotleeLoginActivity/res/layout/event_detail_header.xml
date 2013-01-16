@@ -7,7 +7,7 @@
 	
     <ImageButton 
         android:layout_width="0dp"
-        android:layout_weight=".2"
+        android:layout_weight=".25"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
         android:id="@+id/event_detail_photos"
@@ -16,7 +16,7 @@
         android:padding="5dp"
         android:onClick="showPhotos"/>
     
-    <ImageButton 
+   <!-- <ImageButton 
         android:layout_width="0dp"
         android:layout_weight=".2"
         android:layout_height="match_parent"
@@ -25,11 +25,11 @@
         android:src="@drawable/event_detail_comment"
         android:background="@android:color/transparent"
         android:padding="5dp"
-        android:onClick="showComments" />
+        android:onClick="showComments" /> -->
     
     <ImageButton 
         android:layout_width="0dp"
-        android:layout_weight=".2"
+        android:layout_weight=".25"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
         android:id="@+id/event_detail_friends"
@@ -40,7 +40,7 @@
     
     <ImageButton 
         android:layout_width="0dp"
-        android:layout_weight=".2"
+        android:layout_weight=".25"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
         android:id="@+id/event_detail_map"
@@ -51,7 +51,7 @@
     
     <ImageButton 
         android:layout_width="0dp"
-        android:layout_weight=".2"
+        android:layout_weight=".25"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
         android:id="@+id/event_detail_time"

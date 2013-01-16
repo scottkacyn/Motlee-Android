@@ -47,7 +47,7 @@ public class FacebookSettingsFragment extends BaseMotleeFragment {
 		settingsLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.settings_table_layout);
 		settingsLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
 		
-		helper = new DatabaseHelper(this.getActivity().getApplicationContext());
+		helper = DatabaseHelper.getInstance(this.getActivity().getApplicationContext());
 		
 		setNavigationButtons();
 		

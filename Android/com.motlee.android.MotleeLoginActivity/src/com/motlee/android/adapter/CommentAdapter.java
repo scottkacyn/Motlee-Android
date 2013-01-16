@@ -9,6 +9,7 @@ import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.object.Comment;
 import com.motlee.android.object.DateStringFormatter;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -23,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -48,7 +50,7 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
         this.resource = resource;
         this.mData = new ArrayList<Comment>(data);
         
-        helper = new DatabaseHelper(context.getApplicationContext());
+        helper = DatabaseHelper.getInstance(context.getApplicationContext());
         
 		ImageScaleType ist = ImageScaleType.IN_SAMPLE_POWER_OF_2;
 		
@@ -94,6 +96,27 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
     	{
         	this.mData.add(comment);
         	this.notifyDataSetChanged();
+    	}
+    }
+    
+    @Override
+    public boolean areAllItemsEnabled() 
+    {
+        return false;
+    }
+    
+    @Override
+    public boolean isEnabled(int position)
+    {
+    	Comment comment = mData.get(position);
+    	
+    	if (comment.user_id == SharePref.getIntPref(getContext(), SharePref.USER_ID))
+    	{
+    		return true;
+    	}
+    	else
+    	{
+    		return false;
     	}
     }
     

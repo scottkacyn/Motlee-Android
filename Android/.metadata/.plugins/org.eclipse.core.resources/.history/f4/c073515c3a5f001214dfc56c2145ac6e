@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="@android:color/transparent">
+    <ScrollView
+        android:id="@+id/event_detail_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        android:background="@android:color/transparent">
+		<LinearLayout
+		    android:layout_height="wrap_content"
+		    android:layout_width="match_parent"
+		    android:orientation="vertical"
+		    android:padding="10dp" >
+		        
+	        <com.motlee.android.layouts.StretchedBackgroundTableLayout
+	            android:id="@+id/event_create_info"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:paddingTop="10dp"
+	            android:paddingBottom = "10dp"
+	            android:shrinkColumns="*"/>
+	        
+	        <LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="50dp"
+	            android:paddingTop="5dp"
+	            android:paddingBottom="5dp"
+	            android:background="@android:color/transparent">
+	            
+	            <LinearLayout
+	                android:layout_width="0dp"
+	                android:layout_weight=".75"
+	                android:layout_height="match_parent"
+	                android:paddingLeft="10dp"
+	                android:orientation="vertical" >
+	                
+		            <TextView
+		                android:id="@+id/event_create_public_event_header"
+		                android:layout_width="match_parent"
+		                android:layout_height="0dp"
+		                android:layout_weight=".6"
+		                android:gravity="center_vertical"
+		                style="@style/CodeFont"
+		                android:text="Public Event"
+		                android:textColor="@color/orange" />
+		            
+  		            <TextView
+		                android:id="@+id/event_create_public_event_text"
+		                android:layout_width="match_parent"
+		                android:layout_height="0dp"
+		                android:layout_weight=".4"
+		                style="@style/CodeFont.Small"
+		                android:text="@string/public_event_true" />
+		            
+	            </LinearLayout>
+	            <com.motlee.android.view.HorizontalAspectImageButton
+			        android:id="@+id/event_create_public_switcher"
+			        android:layout_width="0dp"
+			        android:layout_weight=".25"
+			        android:layout_height="wrap_content"
+			        android:layout_gravity="center"
+			        android:scaleType="fitCenter"
+			        android:src="@drawable/switcher_button_on"
+			        android:background="@android:color/transparent" />
+	            
+	        </LinearLayout>    
+	        
+	        <LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="50dp"
+	            android:background="@android:color/transparent"
+	            android:paddingBottom="10dp">
+	            
+	            <LinearLayout
+	                android:layout_width="0dp"
+	                android:layout_weight=".75"
+	                android:layout_height="match_parent"
+	                android:paddingLeft="10dp"
+	                android:orientation="vertical" >
+	                
+		            <TextView
+		                android:id="@+id/event_create_facebook_event_header"
+		                android:layout_width="match_parent"
+		                android:layout_height="0dp"
+		                android:layout_weight=".6"
+		                android:gravity="center_vertical"
+		                style="@style/CodeFont"
+		                android:text="Facebook Event"
+		                android:textColor="@color/orange" />
+		            
+  		            <TextView
+		                android:id="@+id/event_create_facebook_event_text"
+		                android:layout_width="match_parent"
+		                android:layout_height="0dp"
+		                android:layout_weight=".4"
+		                style="@style/CodeFont.Small"
+		                android:text="@string/facebook_event_true" />
+		            
+	            </LinearLayout>
+	            <com.motlee.android.view.HorizontalAspectImageButton
+			        android:id="@+id/event_create_facebook_switcher"
+			        android:layout_width="0dp"
+			        android:layout_weight=".25"
+			        android:layout_height="wrap_content"
+			        android:layout_gravity="center"
+			        android:scaleType="fitCenter"
+			        android:src="@drawable/switcher_button_on"
+			        android:background="@android:color/transparent" />
+	            
+	        </LinearLayout> 
+	        
+       	    <FrameLayout 
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:paddingTop="10dp"
+		        android:paddingBottom="10dp">
+		    
+			    <com.motlee.android.view.HorizontalAspectImageButton
+			        android:id="@+id/settings_delete_account_button"
+			        android:src="@drawable/large_page_button"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			        android:onClick="deleteAccount" />
+			    
+			    <TextView
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_gravity="center"
+			        style="@style/CodeFont" 
+			        android:textColor="@color/orange"
+			        android:text="Delete Event" />
+			    
+			    
+		    </FrameLayout>
+	        
+		    <com.motlee.android.layouts.StretchedBackgroundTableLayout
+		        android:id="@+id/event_create_friend_list"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:paddingTop="10dp"
+		        android:paddingBottom="10dp"
+		        android:background="@drawable/label_button_background"
+		        android:shrinkColumns="*" />
+	    </LinearLayout>
+    </ScrollView>
+</LinearLayout>

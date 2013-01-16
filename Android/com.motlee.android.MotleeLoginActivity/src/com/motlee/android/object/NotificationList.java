@@ -219,14 +219,7 @@ public class NotificationList
 		}
 		else if (notification.objectType == NotificationObjectType.EVENT_MESSAGE)
 		{
-			if (settings.on_event_message)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			return false;
 		}
 		else if (notification.objectType == NotificationObjectType.FRIEND)
 		{

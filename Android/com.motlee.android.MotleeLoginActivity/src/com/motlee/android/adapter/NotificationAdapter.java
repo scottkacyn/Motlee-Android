@@ -12,6 +12,7 @@ import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Notification;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
 
 import android.content.Context;
@@ -20,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -43,7 +45,7 @@ public class NotificationAdapter extends StickyListHeadersBaseAdapter {
             this.mSplitSection = splitIndex;
             
             
-            helper = new DatabaseHelper(context.getApplicationContext());
+            helper = DatabaseHelper.getInstance(context.getApplicationContext());
     }
 	
     /**
@@ -96,8 +98,9 @@ public class NotificationAdapter extends StickyListHeadersBaseAdapter {
                 
                 holder.notification_profile = (ImageView) convertView.findViewById(R.id.notification_profile_pic);
                 holder.notification_message = (TextView) convertView.findViewById(R.id.notification_message);
-                holder.notification_button = convertView.findViewById(R.id.notification_button);
+                holder.notification_button = (ImageButton) convertView.findViewById(R.id.notification_button);
                 holder.notification_time = (TextView) convertView.findViewById(R.id.notification_time);
+                holder.notification = convertView.findViewById(R.id.notification);
                 
                 convertView.setTag(holder);
         } else {
@@ -119,7 +122,18 @@ public class NotificationAdapter extends StickyListHeadersBaseAdapter {
         holder.notification_time.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
         holder.notification_button.setTag(notification);
         
-        DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.label_button_normal, GlobalVariables.DISPLAY_WIDTH);
+        if (getHeaderId(position) == 0)
+        {
+        	holder.notification.setBackgroundColor(R.color.see_through_gray);
+        }
+        else
+        {
+        	holder.notification.setBackgroundColor(android.R.color.transparent);
+        }
+        
+        DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.label_button_normal, SharePref.getIntPref(getContext().getApplicationContext(), SharePref.DISPLAY_WIDTH));
+        
+    	holder.notification_button.setImageDrawable(drawable.getDrawable());
         
         holder.notification_profile.setMaxHeight(drawable.getHeight() - DrawableCache.convertDpToPixel(5));
         holder.notification_profile.setMaxWidth(drawable.getHeight() - DrawableCache.convertDpToPixel(5));
@@ -134,8 +148,9 @@ public class NotificationAdapter extends StickyListHeadersBaseAdapter {
     private static class ViewHolder {
         public ImageView notification_profile;
         public TextView notification_message;
-        public View notification_button;
+        public ImageButton notification_button;
         public TextView notification_time;
+        public View notification;
     }
 
 

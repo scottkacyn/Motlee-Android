@@ -61,7 +61,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private Dao<LocationInfo, Integer> locationDao = null;
 	private RuntimeExceptionDao<LocationInfo, Integer> locationRuntimeDao = null;
 	
-	public DatabaseHelper(Context context) {
+	private static DatabaseHelper instance;
+	
+	public static DatabaseHelper getInstance(Context context)
+	{
+		if (instance == null)
+		{
+			instance = new DatabaseHelper(context);
+		}
+		return instance;
+	}
+	
+	private DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 

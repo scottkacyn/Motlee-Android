@@ -1,4 +1,3 @@
-
     <resources>
         <color name="background">#3a3836</color>
         <color name="background_header">#2b333a</color>
@@ -8,4 +7,6 @@
         <color name="orange">#c25541</color>
         <color name="gray">#968f87</color>
         <color name="dark_gray">#544f49</color>
+        <color name="see_through_gray">#88968f87</color>
+        <color name="normal">#00FFFFFF</color>
     </resources>

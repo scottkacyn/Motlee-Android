@@ -13,35 +13,6 @@
  	    android:layout_height="wrap_content"
  	    android:background="@drawable/main_menu_opened_button"
  	    android:clickable="true"
-        android:onClick="onClickShowSearch"
-        android:orientation="vertical" >
-
-	 	    <ImageView
-	 	        android:layout_width="match_parent"
-	 	        android:layout_height="0dp"
-	 	        android:layout_weight="0.6"
-	 	        android:paddingTop="15dp"
-	 	        android:src="@drawable/icon_button_search"
-	 	        android:layout_gravity="center" />
-	 	    
-	 	    <TextView
-	 	        android:id="@+id/main_menu_button_search"
-	 	        android:layout_width="match_parent"
-	 	        android:layout_height="0dp"
-	 	        android:layout_weight="0.4"
-	 	        android:text="Search"
-	 	        android:layout_marginBottom="8dp"
-	 	        android:gravity="bottom|center_horizontal" />
- 	</com.motlee.android.layouts.SetWidthRatioLinearLayout>
- 		 	    	 	    <ImageView
-	 	        android:layout_width="match_parent"
-	 	        android:layout_height="wrap_content"
-	 	        android:src="@drawable/main_menu_opened_divider" />
-	 <com.motlee.android.layouts.SetWidthRatioLinearLayout
- 	    android:layout_width="match_parent"
- 	    android:layout_height="wrap_content"
- 	    android:background="@drawable/main_menu_opened_button"
- 	    android:clickable="true"
         android:onClick="onClickShowAllEvents"
         android:orientation="vertical" >
 
@@ -160,6 +131,36 @@
 	 	        android:layout_weight="0.4"
 	 	        android:text="Notifications"
 	 	        android:paddingBottom="8dp"
+	 	        android:gravity="bottom|center_horizontal" />
+ 	</com.motlee.android.layouts.SetWidthRatioLinearLayout>
+ 		 	    	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="wrap_content"
+	 	        android:src="@drawable/main_menu_opened_divider" />
+ 		 	    	 	    
+ 		 	    	 	    	 <com.motlee.android.layouts.SetWidthRatioLinearLayout
+ 	    android:layout_width="match_parent"
+ 	    android:layout_height="wrap_content"
+ 	    android:background="@drawable/main_menu_opened_button"
+ 	    android:clickable="true"
+        android:onClick="onClickShowSearch"
+        android:orientation="vertical" >
+
+	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.6"
+	 	        android:paddingTop="15dp"
+	 	        android:src="@drawable/icon_button_search"
+	 	        android:layout_gravity="center" />
+	 	    
+	 	    <TextView
+	 	        android:id="@+id/main_menu_button_search"
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.4"
+	 	        android:text="Search"
+	 	        android:layout_marginBottom="8dp"
 	 	        android:gravity="bottom|center_horizontal" />
  	</com.motlee.android.layouts.SetWidthRatioLinearLayout>
  		 	    	 	    <ImageView

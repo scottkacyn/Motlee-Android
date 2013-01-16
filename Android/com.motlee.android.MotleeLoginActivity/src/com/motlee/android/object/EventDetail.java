@@ -57,6 +57,8 @@ public class EventDetail implements Comparable<EventDetail> {
 	@DatabaseField(columnName = "id", dataType = DataType.INTEGER, id = true, index = true)
 	private int id;
 	
+	public Boolean is_deleted = false;
+	
 	private ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>();
 	private LocationInfo location = new LocationInfo();
 	private UserInfo ownerInfo = new UserInfo();

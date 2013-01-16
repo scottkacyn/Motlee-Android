@@ -21,7 +21,7 @@
     		    <ImageView
     		        android:id="@+id/event_header_icon"
 		            android:layout_width="0dp"
-		            android:layout_weight=".05"
+		            android:layout_weight=".06"
 		            android:layout_height="match_parent"
 		            android:src="@drawable/icon_button_gear"
 		            android:scaleType="fitCenter"
@@ -29,10 +29,10 @@
 		        
 		        <TextView android:id="@+id/event_header_name"
 					android:layout_width="0dp"
-					android:layout_weight="0.55"
+					android:layout_weight="0.54"
 		            android:layout_height="match_parent"
 		            android:gravity="left|center_vertical"
-		            style="@style/CodeFont.Small"
+		            style="@style/CodeFont.Message"
 		            android:ellipsize="end"
 		            android:singleLine="true"
 		            android:paddingLeft="5dp" />

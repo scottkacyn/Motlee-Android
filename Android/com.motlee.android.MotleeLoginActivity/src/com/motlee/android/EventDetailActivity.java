@@ -656,8 +656,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         }
         else
         {
-        	setActionForRightMenu(joinMenuListener);
-        	showMenuButtons(BaseMotleeActivity.JOIN_EVENT);
+        	//setActionForRightMenu(joinMenuListener);
+        	showMenuButtons(BaseMotleeActivity.NOT_APART_OF);
         }
         
     	if (mNewPhoto != null)

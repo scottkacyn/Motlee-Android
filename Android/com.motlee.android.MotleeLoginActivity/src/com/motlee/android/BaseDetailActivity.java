@@ -29,7 +29,7 @@ public abstract class BaseDetailActivity extends BaseMotleeActivity {
 		}
 		else if (view.getTag().toString() == JOIN)
 		{
-			DatabaseHelper helper = new DatabaseHelper(this.getApplicationContext());
+			DatabaseHelper helper = DatabaseHelper.getInstance(this.getApplicationContext());
 			
 			UserInfo user = null;
 			try {

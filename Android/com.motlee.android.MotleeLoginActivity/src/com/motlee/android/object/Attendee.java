@@ -14,7 +14,7 @@ public class Attendee implements Comparable<Attendee> {
 	public Integer user_id;
 	
 	@DatabaseField(columnName = "id", dataType = DataType.INTEGER_OBJ, generatedId = true)
-	private Integer id;
+	public Integer id;
 	
 	public Attendee()
 	{

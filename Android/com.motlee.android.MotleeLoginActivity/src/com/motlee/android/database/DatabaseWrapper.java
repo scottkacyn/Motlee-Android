@@ -36,9 +36,33 @@ public class DatabaseWrapper {
 	
 	public DatabaseWrapper(Context context) {
 		
-		helper = new DatabaseHelper(context.getApplicationContext());
+		helper = DatabaseHelper.getInstance(context.getApplicationContext());
 		
 		mContext = context;
+	}
+	
+	public void deleteEvent(EventDetail eDetail)
+	{
+		try
+		{
+			helper.getEventDao().deleteById(eDetail.getEventID());
+		}
+		catch (SQLException e) 
+		{
+			Log.e("DatabaseWrapper", "Failed to deleteEvent eventDetail", e);
+		}
+	}
+	
+	public void updateComment(Comment comment)
+	{
+		try
+		{
+			helper.getCommentDao().update(comment);
+		}
+		catch (SQLException e) 
+		{
+			Log.e("DatabaseWrapper", "Failed to deleteEvent eventDetail", e);
+		}
 	}
 	
 	public void createOrUpdateEvent(EventDetail eDetail)
@@ -184,14 +208,81 @@ public class DatabaseWrapper {
 		}
 	}
 	
-	public void updateAttendees(Integer eventId, Collection<UserInfo> attendees)
+	public void updatePhotos(Integer eventId, Collection<PhotoItem> newPhotos)
 	{
 		try 
 		{
-			UpdateBuilder<EventDetail, Integer> updateBuilder = helper.getEventDao().updateBuilder();
-			updateBuilder.updateColumnValue("people_attending", attendees);
-			updateBuilder.where().idEq(eventId);
-			updateBuilder.update();
+			QueryBuilder<PhotoItem, Integer> queryBuilder = helper.getPhotoDao().queryBuilder();
+			queryBuilder.where().eq("event_detail", eventId);
+			Collection<PhotoItem> photos = helper.getPhotoDao().query(queryBuilder.prepare());
+			Iterator<PhotoItem> iterator = photos.iterator();
+			while (iterator.hasNext())
+			{
+				PhotoItem photo = iterator.next();
+				if (newPhotos.contains(photo))
+				{
+					iterator.remove();
+					newPhotos.remove(photo);
+				}
+			}
+			
+			if (photos.size() > 0)
+			{
+				DeleteBuilder<PhotoItem, Integer> deleteBuilder = helper.getPhotoDao().deleteBuilder();
+				Where<PhotoItem, Integer> where = deleteBuilder.where();
+				for (PhotoItem photo : photos)
+				{
+					where.eq("id", photo.id);
+				}
+				where.or(photos.size());
+				helper.getPhotoDao().delete(deleteBuilder.prepare());
+			}
+			
+			for (PhotoItem photo : newPhotos)
+			{
+				helper.getPhotoDao().createOrUpdate(photo);
+			}
+		} 
+		catch (SQLException e)
+		{
+			Log.e("DatabaseWrapper", "Failed to updatePhoto for eventDetail", e);
+		}
+	}
+	
+	public void updateAttendees(Integer eventId, Collection<Attendee> newAttendees)
+	{
+		try 
+		{
+			QueryBuilder<Attendee, Integer> queryBuilder = helper.getAttendeeDao().queryBuilder();
+			queryBuilder.where().eq("event_detail", eventId);
+			Collection<Attendee> attendees = helper.getAttendeeDao().query(queryBuilder.prepare());
+			Iterator<Attendee> iterator = attendees.iterator();
+			while (iterator.hasNext())
+			{
+				Attendee attendee = iterator.next();
+				if (newAttendees.contains(attendee))
+				{
+					iterator.remove();
+					newAttendees.remove(attendee);
+				}
+			}
+			
+			if (attendees.size() > 0)
+			{
+				DeleteBuilder<Attendee, Integer> deleteBuilder = helper.getAttendeeDao().deleteBuilder();
+				Where<Attendee, Integer> where = deleteBuilder.where();
+				for (Attendee attendee : attendees)
+				{
+					where.eq("id", attendee.id);
+				}
+				where.or(attendees.size());
+				helper.getAttendeeDao().delete(deleteBuilder.prepare());
+			}
+			
+			for (Attendee attendee : newAttendees)
+			{
+				helper.getAttendeeDao().createOrUpdate(attendee);
+			}
 		} 
 		catch (SQLException e)
 		{
@@ -271,21 +362,6 @@ public class DatabaseWrapper {
 		} catch (SQLException e) {
 			Log.e("DatabaseWrapper", "Failed to getPhoto for user", e);
 			return null;
-		}
-	}
-
-	public void updatePhotos(Integer eventId, Collection<PhotoItem> photos)
-	{
-		try 
-		{
-			UpdateBuilder<EventDetail, Integer> updateBuilder = helper.getEventDao().updateBuilder();
-			updateBuilder.updateColumnValue("photos", photos);
-			updateBuilder.where().idEq(eventId);
-			updateBuilder.update();
-		} 
-		catch (SQLException e)
-		{
-			Log.e("DatabaseWrapper", "Failed to updatePhotos for eventDetail", e);
 		}
 	}
 	
@@ -447,7 +523,7 @@ public class DatabaseWrapper {
 		} 
 		catch (SQLException e) {
 			Log.e("DatabaseWrapper", "Failed to getAttendees for event", e);
-			return null;
+			return new ArrayList<Attendee>();
 		}
 	}
 	

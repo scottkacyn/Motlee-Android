@@ -226,7 +226,7 @@ public class MessageDetailFragment extends BaseDetailFragment implements Updated
 		
 		eventHeader.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getHeight()));
 		
-		((ImageButton) eventHeader.findViewById(R.id.event_detail_comment)).setEnabled(false);
+		//((ImageButton) eventHeader.findViewById(R.id.event_detail_comment)).setEnabled(false);
 		
 
 	}

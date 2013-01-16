@@ -44,9 +44,11 @@ import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
 import com.motlee.android.view.DateTimePicker;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
@@ -85,11 +87,6 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	private static final int SEARCH_RESULT_LIMIT = 50;
 	private static final String SEARCH_TEXT = "";
 	private View mCurrentDateTimePickerFocus;
-	
-	private String mPhotoUrl;
-	private String mPhotoDesc;
-	private LocationInfo mLocationInfo;
-	private PhotoItem mPhoto;
 	
 	private LocationInfo selectLocation;
 	private SearchPlacesFragment searchPlacesFragment;
@@ -145,12 +142,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
- 
-        mPhotoUrl = getIntent().getStringExtra("Image");
-        mPhoto = getIntent().getParcelableExtra("PhotoItem");
-        mPhotoDesc = getIntent().getStringExtra("Description");
-        mLocationInfo = getIntent().getParcelableExtra("Location");
-        
+
         dbWrapper = new DatabaseWrapper(this.getApplicationContext());
         
         mEventID = getIntent().getIntExtra("EventID", -1);
@@ -286,6 +278,63 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	        .commit();
         }
     }
+    
+    public void onDeleteEvent(View view)
+    {
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+		
+		alertDialogBuilder
+		.setMessage("Are you sure you want to delete this awesome event?")
+		.setCancelable(true)
+		.setPositiveButton("Delete",new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				// if this button is clicked, close
+				// current activity
+				
+				if (mEventID != null)
+				{
+					progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Deleting Event");
+					
+					EventServiceBuffer.setEventDetailListener(eventListener);
+					
+					EventServiceBuffer.deleteEvent(mEventID);
+				
+				}
+				
+				
+				dialog.cancel();
+			}
+		  })
+		.setNegativeButton("No way!",new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				dialog.cancel();
+			}
+		});
+		
+		// create alert dialog
+		AlertDialog alertDialog = alertDialogBuilder.create();
+ 
+				// show it
+		alertDialog.show();
+    }
+    
+	public UpdatedEventDetailListener eventListener = new UpdatedEventDetailListener(){
+
+		public void myEventOccurred(UpdatedEventDetailEvent evt) {
+			
+			EventServiceBuffer.removeEventDetailListener(eventListener);
+			
+			progressDialog.dismiss();
+			
+			Intent eventListIntent = new Intent(CreateEventActivity.this, EventListActivity.class);
+			eventListIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(eventListIntent);
+			
+			finish();
+			
+		}
+		
+	};
     
     /*
      * this action starts the event. It gets all event information from the CreateEventFragment
@@ -545,7 +594,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	public void endCreateEventActivity()
 	{
 		Intent eventListIntent = new Intent(CreateEventActivity.this, EventListActivity.class);
-		eventListIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		eventListIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(eventListIntent);
 		
 		Intent seeDetailIntent = new Intent(CreateEventActivity.this, EventDetailActivity.class);

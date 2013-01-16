@@ -50,6 +50,7 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
 	public static final int CREATE_EVENT = 0;
 	public static final int TAKE_PICTURE = 1;
 	public static final int JOIN_EVENT = 2;
+	public static final int NOT_APART_OF = 3;
 	
 	protected ProgressDialog progressDialog;
 	
@@ -252,17 +253,25 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
 	{
 		findViewById(R.id.menu_buttons).setVisibility(View.VISIBLE);
 		
-		if (iconToShow == this.CREATE_EVENT)
+		if (iconToShow == CREATE_EVENT)
 		{
+			((ImageView) findViewById(R.id.plus_menu_button)).setClickable(true);
 			((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_plus_icon);
 		}
-		else if (iconToShow == this.TAKE_PICTURE)
+		else if (iconToShow == TAKE_PICTURE)
 		{
+			((ImageView) findViewById(R.id.plus_menu_button)).setClickable(true);
 			((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_photo_icon);
 		}
-		else if (iconToShow == this.JOIN_EVENT)
+		else if (iconToShow == JOIN_EVENT)
 		{
 			((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_join_icon);
+		}
+		else if (iconToShow == NOT_APART_OF)
+		{
+			((ImageView) findViewById(R.id.plus_menu_button)).setImageResource(android.R.color.transparent);
+			((ImageView) findViewById(R.id.plus_menu_button)).setClickable(false);
+			((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(android.R.color.transparent);
 		}
 	}
 	

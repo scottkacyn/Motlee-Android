@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import com.motlee.android.EventItemDetailActivity;
 import com.motlee.android.R;
+import com.motlee.android.ZoomActivity;
 import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.EventItemType;
@@ -14,6 +16,7 @@ import com.motlee.android.object.DateStringFormatter;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventItem;
+import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.LocationInfo;
@@ -22,12 +25,17 @@ import com.motlee.android.object.SharePref;
 import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.UserInfo;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -54,7 +62,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 		this.inflater = LayoutInflater.from(context);
 		this.mData = new ArrayList<PhotoItem>(data);
 		
-		helper = new DatabaseHelper(context.getApplicationContext());
+		helper = DatabaseHelper.getInstance(context.getApplicationContext());
 		dbWrapper = new DatabaseWrapper(context.getApplicationContext());
 	}
 
@@ -104,7 +112,6 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
         public ListView comment_list;
         public TextView photo_detail_caption;
         public ImageButton photo_detail_like_button;
-        public ImageButton photo_detail_delete_button;
 	}
 	
 		@Override
@@ -134,7 +141,6 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	                     holder.touch_overlay = holder.header_view.findViewById(R.id.photo_detail_touch_overlay);
 	                     holder.photo_detail_caption = (TextView) holder.touch_overlay.findViewById(R.id.photo_detail_description);
 	                     holder.photo_detail_like_button = (ImageButton) holder.header_view.findViewById(R.id.photo_detail_like_button);
-	                     holder.photo_detail_delete_button = (ImageButton) holder.header_view.findViewById(R.id.photo_detail_delete_button);
 	                     
 	                     convertView.setTag(holder);
 	         			
@@ -170,6 +176,57 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	 	holder.photo_detail_like_button.setTag(photo);
 	 	
 	 	CommentAdapter adapter = new CommentAdapter(context, R.layout.comment_list_item, comments);
+	 	
+	 	holder.comment_list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
+
+			public boolean onItemLongClick(AdapterView<?> adapter, View view, int position, long id) {
+				
+				final Comment comment = (Comment) adapter.getItemAtPosition(position);
+				
+				if (comment.user_id == SharePref.getIntPref(context, SharePref.USER_ID))
+				{
+					AlertDialog.Builder builder = new AlertDialog.Builder(context);
+					builder.setMessage("Delete your comment?")
+					.setCancelable(true)
+					.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							
+							if (comment.id < 0)
+							{
+								dbWrapper.deleteComment(comment);
+								
+								notifyDataSetChanged();
+							}
+							else
+							{
+							
+								comment.body = "Deleting...";
+								
+								dbWrapper.updateComment(comment);
+								
+								notifyDataSetChanged();
+								
+								EventServiceBuffer.deleteComment(comment);
+							}
+							
+							dialog.cancel();
+						}
+					})
+					.setNegativeButton("Nope", new DialogInterface.OnClickListener() {
+						
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+							
+						}
+					});
+					
+					builder.create().show();
+				}
+				
+				return false;
+			}
+	 	
+	 	});
 	 	
 	 	if (holder.comment_list.getHeaderViewsCount() == 0)
 	 	{
@@ -214,17 +271,6 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 		    		holder.touch_overlay.setVisibility(View.GONE);
 		    	}
 		    	
-		    	holder.photo_detail_delete_button.setTag(photo);
-		    	
-		    	if (photo.user_id == SharePref.getIntPref(context.getApplicationContext(), SharePref.USER_ID))
-		    	{
-		    		holder.photo_detail_delete_button.setVisibility(View.VISIBLE);
-		    	}
-		    	else
-		    	{
-		    		holder.photo_detail_delete_button.setVisibility(View.GONE);
-		    	}
-		    	
 		    	final View touchOverlay = holder.touch_overlay;
 		    	
 		        GlobalVariables.getInstance().downloadImage(holder.photo_detail_picture, 
@@ -239,19 +285,12 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 
 					public void onClick(View v) {
 						
-						if (touchOverlay.getVisibility() == View.GONE)
-						{
-							touchOverlay.setVisibility(View.VISIBLE);
-							if (photo.user_id == SharePref.getIntPref(context.getApplicationContext(), SharePref.USER_ID))
-							{
-								holder.photo_detail_delete_button.setVisibility(View.VISIBLE);
-							}
-						}
-						else
-						{
-							touchOverlay.setVisibility(View.GONE);
-							holder.photo_detail_delete_button.setVisibility(View.GONE);
-						}
+						Intent intent = new Intent(context, ZoomActivity.class);
+						
+						intent.putExtra("Photo", photo);
+						
+						context.startActivity(intent);
+						
 					}
 				});
 		        
@@ -350,5 +389,4 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 			//holder.photo_detail_bottom.addView(bottomInfo);
 		}
 	}
-
 }

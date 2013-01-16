@@ -28,7 +28,7 @@ public class NotificationActivity extends BaseMotleeActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        helper = new DatabaseHelper(this.getApplicationContext());
+        helper = DatabaseHelper.getInstance(this.getApplicationContext());
         
         progressDialog = ProgressDialog.show(this, "", "Loading Notifications");
         

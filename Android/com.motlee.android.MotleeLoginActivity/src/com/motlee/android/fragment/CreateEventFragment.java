@@ -105,7 +105,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		
 		mAttendees = new ArrayList<Long>();
 		
-		mHelper = new DatabaseHelper(this.getActivity().getApplicationContext());
+		mHelper = DatabaseHelper.getInstance(this.getActivity().getApplicationContext());
 		dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
 		
 		eventInfoLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_create_info);
@@ -118,6 +118,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		{
 			setPageHeader(pageTitle);
 			showRightHeaderButton("Start!");
+			view.findViewById(R.id.event_create_delete_button).setVisibility(View.GONE);
 		}
 		else
 		{
@@ -125,6 +126,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 			setPageHeader(pageTitle);
 			setHeaderIcon(EDIT_EVENTS);
 			showRightHeaderButton("Save");
+			view.findViewById(R.id.event_create_delete_button).setVisibility(View.VISIBLE);
 		}
 		showLeftHeaderButton();
 		

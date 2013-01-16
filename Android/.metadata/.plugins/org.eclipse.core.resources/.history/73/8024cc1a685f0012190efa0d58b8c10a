@@ -1,0 +1,34 @@
+package com.motlee.android;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.ImageView;
+
+import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharePref;
+
+public class ZoomActivity extends Activity {
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+    	super.onCreate(savedInstanceState);
+    	
+    	setContentView(R.layout.event_item_zoom);
+    	
+    	Intent intent = getIntent();   
+    	
+    	PhotoItem photo = (PhotoItem) intent.getExtras().getParcelable("Photo");
+    	
+    	ImageView view = (ImageView) findViewById(R.id.photo_detail_picture);
+    	
+        GlobalVariables.getInstance().downloadImage(view, 
+        		GlobalVariables.getInstance().getAWSUrlCompressed(photo), 
+        		SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH));
+    	
+    }
+	
+}

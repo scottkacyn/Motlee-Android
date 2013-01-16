@@ -110,11 +110,22 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		
 		setPageHeader(this.pageTitle);
 		showLeftHeaderButton();
+		this.showRightHeaderButton("Options", showMenu);
 		
 		setEditText();
 		
 		return view;
 	}
+	
+	private OnClickListener showMenu = new OnClickListener(){
+
+		public void onClick(View v) {
+			
+			getActivity().openOptionsMenu();
+			
+		}
+		
+	};
 	
 	public PagedView getPagedView()
 	{
