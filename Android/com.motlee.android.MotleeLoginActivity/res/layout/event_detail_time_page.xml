@@ -1,7 +1,7 @@
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" 
+        android:layout_height="wrap_content" 
         android:orientation="vertical">
 
         <LinearLayout
@@ -53,7 +53,68 @@
                     
                 </com.motlee.android.layouts.SetWidthRatioLinearLayout>
                 
+                <com.motlee.android.layouts.SetWidthRatioLinearLayout
+	                android:id="@+id/date_time_hour" 
+	                android:layout_width="0dp"
+	                android:layout_weight=".1"
+	                android:layout_height="wrap_content" 
+	                android:background="@drawable/event_detail_time_box_light" >
+                    
+                    <TextView
+                        android:id="@+id/date_hour"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="03"
+                        style="@style/CodeFont.VeryLarge" />
                 
+                </com.motlee.android.layouts.SetWidthRatioLinearLayout>
+                    
+                <TextView
+                    android:id="@+id/date_colon"
+	                android:layout_width="0dp"
+	                android:layout_weight=".03"
+                    android:layout_height="wrap_content"
+                    android:text=":"
+                    style="@style/CodeFont.VeryLarge" />
+                
+                <com.motlee.android.layouts.SetWidthRatioLinearLayout
+	                android:id="@+id/date_time_minute" 
+	                android:layout_width="0dp"
+	                android:layout_weight=".1"
+	                android:layout_height="wrap_content" 
+	                android:background="@drawable/event_detail_time_box_light" >
+                    
+                    <TextView
+                        android:id="@+id/date_minute"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="30"
+                        style="@style/CodeFont.VeryLarge" />
+                
+                </com.motlee.android.layouts.SetWidthRatioLinearLayout>
+                
+                <View
+                    android:id="@+id/date_space"
+	                android:layout_width="0dp"
+	                android:layout_weight=".03"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"/>
+                
+                <com.motlee.android.layouts.SetWidthRatioLinearLayout
+	                android:id="@+id/date_time_am_pm" 
+	                android:layout_width="0dp"
+	                android:layout_weight=".1"
+	                android:layout_height="wrap_content" 
+	                android:background="@drawable/event_detail_time_box_light" >
+                    
+                    <TextView
+                        android:id="@+id/date_am_pm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="pm"
+                        style="@style/CodeFont.VeryLarge" />
+                
+                </com.motlee.android.layouts.SetWidthRatioLinearLayout>
                 
             </com.motlee.android.layouts.SetWidthRatioLinearLayout>
 

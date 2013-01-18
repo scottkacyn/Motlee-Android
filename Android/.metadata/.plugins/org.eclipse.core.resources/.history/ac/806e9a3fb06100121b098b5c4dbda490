@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">	        
+	        
+    <include layout="@layout/event_detail_header"
+        android:id="@+id/event_detail_header" />
+    
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/event_detail_header" 
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp" >
+            
+            <TextView 
+                android:layout_width="0dp"
+                android:layout_weight=".20"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Start"
+                style="@style/CodeFont.VeryLarge"/>
+            
+            <com.motlee.android.layouts.HorizontalRatioLinearLayout
+                android:id="@+id/date_calendar_time" 
+                android:layout_width="0dp"
+                android:layout_weight=".80"
+                android:layout_height="wrap_content" >
+                
+                <View
+                    android:layout_width="0dp"
+                    android:layout_weight=".07"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent" />
+                
+                <com.motlee.android.layouts.HorizontalRatioLinearLayout
+	                android:id="@+id/date_calendar" 
+	                android:layout_width="0dp"
+	                android:layout_weight=".3"
+	                android:layout_gravity="center_vertical"
+	                android:layout_height="wrap_content" 
+	                android:orientation="vertical"
+	                android:weightSum="1">
+	                
+                    <TextView
+                        android:id="@+id/date_month"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight=".20"
+                        android:layout_gravity="center"
+                        style="@style/CodeFont"
+                        android:text="July" 
+                        android:textColor="@color/see_through_gray"/>
+
+                    <TextView
+                        android:id="@+id/date_day"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight=".55"
+                        android:text="04"
+                        android:layout_gravity="center"
+                        style="@style/ProfileNumbers" />
+                    
+                    <TextView
+                        android:id="@+id/date_day_of_week"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight=".23"
+                        android:text="Thursday"
+                        style="@style/CodeFont" 
+                        android:layout_gravity="center"
+                        android:textColor="@color/see_through_gray"/>
+                    
+                </com.motlee.android.layouts.HorizontalRatioLinearLayout>
+                
+                <View
+                    android:id="@+id/date_space"
+	                android:layout_width="0dp"
+	                android:layout_weight=".03"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"/>
+                
+                <com.motlee.android.layouts.HorizontalRatioLinearLayout
+	                android:id="@+id/date_time_hour" 
+	                android:layout_width="0dp"
+	                android:layout_weight=".1"
+	                android:layout_gravity="center_vertical"
+	                android:layout_height="wrap_content" >
+                    
+                    <TextView
+                        android:id="@+id/date_hour"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="03"
+                        style="@style/CodeFont.VeryLarge" />
+                
+                </com.motlee.android.layouts.HorizontalRatioLinearLayout>
+                    
+                <TextView
+                    android:id="@+id/date_colon"
+                    android:layout_gravity="center_vertical"
+	                android:layout_width="0dp"
+	                android:layout_weight=".03"
+                    android:layout_height="match_parent"
+                    android:text=":"
+                    style="@style/CodeFont.VeryLarge" />
+                
+                <com.motlee.android.layouts.HorizontalRatioLinearLayout
+	                android:id="@+id/date_time_minute" 
+	                android:layout_gravity="center_vertical"
+	                android:layout_width="0dp"
+	                android:layout_weight=".1"
+	                android:layout_height="wrap_content" >
+                    
+                    <TextView
+                        android:id="@+id/date_minute"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="30"
+                        style="@style/CodeFont.VeryLarge" />
+                
+                </com.motlee.android.layouts.HorizontalRatioLinearLayout>
+                
+                <View
+                    android:id="@+id/date_space"
+	                android:layout_width="0dp"
+	                android:layout_weight=".03"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"/>
+                
+                <com.motlee.android.layouts.HorizontalRatioLinearLayout
+	                android:id="@+id/date_time_am_pm" 
+	                android:layout_gravity="center_vertical"
+	                android:layout_width="0dp"
+	                android:layout_weight=".1"
+	                android:layout_height="wrap_content" >
+                    
+                    <TextView
+                        android:id="@+id/date_am_pm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="pm"
+                        style="@style/CodeFont.VeryLarge" />
+                
+                </com.motlee.android.layouts.HorizontalRatioLinearLayout>
+                
+                <View
+                    android:layout_width="0dp"
+                    android:layout_weight=".03"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent" />
+                
+            </com.motlee.android.layouts.HorizontalRatioLinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+            
+            <TextView 
+                android:layout_width="0dp"
+                android:layout_weight=".20"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:text="End"/>
+            
+            
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>

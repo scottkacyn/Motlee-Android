@@ -8,6 +8,7 @@ import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.SharePref;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -45,12 +46,15 @@ public class DateDetailFragment extends BaseDetailFragment {
 	{
 		super.onResume();
 		
-		eventInfoLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_detail_info);
-		eventInfoLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
 		
-		setDateLabels();
+		setDateTime();
+		//eventInfoLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_detail_info);
+		//eventInfoLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		
+		//setDateLabels();
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	        Bundle savedInstanceState)
@@ -58,6 +62,26 @@ public class DateDetailFragment extends BaseDetailFragment {
 	
 		this.inflater = inflater;
 		view = (View) this.inflater.inflate(R.layout.event_detail_date, null);
+		
+		((LinearLayout) view.findViewById(R.id.date_calendar_time_start)).setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_time_background, (int) (SharePref.getIntPref(getActivity(), SharePref.DISPLAY_WIDTH) * .8) - DrawableCache.convertDpToPixel(20)).getDrawable()); 
+		
+		((LinearLayout) view.findViewById(R.id.date_calendar_start)).setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_time_calendar, (int) (SharePref.getIntPref(getActivity(), SharePref.DISPLAY_WIDTH) * .8 * .33)).getDrawable()); 
+		
+		((LinearLayout) view.findViewById(R.id.date_time_hour_start)).setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_time_box_light, (int) (SharePref.getIntPref(getActivity(), SharePref.DISPLAY_WIDTH) * .8 * .14)).getDrawable()); 
+		
+		((LinearLayout) view.findViewById(R.id.date_time_minute_start)).setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_time_box_light, (int) (SharePref.getIntPref(getActivity(), SharePref.DISPLAY_WIDTH) * .8 * .14)).getDrawable()); 
+		
+		((LinearLayout) view.findViewById(R.id.date_time_am_pm_start)).setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_time_box_dark, (int) (SharePref.getIntPref(getActivity(), SharePref.DISPLAY_WIDTH) * .8 *.14)).getDrawable()); 
+		
+		((LinearLayout) view.findViewById(R.id.date_calendar_time_end)).setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_time_background, (int) (SharePref.getIntPref(getActivity(), SharePref.DISPLAY_WIDTH) * .8) - DrawableCache.convertDpToPixel(20)).getDrawable()); 
+		
+		((LinearLayout) view.findViewById(R.id.date_calendar_end)).setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_time_calendar, (int) (SharePref.getIntPref(getActivity(), SharePref.DISPLAY_WIDTH) * .8 * .33)).getDrawable()); 
+		
+		((LinearLayout) view.findViewById(R.id.date_time_hour_end)).setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_time_box_light, (int) (SharePref.getIntPref(getActivity(), SharePref.DISPLAY_WIDTH) * .8 * .14)).getDrawable()); 
+		
+		((LinearLayout) view.findViewById(R.id.date_time_minute_end)).setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_time_box_light, (int) (SharePref.getIntPref(getActivity(), SharePref.DISPLAY_WIDTH) * .8 * .14)).getDrawable()); 
+		
+		((LinearLayout) view.findViewById(R.id.date_time_am_pm_end)).setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_time_box_dark, (int) (SharePref.getIntPref(getActivity(), SharePref.DISPLAY_WIDTH) * .8 *.14)).getDrawable()); 
 		
 		setPageHeader(pageTitle);
 		if (mEventDetail != null)
@@ -89,7 +113,28 @@ public class DateDetailFragment extends BaseDetailFragment {
 		this.pageTitle = mEventDetail.getEventName();
 	}
 
-	public void setDateLabels() {
+	private void setDateTime()
+	{
+		((TextView) view.findViewById(R.id.date_month_start)).setText(new SimpleDateFormat("MMMM").format(mEventDetail.getStartTime()));
+		((TextView) view.findViewById(R.id.date_month_end)).setText(new SimpleDateFormat("MMMM").format(mEventDetail.getEndTime()));
+		
+		((TextView) view.findViewById(R.id.date_day_start)).setText(new SimpleDateFormat("dd").format(mEventDetail.getStartTime()));
+		((TextView) view.findViewById(R.id.date_day_end)).setText(new SimpleDateFormat("dd").format(mEventDetail.getEndTime()));
+		
+		((TextView) view.findViewById(R.id.date_day_of_week_start)).setText(new SimpleDateFormat("EEEE").format(mEventDetail.getStartTime()));
+		((TextView) view.findViewById(R.id.date_day_of_week_end)).setText(new SimpleDateFormat("EEEE").format(mEventDetail.getEndTime()));
+		
+		((TextView) view.findViewById(R.id.date_hour_start)).setText(new SimpleDateFormat("hh").format(mEventDetail.getStartTime()));
+		((TextView) view.findViewById(R.id.date_hour_end)).setText(new SimpleDateFormat("hh").format(mEventDetail.getEndTime()));
+		
+		((TextView) view.findViewById(R.id.date_minute_start)).setText(new SimpleDateFormat("mm").format(mEventDetail.getStartTime()));
+		((TextView) view.findViewById(R.id.date_minute_end)).setText(new SimpleDateFormat("mm").format(mEventDetail.getEndTime()));
+		
+		((TextView) view.findViewById(R.id.date_am_pm_start)).setText(new SimpleDateFormat("aa").format(mEventDetail.getStartTime()));
+		((TextView) view.findViewById(R.id.date_am_pm_end)).setText(new SimpleDateFormat("aa").format(mEventDetail.getEndTime()));
+	}
+	
+	private void setDateLabels() {
 		eventInfoLayout.removeAllViews();
 		
 		View label = this.inflater.inflate(R.layout.event_detail_info_date, null);

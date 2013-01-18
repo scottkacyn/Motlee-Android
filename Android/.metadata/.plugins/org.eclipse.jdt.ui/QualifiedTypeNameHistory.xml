@@ -56,8 +56,8 @@
 <fullyQualifiedTypeName name="java.util.Collection"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.Attendee"/>
 <fullyQualifiedTypeName name="android.widget.LinearLayout"/>
-<fullyQualifiedTypeName name="com.motlee.android.R.id"/>
 <fullyQualifiedTypeName name="android.widget.RelativeLayout"/>
 <fullyQualifiedTypeName name="android.widget.RelativeLayout.LayoutParams"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.SharePref"/>
+<fullyQualifiedTypeName name="com.motlee.android.R.id"/>
 </qualifiedTypeNameHistroy>
