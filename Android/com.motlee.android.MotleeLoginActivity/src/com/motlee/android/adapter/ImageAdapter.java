@@ -30,6 +30,7 @@ import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -44,7 +45,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class ImageAdapter extends BaseAdapter {
@@ -54,15 +58,17 @@ public class ImageAdapter extends BaseAdapter {
 	private final LayoutInflater inflater;
 	
 	private static final int MAX_SIZE = 10;
-	private static final int MIN_SIZE = 4;
+	private static final int MIN_SIZE = 3;
 	
 	public static final PhotoItem NO_PHOTO = new PhotoItem(-10, EventItemType.PICTURE, -10, null, null, null);
-	//private static final PhotoItem FIRST_PHOTO = new PhotoItem(-5, EventItemType.PICTURE, -5, null, null, null);
+	public static final PhotoItem HEADER = new PhotoItem(-5, EventItemType.PICTURE, -5, null, null, null);
 	
     private ArrayList<PhotoItem> mPhotoList = new ArrayList<PhotoItem>();
     private ArrayList<PhotoItem> mOriginalPhotoList = new ArrayList<PhotoItem>();
     private boolean isAttending;
     private int eventId;
+    
+    private FrameLayout mPullOutDrawer;
     
     public ImageAdapter(Context context, int resource)
     {
@@ -73,6 +79,8 @@ public class ImageAdapter extends BaseAdapter {
     	this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     	
     	mOriginalPhotoList.add(NO_PHOTO);
+    	
+    	mPullOutDrawer = (FrameLayout) this.inflater.inflate(R.layout.event_list_pull_out_drawer, null);
     	
     	for (int i = 0; i < MIN_SIZE; i++)
     	{
@@ -110,6 +118,8 @@ public class ImageAdapter extends BaseAdapter {
 	    	
 	    	this.mPhotoList.clear();
 	    	
+	    	mPhotoList.add(HEADER);
+	    	
 	    	// Set last position in list we load into ImageAdapter
 	    	// Equals MAX_SIZE or total photos size whichever is smaller
 	    	int lastPosition = MAX_SIZE;
@@ -124,8 +134,14 @@ public class ImageAdapter extends BaseAdapter {
 	    		this.mPhotoList.add(photos.get(i));
 	    	}
 	    	
+	    	int minSize = 1;
+	    	if (photos.size() > 0)
+	    	{
+	    		minSize = MIN_SIZE;
+	    	}
+	    	
 	    	// Adds placeholder if photos list is not larger than MIN_SIZE
-	    	for (int i = lastPosition; i < MIN_SIZE; i++)
+	    	for (int i = lastPosition; i < minSize; i++)
 	    	{
 	    		this.mPhotoList.add(NO_PHOTO);
 	    	}
@@ -137,12 +153,16 @@ public class ImageAdapter extends BaseAdapter {
     
     public View getView(int position, View contentView, ViewGroup parent) {
     	
+    	Log.d("ImageAdapter", "position: " + position);
+    	
     	ViewHolder holder = new ViewHolder();
     	
-    	if (contentView == null) {
+    	if (contentView == null || contentView.getTag() == null || position > 0) 
+    	{
             contentView = (View) this.inflater.inflate(resource, null);
             holder.imageView = (ImageView) contentView.findViewById(R.id.imageThumbnail);
-            holder.imagePlaceHolder = (ImageView) contentView.findViewById(R.id.imagePlaceHolder);
+            holder.imagePlaceHolder = (LinearLayout) contentView.findViewById(R.id.no_photos);
+            holder.blank_space = contentView.findViewById(R.id.blank_space);
             contentView.setTag(holder);
         }
     	else
@@ -151,32 +171,69 @@ public class ImageAdapter extends BaseAdapter {
     	}
     
     	
-    	if (mPhotoList.get(position) == NO_PHOTO)
+    	if (position == 0)
     	{
-    		holder.imageView.setVisibility(View.GONE);
+    		contentView = mPullOutDrawer;
     		if (isAttending)
     		{
-    			holder.imagePlaceHolder.setImageDrawable(context.getResources().getDrawable(R.drawable.watermark_camera));
-    			//holder.imagePlaceHolder.setClickable(true);
+    			View camera = mPullOutDrawer.findViewById(R.id.pull_out_drawer_camera);
+    			camera.setVisibility(View.VISIBLE);
+    			camera.setTag(eventId);
+    			View eyeBall = mPullOutDrawer.findViewById(R.id.pull_out_drawer_eye_ball);
+    			eyeBall.setVisibility(View.GONE);
+    			eyeBall.setContentDescription(String.valueOf(eventId));;
     		}
     		else
     		{
-    			holder.imagePlaceHolder.setImageDrawable(context.getResources().getDrawable(R.drawable.watermark_no_content));
-    			//holder.imagePlaceHolder.setClickable(false);
+    			View camera = mPullOutDrawer.findViewById(R.id.pull_out_drawer_camera);
+    			camera.setVisibility(View.GONE);
+    			camera.setTag(eventId);
+    			View eyeBall = mPullOutDrawer.findViewById(R.id.pull_out_drawer_eye_ball);
+    			eyeBall.setVisibility(View.VISIBLE);
+    			eyeBall.setContentDescription(String.valueOf(eventId));
     		}
-    		holder.imagePlaceHolder.setVisibility(View.VISIBLE);
-    		//holder.imagePlaceHolder.setTag(eventId);
     	}
     	else
     	{
-    		holder.imagePlaceHolder.setVisibility(View.GONE);
-    		
-    		GlobalVariables.getInstance().downloadImage(holder.imageView, GlobalVariables.getInstance().getAWSUrlThumbnail(mPhotoList.get(position)), GlobalVariables.getInstance().getMaxEventListImageHeight());
-        	holder.imageView.setVisibility(View.VISIBLE);
-        	holder.imageView.setTag(mPhotoList.get(position));
+	    	
+	    	if (mPhotoList.get(position) == NO_PHOTO && position == 1)
+	    	{
+	    		holder.imageView.setVisibility(View.GONE);
+	    		holder.imagePlaceHolder.setVisibility(View.VISIBLE);
+	    		holder.blank_space.setVisibility(View.GONE);
+	    		
+	    		int imageHeight = GlobalVariables.getInstance().getMaxEventListImageHeight();
+	    		
+	    		double scale = ((double) imageHeight) / 219.0;
+	    		
+	    		int imageWidth = (int) (scale * 32.0);
+	    		
+	    		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(SharePref.getIntPref(context.getApplicationContext(), SharePref.DISPLAY_WIDTH) - imageWidth, GlobalVariables.getInstance().getMaxEventListImageHeight());
+	    		
+	    		Log.d("ImageAdapter", "Width: " + (SharePref.getIntPref(context, SharePref.DISPLAY_WIDTH) - imageWidth));
+	    		
+	    		holder.imagePlaceHolder.setLayoutParams(params);
+	    		//holder.imagePlaceHolder.setTag(eventId);
+	    	}
+	    	else if (mPhotoList.get(position) == NO_PHOTO && position > 1)
+	    	{
+	    		holder.imageView.setVisibility(View.GONE);
+	    		holder.imagePlaceHolder.setVisibility(View.GONE);
+	    		holder.blank_space.setVisibility(View.VISIBLE);
+	    		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(GlobalVariables.getInstance().getMaxEventListImageHeight(), GlobalVariables.getInstance().getMaxEventListImageHeight());
+	    		
+	    		holder.blank_space.setLayoutParams(params);
+	    	}
+	    	else
+	    	{
+	    		holder.imagePlaceHolder.setVisibility(View.GONE);
+	    		holder.blank_space.setVisibility(View.GONE);
+	    		
+	    		GlobalVariables.getInstance().downloadImage(holder.imageView, GlobalVariables.getInstance().getAWSUrlThumbnail(mPhotoList.get(position)), GlobalVariables.getInstance().getMaxEventListImageHeight());
+	        	holder.imageView.setVisibility(View.VISIBLE);
+	        	holder.imageView.setTag(mPhotoList.get(position));
+	    	}
     	}
-
-
         
         return contentView;
     }
@@ -184,7 +241,8 @@ public class ImageAdapter extends BaseAdapter {
     private class ViewHolder
     {
     	public ImageView imageView;
-    	public ImageView imagePlaceHolder;
+    	public LinearLayout imagePlaceHolder;
+    	public View blank_space;
     }
 }
 

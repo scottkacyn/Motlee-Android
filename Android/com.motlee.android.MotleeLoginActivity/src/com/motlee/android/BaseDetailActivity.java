@@ -19,6 +19,7 @@ public abstract class BaseDetailActivity extends BaseMotleeActivity {
 
 	public static final String EDIT = "Edit";
 	public static final String JOIN = "Join";
+	public static final String LEAVE = "Leave";
 	protected EventDetail eDetail;
 	
 	public void onRightHeaderButtonClick(View view)
@@ -50,6 +51,10 @@ public abstract class BaseDetailActivity extends BaseMotleeActivity {
 				
 			});
 			EventServiceBuffer.sendAttendeesForEvent(eDetail.getEventID(), attendeeList);
+		}
+		else if (view.getTag().toString() == LEAVE)
+		{
+			
 		}
 	}
 }

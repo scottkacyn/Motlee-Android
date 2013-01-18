@@ -60,13 +60,12 @@
 		    </LinearLayout>
 	
 		    
-		    <LinearLayout android:id="@+id/event_middle"
+		    <RelativeLayout android:id="@+id/event_middle"
 		        android:baselineAligned="false"
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
 		        android:layout_below="@id/event_header"
-		        android:layout_above="@id/event_footer"
-		        android:weightSum="1.0">
+		        android:layout_above="@id/event_footer">
 
 		        <!-- <com.motlee.android.view.EcoGallery
 		            xmlns:blah="http://schemas.android.com/apk/res/com.motlee.android"
@@ -80,19 +79,74 @@
 			        blah:animationDuration="200"
 					android:background="@android:color/transparent" /> -->
 		        
-   		        <com.motlee.android.view.HorizontalListViewDisallowIntercept
-		            xmlns:blah="http://schemas.android.com/apk/res/com.motlee.android"
-	          		android:id="@+id/listview"
-					android:layout_width="0dp"
-					android:layout_weight="1"
-					android:layout_height="match_parent"
-					blah:gravity="left"
-					blah:spacing="0px"
-			        blah:unselectedAlpha="1"
-			        blah:animationDuration="200"
-					android:background="@android:color/transparent" />
+		        <!-- <com.motlee.android.view.Panel
+		             xmlns:blah="http://schemas.android.com/apk/res/com.motlee.android"
+		          	 android:id="@+id/drawer"
+					 android:layout_width="wrap_content"
+					 android:layout_height="match_parent"
+					 android:orientation="horizontal"
+					 blah:handle="@+id/handle"     
+					 blah:content="@+id/content"
+					 blah:position="left" 
+					 blah:animationDuration="100"
+					 android:visibility="gone">
+					 
+				    <ImageView
+				        android:id="@id/handle"
+				        android:layout_width="match_parent"
+				        android:layout_height="wrap_content"
+				        android:scaleType="fitCenter"
+				        android:src="@drawable/event_list_slide_out_partial"  />
 		            
-		    </LinearLayout>
+		            <com.motlee.android.layouts.VerticalAspectFrameLayout
+					    android:id="@id/content"
+					    android:layout_width="wrap_content"
+					    android:layout_height="match_parent"
+						android:background="@drawable/event_list_slide_out_full" > 
+					    
+					    <ImageView
+					        android:id="@+id/pull_out_drawer_camera"
+					        android:layout_width="match_parent"
+					        android:layout_height="wrap_content"
+					        android:scaleType="fitCenter"
+					        android:onClick="takePhoto"
+					        android:paddingLeft="10dp"
+					        android:paddingRight="15dp"
+					        android:layout_gravity="center"
+					        android:src="@drawable/event_list_camera"  />
+					    
+					    <ImageView
+					        android:id="@+id/pull_out_drawer_eye_ball"
+					        android:layout_width="match_parent"
+					        android:layout_height="wrap_content"
+					        android:scaleType="fitCenter"
+					        android:onClick="showEvent"
+					        android:paddingLeft="10dp"
+					        android:paddingRight="15dp"
+					        android:layout_gravity="center"
+					        android:src="@drawable/event_list_eye_ball"
+					        android:visibility="gone" />
+					    
+					</com.motlee.android.layouts.VerticalAspectFrameLayout>
+		            
+	            </com.motlee.android.view.Panel> -->
+		        
+		        
+		        
+   		        <com.motlee.android.view.HorizontalListViewDisallowIntercept
+	          		android:id="@+id/listview"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:background="@android:color/transparent" />
+	            
+	            <ImageView 
+		            android:id="@+id/pull_out_sliver"
+		            android:layout_height="match_parent"
+		            android:layout_width="wrap_content"
+		            android:scaleType="fitCenter"
+		            android:adjustViewBounds="true"
+		            android:src="@drawable/event_list_slide_out_partial" />
+		    </RelativeLayout>
 		    
 			<LinearLayout android:id="@+id/event_footer"
 		        android:layout_width="fill_parent"

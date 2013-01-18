@@ -22,6 +22,7 @@ import com.motlee.android.view.CustomAdapterView;
 import com.motlee.android.view.CustomAdapterView.OnItemLongClickListener;
 import com.motlee.android.view.EcoGallery;
 import com.motlee.android.view.HorizontalListViewDisallowIntercept;
+import com.motlee.android.view.Panel;
 import com.devsmart.android.ui.HorizontalListView;
 
 import android.app.Activity;
@@ -39,6 +40,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SlidingDrawer;
 import android.widget.TextView;
 
 public class EventListAdapter extends ArrayAdapter<EventDetail> {
@@ -178,6 +180,8 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				holder.blank_space = (LinearLayout) convertView.findViewById(R.id.blank_space);
 				holder.event_header_icon = (ImageView) convertView.findViewById(R.id.event_header_icon);
 				holder.event_footer_people = (TextView) convertView.findViewById(R.id.event_footer_people);
+				holder.drawerHandle = (ImageView) convertView.findViewById(R.id.pull_out_sliver);
+				//holder.drawer = (Panel) convertView.findViewById(R.id.drawer);
 				convertView.setTag(holder);
                 
                 } else {
@@ -343,6 +347,8 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				
 				holder.list_view.setEventId(item.getEventID());
 				holder.list_view.setIsAttending(isAttending);
+				holder.list_view.setHandleImage(holder.drawerHandle);
+				holder.list_view.reset();
 				
 				if (holder.list_view.getAdapter() == null)
 				{					
@@ -365,6 +371,7 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
             public LinearLayout blank_space;
             public ImageView event_header_icon;
             public TextView event_footer_people;
+            public ImageView drawerHandle;
         }
 
 

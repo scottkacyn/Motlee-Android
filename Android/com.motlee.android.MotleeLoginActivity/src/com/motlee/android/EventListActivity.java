@@ -193,7 +193,7 @@ public class EventListActivity extends BaseMotleeActivity {
         
         instance.setDisplay(getWindowManager().getDefaultDisplay()); 
         SharePref.setIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH, getWindowManager().getDefaultDisplay().getWidth());
-        SharePref.setIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH, getWindowManager().getDefaultDisplay().getHeight());
+        SharePref.setIntPref(getApplicationContext(), SharePref.DISPLAY_HEIGHT, getWindowManager().getDefaultDisplay().getHeight());
         instance.setGothamLigtFont(Typeface.createFromAsset(getAssets(), "fonts/gotham_light.ttf"));
         instance.setHelveticaNeueRegularFont(Typeface.createFromAsset(getAssets(), "fonts/helvetica_neue_bold.ttf"));
         instance.setHelveticaNeueRegularFont(Typeface.createFromAsset(getAssets(), "fonts/helvetica_neue_regular.ttf"));
@@ -471,6 +471,13 @@ public class EventListActivity extends BaseMotleeActivity {
     				// show it
     		alertDialog.show();
     	}
+    }
+    
+    public void takePhoto(View view)
+    {
+    	Integer eventId = (Integer) view.getTag();
+    	
+    	MenuFunctions.takePictureOnPhone(eventId, this);
     }
     
 	public void updateEventAdapter(ArrayList<EventDetail> eventsToShow) {

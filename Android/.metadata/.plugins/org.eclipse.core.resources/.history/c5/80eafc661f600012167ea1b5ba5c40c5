@@ -1,0 +1,31 @@
+<com.motlee.android.layouts.VerticalAspectFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+	android:background="@drawable/event_list_slide_out_full" > 
+    
+    <ImageView
+        android:id="@+id/pull_out_drawer_camera"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        android:onClick="takePhoto"
+        android:padding="5dp"
+        android:paddingRight="15dp"
+        android:layout_gravity="center"
+        android:src="@drawable/event_list_camera" 
+        android:visibility="gone" />
+    
+    <ImageView
+        android:id="@+id/pull_out_drawer_eye_ball"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        android:onClick="showEvent"
+        android:paddingLeft="5dp"
+        android:paddingRight="15dp"
+        android:layout_gravity="center"
+        android:src="@drawable/event_list_eye_ball"
+        android:visibility="gone" />
+    
+</com.motlee.android.layouts.VerticalAspectFrameLayout>

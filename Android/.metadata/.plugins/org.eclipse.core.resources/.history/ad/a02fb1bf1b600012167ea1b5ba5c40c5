@@ -1,0 +1,27 @@
+package com.motlee.android.view;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+
+public class HorizontalListWithHeader extends LinearLayout {
+
+	private ImageView mTactileRidge;
+	private HorizontalListViewDisallowIntercept mListView;
+	
+	public HorizontalListWithHeader(Context context, AttributeSet attrs) {
+		super(context, attrs);
+	}
+	
+	public void setIsAttending(boolean isAttending)
+	{
+		mListView.setIsAttending(isAttending);
+	}
+
+	public void setEventId(int eventId)
+	{
+		mListView.setEventId(eventId);
+	}
+
+}

@@ -468,8 +468,43 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 			showEdit.putExtra("EventID", eDetail.getEventID());
 			startActivity(showEdit);
 		}
+		else if (tag.equals(BaseDetailActivity.LEAVE))
+		{
+			AlertDialog.Builder builder = new AlertDialog.Builder(EventDetailActivity.this);
+			builder.setMessage("Leave This Event?")
+			.setCancelable(true)
+			.setPositiveButton("Leave", new DialogInterface.OnClickListener() {
+				
+				public void onClick(DialogInterface dialog, int which) {
+					
+					leaveThisEvent();
+					
+				}
+			})
+			.setNegativeButton("No way!", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+				}
+			});
+			
+			builder.create().show();
+		}
 	}
 	
+	private void leaveThisEvent() {
+			
+		EventServiceBuffer.setAttendeeListener(attendeeListener);
+
+		progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Leaving this event");
+		
+		ArrayList<Integer> attendees = new ArrayList<Integer>();
+		
+		attendees.add(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
+		
+		EventServiceBuffer.deleteAttendeeFromEvent(eDetail.getEventID(), attendees);
+		
+	}
+
 	private UpdatedAttendeeListener attendeeListener = new UpdatedAttendeeListener(){
 
 		public void raised(UpdatedAttendeeEvent e) {
@@ -644,6 +679,15 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		EventServiceBuffer.removeEventDetailListener(this);
 		
         eDetail = dbWrapper.getEvent(mEventID); 
+        
+        if (eDetail.getIsPrivate())
+        {
+        	findViewById(R.id.header_private_icon).setVisibility(View.VISIBLE);
+        }
+        else
+        {
+        	findViewById(R.id.header_private_icon).setVisibility(View.GONE);
+        }
         
         setUpFragments();
         

@@ -1,0 +1,24 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent">
+    
+    <ImageView
+        android:id="@+id/pull_out_drawer_camera"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        android:onClick="takePhoto"
+        android:layout_gravity="center"
+        android:src="@drawable/event_list_camera" />
+    
+    <ImageView
+        android:id="@+id/pull_out_drawer_eye_ball"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        android:onClick="takePhoto"
+        android:layout_gravity="center"
+        android:src="@drawable/event_list_eye_ball" />
+    
+</FrameLayout>

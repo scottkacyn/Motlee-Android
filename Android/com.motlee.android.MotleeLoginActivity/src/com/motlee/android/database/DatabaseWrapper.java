@@ -566,7 +566,7 @@ public class DatabaseWrapper {
 		} 
 		catch (SQLException e) {
 			Log.e("DatabaseWrapper", "Failed to getPhotos for event", e);
-			return null;
+			return new ArrayList<PhotoItem>();
 		}
 	}
 	

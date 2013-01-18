@@ -36,8 +36,10 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
+import android.view.View.MeasureSpec;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.Scroller;
@@ -51,7 +53,7 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 	protected int mCurrentX;
 	protected int mNextX;
 	private int mMaxX = Integer.MAX_VALUE;
-	private int mDisplayOffset = 0;
+	protected int mDisplayOffset = 0;
 	protected Scroller mScroller;
 	private GestureDetector mGesture;
 	private Queue<View> mRemovedViewQueue = new LinkedList<View>();
@@ -69,7 +71,6 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 	private synchronized void initView() {
 		mLeftViewIndex = -1;
 		mRightViewIndex = 0;
-		mDisplayOffset = 0;
 		mCurrentX = 0;
 		mNextX = 0;
 		mMaxX = Integer.MAX_VALUE;
@@ -141,7 +142,8 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 
 	@Override
 	public void setSelection(int position) {
-		//TODO: implement
+		mDisplayOffset = position;
+		requestLayout();
 	}
 	
 	private void addAndMeasureChild(final View child, int viewPos) {

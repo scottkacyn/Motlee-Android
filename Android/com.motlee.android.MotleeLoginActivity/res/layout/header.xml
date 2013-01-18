@@ -100,5 +100,16 @@
             android:paddingLeft="5dp"
             />
         
+       	<ImageView 
+    	    android:id="@+id/header_private_icon"
+    	    android:layout_height="match_parent"
+    	    android:layout_width="wrap_content"
+    	    android:layout_alignParentRight="true"
+    	    android:scaleType="fitCenter"
+    	    android:padding="4dp"
+    	    android:adjustViewBounds="true"
+    	    android:src="@drawable/icon_lock_icon"
+    	    android:visibility="gone" />
+        
     </com.motlee.android.layouts.RatioBackgroundRelativeLayout>
 </RelativeLayout>
