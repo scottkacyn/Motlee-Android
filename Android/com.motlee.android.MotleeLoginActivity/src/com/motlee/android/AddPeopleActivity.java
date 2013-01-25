@@ -101,7 +101,7 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
         
         	EventServiceBuffer.setAttendeeListener(AddPeopleActivity.this);
         
-        	EventServiceBuffer.sendAttendeesForEvent(eventId, peopleToAdd);
+        	EventServiceBuffer.sendAttendeesForEvent(eventId, peopleToAdd, false);
         }
         else
         {

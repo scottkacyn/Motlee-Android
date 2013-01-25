@@ -75,8 +75,6 @@ import android.widget.TextView.OnEditorActionListener;
 public class EventDetailFragment extends BaseDetailFragment implements UpdatedStoryListener {
 	private String tag = "EventDetailFragment";
 	
-	private EventDetail mEventDetail;
-	
 	private String pageTitle = "All Events";
 	
 	private EventDetailGridAdapter gridAdapter;
@@ -90,8 +88,6 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 	private Boolean onCreateViewHasBeenCalled = false;
 	
 	private EditText photoDescriptionEdit;
-	
-	private View view;
 	
 	private LayoutInflater inflater;
 	
@@ -299,7 +295,7 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		
 	};*/
 	
-	public void addEventDetail(EventDetail eDetail) {
+	public void setEventDetail(EventDetail eDetail) {
 		Log.w(tag, "addEventDetail");
 		mEventDetail = eDetail;
 		this.pageTitle = mEventDetail.getEventName();
@@ -308,6 +304,13 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		if (mEventDetail != null && getActivity() != null)
 		{
 			showRightHeaderButton(mEventDetail, getActivity().getApplicationContext());
+		}
+		
+		if (view != null)
+		{
+			setGridAdapter();
+			
+			gridAdapter.notifyDataSetChanged();
 		}
 		
 		//addListToAdapter();
@@ -455,10 +458,9 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 			else
 			{
 				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-				builder.setMessage("Join This Event to Take Photo?")
+				builder.setMessage("You must be apart of this event to add photo.")
 				.setCancelable(true)
-				.setPositiveButton("Join!", ((EventDetailActivity) getActivity()).joinListener)
-				.setNegativeButton("Nope", new DialogInterface.OnClickListener() {
+				.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						dialog.cancel();
 					}
@@ -466,8 +468,6 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 				
 				builder.create().show();
 			}
-			
-			
 		}
 		
 	};

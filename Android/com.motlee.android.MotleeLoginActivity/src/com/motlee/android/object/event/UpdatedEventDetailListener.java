@@ -4,4 +4,6 @@ import java.util.EventListener;
 
 public interface UpdatedEventDetailListener extends EventListener {
 	public void myEventOccurred(UpdatedEventDetailEvent evt);
+	
+	public void updatedEventOccurred(Integer eventId);
 }

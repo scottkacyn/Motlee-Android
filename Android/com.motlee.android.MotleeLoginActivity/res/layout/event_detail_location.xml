@@ -8,11 +8,24 @@
         android:id="@+id/event_detail_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+    
+    <ProgressBar 
+        android:indeterminate="true"
+        android:layout_width="20dp" 
+        android:layout_height="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyle"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/event_detail_header"
+        android:visibility="gone"/>
+    
 	<com.google.android.maps.MapView
 		android:id="@+id/map_view"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
 	    android:clickable="true"
-	    android:layout_below="@id/event_detail_header"
+	    android:layout_below="@id/progress_bar"
 	    android:apiKey="0oE1cuDjQWjAeMp6PSnXQ2-zp6QB_nyPeeQEEQA" />
 </RelativeLayout>

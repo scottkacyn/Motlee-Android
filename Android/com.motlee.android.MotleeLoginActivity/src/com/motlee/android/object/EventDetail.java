@@ -49,7 +49,7 @@ public class EventDetail implements Comparable<EventDetail> {
 	private double lon;
 	
 	@DatabaseField(columnName = "updated", dataType = DataType.DATE)
-	public Date updated;
+	public Date updated_at;
 	
 	@DatabaseField(columnName = "is_private", dataType = DataType.BOOLEAN_OBJ)
 	private Boolean is_private;	
@@ -62,6 +62,23 @@ public class EventDetail implements Comparable<EventDetail> {
 	private ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>();
 	private LocationInfo location = new LocationInfo();
 	private UserInfo ownerInfo = new UserInfo();
+	
+	public EventDetail(Integer eventId)
+	{
+		this.id = eventId;
+		this.user_id = -1;
+		this.name = "";
+		this.start_time = new Date();
+		this.end_time = new Date();
+		this.setDescription("");
+		this.location_id = -1;
+		this.attendee_count = 0;
+		this.created_at = new Date();
+		this.is_deleted = false;
+		this.is_private = false;
+		this.lat = 41.872188;
+		this.lon = -87.641083;
+	}
 	
 	public EventDetail()
 	{

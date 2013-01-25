@@ -30,9 +30,7 @@ public class DateDetailFragment extends BaseDetailFragment {
 	private static final String EDIT = "Edit";
 	private static final String LEAVE = "Leave";
 	
-	private View view;
 	private LayoutInflater inflater;
-	private EventDetail mEventDetail;
 	private String pageTitle = "All Events";
 	
 	private LinearLayout eventHeader;
@@ -107,10 +105,14 @@ public class DateDetailFragment extends BaseDetailFragment {
 		
 	}
 
-	public void addEventDetail(EventDetail eDetail) {
+	public void setEventDetail(EventDetail eDetail) {
 		
 		mEventDetail = eDetail;
 		this.pageTitle = mEventDetail.getEventName();
+		if (view != null)
+		{
+			setDateTime();
+		}
 	}
 
 	private void setDateTime()

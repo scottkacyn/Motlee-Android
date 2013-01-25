@@ -50,7 +50,7 @@ public abstract class BaseDetailActivity extends BaseMotleeActivity {
 				}
 				
 			});
-			EventServiceBuffer.sendAttendeesForEvent(eDetail.getEventID(), attendeeList);
+			//EventServiceBuffer.sendAttendeesForEvent(eDetail.getEventID(), attendeeList);
 		}
 		else if (view.getTag().toString() == LEAVE)
 		{

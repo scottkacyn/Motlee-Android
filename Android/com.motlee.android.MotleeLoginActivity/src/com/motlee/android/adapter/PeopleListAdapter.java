@@ -26,8 +26,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 public class PeopleListAdapter extends ArrayAdapter<UserInfo> {
@@ -97,6 +100,7 @@ public class PeopleListAdapter extends ArrayAdapter<UserInfo> {
                 holder.search_people_profile_pic = (ImageView) convertView.findViewById(R.id.search_button_profile_pic);
                 holder.search_people_text = (TextView) convertView.findViewById(R.id.search_button_name);
                 holder.search_button = convertView.findViewById(R.id.search_button);
+                holder.search_motlee_text = (TextView) convertView.findViewById(R.id.search_button_not_motlee);
                 
                 convertView.setTag(holder);
         } else {
@@ -121,6 +125,24 @@ public class PeopleListAdapter extends ArrayAdapter<UserInfo> {
         holder.search_people_profile_pic.setMaxHeight(background.getHeight() - DrawableCache.convertDpToPixel(5));
         holder.search_people_profile_pic.setMaxWidth(background.getHeight() - DrawableCache.convertDpToPixel(5));
         
+        if (person.sign_in_count > 0)
+        {
+        	if (holder.search_motlee_text != null)
+        	{
+        		holder.search_motlee_text.setVisibility(View.GONE);
+        	}
+        	holder.search_people_text.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, .70f));
+        }
+        else
+        {
+        	if (holder.search_motlee_text != null)
+        	{
+        		holder.search_motlee_text.setVisibility(View.VISIBLE);
+        		holder.search_motlee_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+        	}
+        	holder.search_people_text.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, .42f));
+        }
+        
         GlobalVariables.getInstance().downloadImage(holder.search_people_profile_pic, 
         		GlobalVariables.getInstance().getFacebookPictureUrlLarge(person.uid), 
         		background.getHeight() - DrawableCache.convertDpToPixel(5));
@@ -133,5 +155,6 @@ public class PeopleListAdapter extends ArrayAdapter<UserInfo> {
         public TextView search_people_text;
         public View search_button;
         public HorizontalRatioLinearLayout layout;
+        public TextView search_motlee_text;
     }
 }

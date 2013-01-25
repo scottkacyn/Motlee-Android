@@ -15,6 +15,7 @@ import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
 import com.motlee.android.fragment.LocationFragment;
+import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.GlobalVariables;
@@ -81,7 +82,11 @@ public class NearbyEventsActivity extends BaseMotleeActivity implements UpdatedE
 	        
 	        for (Integer eventId : evt.getEventIds())
 	        {
-	        	locationFragment.addEventDetail(dbWrapper.getEvent(eventId));
+	        	EventDetail eDetail = dbWrapper.getEvent(eventId);
+	        	if (eDetail != null)
+	        	{
+	        		locationFragment.addEventDetail(dbWrapper.getEvent(eventId));
+	        	}
 	        }
 	        
 	        ft.add(R.id.fragment_content, locationFragment)

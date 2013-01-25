@@ -17,30 +17,15 @@
 package com.motlee.android.adapter;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
 
-import com.motlee.android.EventListActivity;
 import com.motlee.android.R;
 import com.motlee.android.enums.EventItemType;
-import com.motlee.android.object.DrawableCache;
-import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
-import com.motlee.android.object.event.UpdatedPhotoEvent;
-import com.motlee.android.object.event.UpdatedPhotoListener;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +34,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 public class ImageAdapter extends BaseAdapter {
 
@@ -153,8 +137,6 @@ public class ImageAdapter extends BaseAdapter {
     
     public View getView(int position, View contentView, ViewGroup parent) {
     	
-    	Log.d("ImageAdapter", "position: " + position);
-    	
     	ViewHolder holder = new ViewHolder();
     	
     	if (contentView == null || contentView.getTag() == null || position > 0) 
@@ -209,8 +191,6 @@ public class ImageAdapter extends BaseAdapter {
 	    		int imageWidth = (int) (scale * 32.0);
 	    		
 	    		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(SharePref.getIntPref(context.getApplicationContext(), SharePref.DISPLAY_WIDTH) - imageWidth, GlobalVariables.getInstance().getMaxEventListImageHeight());
-	    		
-	    		Log.d("ImageAdapter", "Width: " + (SharePref.getIntPref(context, SharePref.DISPLAY_WIDTH) - imageWidth));
 	    		
 	    		holder.imagePlaceHolder.setLayoutParams(params);
 	    		//holder.imagePlaceHolder.setTag(eventId);

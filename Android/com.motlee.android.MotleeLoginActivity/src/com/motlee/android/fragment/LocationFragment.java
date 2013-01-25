@@ -51,8 +51,7 @@ public class LocationFragment extends BaseDetailFragment {
 	private static final String LEAVE = "Leave";
 	
 	private static final int locMultiplier = 1000000;
-	
-	private RelativeLayout view;
+
 	private LayoutInflater inflater;
 	private EventDetail mEventDetail;
 	
@@ -226,6 +225,10 @@ public class LocationFragment extends BaseDetailFragment {
 	public void addEventDetail(EventDetail eDetail) {
 		
 		mEventList.add(eDetail);
+		if (view != null)
+		{
+			setMapOverlays();
+		}
 	}
 	
 	public void setPageTitle(String pageTitle)

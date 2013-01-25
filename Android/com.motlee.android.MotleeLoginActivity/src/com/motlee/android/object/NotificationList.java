@@ -76,7 +76,7 @@ public class NotificationList
 			try
 			{
 				Notification notification = getNotification(element.getAsString());
-				if (dbWrapper.getUser(notification.userId) != null && filterNotification(notification, settings))
+				if (filterNotification(notification, settings))
 				{
 					numUnreadNotifications++;
 				}
@@ -113,7 +113,7 @@ public class NotificationList
 			try
 			{
 				Notification notification = getNotification(element.getAsString());
-				if (dbWrapper.getUser(notification.userId) != null && filterNotification(notification, settings))
+				if (filterNotification(notification, settings))
 				{
 					mNotifications.add(notification);
 				}

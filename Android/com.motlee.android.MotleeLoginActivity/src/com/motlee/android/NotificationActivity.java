@@ -1,8 +1,11 @@
 package com.motlee.android;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -11,24 +14,31 @@ import android.util.Log;
 import android.view.View;
 
 import com.motlee.android.database.DatabaseHelper;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.NotificationObjectType;
 import com.motlee.android.fragment.NotificationFragment;
 import com.motlee.android.fragment.SearchPeopleFragment;
+import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Notification;
+import com.motlee.android.object.NotificationList;
+import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.UserInfo;
+import com.motlee.android.object.event.UserWithEventsPhotosEvent;
 
 public class NotificationActivity extends BaseMotleeActivity {
 
-	private DatabaseHelper helper;
+	private DatabaseWrapper dbWrapper;
+	
+	private ArrayList<Integer> users;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        helper = DatabaseHelper.getInstance(this.getApplicationContext());
+        dbWrapper = new DatabaseWrapper(this.getApplicationContext());
         
         progressDialog = ProgressDialog.show(this, "", "Loading Notifications");
         
@@ -38,15 +48,68 @@ public class NotificationActivity extends BaseMotleeActivity {
 	
     public void receivedAllNotifications()
     {
-        FragmentManager     fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        
-        NotificationFragment fragment = new NotificationFragment();
-        fragment.setHeaderView(findViewById(R.id.header));
-        ft.add(R.id.fragment_content, fragment)
-        .commit();
-        
-        progressDialog.dismiss();
+    	users = new ArrayList<Integer>();
+    	for (Notification notification : NotificationList.getInstance().getNotificationList())
+    	{
+    		if (dbWrapper.getUser(notification.userId) == null)
+    		{
+    			if (!users.contains(notification.userId))
+    			{
+    				users.add(notification.userId);
+    			}
+    		}
+    	}
+    	
+    	if (users.size() > 0)
+    	{
+    		EventServiceBuffer.setUserInfoListener(this);
+    		
+    		EventServiceBuffer.getUserInfoFromService(users.get(0));
+    	}
+    	else
+    	{
+	        FragmentManager     fm = getSupportFragmentManager();
+	        FragmentTransaction ft = fm.beginTransaction();
+	        
+	        NotificationFragment fragment = new NotificationFragment();
+	        fragment.setHeaderView(findViewById(R.id.header));
+	        ft.add(R.id.fragment_content, fragment)
+	        .commit();
+	        
+	        progressDialog.dismiss();
+    	}
+    }
+    
+    public void userWithEventsPhotos(UserWithEventsPhotosEvent e)
+    {
+    	if (e != null)
+    	{
+    		Integer userId = e.getUserInfo().id;
+    		
+    		if (users.contains(userId))
+			{
+    			users.remove(userId);
+			}
+    		
+    		if (users.size() > 0)
+    		{
+    			EventServiceBuffer.getUserInfoFromService(users.get(0));
+    		}
+    		else
+    		{
+    			EventServiceBuffer.removeUserInfoListener(this);
+    			
+    	        FragmentManager     fm = getSupportFragmentManager();
+    	        FragmentTransaction ft = fm.beginTransaction();
+    	        
+    	        NotificationFragment fragment = new NotificationFragment();
+    	        fragment.setHeaderView(findViewById(R.id.header));
+    	        ft.add(R.id.fragment_content, fragment)
+    	        .commit();
+    	        
+    	        progressDialog.dismiss();
+    		}
+    	}
     }
     
     public void showNotificationObject(View view)
@@ -55,12 +118,7 @@ public class NotificationActivity extends BaseMotleeActivity {
     	
     	if (notification.objectType == NotificationObjectType.FRIEND)
     	{
-    		UserInfo user = null;
-			try {
-				user = helper.getUserDao().queryForId(notification.objectId);
-			} catch (SQLException e) {
-				Log.e("DatabaseHelper", "Failed to queryForId for user", e);
-			}
+    		UserInfo user = dbWrapper.getUser(notification.objectId);
     		
     		Intent intent = new Intent(this, UserProfilePageActivity.class);
     		intent.putExtra("UserID", notification.objectId);
@@ -70,6 +128,12 @@ public class NotificationActivity extends BaseMotleeActivity {
     	}
     	else if (notification.objectType == NotificationObjectType.EVENT)
     	{
+    		if (dbWrapper.getEvent(notification.objectId) == null)
+    		{
+    			EventDetail eDetail = new EventDetail(notification.objectId);
+    			dbWrapper.createIfNotExistsEvent(eDetail);
+    		}
+    		
     		Intent intent = new Intent(this, EventDetailActivity.class);
     		intent.putExtra("EventID", notification.objectId);
     		
@@ -85,10 +149,29 @@ public class NotificationActivity extends BaseMotleeActivity {
     	}
     	else if (notification.objectType == NotificationObjectType.PHOTO_COMMENT || notification.objectType == NotificationObjectType.PHOTO_LIKE)
     	{
-    		Intent intent = new Intent(this, EventItemDetailActivity.class);
-    		intent.putExtra("EventItem", GlobalVariables.getInstance().getUserPhotos().get(notification.objectId));
-    		
-    		startActivity(intent);
+    		PhotoItem photo = dbWrapper.getPhoto(notification.objectId);
+    		if (photo != null)
+    		{
+	    		Intent intent = new Intent(this, EventItemDetailActivity.class);
+	    		intent.putExtra("EventItem", photo);
+	    		intent.putExtra("IsSinglePhoto", true);
+	    		
+	    		startActivity(intent);
+    		}
+    		else
+    		{
+    			AlertDialog.Builder builder = new AlertDialog.Builder(NotificationActivity.this);
+    			builder.setMessage("This photo may have been deleted.")
+    			.setCancelable(true)
+    			.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+    				
+    				public void onClick(DialogInterface dialog, int which) {
+    					dialog.cancel();
+    				}
+    			});
+    			
+    			builder.create().show();
+    		}
     	}
     }
 }

@@ -251,27 +251,31 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
 	
 	final public void showMenuButtons(int iconToShow)
 	{
-		findViewById(R.id.menu_buttons).setVisibility(View.VISIBLE);
-		
-		if (iconToShow == CREATE_EVENT)
+		View menuButtons = findViewById(R.id.menu_buttons);
+		if (menuButtons != null)
 		{
-			((ImageView) findViewById(R.id.plus_menu_button)).setClickable(true);
-			((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_plus_icon);
-		}
-		else if (iconToShow == TAKE_PICTURE)
-		{
-			((ImageView) findViewById(R.id.plus_menu_button)).setClickable(true);
-			((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_photo_icon);
-		}
-		else if (iconToShow == JOIN_EVENT)
-		{
-			((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_join_icon);
-		}
-		else if (iconToShow == NOT_APART_OF)
-		{
-			((ImageView) findViewById(R.id.plus_menu_button)).setImageResource(android.R.color.transparent);
-			((ImageView) findViewById(R.id.plus_menu_button)).setClickable(false);
-			((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(android.R.color.transparent);
+			menuButtons.setVisibility(View.VISIBLE);
+			
+			if (iconToShow == CREATE_EVENT)
+			{
+				((ImageView) findViewById(R.id.plus_menu_button)).setClickable(true);
+				((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_plus_icon);
+			}
+			else if (iconToShow == TAKE_PICTURE)
+			{
+				((ImageView) findViewById(R.id.plus_menu_button)).setClickable(true);
+				((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_photo_icon);
+			}
+			else if (iconToShow == JOIN_EVENT)
+			{
+				((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_join_icon);
+			}
+			else if (iconToShow == NOT_APART_OF)
+			{
+				((ImageView) findViewById(R.id.plus_menu_button)).setImageResource(android.R.color.transparent);
+				((ImageView) findViewById(R.id.plus_menu_button)).setClickable(false);
+				((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(android.R.color.transparent);
+			}
 		}
 	}
 	
@@ -285,6 +289,11 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
 		public void myEventOccurred(UpdatedEventDetailEvent evt) {
 			
 			return;
+			
+		}
+
+		public void updatedEventOccurred(Integer eventId) {
+			// TODO Auto-generated method stub
 			
 		}
 		
@@ -446,6 +455,11 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
 	}
 
 	public void userWithEventsPhotos(UserWithEventsPhotosEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void updatedEventOccurred(Integer eventId) {
 		// TODO Auto-generated method stub
 		
 	}

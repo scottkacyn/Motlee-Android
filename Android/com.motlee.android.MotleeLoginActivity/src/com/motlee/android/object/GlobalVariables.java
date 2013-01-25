@@ -17,6 +17,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.scheme.SocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
@@ -103,7 +104,7 @@ public class GlobalVariables {
     
     private Location userLocation;
     
-    private String AWS_URL = "http://s3.amazonaws.com/motlee-development-photos/images/";
+    private String AWS_URL = "http://s3.amazonaws.com/motlee-staging-photos/images/";
     
     public static String FOMOS = "fomos";
     public static String ATTENDEES = "attendees";

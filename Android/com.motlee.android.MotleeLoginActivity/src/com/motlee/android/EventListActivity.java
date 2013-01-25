@@ -106,10 +106,11 @@ public class EventListActivity extends BaseMotleeActivity {
 	
 	private StopWatch sw = new StopWatch();
 	
+	private boolean refreshingData = false;
+	
 	@Override
 	public void onResume()
 	{		
-		Log.d(this.toString(), "onResume");
 		super.onResume();
 		
 		if (eAdapter != null && SharePref.getStringPref(getApplicationContext(), SharePref.AUTH_TOKEN) != "" && SharePref.getStringPref(getApplicationContext(), SharePref.ACCESS_TOKEN) != "")
@@ -117,6 +118,7 @@ public class EventListActivity extends BaseMotleeActivity {
 			if (eAdapter.getData().size() > 1)
 			{
 				mEventListFragment.setDoneLoading();
+				mEventListFragment.hideProgressBar();
 				requestNewDataForList(eventListParams.dataContent, eventListParams.headerText);
 			}
 			else
@@ -129,8 +131,6 @@ public class EventListActivity extends BaseMotleeActivity {
 	@Override 
 	public void onStart()
 	{
-		Log.d("EventListActivity", "onStart");
-
 		super.onStart();
 	}
 	
@@ -144,8 +144,6 @@ public class EventListActivity extends BaseMotleeActivity {
 	@Override
 	public void onNewIntent(Intent intent)
 	{
-		Log.d("EventListActivity", "onNewIntent");
-		
         Object listType = null;
         boolean startSplash = false;
         if (intent.getExtras() != null)
@@ -182,8 +180,6 @@ public class EventListActivity extends BaseMotleeActivity {
     public void onCreate(Bundle savedInstanceState) {
     	
         super.onCreate(savedInstanceState);
-    	
-        Log.d(tag, "onCreate");
         
         GlobalVariables instance = GlobalVariables.getInstance();
         
@@ -249,41 +245,7 @@ public class EventListActivity extends BaseMotleeActivity {
         Collections.sort(events);
         
         updateEventAdapter(events);
-        
-        mEventListFragment.addEventListAdapter(eAdapter);
-
-        mEventListFragment.setHeaderView(findViewById(R.id.header));
-        
-        
-        showMenuButtons(BaseMotleeActivity.CREATE_EVENT);
-        
-        setActionForRightMenu(plusMenuClick);
-        
-        Intent intent = getIntent();
-        
-        Object listType = null;
-        if (intent.getExtras() != null)
-        {
-        	listType = intent.getExtras().get("ListType");
-        }
-        
-        if (listType != null)
-        {
-        	eventListParams.headerText = listType.toString();
-        }
-        else
-        {
-        	eventListParams.headerText = BaseMotleeFragment.ALL_EVENTS;
-        	eventListParams.dataContent = EventServiceBuffer.NO_EVENT_FILTER;
-        }
-        
-        mEventListFragment.setEventListParams(eventListParams);
-        
-        //requestNewDataForList(eventListParams.dataContent, eventListParams.headerText);
-        
-        ft.add(R.id.fragment_content, mEventListFragment)
-        .commit();
-    	
+   	
     }
     
     @Override
@@ -327,8 +289,13 @@ public class EventListActivity extends BaseMotleeActivity {
     	
     	sw.start();
     	
-    	EventServiceBuffer.getEventsFromService();
-		//updateEventAdapter(GlobalEventList.eventDetailMap.keySet());
+    	if (!refreshingData)
+    	{
+    		refreshingData = true;
+    		EventServiceBuffer.getEventsFromService();
+    	}
+    	
+    	//updateEventAdapter(GlobalEventList.eventDetailMap.keySet());
 		//mEventListFragment.getPullToRefreshListView().setSelection(1);
 		
 	}
@@ -358,7 +325,11 @@ public class EventListActivity extends BaseMotleeActivity {
         
         //progressDialog = ProgressDialog.show(EventListActivity.this, "", "Loading");
         
-        EventServiceBuffer.getEventsFromService(dataContent);
+        if (!refreshingData)
+        {
+        	refreshingData = true;
+        	EventServiceBuffer.getEventsFromService(dataContent);
+        }
     }
     
     public UpdatedEventDetailListener initialEventListener = new UpdatedEventDetailListener()
@@ -374,9 +345,14 @@ public class EventListActivity extends BaseMotleeActivity {
 			
 			updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getAllEvents()));
 			
-			mEventListFragment.setDoneLoading();
+			//mEventListFragment.setDoneLoading();
 			
 			Log.d(tag, "ready to go " + sw.getElapsedTime() + " ms");
+			
+		}
+
+		public void updatedEventOccurred(Integer eventId) {
+			// TODO Auto-generated method stub
 			
 		}
     	
@@ -399,14 +375,16 @@ public class EventListActivity extends BaseMotleeActivity {
 				updateEventAdapter(dbWrapper.getMyEvents());
 			}
 			
-			//mEventListFragment.getPullToRefreshListView().setSelection(1);
-			//mEventListFragment.getPullToRefreshListView().onRefreshComplete();
-	        if (progressDialog != null && progressDialog.isShowing())
-	        {
-	        	progressDialog.dismiss();
+			/*if (progressDialog != null && progressDialog.isShowing())
+			{
 				mEventListFragment.getPullToRefreshListView().setSelection(1);
 				mEventListFragment.getPullToRefreshListView().onRefreshComplete();
-	        }
+			}*/
+		}
+
+		public void updatedEventOccurred(Integer eventId) {
+			// TODO Auto-generated method stub
+			
 		}
     };
     
@@ -480,81 +458,153 @@ public class EventListActivity extends BaseMotleeActivity {
     	MenuFunctions.takePictureOnPhone(eventId, this);
     }
     
-	public void updateEventAdapter(ArrayList<EventDetail> eventsToShow) {
+    private ArrayList<EventDetail> eventsToDisplay;
+    private ArrayList<EventDetail> upcomingEvents;
+    private ArrayList<Integer> upcomingIntegers;
+    
+    private boolean updatingEventAdapter = false;
+    
+	public void updateEventAdapter(final ArrayList<EventDetail> eventsToShow) {
 		
 		Log.d(tag, "updateEventAdapter");
-		
-		ArrayList<EventDetail> eventsToDisplay = new ArrayList<EventDetail>();
-		
-		ArrayList<EventDetail> upcomingEvents = new ArrayList<EventDetail>();
-		
-		for (EventDetail eDetail : eventsToShow)
+				
+		if (!updatingEventAdapter)
 		{
-			eDetail.setPhotos(dbWrapper.getPhotos(eDetail.getEventID()));
-			eDetail.setOwnerInfo(dbWrapper.getUser(eDetail.getOwnerID()));
+			updatingEventAdapter = true;
 			
-			if (eDetail.getLocationID() != null)
-			{
-				eDetail.setLocationInfo(dbWrapper.getLocation(eDetail.getLocationID()));
-			}
-
-			if (eDetail.getStartTime().compareTo(new Date()) < 0)
-			{
-				eventsToDisplay.add(eDetail);
-			}
-			else
-			{
-				upcomingEvents.add(eDetail);
-			}
-		}
-		
-		Collections.sort(eventsToDisplay);
-		Collections.sort(upcomingEvents);
-		
-		if (eAdapter == null)
-		{
-			eAdapter = new EventListAdapter(this, R.layout.event_list_item, eventsToDisplay);
-		}
-		else
-		{
-			eAdapter.clear();
-			eAdapter.addAll(eventsToDisplay);
-			eAdapter.notifyDataSetChanged();
-		}
-		
-		ArrayList<Integer> upcomingIntegers = new ArrayList<Integer>();
-		
-		/*for (EventDetail eDetail : eventsToDisplay)
-		{
-			eAdapter.add(eDetail.getEventID());
-		}*/
-		
-		for (EventDetail eDetail : upcomingEvents)
-		{
-			upcomingIntegers.add(eDetail.getEventID());
-		}
-		
-		//setPosition(firstEventDetailVisible);
-		
-		if (eventListParams.dataContent.equals(EventServiceBuffer.MY_EVENTS))
-		{
-			mEventListFragment.showUpcomingHeader(upcomingIntegers);
-		}
-		else
-		{
-			mEventListFragment.hideUpcomingHeader();
-		}
-	}
+			Thread thread = new Thread(new Runnable(){
 	
-	private void setPosition(EventDetail eDetail) {
+				public void run() {
+					
+					eventsToDisplay = new ArrayList<EventDetail>();
+					
+					upcomingEvents = new ArrayList<EventDetail>();
+					
+					for (EventDetail eDetail : eventsToShow)
+					{
+						eDetail.setPhotos(dbWrapper.getPhotos(eDetail.getEventID()));
+						eDetail.setOwnerInfo(dbWrapper.getUser(eDetail.getOwnerID()));
+						
+						if (eDetail.getLocationID() != null)
+						{
+							eDetail.setLocationInfo(dbWrapper.getLocation(eDetail.getLocationID()));
+						}
+	
+						if (eDetail.getStartTime().compareTo(new Date()) < 0)
+						{
+							eventsToDisplay.add(eDetail);
+						}
+						else
+						{
+							upcomingEvents.add(eDetail);
+						}
+					}
+					
+					Collections.sort(eventsToDisplay);
+					Collections.sort(upcomingEvents);
+					
+					upcomingIntegers = new ArrayList<Integer>();
+					
+					/*for (EventDetail eDetail : eventsToDisplay)
+					{
+						eAdapter.add(eDetail.getEventID());
+					}*/
+					
+					for (EventDetail eDetail : upcomingEvents)
+					{
+						upcomingIntegers.add(eDetail.getEventID());
+					}
+					
+					handler.post(new Runnable(){
+	
+						public void run() {
+							
+							if (eAdapter == null)
+							{
+								eAdapter = new EventListAdapter(EventListActivity.this, R.layout.event_list_item, eventsToDisplay);
+								mEventListFragment.addEventListAdapter(eAdapter);
+								
+						        mEventListFragment.setHeaderView(findViewById(R.id.header));
+						        
+						        if (eventsToDisplay.size() > 0)
+						        {
+						        	mEventListFragment.hideProgressBar();
+						        }
+						        
+						        showMenuButtons(BaseMotleeActivity.CREATE_EVENT);
+						        
+						        setActionForRightMenu(plusMenuClick);
+						        
+						        Intent intent = getIntent();
+						        
+						        Object listType = null;
+						        if (intent.getExtras() != null)
+						        {
+						        	listType = intent.getExtras().get("ListType");
+						        }
+						        
+						        if (listType != null)
+						        {
+						        	eventListParams.headerText = listType.toString();
+						        }
+						        else
+						        {
+						        	eventListParams.headerText = BaseMotleeFragment.ALL_EVENTS;
+						        	eventListParams.dataContent = EventServiceBuffer.NO_EVENT_FILTER;
+						        }
+						        
+						        mEventListFragment.setEventListParams(eventListParams);
+						        
+						        //requestNewDataForList(eventListParams.dataContent, eventListParams.headerText);
+						        
+						        FragmentManager fm = getSupportFragmentManager();
+						        FragmentTransaction ft = fm.beginTransaction();
+						        
+						        ft.add(R.id.fragment_content, mEventListFragment)
+						        .commit();
+							}
+							else
+							{
+								eAdapter.clear();
+								eAdapter.addAll(eventsToDisplay);
+								
+								Log.d("EventListActivity", "About to notifyDataSetChanged");
+								eAdapter.notifyDataSetChanged();
+							}
+							
+							//setPosition(firstEventDetailVisible);
+							
+							if (eventListParams.dataContent.equals(EventServiceBuffer.MY_EVENTS))
+							{
+								mEventListFragment.showUpcomingHeader(upcomingIntegers);
+							}
+							else
+							{
+								mEventListFragment.hideUpcomingHeader();
+							}
+							
+							mEventListFragment.setDoneLoading();
+							
+					        if (progressDialog != null && progressDialog.isShowing())
+					        {
+					        	progressDialog.dismiss();
+								mEventListFragment.getPullToRefreshListView().setSelection(1);
+								mEventListFragment.getPullToRefreshListView().onRefreshComplete();
+					        }
+							
+					        refreshingData = false;
+					        updatingEventAdapter = false;
+					        
+					        Log.d("EventListActivity", "Done notifying data set change");
+						}
+						
+					});					
+				}
+			
+			});
+			
+			thread.start();
 		
-		ArrayList<EventDetail> eventDetails = new ArrayList<EventDetail>(eAdapter.getData());
-		
-		Integer eventDetailIndex = eventDetails.indexOf(eDetail);
-		
-		if (eventDetailIndex > 0)
-		{
-			mEventListFragment.getListView().setSelection(eventDetailIndex);
 		}
 	}
 

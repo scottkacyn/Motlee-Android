@@ -23,6 +23,7 @@ import com.google.android.maps.MapView;
 import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.EventItemType;
+import com.motlee.android.fragment.BaseDetailFragment;
 import com.motlee.android.fragment.DateDetailFragment;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
@@ -88,6 +89,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	private FragmentTransaction ft;
 	private int mEventID;
 	
+	private boolean mShowProgressBar = false;
+	
 	public static final String PHOTOS = "photos";
 	public static final String MESSAGES = "messages";
 	
@@ -145,17 +148,21 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
 		eDetail = dbWrapper.getEvent(mEventID);
 		
-		if (progressDialog == null || !progressDialog.isShowing())
+		
+		if (eDetail == null)
 		{
-			if (eDetail != null)
-			{
-				progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading " + eDetail.getEventName());
-			}
-			else
+			
+			this.showDeletedEventDialog();
+			
+		}
+		
+		/*if (progressDialog == null || !progressDialog.isShowing())
+		{
+			if (eDetail == null)
 			{
 				progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading...");
 			}
-		}//setUpFragments();
+		}//setUpFragments();*/
 		
 		if (findViewById(R.id.header) == null)
 		{
@@ -212,6 +219,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
     	{
     		locationFragment = setUpLocationFragment();
     	}
+    	
     	
     	dateFragment = setUpDateFragment();
     	
@@ -396,7 +404,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         
         if (eDetail != null)
         {
-        	dateDetailFragment.addEventDetail(eDetail);
+        	dateDetailFragment.setEventDetail(eDetail);
         }
         
         return dateDetailFragment;
@@ -432,7 +440,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         
         if (eDetail != null)
         {
-        	eventDetailFragment.addEventDetail(eDetail);
+        	eventDetailFragment.setEventDetail(eDetail);
         }
         
         return eventDetailFragment;
@@ -493,7 +501,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	
 	private void leaveThisEvent() {
 			
-		EventServiceBuffer.setAttendeeListener(attendeeListener);
+		EventServiceBuffer.setAttendeeListener(leaveEvent);
 
 		progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Leaving this event");
 		
@@ -505,6 +513,31 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
 	}
 
+	private UpdatedAttendeeListener leaveEvent = new UpdatedAttendeeListener(){
+
+		public void raised(UpdatedAttendeeEvent e) {
+			
+			Collection<Attendee> attendees = dbWrapper.getAttendees(eDetail.getEventID());
+			
+			Iterator<Attendee> iterator = attendees.iterator();
+			
+			while (iterator.hasNext())
+			{
+				if (iterator.next().user_id == SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID))
+				{
+					iterator.remove();
+					break;
+				}
+			}
+			
+			dbWrapper.updateAttendees(eDetail.getEventID(), attendees);
+			
+			progressDialog.dismiss();
+			
+			showEvent();
+		}
+	};
+	
 	private UpdatedAttendeeListener attendeeListener = new UpdatedAttendeeListener(){
 
 		public void raised(UpdatedAttendeeEvent e) {
@@ -551,6 +584,14 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		removeMessageText();
 		locationFragment.clearEventList();
 		locationFragment.addEventDetail(eDetail);
+		if (mShowProgressBar)
+		{
+			locationFragment.showProgressBar();
+		}
+		else
+		{
+			locationFragment.hideProgressBar();
+		}
 		FragmentManager     fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
         
@@ -588,7 +629,15 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	public void showPhotos(View view)
 	{
 		removeMessageText();
-		photosFragment.addEventDetail(eDetail);
+		photosFragment.setEventDetail(eDetail);
+		if (mShowProgressBar)
+		{
+			photosFragment.showProgressBar();
+		}
+		else
+		{
+			photosFragment.hideProgressBar();
+		}
 		showFragment(photosFragment);
 	}
 	
@@ -596,13 +645,29 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	{
 		removeMessageText();
 		peopleListFragment.setEventDetail(eDetail);
+		if (mShowProgressBar)
+		{
+			peopleListFragment.showProgressBar();
+		}
+		else
+		{
+			peopleListFragment.hideProgressBar();
+		}
         showFragment(peopleListFragment);
 	}
 
 	public void showTime(View view)
 	{
 		removeMessageText();
-		dateFragment.addEventDetail(eDetail);
+		dateFragment.setEventDetail(eDetail);
+		if (mShowProgressBar)
+		{
+			dateFragment.showProgressBar();
+		}
+		else
+		{
+			dateFragment.hideProgressBar();
+		}
 		showFragment(dateFragment);
 	}
 	
@@ -610,6 +675,14 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	{
 		setUpMessageText();
 		messageFragment.addEventDetail(eDetail);
+		if (mShowProgressBar)
+		{
+			messageFragment.showProgressBar();
+		}
+		else
+		{
+			messageFragment.hideProgressBar();
+		}
 		showFragment(messageFragment);
 	}
 
@@ -676,105 +749,189 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
     
 	public void myEventOccurred(UpdatedEventDetailEvent evt) {
 		
+		//EventServiceBuffer.removeEventDetailListener(this);
+		
+
+
+		//progressDialog.dismiss();
+	}
+	
+	public void updatedEventOccurred(Integer eventId)
+	{
 		EventServiceBuffer.removeEventDetailListener(this);
 		
+		eDetail = dbWrapper.getEvent(mEventID);
+		
+		if (eDetail == null)
+		{
+			showDeletedEventDialog();
+		}
+		else
+		{
+			mShowProgressBar = false;
+			
+	        FragmentManager fm = getSupportFragmentManager();
+	        BaseDetailFragment fragment = (BaseDetailFragment) fm.findFragmentById(R.id.fragment_content);
+			
+	        if (mNewPhoto != null)
+	        {
+	        	mNewPhoto.event_detail = eDetail;
+	        	
+	        	dbWrapper.createPhoto(mNewPhoto);
+	        }
+	        
+			if (fragment instanceof EventDetailFragment)
+			{
+				fragment.hideProgressBar();
+				((EventDetailFragment) fragment).setEventDetail(eDetail);
+			}
+			else if (fragment instanceof MessageDetailFragment)
+			{
+				fragment.hideProgressBar();
+				((MessageDetailFragment) fragment).addEventDetail(eDetail);
+			}
+			else if (fragment instanceof PeopleListFragment)
+			{
+				fragment.hideProgressBar();
+				((PeopleListFragment) fragment).setEventDetail(eDetail);
+			}
+			else if (fragment instanceof LocationFragment)
+			{
+				fragment.hideProgressBar();
+				((LocationFragment) fragment).clearEventList();
+				((LocationFragment) fragment).addEventDetail(eDetail);
+			}
+			else if (fragment instanceof DateDetailFragment)
+			{
+				fragment.hideProgressBar();
+				((DateDetailFragment) fragment).setEventDetail(eDetail);
+			}
+		}
+	}
+	
+	public void showEvent()
+	{
         eDetail = dbWrapper.getEvent(mEventID); 
         
-        if (eDetail.getIsPrivate())
+        if (eDetail == null)
         {
-        	findViewById(R.id.header_private_icon).setVisibility(View.VISIBLE);
+        	showDeletedEventDialog();
         }
         else
         {
-        	findViewById(R.id.header_private_icon).setVisibility(View.GONE);
+	        if (eDetail.getIsPrivate() == null || !eDetail.getIsPrivate())
+	        {
+	        	findViewById(R.id.header_private_icon).setVisibility(View.GONE);
+	        }
+	        else
+	        {
+	        	findViewById(R.id.header_private_icon).setVisibility(View.VISIBLE);
+	        }
+	        
+	        setUpFragments();
+	        
+	        Attendee attendee = new Attendee(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
+	        
+	        if (dbWrapper.getAttendees(mEventID).contains(attendee))
+	        {
+	        	setActionForRightMenu(takePhotoListener);
+	            showMenuButtons(BaseMotleeActivity.TAKE_PICTURE);
+	        }
+	        else
+	        {
+	        	//setActionForRightMenu(joinMenuListener);
+	        	showMenuButtons(BaseMotleeActivity.NOT_APART_OF);
+	        }
+	        
+	    	if (mNewPhoto != null)
+	    	{
+	    		
+	    		EventServiceBuffer.setPhotoListener(this);
+	    		
+	    		EventServiceBuffer.sendPhotoCacheToDatabase();
+	    		
+	    		mNewPhoto.event_detail = eDetail;
+	    		
+	    		dbWrapper.createPhoto(mNewPhoto);
+	    		
+	    		showPhotos(null);
+	    	}
+	    	else if (firstScreen != null)
+	    	{
+	    		if (firstScreen.equals(PHOTOS))
+	    		{
+	    			firstScreen = null;
+	    			showPhotos(null);
+	    		}
+	    		else if (firstScreen.equals(MESSAGES))
+	    		{
+	    			firstScreen = null;
+	    			showComments(null);
+	    		}
+	    		else
+	    		{
+	    			firstScreen = null;
+	    			showPhotos(null);
+	    		}
+	    	}
+	    	else
+	    	{
+	            FragmentManager fm = getSupportFragmentManager();
+	            BaseDetailFragment fragment = (BaseDetailFragment) fm.findFragmentById(R.id.fragment_content);
+	            if (fragment != null)
+	            {
+	    			if (fragment instanceof EventDetailFragment)
+	    			{
+	    				showPhotos(null);
+	    			}
+	    			else if (fragment instanceof MessageDetailFragment)
+	    			{
+	    				showComments(null);
+	    			}
+	    			else if (fragment instanceof PeopleListFragment)
+	    			{
+	    				showFriends(null);
+	    			}
+	    			else if (fragment instanceof LocationFragment)
+	    			{
+	    				this.showMap(null);
+	    			}
+	    			else if (fragment instanceof DateDetailFragment)
+	    			{
+	    				this.showTime(null);
+	    			}
+	            }
+	            else
+	            {
+	            	showPhotos(null);
+	            }
+	    	}
         }
-        
-        setUpFragments();
-        
-        Attendee attendee = new Attendee(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
-        
-        if (dbWrapper.getAttendees(mEventID).contains(attendee))
-        {
-        	setActionForRightMenu(takePhotoListener);
-            showMenuButtons(BaseMotleeActivity.TAKE_PICTURE);
-        }
-        else
-        {
-        	//setActionForRightMenu(joinMenuListener);
-        	showMenuButtons(BaseMotleeActivity.NOT_APART_OF);
-        }
-        
-    	if (mNewPhoto != null)
-    	{
-    		
-    		EventServiceBuffer.setPhotoListener(this);
-    		
-    		EventServiceBuffer.sendPhotoCacheToDatabase();
-    		
-    		mNewPhoto.event_detail = eDetail;
-    		
-    		dbWrapper.createPhoto(mNewPhoto);
-    		
-    		showPhotos(null);
-    	}
-    	else if (firstScreen != null)
-    	{
-    		if (firstScreen.equals(PHOTOS))
-    		{
-    			firstScreen = null;
-    			showPhotos(null);
-    		}
-    		else if (firstScreen.equals(MESSAGES))
-    		{
-    			firstScreen = null;
-    			showComments(null);
-    		}
-    		else
-    		{
-    			firstScreen = null;
-    			showPhotos(null);
-    		}
-    	}
-    	else
-    	{
-            FragmentManager fm = getSupportFragmentManager();
-            Fragment fragment = fm.findFragmentById(R.id.fragment_content);
-            if (fragment != null)
-            {
-    			if (fragment instanceof EventDetailFragment)
-    			{
-    				showPhotos(null);
-    			}
-    			else if (fragment instanceof MessageDetailFragment)
-    			{
-    				showComments(null);
-    			}
-    			else if (fragment instanceof PeopleListFragment)
-    			{
-    				showFriends(null);
-    			}
-    			else if (fragment instanceof LocationFragment)
-    			{
-    				this.showMap(null);
-    			}
-    			else if (fragment instanceof DateDetailFragment)
-    			{
-    				this.showTime(null);
-    			}
-            }
-            else
-            {
-            	showPhotos(null);
-            }
-    	}
-
-		progressDialog.dismiss();
 	}
 
 
+	private void showDeletedEventDialog() {
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(EventDetailActivity.this);
+		builder.setMessage("This event has been deleted.")
+		.setCancelable(true)
+		.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			
+			public void onClick(DialogInterface dialog, int which) {
+				
+				dialog.cancel();
+				finish();
+				
+			}
+		});
+		
+		builder.create().show();
+		
+	}
+
 	public void OnFragmentAttached() {
 		
-		if (progressDialog.isShowing())
+		if (progressDialog != null && progressDialog.isShowing())
 		{
 		
 	        EventServiceBuffer.setEventDetailListener(this);
@@ -788,7 +945,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		}
 		else
 		{
-			eDetail = dbWrapper.getEvent(mEventID);
+			/*eDetail = dbWrapper.getEvent(mEventID);
 			
 			Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_content);
 			
@@ -817,8 +974,16 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 			{
 				this.dateFragment.addEventDetail(eDetail);
 				//this.dateFragment.setDateLabels();
-			}
+			}*/
 			
+			mShowProgressBar = true;
+			
+			showEvent();
+			
+	        EventServiceBuffer.setEventDetailListener(this);
+	        
+	        EventServiceBuffer.getEventsFromService(mEventID);
+	        
 		}
 		
 	}

@@ -18,6 +18,7 @@ import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.Attendee;
 import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.SharePref;
@@ -52,29 +53,15 @@ public class PeopleListFragment extends BaseDetailFragment {
 	
 	private String tag = "PeopleListFragment";
 	
-	private static final String JOIN = "Join";
-	private static final String EDIT = "Edit";
-	private static final String LEAVE = "Leave";
-	private static final String FOMO = "FOMO";
-	
 	private String pageTitle = "All Events";
 	
-	private String facebookPrefix = "https://graph.facebook.com/";
-	
 	private ListView eventDetailPeopleList;
-	
-	private View view;
 	
 	private LayoutInflater inflater;
 	
 	private PeopleListAdapter mAdapter;
 	
 	private ArrayList<UserInfo> mUsers = new ArrayList<UserInfo>();
-	
-	private Facebook facebook = new Facebook(GlobalVariables.FB_APP_ID);
-    private ImageLoader imageDownloader;
-    private DisplayImageOptions mOptions;
-    private EventDetail mEventDetail;
 
     private LinearLayout eventHeader;
     
@@ -97,6 +84,11 @@ public class PeopleListFragment extends BaseDetailFragment {
 		if (eventDetailPeopleList.getHeaderViewsCount() == 0 && dbWrapper.getAttendees(mEventDetail.getEventID()).contains(attendee))
 		{
 			eventDetailPeopleList.addHeaderView(inviteFriendsHeader);
+		}
+		
+		if (eventDetailPeopleList.getFooterViewsCount() == 0)
+		{
+			setUpFooter();
 		}
 		
 		setUpPeopleList();
@@ -128,6 +120,21 @@ public class PeopleListFragment extends BaseDetailFragment {
 		
 		return view;
 	}
+
+	private void setUpFooter() {
+		
+		LinearLayout blank = new LinearLayout(getActivity());
+		
+		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.event_list_load_more, GlobalVariables.DISPLAY_WIDTH);
+		
+		blank.setLayoutParams(new ListView.LayoutParams(drawable.getWidth(), drawable.getHeight()));
+		
+		blank.setBackgroundColor(android.R.color.transparent);
+				
+		eventDetailPeopleList.addFooterView(blank);
+		
+	}
+	
 	
 	private void setUpPageHeader() 
 	{
@@ -196,7 +203,10 @@ public class PeopleListFragment extends BaseDetailFragment {
 			Collections.sort(mUsers);
 		}
 		
-		mAdapter = new PeopleListAdapter(getActivity(), R.layout.people_list_item, mUsers);
+		if (getActivity() != null)
+		{
+			mAdapter = new PeopleListAdapter(getActivity(), R.layout.people_list_item, mUsers);
+		}
 
 		
 		eventDetailPeopleList.setAdapter(mAdapter);
@@ -207,5 +217,10 @@ public class PeopleListFragment extends BaseDetailFragment {
 	{
 		mEventDetail = eventDetail;
 		this.pageTitle = mEventDetail.getEventName();
+		
+		if (eventDetailPeopleList != null && mAdapter != null)
+		{
+			setUpPeopleList();
+		}
 	}
 }

@@ -161,8 +161,8 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 		
 	}
 	
-	private void setLoadingHeader() {
-		
+	private void setLoadingHeader() 
+	{	
 		progressBar = getActivity().getLayoutInflater().inflate(R.layout.event_list_progress_bar, null);
 		
 		LinearLayout bar = (LinearLayout) progressBar.findViewById(R.id.marker_progress);
@@ -181,11 +181,17 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 	
 	public void setDoneLoading()
 	{
-		
-		ListView listView = (ListView) view.findViewById(android.R.id.list);
-		if (listView != null)
+		if (view != null)
 		{
-			listView.removeHeaderView(progressBar);
+			ListView listView = (ListView) view.findViewById(android.R.id.list);
+			if (listView != null)
+			{
+				Log.d("EventListFragment", "headerCount: " + listView.getHeaderViewsCount());
+				if (progressBar != null)
+				{
+					listView.removeHeaderView(progressBar);
+				}
+			}
 		}
 	}
 	
@@ -243,6 +249,8 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
             
             public void onRefresh() {
             	
+            	Log.d("EventListFragment", "onRefresh");
+            	
             	EventServiceBuffer.setEventDetailListener(EventListFragment.this);
             	
             	EventServiceBuffer.getEventsFromService(params.dataContent);
@@ -251,6 +259,8 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 	}
 
 	public void myEventOccurred(UpdatedEventDetailEvent evt) {
+		
+		Log.d("EventListFragment", "myEventOccurred, onRefresh");
 		
 		EventServiceBuffer.removeEventDetailListener(this);
 		
@@ -313,6 +323,11 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 	public void hideProgressBar() {
 		
 		this.hideProgressBar = true;
+		
+	}
+
+	public void updatedEventOccurred(Integer eventId) {
+		// TODO Auto-generated method stub
 		
 	}
 

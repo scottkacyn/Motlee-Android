@@ -48,7 +48,6 @@ public class MoreEventDetailActivity extends BaseMotleeActivity {
 
             dateDetailFragment.setHeaderView(findViewById(R.id.header));
             
-            dateDetailFragment.addEventDetail(eDetail);
             
             ft.add(R.id.fragment_content, dateDetailFragment);
         }

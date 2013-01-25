@@ -70,7 +70,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEventDetailListener, UpdatedPhotoListener {
+public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEventDetailListener {
 	
 	public static String MAIN_FRAGMENT = "MainFragment";
 	public static String SEARCH_PEOPLE = "SearchPeople";
@@ -87,6 +87,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	private static final int SEARCH_RESULT_LIMIT = 50;
 	private static final String SEARCH_TEXT = "";
 	private View mCurrentDateTimePickerFocus;
+	
+	private boolean isFacebookEvent = false;
 	
 	private LocationInfo selectLocation;
 	private SearchPlacesFragment searchPlacesFragment;
@@ -333,6 +335,11 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 			finish();
 			
 		}
+
+		public void updatedEventOccurred(Integer eventId) {
+			// TODO Auto-generated method stub
+			
+		}
 		
 	};
     
@@ -394,6 +401,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	    	mCreatedEvent.setOwnerID(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
 	    	mCreatedEvent.setIsPrivate(fragment.getIsPrivate());
 	    	
+	    	isFacebookEvent = fragment.getIsFacebookEvent();
+	    	
 	    	EventServiceBuffer.setEventDetailListener(this);
 	    	
 	    	EventServiceBuffer.setAttendeeListener(attendeeListener);
@@ -429,6 +438,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	    	mCreatedEvent.setEndTime(fragment.getEndTime().getTime());
 	    	mCreatedEvent.setOwnerID(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
 	    	mCreatedEvent.setIsPrivate(fragment.getIsPrivate());
+	    	
+	    	isFacebookEvent = fragment.getIsFacebookEvent();
 	    	
 	    	EventServiceBuffer.setEventDetailListener(this);
 	    	
@@ -540,7 +551,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	                    
 	                    EventServiceBuffer.setAttendeeListener(attendeeListener);
 	                    
-	                    EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees);
+	                    EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees, isFacebookEvent);
                     } 
                     else
                     {
@@ -574,7 +585,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
                 
                 EventServiceBuffer.setAttendeeListener(attendeeListener);
                 
-                EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees);
+                EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees, isFacebookEvent);
             }
             else if (removedAttendees.size() > 0)
             {
@@ -610,7 +621,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 		{
 			mCreatedEvent.getImages().add(item);
 		}*/
-		EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees);
+		EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees, false);
 	}
 	
     /*

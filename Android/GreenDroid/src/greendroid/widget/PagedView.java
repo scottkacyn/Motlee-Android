@@ -20,6 +20,7 @@ import greendroid.util.Config;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.os.Handler;
@@ -55,6 +56,7 @@ import android.widget.Scroller;
  * 
  * @author Cyril Mottier
  */
+@TargetApi(3)
 public class PagedView extends ViewGroup {
 
     private static final String LOG_TAG = PagedView.class.getSimpleName();
@@ -136,7 +138,8 @@ public class PagedView extends ViewGroup {
         initPagedView();
     }
 
-    private void initPagedView() {
+    @TargetApi(4)
+	private void initPagedView() {
 
         final Context context = getContext();
 
@@ -273,7 +276,8 @@ public class PagedView extends ViewGroup {
         return mIsBeingDragged;
     }
 
-    @Override
+    @TargetApi(4)
+	@Override
     public boolean onTouchEvent(MotionEvent ev) {
 
         final int action = ev.getAction();
@@ -652,7 +656,14 @@ public class PagedView extends ViewGroup {
                 setOffsetX(scroller.getCurrX());
                 mHandler.postDelayed(this, FRAME_RATE);
             } else {
-                performPageChange(mTargetPage);
+            	if (mTargetPage < 0)
+            	{
+            		performPageChange(mCurrentPage);
+            	}
+            	else
+            	{
+            		performPageChange(mTargetPage);
+            	}
             }
         }
     };

@@ -324,4 +324,9 @@ public class MotleeLoginActivity extends FragmentActivity implements UserInfoLis
     	}
     	//EventServiceBuffer.getEventsFromService();
 	}
+
+	public void updatedEventOccurred(Integer eventId) {
+		// TODO Auto-generated method stub
+		
+	}
 }

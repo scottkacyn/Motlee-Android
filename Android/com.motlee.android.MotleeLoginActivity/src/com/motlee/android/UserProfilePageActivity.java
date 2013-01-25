@@ -233,6 +233,7 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
 		Intent showPictureIntent = new Intent(this, EventItemDetailActivity.class);
 		showPictureIntent.putExtra("EventItem", photo);
 		showPictureIntent.putParcelableArrayListExtra("Photos", this.photos);
+		showPictureIntent.putExtra("IsUserPhotoRoll", true);
 		startActivity(showPictureIntent);
 	}
 	

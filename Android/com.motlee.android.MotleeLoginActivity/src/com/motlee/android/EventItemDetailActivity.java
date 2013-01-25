@@ -21,6 +21,7 @@ import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.Attendee;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Like;
+import com.motlee.android.object.PhotoDetail;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.StoryItem;
@@ -73,7 +74,8 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 	private HashMap<PhotoItem, Boolean> likeMap = new HashMap<PhotoItem, Boolean>();
 	
 	private EditText editText;
-	private boolean getPhotoInformation = true;
+	private boolean isUserPhotoRoll = false;
+	private boolean isSinglePhoto = false;
 	
 	private DatabaseWrapper dbWrapper;
 	
@@ -83,6 +85,8 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 	private static final int REPORT = 2;
 	private static final int DOWNLOAD = 3;
 	
+	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -91,90 +95,72 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
         
         //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
         
-        mEventItem = (EventItem) getIntent().getParcelableExtra("EventItem");
-        getPhotoInformation = getIntent().getBooleanExtra("GetPhotoInfo", true);
+    	newComments = new HashMap<PhotoItem, ArrayList<Comment>>();
+    	likeMap = new HashMap<PhotoItem, Boolean>();
         
-        getPhotoInformation = true;
+        mEventItem = (EventItem) getIntent().getParcelableExtra("EventItem");
+        isUserPhotoRoll = getIntent().getBooleanExtra("IsUserPhotoRoll", false);
+        isSinglePhoto = getIntent().getBooleanExtra("IsSinglePhoto", false);
         
 		EventServiceBuffer.setCommentListener(EventItemDetailActivity.this);
 		
         dbWrapper = new DatabaseWrapper(getApplicationContext());
         
-        setIsApartOfEvent();
-        
-        ArrayList<PhotoItem> photos = getIntent().getParcelableArrayListExtra("Photos");
-        
-        if (photos != null)
+        if (mEventItem != null)
         {
-            getPhotoInformation = false;
-        }
-        
-        //setEditText();
-        if (getPhotoInformation)
-        {
+	        setIsApartOfEvent();
+	        
+	        ArrayList<PhotoItem> photos = getIntent().getParcelableArrayListExtra("Photos");
+	        
+	        if (photos != null)
+	        {
+	            isUserPhotoRoll = true;
+	        }
+	        
 	        EventServiceBuffer.setPhotoListener(this);
 	        
-	        EventServiceBuffer.getPhotosForEventFromService(mEventItem.event_id);
+	        FragmentManager fm = getSupportFragmentManager();
+	        FragmentTransaction ft = fm.beginTransaction();
 	        
-	        progressDialog = ProgressDialog.show(EventItemDetailActivity.this, "", "Loading Photos");
+	        fragment = new EventItemDetailFragment();
+	        fragment.setHeaderView(findViewById(R.id.header));
+	        
+	        fragment.setDetailImage((PhotoItem)mEventItem);
+	        
+	        if (isSinglePhoto)
+	        {
+	        	UserInfo user = dbWrapper.getUser(mEventItem.user_id);
+	        	
+	        	ArrayList<PhotoItem> singlePhotoList = new ArrayList<PhotoItem>();
+	        	
+	        	singlePhotoList.add((PhotoItem) mEventItem);
+	        	
+	        	fragment.setPhotoList(singlePhotoList);
+	        	
+	        	fragment.setPageTitle(user.name);
+	        }
+	        else if (isUserPhotoRoll)
+	        {
+	        	UserInfo user = dbWrapper.getUser(mEventItem.user_id);
+	        	
+	            fragment.setPhotoList(photos);
+	        	
+	            fragment.setPageTitle(user.name);
+	        }
+	        else
+	        {
+		        fragment.setPhotoList(new ArrayList<PhotoItem>(dbWrapper.getPhotos(mEventItem.event_id)));
+	        	
+		        fragment.setPageTitle(dbWrapper.getEvent(mEventItem.event_id).getEventName());
+	        }
+	        
+	        ft.add(R.id.fragment_content, fragment)
+	        .commit();
         }
-        else
-        {
-        	DatabaseHelper helper = DatabaseHelper.getInstance(this.getApplicationContext());
-        	
-        	UserInfo user = null;
-			try {
-				user = helper.getUserDao().queryForId(mEventItem.user_id);
-			} catch (SQLException e) {
-				Log.e("DatabaseHelper", "Failed to queryForId for user", e);
-			}
-        	
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-            
-            fragment = new EventItemDetailFragment();
-            fragment.setHeaderView(findViewById(R.id.header));
-            
-            fragment.setDetailImage((PhotoItem)mEventItem);
-            fragment.setPhotoList(photos);
-            fragment.setPageTitle(user.name);
-            
-            ft.add(R.id.fragment_content, fragment)
-            .commit();
-        }
-        /*if (mEventItem instanceof PhotoItem)
-        {
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-            
-            fragment = new EventItemDetailFragment();
-            fragment.setHeaderView(findViewById(R.id.header));
-            
-            fragment.setDetailImage((PhotoItem)mEventItem);
-            
-            ft.add(R.id.fragment_content, fragment)
-            .commit();
-        }
-        
-        if (mEventItem instanceof StoryItem)
-        {
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-            
-            fragment = new EventItemDetailFragment();
-            fragment.setHeaderView(findViewById(R.id.header));
-            
-            fragment.setDetailStory((StoryItem)mEventItem);
-            
-            ft.add(R.id.fragment_content, fragment)
-            .commit();
-        }*/
 	}
 	
 	public void deleteComment(View view)
 	{
-		
-		
 		final Comment comment = (Comment) view.getTag();
 		AlertDialog.Builder builder = new AlertDialog.Builder(EventItemDetailActivity.this);
 		builder.setMessage("Delete your comment?")
@@ -219,16 +205,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 	
 	private void setIsApartOfEvent()
 	{
-		Collection<Attendee> attendees = dbWrapper.getAttendees(mEventItem.event_id);
-		
-		for (Attendee attendee : attendees)		
-		{
-			if (attendee.user_id == SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID))
-			{
-				isApartOfEvent = true;
-				break;
-			}
-		}
+		isApartOfEvent = dbWrapper.isAttending(mEventItem.event_id);
 	}
 	
 	@Override
@@ -237,7 +214,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 		menu.clear();
 		
     	PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
-		PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
+		PhotoItem currentPhoto = ((PhotoDetail) adapter.getItem(fragment.getPagedView().getCurrentPage())).photo;
 	
 		boolean isOwner = currentPhoto.user_id == SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID);
 		
@@ -281,7 +258,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 		Toast.makeText(getApplicationContext(), "Starting download...", 2000).show();	
 		
     	PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
-		final PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
+		final PhotoItem currentPhoto = ((PhotoDetail) adapter.getItem(fragment.getPagedView().getCurrentPage())).photo;
 		
         Intent intent = new Intent(this, DownloadImage.class);
 		
@@ -311,7 +288,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 	public void deleteCurrentPhoto()
 	{
     	PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
-		final PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
+		final PhotoItem currentPhoto = ((PhotoDetail) adapter.getItem(fragment.getPagedView().getCurrentPage())).photo;
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(EventItemDetailActivity.this);
 		builder.setMessage("Delete This Photo?")
@@ -340,8 +317,8 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
     public void sendComment(View view)
     {
     	PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
-		PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
-    	
+		PhotoItem currentPhoto = ((PhotoDetail) adapter.getItem(fragment.getPagedView().getCurrentPage())).photo;
+		
     	if (!fragment.getCommentText().equals(""))
     	{
 	    	//EventServiceBuffer.addCommentToEventItem(mEventItem, fragment.getCommentText());
@@ -358,24 +335,29 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
     			newComments.get(currentPhoto).add(comment);
     		}
     		
-    		comment.photo = currentPhoto;
-    		
-    		int id = comment.id;
-    		
-    		while (dbWrapper.getComment(id) != null)
-    		{
-    			id--;
-    		}
-    		
-    		comment.id = id;
-    		
-    		dbWrapper.createComment(comment);
+    		updateCommentInAdapter(currentPhoto, comment);
     		
 	    	fragment.removeTextAndKeyboard();
 	    	
+			fragment.getAdapter().showFirstComment();
 	    	adapter.notifyDataSetChanged();
     	}
     }
+
+	private void updateCommentInAdapter(PhotoItem currentPhoto, Comment comment) {
+		comment.photo = currentPhoto;
+		
+		int id = comment.id;
+		
+		while (dbWrapper.getComment(id) != null)
+		{
+			id--;
+		}
+		
+		comment.id = id;
+		
+		dbWrapper.createComment(comment);
+	}
 	
     public void onShowLikes(View view)
     {
@@ -393,7 +375,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
     
 	public void onLikeClick(View view)
 	{
-		PhotoItem photo = (PhotoItem) view.getTag();
+		PhotoItem photo = ((PhotoDetail) view.getTag()).photo;
 		// toggle if we changed user's like status
 		if (likeMap.containsKey(photo))
 		{
@@ -404,6 +386,13 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 			likeMap.put(photo, true);
 		}
 		
+		updateLikeInAdapter(photo);
+		
+		PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+		adapter.notifyDataSetChanged();
+	}
+
+	private void updateLikeInAdapter(PhotoItem photo) {
 		boolean hasLiked = false;
 		
 		Collection<Like> likes = dbWrapper.getLikes(photo.id);
@@ -428,11 +417,6 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 					dbWrapper.deleteLike(like);
 				}
 			}
-			
-			PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
-			PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
-			currentPhoto = photo;
-			adapter.notifyDataSetChanged();
 		}
 		else
 		{
@@ -441,11 +425,6 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 			newLike.photo = photo;
 			
 			dbWrapper.createLike(newLike);
-			
-			PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
-			PhotoItem currentPhoto = (PhotoItem) adapter.getItem(fragment.getPagedView().getCurrentPage());
-			currentPhoto = photo;
-			adapter.notifyDataSetChanged();
 		}
 	}
 	
@@ -453,6 +432,8 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 	public void onDestroy()
 	{
 		EventServiceBuffer.removeCommentListener(this);
+		
+		EventServiceBuffer.removePhotoListener(this);
 		
 		for (PhotoItem photo : newComments.keySet())
 		{
@@ -462,7 +443,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 			}
 		}
 		
-		for (PhotoItem photo : likeMap.keySet())
+		for (PhotoItem photo : likeMap.keySet()) 
 		{
 			if (likeMap.get(photo))
 			{
@@ -475,27 +456,66 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 
 	public void photoEvent(UpdatedPhotoEvent e) {
 		
-		EventServiceBuffer.removePhotoListener(this);
+		//EventServiceBuffer.removePhotoListener(this);
 		
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        
-        fragment = new EventItemDetailFragment();
-        fragment.setHeaderView(findViewById(R.id.header));
-        
-        fragment.setDetailImage((PhotoItem)mEventItem);
-        
-        fragment.setPhotoList(new ArrayList<PhotoItem>(dbWrapper.getPhotos(mEventItem.event_id)));
-        
-        fragment.setPageTitle(dbWrapper.getEvent(mEventItem.event_id).getEventName());
-        
-        ft.add(R.id.fragment_content, fragment)
-        .commit();
-        
-        progressDialog.dismiss();
+		PhotoItem photo = e.getPhoto();
 		
+		if (photo != null)
+		{
+			for (int i = 0; i < fragment.getAdapter().getCount(); i++ )
+			{
+				PhotoDetail photoDetail = ((PhotoDetail) fragment.getAdapter().getItem(i));
+				
+				if (photoDetail.photo.equals(photo))
+				{
+					photoDetail.hasReceivedDetail = true;
+					
+					if (likeMap.containsKey(photoDetail.photo))
+					{
+						if (likeMap.get(photoDetail.photo))
+						{
+							updateLikeInAdapter(photoDetail.photo);
+						}
+					}
+					
+					if (newComments.containsKey(photoDetail.photo))
+					{
+						for (Comment comment : newComments.get(photoDetail.photo))
+						{
+							updateCommentInAdapter(photoDetail.photo, comment);
+						}
+					}
+					
+					break;
+				}
+			}
+			
+			//Log.e("photoEvent", "currentPosition: " + fragment.getPagedView().getCurrentPage());
+			if (fragment.getPagedView().getCurrentPage() >= 0)
+			{
+				fragment.getAdapter().notifyDataSetChanged();
+			}
+		}
 	}
 
+	private void showDeletedPhoto() {
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(EventItemDetailActivity.this);
+		builder.setMessage("This photo has been deleted.")
+		.setCancelable(true)
+		.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			
+			public void onClick(DialogInterface dialog, int which) {
+				
+				dialog.cancel();
+				finish();
+			}
+		});
+		
+		builder.create().show();
+		
+	}
+	
 	public void photoDeleted(UpdatedPhotoEvent photo) {
 		
 		progressDialog.dismiss();
@@ -506,7 +526,13 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 
 	public void commentSuccess(UpdatedCommentEvent params) {
 		
-		fragment.getAdapter().notifyDataSetChanged();
+		if (fragment != null)
+		{
+			if (fragment.getAdapter() != null)
+			{
+				fragment.getAdapter().notifyDataSetChanged();
+			}
+		}
 		
 	}
 }
