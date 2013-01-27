@@ -58,6 +58,6 @@
 <fullyQualifiedTypeName name="com.motlee.android.object.EventDetail"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.EventServiceBuffer"/>
 <fullyQualifiedTypeName name="java.util.concurrent.ThreadFactory"/>
-<fullyQualifiedTypeName name="com.motlee.android.R.id"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.PhotoItem"/>
+<fullyQualifiedTypeName name="com.motlee.android.R.id"/>
 </qualifiedTypeNameHistroy>

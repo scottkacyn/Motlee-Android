@@ -43,6 +43,7 @@
 		        android:paddingLeft="15dp"
 		        sytle="@style/CodeFont.Small"
 		        android:ellipsize="end"
+		        android:singleLine="true"
 		        android:background="@android:color/transparent" />
 		    
 		    <TextView 

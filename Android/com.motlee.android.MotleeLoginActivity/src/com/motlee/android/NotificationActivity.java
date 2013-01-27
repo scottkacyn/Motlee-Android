@@ -145,6 +145,7 @@ public class NotificationActivity extends BaseMotleeActivity {
     		intent.putExtra("Page", EventDetailActivity.MESSAGES);
     		intent.putExtra("EventID", notification.objectId);
     		
+    		
     		startActivity(intent);
     	}
     	else if (notification.objectType == NotificationObjectType.PHOTO_COMMENT || notification.objectType == NotificationObjectType.PHOTO_LIKE)

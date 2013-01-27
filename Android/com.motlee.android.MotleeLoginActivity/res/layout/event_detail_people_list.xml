@@ -24,7 +24,6 @@
 	    android:id="@+id/event_detail_people_list"
 	    android:layout_height="fill_parent"
 	    android:layout_width="fill_parent"
-	    android:fastScrollEnabled="true"
 	    android:scrollbars="none" 
 	    android:layout_below="@id/progress_bar"
 	    android:divider="@null" 

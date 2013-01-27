@@ -1086,7 +1086,7 @@ public class EventServiceBuffer extends Object {
         }
         else if (code == updateEventSuccessCode && result != null)
         {
-        	getEventsFromJson(result);
+        	getEventDetailFromJson(result);
         }
         else if (code == userSuccessCode && result != null)
         {
@@ -1102,7 +1102,7 @@ public class EventServiceBuffer extends Object {
         }
         else if (code == createEventSuccessCode && result != null)
         {
-        	getEventsFromJson(result);
+        	getEventDetailFromJson(result);
         }
         else if (code == addAttendeeSuccessCode && result != null)
         {
@@ -1637,32 +1637,41 @@ public class EventServiceBuffer extends Object {
 		    		
 		    		JsonObject eventObject = object.getAsJsonObject("event").getAsJsonObject("event");
 		    		
-		    		JsonArray attendingElement = eventObject.getAsJsonArray("people_attending");
-		    		
-		    		JsonArray stories = eventObject.getAsJsonArray("stories");
-		    		
-		    		JsonArray photos = eventObject.getAsJsonArray("photos");
+		    		//JsonArray stories = eventObject.getAsJsonArray("stories");
+
+		    		if (eventObject == null)
+		    		{
+		    			eventObject = object.getAsJsonObject("event");
+		    		}
 		    		
 		    		EventDetail eDetail = gson.fromJson(eventObject, EventDetail.class);
 		    		
 			    	Collection<Attendee> newAttendees = new ArrayList<Attendee>();
 			    	
-		   		    for (JsonElement attendee : attendingElement)
-		   		    {
-		   		    	UserInfo user = gson.fromJson(attendee, UserInfo.class);
-		   		    	
-		   		    	newAttendees.add(new Attendee(user.id, eDetail));
-		   		    	
-		    			try {
-							helper.getUserDao().createIfNotExists(user);
-						} catch (SQLException e1) {
-							Log.e("DatabaseHelper", "Failed to createOrUpdate user", e1);
-						}
-		   		    }
-		   		    
-		   		    dbWrapper.updateAttendees(eDetail.getEventID(), newAttendees);
+			    	JsonElement attendees = eventObject.get("people_attending");
+			    	
+			    	if (attendees != null)
+			    	{
+			    		JsonArray attendingElement = attendees.getAsJsonArray();
+			    		
+			   		    for (JsonElement attendee : attendingElement)
+			   		    {
+			   		    	UserInfo user = gson.fromJson(attendee, UserInfo.class);
+			   		    	
+			   		    	newAttendees.add(new Attendee(user.id, eDetail));
+			   		    	
+			    			try {
+								helper.getUserDao().createIfNotExists(user);
+							} catch (SQLException e1) {
+								Log.e("DatabaseHelper", "Failed to createOrUpdate user", e1);
+							}
+			   		    }
+			   		    
+			   		    dbWrapper.updateAttendees(eDetail.getEventID(), newAttendees);
+			    		
+			    		eDetail.setAttendeeCount(attendingElement.size());
 		    		
-		    		eDetail.setAttendeeCount(attendingElement.size());
+			    	}
 		    		
 		    		if (eDetail.is_deleted)
 		    		{
@@ -1682,34 +1691,40 @@ public class EventServiceBuffer extends Object {
 		    			dbWrapper.createStory(story);
 		    		}*/
 		    		
-		    		Collection<PhotoItem> newPhotos = new ArrayList<PhotoItem>();
+		    		JsonElement photoElement = eventObject.get("photos");
 		    		
-		    		dbWrapper.clearPhotos(eDetail.getEventID());
-		    		for (JsonElement element : photos)
+		    		if (photoElement != null)
 		    		{
-		    			PhotoItem photo = gson.fromJson(element, PhotoItem.class);
-		    			
-		    			photo.event_detail = eDetail;
-		    			
-		    			dbWrapper.createPhoto(photo);
-		    			
-		    			dbWrapper.clearComments(photo.id);
-		    			for (JsonElement commentElement : element.getAsJsonObject().getAsJsonArray("comments"))
-		    			{
-		    				Comment comment = gson.fromJson(commentElement, Comment.class);
-		    				comment.event_id = photo.event_id;
-		    				comment.photo = photo;
-		    				dbWrapper.createComment(comment);
-		    			}
-		    			
-		    			dbWrapper.clearLikes(photo.id);
-		    			for (JsonElement likeElement : element.getAsJsonObject().getAsJsonArray("likes"))
-		    			{
-		    				Like like = gson.fromJson(likeElement, Like.class);
-		    				like.event_id = photo.event_id;
-		    				like.photo = photo;
-		    				dbWrapper.createLike(like);
-		    			}
+					    		
+			    		JsonArray photos = photoElement.getAsJsonArray();
+			    				
+			    		dbWrapper.clearPhotos(eDetail.getEventID());
+			    		for (JsonElement element : photos)
+			    		{
+			    			PhotoItem photo = gson.fromJson(element, PhotoItem.class);
+			    			
+			    			photo.event_detail = eDetail;
+			    			
+			    			dbWrapper.createPhoto(photo);
+			    			
+			    			dbWrapper.clearComments(photo.id);
+			    			for (JsonElement commentElement : element.getAsJsonObject().getAsJsonArray("comments"))
+			    			{
+			    				Comment comment = gson.fromJson(commentElement, Comment.class);
+			    				comment.event_id = photo.event_id;
+			    				comment.photo = photo;
+			    				dbWrapper.createComment(comment);
+			    			}
+			    			
+			    			dbWrapper.clearLikes(photo.id);
+			    			for (JsonElement likeElement : element.getAsJsonObject().getAsJsonArray("likes"))
+			    			{
+			    				Like like = gson.fromJson(likeElement, Like.class);
+			    				like.event_id = photo.event_id;
+			    				like.photo = photo;
+			    				dbWrapper.createLike(like);
+			    			}
+			    		}
 		    		}
 		    		
 		    		final Integer eventId = eDetail.getEventID();

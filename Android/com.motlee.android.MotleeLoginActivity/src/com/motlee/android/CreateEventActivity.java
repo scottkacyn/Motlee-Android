@@ -324,7 +324,15 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 
 		public void myEventOccurred(UpdatedEventDetailEvent evt) {
 			
+
+			
+		}
+
+		public void updatedEventOccurred(Integer eventId) {
+			
 			EventServiceBuffer.removeEventDetailListener(eventListener);
+			
+			updateLocationInDatabase(eventId);
 			
 			progressDialog.dismiss();
 			
@@ -334,15 +342,33 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 			
 			finish();
 			
-		}
-
-		public void updatedEventOccurred(Integer eventId) {
-			// TODO Auto-generated method stub
-			
-		}
-		
+		}		
 	};
     
+	private void updateLocationInDatabase(Integer eventId) {
+		EventDetail eDetail = dbWrapper.getEvent(eventId);
+		
+		if (eDetail != null)
+		{
+			if (eDetail.getLocationID() != null)
+			{
+				LocationInfo location = dbWrapper.getLocation(eDetail.getLocationID());
+				if (location == null)
+				{
+					FragmentManager fm = getSupportFragmentManager();
+					FragmentTransaction ft = fm.beginTransaction();
+					
+					CreateEventFragment fragment = (CreateEventFragment) fm.findFragmentById(R.id.fragment_content);
+					
+					LocationInfo eventLocation = fragment.getLocationInfo();
+					eventLocation.id = eDetail.getLocationID();
+					
+					dbWrapper.createLocation(eventLocation);
+				}
+			}
+		}
+	}
+	
     /*
      * this action starts the event. It gets all event information from the CreateEventFragment
      * and intializes the EventDetail object and sends to the EventServiceBuffer
@@ -532,34 +558,29 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 		}
 	};
 	
-	public void myEventOccurred(UpdatedEventDetailEvent evt) {
-
+	public void updatedEventOccurred(Integer eventId) {
+		
 		if (!isEditing)
 		{
-			if (evt.getEventIds().size() == 1)
-			{
-				for (Integer eventID : evt.getEventIds())
-				{
 					
-					mEventID = eventID;
-					
-					progressDialog.dismiss();
-					
-                    if (mEventAttendees.size() > 0)
-                    {
-	                    progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Inviting Friends");
-	                    
-	                    EventServiceBuffer.setAttendeeListener(attendeeListener);
-	                    
-	                    EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees, isFacebookEvent);
-                    } 
-                    else
-                    {
-                    	endCreateEventActivity();
-                    }
-					
-				}
-			}
+			mEventID = eventId;
+			
+			updateLocationInDatabase(eventId);
+			
+			progressDialog.dismiss();
+			
+            if (mEventAttendees.size() > 0)
+            {
+                progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Inviting Friends");
+                
+                EventServiceBuffer.setAttendeeListener(attendeeListener);
+                
+                EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees, isFacebookEvent);
+            } 
+            else
+            {
+            	endCreateEventActivity();
+            }
 		}
 		else
 		{
@@ -576,6 +597,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 			}
 			
 			mEventID = mCreatedEvent.getEventID();
+			
+			updateLocationInDatabase(mEventID);
 			
 			progressDialog.dismiss();
 
@@ -600,6 +623,12 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
             	endCreateEventActivity();
             }
 		}
+		
+	}
+	
+	public void myEventOccurred(UpdatedEventDetailEvent evt) {
+
+		
 	}
     
 	public void endCreateEventActivity()

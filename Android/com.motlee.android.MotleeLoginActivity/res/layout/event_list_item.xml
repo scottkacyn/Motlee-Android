@@ -29,7 +29,7 @@
 		        
 		        <TextView android:id="@+id/event_header_name"
 					android:layout_width="0dp"
-					android:layout_weight="0.54"
+					android:layout_weight="0.50"
 		            android:layout_height="match_parent"
 		            android:gravity="left|center_vertical"
 		            style="@style/CodeFont.Message"
@@ -37,10 +37,15 @@
 		            android:singleLine="true"
 		            android:paddingLeft="5dp" />
 		        
+		        <View 
+		            android:layout_width="0dp"
+		            android:layout_weight="0.02"
+		            android:layout_height="match_parent"
+		            android:background="@android:color/transparent"/>
 		        
 		        <TextView android:id="@+id/event_header_time"
 					android:layout_width="0dp"
-					android:layout_weight="0.30"
+					android:layout_weight="0.32"
 		            android:layout_height="match_parent"
 		            android:gravity="right|center_vertical"
 		            style="@style/CodeFont.Small"
