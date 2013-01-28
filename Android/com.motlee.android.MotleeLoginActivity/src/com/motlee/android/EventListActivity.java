@@ -121,10 +121,6 @@ public class EventListActivity extends BaseMotleeActivity {
 				mEventListFragment.hideProgressBar();
 				requestNewDataForList(eventListParams.dataContent, eventListParams.headerText);
 			}
-			else
-			{
-				initializeListData();
-			}
 		}
 	}
 	
@@ -213,6 +209,10 @@ public class EventListActivity extends BaseMotleeActivity {
     	{
     		Log.d(tag, "starting splash page");
     		
+    		EventServiceBuffer.setEventDetailListener(initialEventListener);
+    		
+    		//initializeListData();
+    		
     		Intent intent = new Intent(EventListActivity.this, MotleeLoginActivity.class);
     		startActivityForResult(intent, 0);
     	}
@@ -293,6 +293,7 @@ public class EventListActivity extends BaseMotleeActivity {
     	{
     		refreshingData = true;
     		EventServiceBuffer.getEventsFromService();
+    		//updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getAllEvents()));    	
     	}
     	
     	//updateEventAdapter(GlobalEventList.eventDetailMap.keySet());
@@ -309,10 +310,10 @@ public class EventListActivity extends BaseMotleeActivity {
     {
     	Log.d(tag, "requestNewDataForList");
     	
-    	if (!eventListParams.headerText.equals(headerText))
+    	/*if (!eventListParams.headerText.equals(headerText))
     	{
     		progressDialog = ProgressDialog.show(this, "", "Loading " + headerText);
-    	}
+    	}*/
     	
     	eventListParams.headerText = headerText;
     	eventListParams.dataContent = dataContent;
@@ -324,6 +325,15 @@ public class EventListActivity extends BaseMotleeActivity {
         EventServiceBuffer.setPhotoListener(photoListener);
         
         //progressDialog = ProgressDialog.show(EventListActivity.this, "", "Loading");
+        
+		if (eventListParams.dataContent.equals(EventServiceBuffer.NO_EVENT_FILTER))
+		{
+			updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getAllEvents()));
+		}
+		else if (eventListParams.dataContent.equals(EventServiceBuffer.MY_EVENTS))
+		{				
+			updateEventAdapter(dbWrapper.getMyEvents());
+		}
         
         if (!refreshingData)
         {
@@ -570,6 +580,11 @@ public class EventListActivity extends BaseMotleeActivity {
 								
 								Log.d("EventListActivity", "About to notifyDataSetChanged");
 								eAdapter.notifyDataSetChanged();
+								
+								/*if (moveToTop)
+								{
+									mEventListFragment.getListView().setSelection(0);
+								}*/
 							}
 							
 							//setPosition(firstEventDetailVisible);
@@ -688,46 +703,56 @@ public class EventListActivity extends BaseMotleeActivity {
 	
 	protected void getFriendsFromFacebook() {
 		
-		Session facebookSession = Session.getActiveSession();
-		
-		if (facebookSession != null && facebookSession.isOpened())
-		{			
-			String query = "select name, uid, pic_square from user where uid in (select uid2 from friend where uid1=me()) order by name";
-			Bundle bundleParams = new Bundle();
-			bundleParams.putString("q", query);
-			
-			Request request = new Request(facebookSession, "/fql", bundleParams, HttpMethod.GET, graphUserListCallback);              
+		Thread friendThread = new Thread(new Runnable(){
 
-			Request.executeBatchAsync(request);
-		}
+			public void run() 
+			{
+				Session facebookSession = Session.getActiveSession();
+				
+				if (facebookSession != null && facebookSession.isOpened())
+				{			
+					String query = "select name, uid, pic_square from user where uid in (select uid2 from friend where uid1=me()) order by name";
+					Bundle bundleParams = new Bundle();
+					bundleParams.putString("q", query);
+					
+					final Request request = new Request(facebookSession, "/fql", bundleParams, HttpMethod.GET, graphUserListCallback);   
+					
+					Response response = request.executeAndWait();
+					
+					try
+					{
+						JSONArray users = (JSONArray) response.getGraphObject().getProperty("data");
+						
+						ArrayList<Long> uids = new ArrayList<Long>();
+						
+						for (int i = 0; i < users.length(); i++)
+						{
+							JSONObject user = users.getJSONObject(i);
+							uids.add(Long.valueOf(user.getLong("uid")));
+						}
+						
+						dbWrapper.updateFriendsList(uids);
+					}
+					catch (JSONException e)
+					{
+						Log.e(this.toString(), "Failed to get friends");
+					}
+					catch (Exception e)
+					{
+						Log.e(this.toString(), "Failed to get friends");
+					}
+				}
+			}
+		});
+		
+		friendThread.start();
 	}
 	
     private Callback graphUserListCallback = new Callback(){
 		
 		public void onCompleted(Response response) {
 						
-			try
-			{
-				JSONArray users = (JSONArray) response.getGraphObject().getProperty("data");
-				
-				ArrayList<Long> uids = new ArrayList<Long>();
-				
-				for (int i = 0; i < users.length(); i++)
-				{
-					JSONObject user = users.getJSONObject(i);
-					uids.add(Long.valueOf(user.getLong("uid")));
-				}
-				
-				dbWrapper.updateFriendsList(uids);
-			}
-			catch (JSONException e)
-			{
-				Log.e(this.toString(), "Failed to get friends");
-			}
-			catch (Exception e)
-			{
-				Log.e(this.toString(), "Failed to get friends");
-			}
+
 		}
     };
 }

@@ -37,12 +37,14 @@ import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import greendroid.widget.PagedAdapter;
 
@@ -286,6 +288,14 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 		    	}
 		    	
 		    	final View touchOverlay = holder.touch_overlay;
+		    	
+		    	holder.photo_detail_picture.setMaxHeight(SharePref.getIntPref(context, SharePref.DISPLAY_WIDTH));
+		    	holder.photo_detail_picture.setMaxWidth(SharePref.getIntPref(context, SharePref.DISPLAY_WIDTH));
+		    	
+		    	holder.photo_detail_picture.setLayoutParams(
+		    			new FrameLayout.LayoutParams(
+		    					SharePref.getIntPref(context, SharePref.DISPLAY_WIDTH), 
+		    					SharePref.getIntPref(context, SharePref.DISPLAY_WIDTH)));
 		    	
 		        GlobalVariables.getInstance().downloadImage(holder.photo_detail_picture, 
 		        		GlobalVariables.getInstance().getAWSUrlCompressed(photo.photo), 

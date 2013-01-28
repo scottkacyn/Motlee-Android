@@ -13,16 +13,16 @@
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="UpdatedEvent" key="selection"/>
+		<item value="holder.imageView" key="selection"/>
 		<list key="findhistory">
-			<item value="updatedEvent"/>
-			<item value="updatedeven"/>
-			<item value="getEventDetail"/>
-			<item value="getEVentsFrom"/>
-			<item value="createEve"/>
-			<item value="create"/>
-			<item value="getEventsFrom"/>
-			<item value="getEvents"/>
+			<item value="holder.imageView"/>
+			<item value="getFriends"/>
+			<item value="onResume"/>
+			<item value="initialize"/>
+			<item value="getEventsFromSer"/>
+			<item value="events call"/>
+			<item value="initializeListData"/>
+			<item value="eventListener"/>
 		</list>
 		<list key="replacehistory">
 			<item value="EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);"/>

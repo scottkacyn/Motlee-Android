@@ -1,5 +1,6 @@
 package com.motlee.android;
 
+import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Matrix;
@@ -27,6 +28,8 @@ public class ZoomActivity extends Activity implements OnTouchListener
     // These matrices will be used to scale points of the image
     Matrix matrix = new Matrix();
     Matrix savedMatrix = new Matrix();
+    
+    ImageViewTouch image;
 
     // The 3 states (events) which the user is trying to perform
     static final int NONE = 0;
@@ -48,12 +51,11 @@ public class ZoomActivity extends Activity implements OnTouchListener
         
         PhotoItem photo = (PhotoItem) getIntent().getParcelableExtra("Photo");
         
-        ImageView view = (ImageView) findViewById(R.id.photo_detail_picture);
-        view.setOnTouchListener(this);
+        image = (ImageViewTouch) findViewById(R.id.photo_detail_picture);
         
-        GlobalVariables.getInstance().downloadImage(view, 
-        		GlobalVariables.getInstance().getAWSUrlCompressed(photo), 
-        		SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH));
+        image.setMinZoom(1f);
+        
+        GlobalVariables.getInstance().downloadImage(image, GlobalVariables.getInstance().getAWSUrlCompressed(photo), SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH));
     }
 
     public boolean onTouch(View v, MotionEvent event) 

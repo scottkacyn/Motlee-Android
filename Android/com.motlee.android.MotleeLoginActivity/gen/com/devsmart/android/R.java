@@ -1934,7 +1934,7 @@ containing a value of this type.
     public static final class string {
         public static final int album_name=0x7f050056;
         public static final int app_id=0x7f050055;
-        public static final int app_name=0x7f050000;
+        public static final int app_name=0x7f050001;
         public static final int com_facebook_choose_friends=0x7f050015;
         public static final int com_facebook_dialogloginactivity_ok_button=0x7f050006;
         public static final int com_facebook_internet_permission_error_message=0x7f050019;
@@ -1997,7 +1997,7 @@ containing a value of this type.
         public static final int gd_take_photo=0x7f050026;
         public static final int gd_talk=0x7f050021;
         public static final int gd_trashcan=0x7f050034;
-        public static final int hello=0x7f050005;
+        public static final int hello=0x7f050000;
         public static final int hello_world=0x7f05003d;
         public static final int map_key=0x7f050057;
         public static final int menu_settings=0x7f05003e;
@@ -2012,10 +2012,10 @@ containing a value of this type.
         public static final int not_photo_likes=0x7f050063;
         public static final int public_event_false=0x7f050059;
         public static final int public_event_true=0x7f050058;
-        public static final int pull_to_refresh_pull_label=0x7f050001;
-        public static final int pull_to_refresh_refreshing_label=0x7f050003;
-        public static final int pull_to_refresh_release_label=0x7f050002;
-        public static final int pull_to_refresh_tap_label=0x7f050004;
+        public static final int pull_to_refresh_pull_label=0x7f050002;
+        public static final int pull_to_refresh_refreshing_label=0x7f050004;
+        public static final int pull_to_refresh_release_label=0x7f050003;
+        public static final int pull_to_refresh_tap_label=0x7f050005;
         public static final int title_activity_event_list=0x7f05003f;
         public static final int title_add_people_activity=0x7f05004f;
         public static final int title_base_motlee_activity=0x7f050050;

@@ -34,6 +34,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 
 public class ImageAdapter extends BaseAdapter {
 
@@ -208,6 +209,14 @@ public class ImageAdapter extends BaseAdapter {
 	    	{
 	    		holder.imagePlaceHolder.setVisibility(View.GONE);
 	    		holder.blank_space.setVisibility(View.GONE);
+	    		
+	    		holder.imageView.setMaxHeight(GlobalVariables.getInstance().getMaxEventListImageHeight());
+	    		holder.imageView.setMaxWidth(GlobalVariables.getInstance().getMaxEventListImageHeight());
+	    		
+	    		holder.imageView.setLayoutParams(
+	    				new RelativeLayout.LayoutParams(
+	    						GlobalVariables.getInstance().getMaxEventListImageHeight(), 
+	    						GlobalVariables.getInstance().getMaxEventListImageHeight()));
 	    		
 	    		GlobalVariables.getInstance().downloadImage(holder.imageView, GlobalVariables.getInstance().getAWSUrlThumbnail(mPhotoList.get(position)), GlobalVariables.getInstance().getMaxEventListImageHeight());
 	        	holder.imageView.setVisibility(View.VISIBLE);
