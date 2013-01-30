@@ -153,8 +153,8 @@ public class PeopleListFragment extends BaseDetailFragment {
 		inviteFriendsHeader.findViewById(R.id.label_button_icon).setVisibility(View.GONE);
 		
 		TextView labelButtonText = (TextView) inviteFriendsHeader.findViewById(R.id.label_button_text);
-		labelButtonText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-		labelButtonText.setText("Add Friends +");
+		labelButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		labelButtonText.setText("Invite other people to join");
 		
 		inviteFriendsHeader.findViewById(R.id.label_button).setOnClickListener(addFriendsListener);
 		

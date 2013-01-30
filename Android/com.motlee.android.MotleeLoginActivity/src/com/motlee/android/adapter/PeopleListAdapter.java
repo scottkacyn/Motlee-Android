@@ -100,7 +100,7 @@ public class PeopleListAdapter extends ArrayAdapter<UserInfo> {
                 holder.search_people_profile_pic = (ImageView) convertView.findViewById(R.id.search_button_profile_pic);
                 holder.search_people_text = (TextView) convertView.findViewById(R.id.search_button_name);
                 holder.search_button = convertView.findViewById(R.id.search_button);
-                holder.search_motlee_text = (TextView) convertView.findViewById(R.id.search_button_not_motlee);
+                holder.search_motlee_text = (ImageView) convertView.findViewById(R.id.search_button_not_motlee);
                 
                 convertView.setTag(holder);
         } else {
@@ -120,27 +120,30 @@ public class PeopleListAdapter extends ArrayAdapter<UserInfo> {
         convertView.setContentDescription(String.valueOf(person.id));
         
         holder.search_people_text.setText(person.name);
-        holder.search_people_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+        holder.search_people_text.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
         holder.search_button.setTag(person);
         holder.search_people_profile_pic.setMaxHeight(background.getHeight() - DrawableCache.convertDpToPixel(5));
         holder.search_people_profile_pic.setMaxWidth(background.getHeight() - DrawableCache.convertDpToPixel(5));
+        
+        holder.search_people_profile_pic.setLayoutParams(
+        		new LinearLayout.LayoutParams(
+        				0, 
+        				background.getHeight() - DrawableCache.convertDpToPixel(5), 
+        				.15f));
         
         if (person.sign_in_count > 0)
         {
         	if (holder.search_motlee_text != null)
         	{
-        		holder.search_motlee_text.setVisibility(View.GONE);
+        		holder.search_motlee_text.setImageResource(R.drawable.logo);
         	}
-        	holder.search_people_text.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, .70f));
         }
         else
         {
         	if (holder.search_motlee_text != null)
         	{
-        		holder.search_motlee_text.setVisibility(View.VISIBLE);
-        		holder.search_motlee_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+        		holder.search_motlee_text.setImageResource(R.drawable.facebook_icon_small);
         	}
-        	holder.search_people_text.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, .42f));
         }
         
         GlobalVariables.getInstance().downloadImage(holder.search_people_profile_pic, 
@@ -155,6 +158,6 @@ public class PeopleListAdapter extends ArrayAdapter<UserInfo> {
         public TextView search_people_text;
         public View search_button;
         public HorizontalRatioLinearLayout layout;
-        public TextView search_motlee_text;
+        public ImageView search_motlee_text;
     }
 }

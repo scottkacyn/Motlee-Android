@@ -2,6 +2,7 @@ package com.motlee.android.adapter;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.motlee.android.R;
@@ -106,6 +107,12 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
     }
     
     @Override
+    public void addAll(Collection<? extends Comment> comments)
+    {
+    	this.mData.addAll(comments);
+    }
+    
+    @Override
     public boolean isEnabled(int position)
     {
     	Comment comment = mData.get(position);
@@ -124,7 +131,7 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
     {
     	Log.w(tag, "clear");
     	this.mData.clear();
-    	this.notifyDataSetChanged();
+    	//this.notifyDataSetChanged();
     }
     
     public View getView(int position, View convertView, ViewGroup parent) {

@@ -33,31 +33,28 @@
 	            android:layout_gravity="center_vertical"
 	            android:paddingLeft="10dp"
 	            android:adjustViewBounds="true"
-	            android:layout_weight=".20" />
+	            android:layout_weight=".15" />
 		    <TextView 
 		        android:id="@+id/search_button_name"
 	    	    android:layout_width="0dp"
 		        android:layout_height="match_parent"
-		        android:layout_weight=".42"
+		        android:layout_weight=".68"
 		        android:gravity="left|center_vertical"
 		        android:paddingLeft="15dp"
-		        sytle="@style/CodeFont.Small"
+		        sytle="@style/CodeFont.Message"
 		        android:ellipsize="end"
 		        android:singleLine="true"
 		        android:background="@android:color/transparent" />
 		    
-		    <TextView 
+		    <ImageView 
 		        android:id="@+id/search_button_not_motlee"
 		        android:layout_width="0dp"
-		        android:layout_weight=".28"
+		        android:layout_weight=".07"
 		        android:layout_height="match_parent"
 		        android:gravity="right|center_vertical"
 		        android:paddingRight="5dp"
-		        style="@style/CodeFont.Small"
-		        android:textColor="@color/see_through_gray"
-		        android:background="@android:color/transparent"
-		        android:text="(Not Motlee)"
-		        android:visibility="gone" />
+		        android:scaleType="fitCenter"
+		        android:background="@android:color/transparent" />
 		    
 	    </LinearLayout>
 	    <ImageView

@@ -1,16 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="android.view.ScaleGestureDetector"/>
-<fullyQualifiedTypeName name="android.content.Context"/>
-<fullyQualifiedTypeName name="android.util.AttributeSet"/>
-<fullyQualifiedTypeName name="android.graphics.Paint"/>
-<fullyQualifiedTypeName name="android.graphics.Canvas"/>
-<fullyQualifiedTypeName name="android.graphics.drawable.BitmapDrawable"/>
-<fullyQualifiedTypeName name="android.graphics.drawable.Drawable"/>
-<fullyQualifiedTypeName name="android.view.MotionEvent"/>
-<fullyQualifiedTypeName name="android.graphics.Matrix"/>
-<fullyQualifiedTypeName name="android.view.View.OnTouchListener"/>
-<fullyQualifiedTypeName name="android.graphics.PointF"/>
 <fullyQualifiedTypeName name="android.util.FloatMath"/>
 <fullyQualifiedTypeName name="android.widget.ImageButton"/>
 <fullyQualifiedTypeName name="android.content.DialogInterface.OnClickListener"/>
@@ -27,17 +16,14 @@
 <fullyQualifiedTypeName name="android.widget.AdapterView"/>
 <fullyQualifiedTypeName name="android.widget.Filter"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.FixedViewInfo"/>
-<fullyQualifiedTypeName name="android.widget.ListAdapter"/>
 <fullyQualifiedTypeName name="com.motlee.android.adapter.HeaderViewListAdapter"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.DrawableCache"/>
-<fullyQualifiedTypeName name="com.motlee.android.R.drawable"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.GlobalVariables"/>
 <fullyQualifiedTypeName name="android.widget.SlidingDrawer"/>
 <fullyQualifiedTypeName name="com.motlee.android.R"/>
 <fullyQualifiedTypeName name="com.motlee.android.view.Panel"/>
 <fullyQualifiedTypeName name="com.motlee.android.R.layout"/>
 <fullyQualifiedTypeName name="android.widget.ImageView"/>
-<fullyQualifiedTypeName name="java.util.Collection"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.Attendee"/>
 <fullyQualifiedTypeName name="android.widget.RelativeLayout"/>
 <fullyQualifiedTypeName name="android.widget.LinearLayout"/>
@@ -55,9 +41,23 @@
 <fullyQualifiedTypeName name="com.motlee.android.object.EventServiceBuffer"/>
 <fullyQualifiedTypeName name="java.util.concurrent.ThreadFactory"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.PhotoItem"/>
-<fullyQualifiedTypeName name="com.motlee.android.R.id"/>
 <fullyQualifiedTypeName name="it.sephiroth.android.library.imagezoom.ImageViewTouch"/>
-<fullyQualifiedTypeName name="com.motlee.android.object.SharePref"/>
 <fullyQualifiedTypeName name="android.widget.FrameLayout"/>
+<fullyQualifiedTypeName name="com.motlee.android.R.drawable"/>
+<fullyQualifiedTypeName name="com.motlee.android.object.SharePref"/>
+<fullyQualifiedTypeName name="android.graphics.BitmapFactory.Options"/>
+<fullyQualifiedTypeName name="android.view.View.OnClickListener"/>
+<fullyQualifiedTypeName name="java.text.SimpleDateFormat"/>
+<fullyQualifiedTypeName name="android.webkit.WebView"/>
+<fullyQualifiedTypeName name="com.motlee.android.fragment.TermsSettingsFragment"/>
+<fullyQualifiedTypeName name="android.webkit.WebViewClient"/>
+<fullyQualifiedTypeName name="com.motlee.android.fragment.AboutSettingsFragment"/>
 <fullyQualifiedTypeName name="android.widget.RelativeLayout.LayoutParams"/>
+<fullyQualifiedTypeName name="android.widget.LinearLayout.LayoutParams"/>
+<fullyQualifiedTypeName name="android.widget.ListAdapter"/>
+<fullyQualifiedTypeName name="java.util.Collection"/>
+<fullyQualifiedTypeName name="com.motlee.android.R.id"/>
+<fullyQualifiedTypeName name="com.google.android.maps.OverlayItem"/>
+<fullyQualifiedTypeName name="com.motlee.android.object.NonClickableItemizedOverlay"/>
+<fullyQualifiedTypeName name="com.motlee.android.fragment.LocationDetailFragment"/>
 </qualifiedTypeNameHistroy>

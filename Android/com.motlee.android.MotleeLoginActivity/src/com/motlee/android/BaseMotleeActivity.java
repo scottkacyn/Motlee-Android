@@ -281,7 +281,11 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
 	
 	final public void setActionForRightMenu(OnClickListener listener)
 	{
-		((ImageButton) findViewById(R.id.plus_menu_button)).setOnClickListener(listener);
+		View plusMenuButton = findViewById(R.id.plus_menu_button);
+		if (plusMenuButton != null)
+		{
+			((ImageButton) plusMenuButton).setOnClickListener(listener);
+		}
 	}
 	
 	public UpdatedEventDetailListener eventListener = new UpdatedEventDetailListener(){

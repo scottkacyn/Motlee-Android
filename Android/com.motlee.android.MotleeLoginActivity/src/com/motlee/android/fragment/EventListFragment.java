@@ -1,9 +1,6 @@
 package com.motlee.android.fragment;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 import com.markupartist.android.widget.PullToRefreshListView;
 import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
@@ -21,30 +18,14 @@ import com.motlee.android.object.SharePref;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
-import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -60,8 +41,6 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 	private Boolean onCreateViewHasBeenCalled = false;
 	
 	private EventListParams params;
-	
-	private Typeface gothamLightFont;
 
 	private View view;
 	
@@ -78,7 +57,10 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 	public void onResume()
 	{
 		super.onResume();
-		this.setPageHeader(params.headerText);
+		if (params != null)
+		{
+			this.setPageHeader(params.headerText);
+		}
 	}
 
 	@Override
@@ -88,7 +70,7 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 	    
 	    dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
 	    
-	    gothamLightFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/gotham_light.ttf");
+	    //gothamLightFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/gotham_light.ttf");
 	}
 	
 	@Override

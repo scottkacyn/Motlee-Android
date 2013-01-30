@@ -1,6 +1,7 @@
 package com.motlee.android.adapter;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,6 +42,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -55,6 +57,8 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	private ArrayList<PhotoDetail> mData = new ArrayList<PhotoDetail>();
 	private Context context;
 	private boolean showFirstComment = false;
+	
+	private SimpleDateFormat formatter = new SimpleDateFormat("M/dd '@' hh:mm aa");
 	
 	private DatabaseHelper helper;
 	
@@ -125,6 +129,9 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
         public TextView photo_detail_caption;
         public ImageButton photo_detail_like_button;
         public ProgressBar photo_detail_download_progress;
+        public View photo_detail_comments;
+        public ImageView photo_detail_comment_image;
+        public TextView photo_detail_comments_text;
 	}
 	
 		@Override
@@ -155,6 +162,9 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	                     holder.photo_detail_caption = (TextView) holder.touch_overlay.findViewById(R.id.photo_detail_description);
 	                     holder.photo_detail_like_button = (ImageButton) holder.header_view.findViewById(R.id.photo_detail_like_button);
 	                     holder.photo_detail_download_progress = (ProgressBar) holder.header_view.findViewById(R.id.photo_detail_download_progress);
+	                     holder.photo_detail_comments = holder.header_view.findViewById(R.id.photo_detail_comments);
+	                     holder.photo_detail_comments_text = (TextView) holder.header_view.findViewById(R.id.photo_detail_comments_text);
+	                     holder.photo_detail_comment_image = (ImageView) holder.header_view.findViewById(R.id.photo_detail_comment_image);
 	                     
 	                     convertView.setTag(holder);
 	         			
@@ -190,8 +200,6 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	 	Collections.sort(comments);
 	 	
 	 	holder.photo_detail_like_button.setTag(photo);
-	 	
-	 	CommentAdapter adapter = new CommentAdapter(context, R.layout.comment_list_item, comments);
 	 	
 	 	holder.comment_list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
 
@@ -248,7 +256,20 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	 	{
 		 	holder.comment_list.addHeaderView(holder.header_view);
 	 	}
-	 	holder.comment_list.setAdapter(adapter);
+
+	 	if (photo.hasReceivedDetail)
+	 	{
+		 	CommentAdapter adapter = new CommentAdapter(context, R.layout.comment_list_item, comments);
+	 		holder.comment_list.setAdapter(adapter);
+	 	}
+	 	else
+	 	{
+		 	CommentAdapter adapter = new CommentAdapter(context, R.layout.comment_list_item, new ArrayList<Comment>());
+	 		holder.comment_list.setAdapter(adapter);
+	 	}
+	 	
+	 	holder.photo_detail_comments_text.setText(String.valueOf(comments.size()));
+	 	holder.photo_detail_comments_text.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 	 	
 	 	if (this.showFirstComment)
 	 	{
@@ -362,16 +383,16 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 					GlobalVariables.getInstance().getFacebookPictureUrlLarge(facebookID), 
 					background.getHeight());
 
-			holder.photo_detail_name_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+			holder.photo_detail_name_text.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 			holder.photo_detail_name_text.setText(photoOwner.name);
 			holder.photo_detail_name_text.setTag(photoOwner);
 			
-			holder.photo_detail_time_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-			holder.photo_detail_time_text.setText(DateStringFormatter.getPastDateString(item.created_at));
+			holder.photo_detail_time_text.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+			holder.photo_detail_time_text.setText(formatter.format(item.created_at));
 			
-			holder.photo_detail_like_button_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+			holder.photo_detail_like_button_text.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 			
-			holder.photo_detail_likes_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+			holder.photo_detail_likes_text.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 			
 			Collection<Like> likes = dbWrapper.getLikes(item.id);
 			
@@ -379,7 +400,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 			
 			if (likes.size() > 0)
 			{
-				holder.photo_detail_likes.setVisibility(View.VISIBLE);
+				//holder.photo_detail_likes.setVisibility(View.VISIBLE);
 				holder.photo_detail_likes_text.setText(Integer.toString(likes.size()));
 				boolean hasLiked = false;
 				for (Like like : likes)
@@ -402,7 +423,8 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 			}
 			else
 			{
-				holder.photo_detail_likes.setVisibility(View.GONE);
+				//holder.photo_detail_likes.setVisibility(View.GONE);
+				holder.photo_detail_likes_text.setText(Integer.toString(likes.size()));
 				holder.photo_detail_like_button_text.setText("Like");
 			}
 			

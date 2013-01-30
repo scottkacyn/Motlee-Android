@@ -173,14 +173,14 @@ public class NotificationAdapter extends StickyListHeadersBaseAdapter {
     		holder = (HeaderViewHolder) convertView.getTag();
     	}
     	
-    	holder.category_title.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+    	holder.category_title.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
     	if (position < mSplitSection)
     	{
-    		holder.category_title.setText("New Notifications");
+    		holder.category_title.setText("Unread Notifications");
     	}
     	else
     	{
-    		holder.category_title.setText("Old Notifications");
+    		holder.category_title.setText("Read Notifications");
     	}
     	
     	return convertView;

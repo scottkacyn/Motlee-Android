@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.motlee.android.layouts.HorizontalRatioLinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:focusable="false"  >
+    
+    
+    <FrameLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" >
+	    <com.motlee.android.view.HorizontalAspectImageButton 
+	        android:id="@+id/search_button"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:scaleType="fitCenter"
+	        android:adjustViewBounds="true"
+	        android:src="@drawable/label_button"
+	        android:onClick="showProfilePage"
+	        android:background="@android:color/transparent"
+	        android:focusable="false" />
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" 
+	        android:layout_gravity="left|center_vertical"
+	        android:weightSum="1">
+	        <ImageView
+	            android:id="@+id/search_button_profile_pic"
+	            android:layout_width="0dp"
+	            android:layout_height="match_parent"
+	            android:layout_gravity="center_vertical"
+	            android:paddingLeft="10dp"
+	            android:adjustViewBounds="true"
+	            android:layout_weight=".20" />
+		    <TextView 
+		        android:id="@+id/search_button_name"
+	    	    android:layout_width="0dp"
+		        android:layout_height="match_parent"
+		        android:layout_weight=".63"
+		        android:gravity="left|center_vertical"
+		        android:paddingLeft="15dp"
+		        sytle="@style/CodeFont.Message"
+		        android:ellipsize="end"
+		        android:singleLine="true"
+		        android:background="@android:color/transparent" />
+		    
+		    <ImageView 
+		        android:id="@+id/search_button_not_motlee"
+		        android:layout_width="0dp"
+		        android:layout_weight=".07"
+		        android:layout_height="match_parent"
+		        android:gravity="right|center_vertical"
+		        android:paddingRight="5dp"
+		        android:scaleType="fitCenter"
+		        android:background="@android:color/transparent" />
+		    
+	    </LinearLayout>
+	    <ImageView
+	        android:id="@+id/divider"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:scaleType="fitXY"
+	        android:adjustViewBounds="true"
+	        android:layout_gravity="bottom"
+	        android:src="@drawable/search_keyline_divider" />
+    </FrameLayout>
+    <!-- Will toggle visible/gone when needed -->
+
+
+</com.motlee.android.layouts.HorizontalRatioLinearLayout>

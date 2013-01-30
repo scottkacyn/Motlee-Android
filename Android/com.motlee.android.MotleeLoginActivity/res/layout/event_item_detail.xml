@@ -170,10 +170,39 @@
    	        android:layout_margin="4dp" 
    	        android:layout_centerInParent="true"/>
    	    
+   	       	    
    	    <LinearLayout 
    	        android:layout_width="wrap_content"
    	        android:layout_height="match_parent"
    	        android:layout_alignParentRight="true"
+   	        android:paddingRight="5dp"
+   	        android:id="@+id/photo_detail_comments"
+   	        android:clickable="true"
+   	        android:onClick="onShowComments" >
+   	        
+   	        <ImageView
+   	            android:layout_width="wrap_content"
+   	            android:layout_height="match_parent"
+   	            android:scaleType="fitCenter"
+   	            android:adjustViewBounds="true"
+   	            android:src="@drawable/icon_button_comment"
+   	            android:background="@android:color/transparent" 
+   	            android:id="@+id/photo_detail_comment_image"/>
+   	        
+   	        <TextView
+   	            android:layout_width="wrap_content"
+   	            android:layout_height="match_parent"
+   	            android:id="@+id/photo_detail_comments_text"
+   	            android:gravity="center"
+   	            android:text="3"
+   	            android:padding="3dp" />
+   	        
+   	    </LinearLayout>
+   	    
+   	    <LinearLayout 
+   	        android:layout_width="wrap_content"
+   	        android:layout_height="match_parent"
+   	        android:layout_toLeftOf="@id/photo_detail_comments"
    	        android:paddingRight="5dp"
    	        android:id="@+id/photo_detail_likes"
    	        android:clickable="true"
@@ -196,6 +225,7 @@
    	            android:padding="3dp" />
    	        
    	    </LinearLayout>
+
    	    
    	</com.motlee.android.layouts.RatioBackgroundRelativeLayout>
     

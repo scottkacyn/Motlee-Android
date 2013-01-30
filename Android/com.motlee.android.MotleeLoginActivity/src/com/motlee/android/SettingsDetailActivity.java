@@ -12,11 +12,13 @@ import android.view.View;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
+import com.motlee.android.fragment.AboutSettingsFragment;
 import com.motlee.android.fragment.DateDetailFragment;
 import com.motlee.android.fragment.FacebookSettingsFragment;
 import com.motlee.android.fragment.LocationFragment;
 import com.motlee.android.fragment.NotificationSettingsFragment;
 import com.motlee.android.fragment.PeopleListFragment;
+import com.motlee.android.fragment.TermsSettingsFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
@@ -60,6 +62,24 @@ public class SettingsDetailActivity extends BaseMotleeActivity {
 	    	notificationSettingsFragment.setSettings(settings);
 	    	
 	    	ft.add(R.id.fragment_content, notificationSettingsFragment);
+	    }
+	    
+	    if (detailDescription.equals(SettingsActivity.TERMS_OF_USE))
+	    {
+	    	TermsSettingsFragment termsSettingsFragment = new TermsSettingsFragment();
+	    	
+	    	termsSettingsFragment.setHeaderView(findViewById(R.id.header));
+	    	
+	    	ft.add(R.id.fragment_content, termsSettingsFragment);
+	    }
+	    
+	    if (detailDescription.equals(SettingsActivity.ABOUT))
+	    {
+	    	AboutSettingsFragment aboutSettingsFragment = new AboutSettingsFragment();
+	    	
+	    	aboutSettingsFragment.setHeaderView(findViewById(R.id.header));
+	    	
+	    	ft.add(R.id.fragment_content, aboutSettingsFragment);
 	    }
 	    
 	    ft.commit();

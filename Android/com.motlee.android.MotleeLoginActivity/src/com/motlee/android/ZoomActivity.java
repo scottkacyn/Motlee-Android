@@ -10,6 +10,7 @@ import android.util.FloatMath;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 
@@ -52,6 +53,18 @@ public class ZoomActivity extends Activity implements OnTouchListener
         PhotoItem photo = (PhotoItem) getIntent().getParcelableExtra("Photo");
         
         image = (ImageViewTouch) findViewById(R.id.photo_detail_picture);
+        
+        /*image.setClickable(true);
+        
+        image.setOnClickListener(new OnClickListener(){
+
+			public void onClick(View v) {
+				
+				finish();
+				
+			}
+        	
+        });*/
         
         image.setMinZoom(1f);
         

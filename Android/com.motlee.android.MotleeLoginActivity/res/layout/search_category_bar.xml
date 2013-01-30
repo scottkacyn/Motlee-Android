@@ -9,7 +9,9 @@
         android:id="@+id/category_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        style="@style/CodeFont"
+        style="@style/CodeFont.Message"
+        android:gravity="center_vertical"
+        android:layout_centerVertical="true"
         android:paddingLeft="5dp"
         />
     

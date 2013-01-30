@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -53,28 +54,30 @@ public class DrawableCache {
 			}
 		}
 		
-		WeakReference<DrawableWithHeight> drawable = new WeakReference<DrawableWithHeight>(scaleBackgroundImage(mResources.getDrawable(resource), width));
+		WeakReference<DrawableWithHeight> drawable = new WeakReference<DrawableWithHeight>(scaleBackgroundImage(resource, width));
 		
 		drawables.put(resource, drawable);
 		
 		return drawable.get();
 	}
 	
-	private static DrawableWithHeight scaleBackgroundImage(Drawable drawable)
+	/*private static DrawableWithHeight scaleBackgroundImage(Drawable drawable)
 	{
 		return scaleBackgroundImage(drawable, GlobalVariables.getInstance().getDisplayWidth());
-	}
+	}*/
 	
-	private static DrawableWithHeight scaleBackgroundImage(Drawable drawable, int width)
+	private static DrawableWithHeight scaleBackgroundImage(int resource, int width)
 	{
-		Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-		
+		Bitmap bitmap = ((BitmapDrawable) mResources.getDrawable(resource)).getBitmap();
+	
 		float scaleFactor = ((float) width) / bitmap.getWidth();
 
 		Matrix scale = new Matrix();
 		scale.postScale(scaleFactor, scaleFactor);
 		
 		int layout_height = (int)(((float) bitmap.getHeight()) * scaleFactor);
+		
+		//bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false);
 		
 		bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), scale, false);
 		

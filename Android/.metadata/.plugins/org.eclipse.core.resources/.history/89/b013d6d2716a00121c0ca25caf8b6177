@@ -1,0 +1,8 @@
+package com.motlee.android.object;
+
+import com.readystatesoftware.mapviewballoons.BalloonItemizedOverlay;
+
+public class NonClickableItemizedOverlay extends
+		BalloonItemizedOverlay<OverlayItem> {
+
+}

@@ -32,7 +32,7 @@
         <activity
             android:name=".FirstUseActivity"
             android:label="@string/title_first_use_activity" 
-            android:theme="@android:style/Theme.Black.NoTitleBar"
+            android:theme="@style/no_anim"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" >
         </activity>
@@ -40,7 +40,7 @@
         <activity
             android:name=".ZoomActivity"
             android:label="@string/title_zoom_activity" 
-            android:theme="@android:style/Theme.Black.NoTitleBar"
+            android:theme="@style/no_anim"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" >
         </activity>

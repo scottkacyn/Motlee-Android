@@ -203,6 +203,15 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 		
 	}
 	
+	public void onShowComments(View view)
+	{
+		PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+		
+		adapter.showFirstComment();
+		
+		adapter.notifyDataSetChanged();
+	}
+	
 	private void setIsApartOfEvent()
 	{
 		isApartOfEvent = dbWrapper.isAttending(mEventItem.event_id);

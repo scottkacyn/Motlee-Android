@@ -20,7 +20,7 @@
 	        
 	        <LinearLayout
 	            android:layout_width="0dp"
-	            android:layout_weight=".77"
+	            android:layout_weight=".67"
 	            android:layout_height="wrap_content"
 	            android:paddingTop="2dp"
 	            android:orientation="vertical">
@@ -43,18 +43,23 @@
 			        style="@style/CodeFont.Small"
 			        android:paddingBottom="3dp"
 			        android:background="@android:color/transparent" />
-			    
-			    <TextView
-			        android:id="@+id/comment_time_text"
-			        android:layout_width="match_parent"
-			        android:layout_height="wrap_content"
-			        android:paddingLeft="15dp"
-			        style="@style/CodeFont.SuperTiny"
-			        android:textColor="@color/dark_gray"
-			        android:background="@android:color/transparent" />
-			    
+  
 		    </LinearLayout>
 		    
+     		<TextView
+		        android:id="@+id/comment_time_text"
+		        android:layout_width="0dp"
+		        android:layout_weight=".20"
+		        android:layout_height="wrap_content"
+		        android:paddingLeft="15dp"
+		        android:layout_gravity="top|right"
+		        android:paddingTop="2dp"
+		        android:paddingRight="6dp"
+		        android:gravity="right"
+		        style="@style/CodeFont.Tiny"
+		        android:textColor="@color/gray"
+		        android:background="@android:color/transparent" />
+	        
 	    </LinearLayout>
 	    <ImageView
 	        android:id="@+id/divider"

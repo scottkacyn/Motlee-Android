@@ -28,6 +28,7 @@ import com.motlee.android.fragment.DateDetailFragment;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
 import com.motlee.android.fragment.EventDetailFragment;
+import com.motlee.android.fragment.LocationDetailFragment;
 import com.motlee.android.fragment.LocationFragment;
 import com.motlee.android.fragment.MessageDetailFragment;
 import com.motlee.android.fragment.PeopleListFragment;
@@ -98,7 +99,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	
 	private EventDetailFragment photosFragment;
 	private PeopleListFragment peopleListFragment;
-	private LocationFragment locationFragment;
+	private LocationDetailFragment locationFragment;
 	private DateDetailFragment dateFragment;
 	private MessageDetailFragment messageFragment;
 	
@@ -410,11 +411,11 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         return dateDetailFragment;
     }
     
-    private LocationFragment setUpLocationFragment()
+    private LocationDetailFragment setUpLocationFragment()
     {
     	eDetail = dbWrapper.getEvent(mEventID);
     	
-        LocationFragment locationFragment = new LocationFragment();
+        LocationDetailFragment locationFragment = new LocationDetailFragment();
         
         locationFragment.setHeaderView(findViewById(R.id.header));
 
@@ -582,7 +583,6 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	public void showMap(View view)
 	{
 		removeMessageText();
-		locationFragment.clearEventList();
 		locationFragment.addEventDetail(eDetail);
 		if (mShowProgressBar)
 		{
@@ -798,8 +798,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 			else if (fragment instanceof LocationFragment)
 			{
 				fragment.hideProgressBar();
-				((LocationFragment) fragment).clearEventList();
-				((LocationFragment) fragment).addEventDetail(eDetail);
+				((LocationDetailFragment) fragment).addEventDetail(eDetail);
 			}
 			else if (fragment instanceof DateDetailFragment)
 			{

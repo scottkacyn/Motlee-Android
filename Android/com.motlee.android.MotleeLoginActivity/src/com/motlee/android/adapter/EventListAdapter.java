@@ -36,6 +36,7 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -259,8 +260,8 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				}
 				else
 				{
-					holder.event_header_icon.setVisibility(View.GONE);
-					//holder.event_header_icon.setImageResource(android.R.color.transparent);
+					holder.event_header_icon.setVisibility(View.VISIBLE);
+					holder.event_header_icon.setImageDrawable(this.mContext.getResources().getDrawable(R.drawable.icon_button_friends));
 				}
 				
 				// set the value
@@ -347,6 +348,7 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				
 				holder.list_view.setEventId(item.getEventID());
 				holder.list_view.setIsAttending(isAttending);
+				holder.drawerHandle.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, GlobalVariables.getInstance().getMaxEventListImageHeight()));
 				holder.list_view.setHandleImage(holder.drawerHandle);
 				holder.list_view.reset();
 				
@@ -373,8 +375,6 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
             public TextView event_footer_people;
             public ImageView drawerHandle;
         }
-
-
 }
 
 

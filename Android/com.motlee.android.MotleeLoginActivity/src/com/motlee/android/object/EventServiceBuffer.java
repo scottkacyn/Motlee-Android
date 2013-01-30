@@ -2286,6 +2286,7 @@ public class EventServiceBuffer extends Object {
     
     private class EventDetailHolder
     {
+    	
     	public EventDetail event;
     	
     	public EventDetailHolder()
@@ -2313,6 +2314,23 @@ public class EventServiceBuffer extends Object {
     		JsonObject object = element.getAsJsonObject();
     		
     		JsonObject event = object.getAsJsonObject("event");
+    		
+    		String updatedAt = event.get("updated_at").toString();
+    		
+    		String lastUpdatedAt = SharePref.getStringPref(mContext, SharePref.LAST_UPDATED);
+    		
+    		try
+    		{
+	    		if (railsDateFormatter.parse(updatedAt).after(railsDateFormatter.parse(lastUpdatedAt)))
+	    		{
+	    			SharePref.setStringPref(mContext, SharePref.LAST_UPDATED, updatedAt);
+	    		}
+    		}
+    		catch (Exception e)
+    		{
+    			Log.e("EventServiceBuffer.MyTask", "Failed to parse dates");
+    			SharePref.setStringPref(mContext, SharePref.LAST_UPDATED, updatedAt);
+    		}
     		
     		JsonElement userObject = event.get("owner");
     		
