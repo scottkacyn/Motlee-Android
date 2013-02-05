@@ -18,6 +18,7 @@ import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
 import com.facebook.android.AsyncFacebookRunner.RequestListener;
+import com.motlee.android.adapter.PhotoDetailPagedViewAdapter;
 import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.CreateEventFragment;
@@ -29,12 +30,15 @@ import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.MenuFunctions;
+import com.motlee.android.object.PhotoDetail;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 import com.motlee.android.object.event.UpdatedFriendsEvent;
 import com.motlee.android.object.event.UpdatedFriendsListener;
+import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UserInfoEvent;
 import com.motlee.android.object.event.UserInfoListener;
 import com.motlee.android.object.event.UserWithEventsPhotosEvent;
@@ -54,12 +58,15 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 public class UserProfilePageActivity extends BaseMotleeActivity implements OnFragmentAttachedListener, UpdatedFriendsListener {
     
 	private int mUserID;
 	private Long facebookID;
+	private String mUserName;
 	private ArrayList<UserInfo> friends = new ArrayList<UserInfo>();
 	
 	private ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>();
@@ -75,6 +82,13 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
         mUserID = intent.getIntExtra("UserID", -1);
         
         facebookID = intent.getLongExtra("UID", -1);
+        
+        mUserName = intent.getStringExtra("Name");
+        
+        if (mUserName == null)
+        {
+        	mUserName = "";
+        }
         
         setContentView(R.layout.main);
         
@@ -108,7 +122,7 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
 		
 		userProfileFragment.setHeaderView(findViewById(R.id.header));
 		
-		userProfileFragment.setUserId(mUserID, facebookID);
+		userProfileFragment.setUserId(mUserID, facebookID, mUserName);
 	}
 	
 	public void myEventOccurred(UpdatedEventDetailEvent evt) {
@@ -268,5 +282,13 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
 		EventServiceBuffer.removeUserInfoListener(this);
 		
 		super.onPause();
+	}
+	
+	public void photoDeleted(UpdatedPhotoEvent photo) {
+		
+		progressDialog.dismiss();
+		
+		finish();
+		
 	}
 }

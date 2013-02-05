@@ -9,7 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none"
-        android:background="@android:color/transparent">
+        android:background="@android:color/transparent"
+        android:focusable="true" >
         <FrameLayout
             android:layout_height="wrap_content"
             android:layout_width="match_parent">
@@ -31,8 +32,7 @@
 		        <LinearLayout
 		            android:layout_width="match_parent"
 		            android:layout_height="50dp"
-		            android:paddingTop="5dp"
-		            android:paddingBottom="5dp"
+		            android:paddingTop="10dp"
 		            android:background="@android:color/transparent">
 		            
 		            <LinearLayout
@@ -72,6 +72,11 @@
 				        android:background="@android:color/transparent" />
 		            
 		        </LinearLayout>    
+		        
+		        <View
+		            android:layout_width="match_parent"
+		            android:layout_height="10dp"
+		            android:background="@android:color/transparent" />
 		        
 		        <LinearLayout
 		            android:layout_width="match_parent"
@@ -116,6 +121,33 @@
 				        android:background="@android:color/transparent" />
 		            
 		        </LinearLayout> 
+		        
+		        <FrameLayout
+		            android:id="@+id/event_create_delete_event"
+		            android:layout_width="match_parent"
+		            android:layout_height="wrap_content"
+		            android:paddingTop="10dp"
+		            android:paddingBottom="10dp" >
+		            
+			        <com.motlee.android.view.HorizontalAspectImageButton
+			            android:layout_width="match_parent"
+			            android:layout_height="wrap_content"
+			            android:src="@drawable/large_page_button"
+			            android:onClick="onDeleteEvent" />		  
+			            
+			        <TextView
+			            android:id="@+id/delete_event_text"
+			            android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"
+			            android:gravity="center"
+			            android:layout_gravity="center"
+			            android:text="Delete Event"
+			            style="@style/CodeFont" />
+		            
+		        </FrameLayout>
+		            
+		        
+
 		        
 			    <com.motlee.android.layouts.StretchedBackgroundTableLayout
 			        android:id="@+id/event_create_friend_list"

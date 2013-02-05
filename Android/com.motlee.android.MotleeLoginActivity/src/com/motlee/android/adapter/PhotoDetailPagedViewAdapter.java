@@ -31,6 +31,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,7 +59,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	private Context context;
 	private boolean showFirstComment = false;
 	
-	private SimpleDateFormat formatter = new SimpleDateFormat("M/dd '@' hh:mm aa");
+	private SimpleDateFormat formatter = new SimpleDateFormat("M/dd '@' h:mm aa");
 	
 	private DatabaseHelper helper;
 	
@@ -129,6 +130,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
         public TextView photo_detail_caption;
         public ImageButton photo_detail_like_button;
         public ProgressBar photo_detail_download_progress;
+        public RelativeLayout photo_detail_comment_bar;
         public View photo_detail_comments;
         public ImageView photo_detail_comment_image;
         public TextView photo_detail_comments_text;
@@ -165,6 +167,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	                     holder.photo_detail_comments = holder.header_view.findViewById(R.id.photo_detail_comments);
 	                     holder.photo_detail_comments_text = (TextView) holder.header_view.findViewById(R.id.photo_detail_comments_text);
 	                     holder.photo_detail_comment_image = (ImageView) holder.header_view.findViewById(R.id.photo_detail_comment_image);
+	                     holder.photo_detail_comment_bar = (RelativeLayout) holder.header_view.findViewById(R.id.photo_detail_comment_bar);
 	                     
 	                     convertView.setTag(holder);
 	         			
@@ -318,8 +321,8 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 		    					SharePref.getIntPref(context, SharePref.DISPLAY_WIDTH), 
 		    					SharePref.getIntPref(context, SharePref.DISPLAY_WIDTH)));
 		    	
-		        GlobalVariables.getInstance().downloadImage(holder.photo_detail_picture, 
-		        		GlobalVariables.getInstance().getAWSUrlCompressed(photo.photo), 
+		        GlobalVariables.getInstance().downloadImageWithThumbnail(holder.photo_detail_picture, 
+		        		photo.photo, 
 		        		SharePref.getIntPref(context.getApplicationContext(), SharePref.DISPLAY_WIDTH));
 		        
 				holder.photo_detail_caption.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
@@ -354,7 +357,13 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	        {
 	        	holder.photo_detail_download_progress.setVisibility(View.VISIBLE);
 	        }
+	        
+	        DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.photo_detail_rect, SharePref.getIntPref(context, SharePref.DISPLAY_WIDTH));
+	        
+	        holder.photo_detail_comment_bar.setBackgroundDrawable(drawable.getDrawable());
 			
+	        holder.photo_detail_comment_bar.setLayoutParams(new LinearLayout.LayoutParams(drawable.getWidth(), drawable.getHeight()));
+	        
 			setUpStoryPictureHeader(holder, photo.photo, height, location);
 	 }
  

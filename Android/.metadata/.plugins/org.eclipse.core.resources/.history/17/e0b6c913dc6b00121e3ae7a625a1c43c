@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:id="@+id/event_detail_main" >    
+    
+    <include layout="@layout/event_detail_header"
+        android:id="@+id/event_detail_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    
+    <ProgressBar 
+        android:indeterminate="true"
+        android:layout_width="20dp" 
+        android:layout_height="20dp"
+        android:layout_marginTop="10dp"
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyle"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/event_detail_header"
+        android:visibility="gone" />
+    
+    <ListView
+        android:id="@+id/event_detail_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+		android:fastScrollEnabled="true"
+	    android:scrollbars="none"
+	    android:cacheColorHint="@android:color/transparent"
+	    android:layout_below="@id/progress_bar"
+        android:background="@drawable/event_detail_photo_container"
+        android:divider="@null"
+        android:overScrollFooter="@null"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp" />
+    
+</RelativeLayout>

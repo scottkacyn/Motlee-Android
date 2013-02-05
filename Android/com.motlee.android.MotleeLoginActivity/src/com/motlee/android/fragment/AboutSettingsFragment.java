@@ -25,7 +25,7 @@ public class AboutSettingsFragment extends BaseMotleeFragment {
 		this.inflater = inflater;
 		view = (View) this.inflater.inflate(R.layout.settings_terms_of_use, null);
 		
-		setPageHeader("Terms and Conditions");
+		setPageHeader("About Motlee");
 		
 		showLeftHeaderButton();
 		

@@ -1,6 +1,7 @@
 package com.motlee.android;
 
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
+import it.sephiroth.android.library.imagezoom.ImageViewTouch.OnImageViewTouchDoubleTapListener;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Matrix;
@@ -53,6 +54,19 @@ public class ZoomActivity extends Activity implements OnTouchListener
         PhotoItem photo = (PhotoItem) getIntent().getParcelableExtra("Photo");
         
         image = (ImageViewTouch) findViewById(R.id.photo_detail_picture);
+        
+        
+        image.setDoubleTapListener(new OnImageViewTouchDoubleTapListener(){
+
+			public void onDoubleTap() {
+				
+				finish();
+				
+			}
+        	
+        });
+        
+        image.setDoubleTapEnabled(true);
         
         /*image.setClickable(true);
         

@@ -3,12 +3,13 @@
 	<section name="org.eclipse.jdt.internal.debug.ui.ExpressionInformationControlCreator$ExpressionInformationControl">
 		<item value="129" key="SashWeightDetails"/>
 		<item value="870" key="SashWeightTree"/>
-		<item value="152" key="HEIGHT"/>
-		<item value="626" key="WIDTH"/>
+		<item value="114" key="HEIGHT"/>
+		<item value="592" key="WIDTH"/>
 	</section>
 	<section name="conditionHistory">
-		<item value="2" key="conditionHistoryEntryCount"/>
-		<item value="eventOwner.first_name == null || eventOwner.last_name == null" key="conditionHistoryEntry_0"/>
-		<item value="mContext == null" key="conditionHistoryEntry_1"/>
+		<item value="3" key="conditionHistoryEntryCount"/>
+		<item value="this.uid == that.uid" key="conditionHistoryEntry_0"/>
+		<item value="eventOwner.first_name == null || eventOwner.last_name == null" key="conditionHistoryEntry_1"/>
+		<item value="mContext == null" key="conditionHistoryEntry_2"/>
 	</section>
 </section>

@@ -31,9 +31,13 @@
     <string name="public_event_true">Shows event to all your friends</string>
     <string name="public_event_false">Shows event to invitees only</string>
     <string name="no_photo_text">How boring... no one has added any photos yet. Why don\'t you be the first?</string>
+    <string name="no_photo_friend_text">None of your friends have added any photos yet... Stay tuned!</string>
+    <string name="no_event_text">Welcome and thank you for being one of our first users!\n\nGet started by creating and event + inviting your friends.\n\nHave Fun!</string>
     <string name="no_message_text">Have something you want to share with everyone? Post a story here!</string>
     <string name="no_notification_text">You have no notifications</string>
     <string name="not_friend_text">Need to be Facebook friends to view this user\'s profile</string>
+    <string name="not_motlee_text">This user has not joined Motlee yet. Remind them to sign up!</string>
+    <string name="user_profile_no_photo_text">No photos yet...</string>
     <string name="fb_on_create_settings_message">Automatically post an event you created on timeline.</string>
     <string name="fb_on_join_settings_message">Automatically post an event you joined on timeline.</string>
     <string name="not_event_invitations">Event invitations</string>

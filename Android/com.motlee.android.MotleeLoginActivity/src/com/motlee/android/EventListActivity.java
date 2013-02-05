@@ -31,6 +31,8 @@ import com.motlee.android.adapter.EventListAdapter;
 import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.BaseMotleeFragment;
+import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
+import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
 import com.motlee.android.fragment.EventListFragment;
 import com.motlee.android.fragment.MainMenuFragment;
 import com.motlee.android.object.DrawableCache;
@@ -44,6 +46,7 @@ import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.StopWatch;
+import com.motlee.android.object.TempAttendee;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
@@ -86,7 +89,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class EventListActivity extends BaseMotleeActivity {
+public class EventListActivity extends BaseMotleeActivity implements OnFragmentAttachedListener {
 
 	private static String tag = "EventListActivity";
 	
@@ -108,6 +111,10 @@ public class EventListActivity extends BaseMotleeActivity {
 	
 	private boolean refreshingData = false;
 	
+	private boolean fragmentHasAttached = false;
+	
+	private boolean isReadyToCommitFragment = false;
+	
 	@Override
 	public void onResume()
 	{		
@@ -119,7 +126,11 @@ public class EventListActivity extends BaseMotleeActivity {
 			{
 				mEventListFragment.setDoneLoading();
 				mEventListFragment.hideProgressBar();
-				requestNewDataForList(eventListParams.dataContent, eventListParams.headerText);
+				requestNewDataForList(eventListParams.dataContent, eventListParams.headerText, false);
+			}
+			else if (dbWrapper.getAllEvents().size() > 0)
+			{
+				requestNewDataForList(eventListParams.dataContent, eventListParams.headerText, false);
 			}
 		}
 	}
@@ -140,6 +151,9 @@ public class EventListActivity extends BaseMotleeActivity {
 	@Override
 	public void onNewIntent(Intent intent)
 	{
+		
+		Log.d("EventListActivity", "onNewIntent");
+		
         Object listType = null;
         boolean startSplash = false;
         if (intent.getExtras() != null)
@@ -162,11 +176,11 @@ public class EventListActivity extends BaseMotleeActivity {
 	        {
 	        	if (listType.toString().equals(BaseMotleeFragment.ALL_EVENTS))
 	        	{
-	        		requestNewDataForList(EventServiceBuffer.NO_EVENT_FILTER, BaseMotleeFragment.ALL_EVENTS);
+	        		requestNewDataForList(EventServiceBuffer.NO_EVENT_FILTER, BaseMotleeFragment.ALL_EVENTS, true);
 	        	}
 	        	else if (listType.toString().equals(BaseMotleeFragment.MY_EVENTS))
 	        	{
-	        		requestNewDataForList(EventServiceBuffer.MY_EVENTS, BaseMotleeFragment.MY_EVENTS);
+	        		requestNewDataForList(EventServiceBuffer.MY_EVENTS, BaseMotleeFragment.MY_EVENTS, true);
 	        	}
 	        }
         }
@@ -237,6 +251,9 @@ public class EventListActivity extends BaseMotleeActivity {
     		
     		ft.remove(fragment);
     	}
+    	
+        ft.add(new EmptyFragmentWithCallbackOnResume(), "EmptyFragment")
+        .commit();
         
         mEventListFragment = new EventListFragment();
         
@@ -244,7 +261,7 @@ public class EventListActivity extends BaseMotleeActivity {
         
         Collections.sort(events);
         
-        updateEventAdapter(events);
+        updateEventAdapter(events, false);
    	
     }
     
@@ -306,7 +323,7 @@ public class EventListActivity extends BaseMotleeActivity {
     	return eAdapter;
     }
     
-    public void requestNewDataForList(String dataContent, String headerText)
+    public void requestNewDataForList(String dataContent, String headerText, boolean resetList)
     {
     	Log.d(tag, "requestNewDataForList");
     	
@@ -328,11 +345,11 @@ public class EventListActivity extends BaseMotleeActivity {
         
 		if (eventListParams.dataContent.equals(EventServiceBuffer.NO_EVENT_FILTER))
 		{
-			updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getAllEvents()));
+			updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getAllEvents()), resetList);
 		}
 		else if (eventListParams.dataContent.equals(EventServiceBuffer.MY_EVENTS))
 		{				
-			updateEventAdapter(dbWrapper.getMyEvents());
+			updateEventAdapter(dbWrapper.getMyEvents(), resetList);
 		}
         
         if (!refreshingData)
@@ -353,7 +370,7 @@ public class EventListActivity extends BaseMotleeActivity {
 			
 			EventServiceBuffer.removeEventDetailListener(initialEventListener);
 			
-			updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getAllEvents()));
+			updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getAllEvents()), false);
 			
 			//mEventListFragment.setDoneLoading();
 			
@@ -378,11 +395,11 @@ public class EventListActivity extends BaseMotleeActivity {
 			
 			if (eventListParams.dataContent.equals(EventServiceBuffer.NO_EVENT_FILTER))
 			{
-				updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getAllEvents()));
+				updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getAllEvents()), false);
 			}
 			else if (eventListParams.dataContent.equals(EventServiceBuffer.MY_EVENTS))
 			{				
-				updateEventAdapter(dbWrapper.getMyEvents());
+				updateEventAdapter(dbWrapper.getMyEvents(), false);
 			}
 			
 			/*if (progressDialog != null && progressDialog.isShowing())
@@ -474,7 +491,7 @@ public class EventListActivity extends BaseMotleeActivity {
     
     private boolean updatingEventAdapter = false;
     
-	public void updateEventAdapter(final ArrayList<EventDetail> eventsToShow) {
+	public void updateEventAdapter(final ArrayList<EventDetail> eventsToShow, final boolean resetList) {
 		
 		Log.d(tag, "updateEventAdapter");
 				
@@ -494,6 +511,8 @@ public class EventListActivity extends BaseMotleeActivity {
 					{
 						eDetail.setPhotos(dbWrapper.getPhotos(eDetail.getEventID()));
 						eDetail.setOwnerInfo(dbWrapper.getUser(eDetail.getOwnerID()));
+						
+						eDetail.setAttendeeCount(eDetail.getAttendeeCount() + TempAttendee.getTempAttendees(eDetail.getEventID()).size());
 						
 						if (eDetail.getLocationID() != null)
 						{
@@ -565,21 +584,37 @@ public class EventListActivity extends BaseMotleeActivity {
 						        
 						        mEventListFragment.setEventListParams(eventListParams);
 						        
+						        isReadyToCommitFragment = true;
+						        
 						        //requestNewDataForList(eventListParams.dataContent, eventListParams.headerText);
 						        
-						        FragmentManager fm = getSupportFragmentManager();
-						        FragmentTransaction ft = fm.beginTransaction();
-						        
-						        ft.add(R.id.fragment_content, mEventListFragment)
-						        .commit();
+						        if (fragmentHasAttached)
+						        {
+							        FragmentManager fm = getSupportFragmentManager();
+							        FragmentTransaction ft = fm.beginTransaction();
+							        
+							        if (fm.findFragmentById(R.id.fragment_content) == null)
+							        {
+								        ft.add(R.id.fragment_content, mEventListFragment)
+								        .commit();
+							        }
+						        }
 							}
 							else
 							{
-								eAdapter.clear();
-								eAdapter.addAll(eventsToDisplay);
-								
-								Log.d("EventListActivity", "About to notifyDataSetChanged");
-								eAdapter.notifyDataSetChanged();
+								if (resetList)
+								{
+									eAdapter = new EventListAdapter(EventListActivity.this, R.layout.event_list_item, eventsToDisplay);
+									mEventListFragment.updateListAdapter(eAdapter);
+								}
+								else
+								{
+									eAdapter.clear();
+									eAdapter.addAll(eventsToDisplay);
+									
+									Log.d("EventListActivity", "About to notifyDataSetChanged");
+									eAdapter.notifyDataSetChanged();
+								}
 								
 								/*if (moveToTop)
 								{
@@ -647,6 +682,9 @@ public class EventListActivity extends BaseMotleeActivity {
     public void onPause()
     {
     	super.onPause();
+    	
+    	fragmentHasAttached = false;
+    	isReadyToCommitFragment = false;
     }
     
     @Override
@@ -755,6 +793,25 @@ public class EventListActivity extends BaseMotleeActivity {
 
 		}
     };
+
+	public void OnFragmentAttached() {
+
+		this.fragmentHasAttached = true;
+		
+		if (this.isReadyToCommitFragment)
+		{
+			FragmentManager fm = getSupportFragmentManager();
+			if (fm.findFragmentById(R.id.fragment_content) == null)
+			{
+				FragmentTransaction ft = fm.beginTransaction();
+				
+				ft.add(R.id.fragment_content, mEventListFragment);
+				
+				ft.commit();
+			}
+		}
+		
+	}
 }
 
 

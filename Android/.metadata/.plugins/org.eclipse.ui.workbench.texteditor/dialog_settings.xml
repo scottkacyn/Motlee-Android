@@ -2,8 +2,8 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="530" key="DIALOG_WIDTH"/>
-		<item value="571" key="DIALOG_Y_ORIGIN"/>
-		<item value="981" key="DIALOG_X_ORIGIN"/>
+		<item value="580" key="DIALOG_Y_ORIGIN"/>
+		<item value="912" key="DIALOG_X_ORIGIN"/>
 		<item value="226" key="DIALOG_HEIGHT"/>
 		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
@@ -13,16 +13,16 @@
 		<item value="false" key="isRegEx"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="setUpLocationFragment" key="selection"/>
+		<item value="EventListAdapter" key="selection"/>
 		<list key="findhistory">
-			<item value="setUpLocationFragment"/>
-			<item value="drawerHandle"/>
-			<item value="mDrawerHandle"/>
-			<item value="mGestureDetector"/>
-			<item value="setOnClick"/>
-			<item value="onClick"/>
-			<item value="onScroll"/>
-			<item value="onScale"/>
+			<item value="EventListAdapter"/>
+			<item value="Adapter"/>
+			<item value="setEventAdapter"/>
+			<item value="deleteAcc"/>
+			<item value="delete"/>
+			<item value="getEvents"/>
+			<item value="getUserInfo"/>
+			<item value="getUserIfno"/>
 		</list>
 		<list key="replacehistory">
 			<item value="EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);"/>

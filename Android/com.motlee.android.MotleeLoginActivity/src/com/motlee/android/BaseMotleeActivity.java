@@ -26,6 +26,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -35,6 +36,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -157,6 +159,9 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
     public void onCreate(Bundle savedInstanceState) {
     	Log.d(tag, "onCreate");
     	
+    	getWindow().setFormat(PixelFormat.RGBA_8888);
+    	getWindow().addFlags(WindowManager.LayoutParams.FLAG_DITHER);
+    	
     	EventServiceBuffer.getInstance(getApplicationContext());
     	
     	super.onCreate(savedInstanceState);
@@ -263,6 +268,7 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
 			}
 			else if (iconToShow == TAKE_PICTURE)
 			{
+				((ImageView) findViewById(R.id.plus_menu_button)).setImageResource(R.drawable.right_menu_button);
 				((ImageView) findViewById(R.id.plus_menu_button)).setClickable(true);
 				((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_photo_icon);
 			}

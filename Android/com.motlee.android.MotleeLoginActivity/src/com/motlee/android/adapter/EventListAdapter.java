@@ -27,6 +27,11 @@ import com.devsmart.android.ui.HorizontalListView;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.GradientDrawable.Orientation;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -225,7 +230,12 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				if (holder.event_background.getBackground() == null)
 				{
 					DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.event_list_detail_background, GlobalVariables.DISPLAY_WIDTH);
-					holder.event_background.setBackgroundDrawable(drawable.getDrawable());
+					
+					GradientDrawable gradient = (GradientDrawable) getContext().getResources().getDrawable(R.drawable.event_list_background_gradient);
+					
+					gradient.setSize(drawable.getWidth(), drawable.getHeight());
+					
+					holder.event_background.setBackgroundDrawable(gradient);
 					//holder.event_background.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, drawable.getHeight()));
 				}
 				
@@ -271,7 +281,7 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				holder.event_header_time.setText(dateString);
 				holder.event_header_time.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 				
-				String attendeeText = "";
+				//String attendeeText = "";
 				if (item.getAttendeeCount() > 1)
 				{
 					holder.event_footer_people.setText(" + " + (item.getAttendeeCount() - 1));
@@ -355,6 +365,10 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				if (holder.list_view.getAdapter() == null)
 				{					
 					holder.list_view.setAdapter(holder.imageAdapter);
+				}
+				else
+				{
+					holder.imageAdapter.notifyDataSetChanged();
 				}
 
          	}

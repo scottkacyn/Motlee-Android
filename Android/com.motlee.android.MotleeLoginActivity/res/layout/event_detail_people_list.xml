@@ -2,7 +2,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/search_list"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent" 
+    android:background="@drawable/event_detail_photo_container">
     
     <include layout="@layout/event_detail_header"
         android:id="@+id/event_detail_header"
@@ -27,5 +28,7 @@
 	    android:scrollbars="none" 
 	    android:layout_below="@id/progress_bar"
 	    android:divider="@null" 
+	    android:paddingLeft="2dp"
+	    android:paddingRight="2dp"
 	    android:overScrollFooter="@null"/>
 </RelativeLayout>

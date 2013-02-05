@@ -41,7 +41,7 @@
 		        android:layout_weight=".68"
 		        android:gravity="left|center_vertical"
 		        android:paddingLeft="15dp"
-		        sytle="@style/CodeFont.Message"
+		        sytle="@style/CodeFont"
 		        android:ellipsize="end"
 		        android:singleLine="true"
 		        android:background="@android:color/transparent" />

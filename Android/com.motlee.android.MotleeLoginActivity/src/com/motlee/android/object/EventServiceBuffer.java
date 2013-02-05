@@ -3,6 +3,7 @@ package com.motlee.android.object;
 import java.io.ByteArrayOutputStream;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -95,7 +96,7 @@ public class EventServiceBuffer extends Object {
     public static final String MY_EVENTS = "me";
     public static final String NO_EVENT_FILTER = "none";
 
-    private static SimpleDateFormat railsDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private static SimpleDateFormat railsDateFormatter = new SimpleDateFormat("\"yyyy-MM-dd'T'HH:mm:ss'Z'\"");
     // HTTP Success code is 200. We add a constant to that code to in RubyService
     // avoiding other types of HTTP codes
     public static final int eventSuccessCode = HttpStatus.SC_OK + RubyService.EVENT;
@@ -421,19 +422,22 @@ public class EventServiceBuffer extends Object {
         mContext.startService(intent);
 	}
 	
-	public static void deleteAccount(Integer userID)
+	public static void deleteAccount()
 	{
 		Bundle params = new Bundle();
 		
 		Intent intent = new Intent(mContext, RubyService.class);
-		intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + SharePref.getIntPref(mContext, SharePref.USER_ID) + "/delete"));
+		intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + SharePref.getIntPref(mContext, SharePref.USER_ID)));
+		
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+		params.putString("access_token", SharePref.getStringPref(mContext, SharePref.ACCESS_TOKEN));
 		
         intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
-        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.POST);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.DELETE);
         intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.USER);
         intent.putExtra(RubyService.EXTRA_PARAMS, params);
         
-        //mContext.startService(intent);
+        mContext.startService(intent);
 	}
 	
 	public static void getSettings()
@@ -924,7 +928,7 @@ public class EventServiceBuffer extends Object {
 		
 		String railsDateString = (new Date()).toString();
 		
-		SharePref.setStringPref(mContext.getApplicationContext(), SharePref.LAST_UPDATED, railsDateString);
+		//SharePref.setStringPref(mContext.getApplicationContext(), SharePref.LAST_UPDATED, railsDateString);
 		
         intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
         intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
@@ -1237,7 +1241,7 @@ public class EventServiceBuffer extends Object {
 	        while (e.hasMoreElements()) 
 	        {
 	        	UpdatedEventDetailListener l = (UpdatedEventDetailListener) e.nextElement();
-	        	l.myEventOccurred(eventParam);
+	        	l.updatedEventOccurred(eDetail.getEventID());
 	        }
     	}
 	}
@@ -1658,6 +1662,8 @@ public class EventServiceBuffer extends Object {
 			   		    {
 			   		    	UserInfo user = gson.fromJson(attendee, UserInfo.class);
 			   		    	
+			   		    	TempAttendee.removeTempAttendee(eDetail.getEventID(), user);
+			   		    	
 			   		    	newAttendees.add(new Attendee(user.id, eDetail));
 			   		    	
 			    			try {
@@ -1671,6 +1677,14 @@ public class EventServiceBuffer extends Object {
 			    		
 			    		eDetail.setAttendeeCount(attendingElement.size());
 		    		
+			    	}
+			    	else
+			    	{
+			    		UserInfo owner = dbWrapper.getUser(eDetail.getOwnerID());
+			    		
+			    		Attendee attendee = new Attendee(owner.id, eDetail);
+			    		
+			    		dbWrapper.createAttendee(attendee);
 			    	}
 		    		
 		    		if (eDetail.is_deleted)
@@ -2168,6 +2182,11 @@ public class EventServiceBuffer extends Object {
 		        			
 		        			ExecutorService execs = Executors.newFixedThreadPool(3, new LowPriorityThreadFactory());  
 		        			
+		        			if (dbWrapper.getAllEvents().size() == 0)
+		        			{
+		        				execs = Executors.newFixedThreadPool(10, new HighPriorityThreadFactory());
+		        			}
+		        			
 		        		    List<Future<Integer>> results = new ArrayList<Future<Integer>>(); 
 		        			
 		                	for (JsonElement element : array)
@@ -2258,6 +2277,18 @@ public class EventServiceBuffer extends Object {
 		}
     	
     }
+    
+    private class HighPriorityThreadFactory implements ThreadFactory
+    {
+    	public Thread newThread(Runnable r)
+    	{
+    		Thread thread = new Thread(r);
+    		
+    		thread.setPriority(Thread.MAX_PRIORITY - 2);
+    		
+    		return thread;
+    	}
+    }
 
     private static void setOwner(JsonElement userObject)
     {
@@ -2321,7 +2352,7 @@ public class EventServiceBuffer extends Object {
     		
     		try
     		{
-	    		if (railsDateFormatter.parse(updatedAt).after(railsDateFormatter.parse(lastUpdatedAt)))
+	    		if (railsDateFormatter.parse(updatedAt, new ParsePosition(0)).after(railsDateFormatter.parse(lastUpdatedAt, new ParsePosition(0))))
 	    		{
 	    			SharePref.setStringPref(mContext, SharePref.LAST_UPDATED, updatedAt);
 	    		}
@@ -2329,7 +2360,7 @@ public class EventServiceBuffer extends Object {
     		catch (Exception e)
     		{
     			Log.e("EventServiceBuffer.MyTask", "Failed to parse dates");
-    			SharePref.setStringPref(mContext, SharePref.LAST_UPDATED, updatedAt);
+    			SharePref.setStringPref(mContext.getApplicationContext(), SharePref.LAST_UPDATED, updatedAt);
     		}
     		
     		JsonElement userObject = event.get("owner");
@@ -2353,6 +2384,8 @@ public class EventServiceBuffer extends Object {
 	   		    for (JsonElement attendee : attendees)
 	   		    {
 	   		    	UserInfo user = gson.fromJson(attendee, UserInfo.class);
+	   		    	
+	   		    	TempAttendee.removeTempAttendee(eDetail.getEventID(), user);
 	   		    	
 	   		    	dbWrapper.createOrUpdateUser(user);
 	   		    	

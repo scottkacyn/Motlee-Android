@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class NotificationAdapter extends StickyListHeadersBaseAdapter {
@@ -176,11 +177,11 @@ public class NotificationAdapter extends StickyListHeadersBaseAdapter {
     	holder.category_title.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
     	if (position < mSplitSection)
     	{
-    		holder.category_title.setText("Unread Notifications");
+    		holder.category_title.setText("New Notifications");
     	}
     	else
     	{
-    		holder.category_title.setText("Read Notifications");
+    		holder.category_title.setText("Old Notifications");
     	}
     	
     	return convertView;

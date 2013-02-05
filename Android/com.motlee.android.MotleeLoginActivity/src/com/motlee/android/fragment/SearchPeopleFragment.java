@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -59,6 +60,7 @@ import com.motlee.android.object.FacebookPerson;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.GraphUserComparator;
 import com.motlee.android.object.SharePref;
+import com.motlee.android.service.RubyService;
 
 public class SearchPeopleFragment extends ListFragmentWithHeader {
 	private String tag = "SearchFragment";
@@ -234,8 +236,11 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
             handler.post(new Runnable() {
                 
                 public void run() {
+                	if (mAdapter != null)
+                	{
                     	mAdapter.getFilter().filter(mSearchText);
                     	hasSearchTextChangedSinceLastQuery = false;
+                	}
                 }
             });
         } else {
@@ -274,47 +279,65 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
     	return newPeople;
     }
     
+	private void sendBroadcast()
+    {
+    	Intent broadcast = new Intent();
+        broadcast.setAction(RubyService.CONNECTION_ERROR);
+        getActivity().sendBroadcast(broadcast);
+    }
+    
     private Callback graphUserListCallback = new Callback(){
 
 		public void onCompleted(Response response) {
 			
 			if (getActivity() != null)
 			{
-			
-				ArrayList<JSONObject> jsonObjectList = new ArrayList<JSONObject>();
-				
-				JSONArray users = (JSONArray) response.getGraphObject().getProperty("data");
-				try
+				if (response != null && response.getGraphObject() != null)
 				{
-					for (int i = 0; i < users.length(); i++)
+					ArrayList<JSONObject> jsonObjectList = new ArrayList<JSONObject>();
+					
+					JSONArray users = (JSONArray) response.getGraphObject().getProperty("data");
+					try
 					{
-						JSONObject user = users.getJSONObject(i);
-						if (initialPeople.contains(user.getLong("uid")))
+						for (int i = 0; i < users.length(); i++)
 						{
-							peopleToAdd.add(user);
-							originalAttendeeList.add(user);
+							JSONObject user = users.getJSONObject(i);
+							if (initialPeople.contains(user.getLong("uid")))
+							{
+								peopleToAdd.add(user);
+								originalAttendeeList.add(user);
+							}
+							jsonObjectList.add(users.getJSONObject(i));
 						}
-						jsonObjectList.add(users.getJSONObject(i));
 					}
-				}
-				catch (JSONException e)
-				{
-					Log.e(this.toString(), e.getMessage());
-				}
-				
-				mAdapter = new SearchPeopleAdapter(getActivity(), R.layout.search_people_item, jsonObjectList, peopleToAdd);
-		    	setListAdapter(mAdapter);
+					catch (JSONException e)
+					{
+						Log.e(this.toString(), e.getMessage());
+					}
+					
+					mAdapter = new SearchPeopleAdapter(getActivity(), R.layout.search_people_item, jsonObjectList, peopleToAdd);
+			    	setListAdapter(mAdapter);
+			    	
+			    	if (mSearchText != null)
+			    	{
+			    		mAdapter.getFilter().filter(mSearchText);
+			    	}
+			    	
+			    	mHandler.post(new Runnable() {
+			    	    
+			    		public void run() { 
+			    			
+			    	    	view.findViewById(R.id.search_progress_bar).setVisibility(View.GONE);
+			    	    	
+			    	    	view.findViewById(R.id.search_list).setVisibility(View.VISIBLE); 
+		    	    	}
+		    	    });
 		    	
-		    	mHandler.post(new Runnable() {
-		    	    
-		    		public void run() { 
-		    			
-		    	    	view.findViewById(R.id.search_progress_bar).setVisibility(View.GONE);
-		    	    	
-		    	    	view.findViewById(R.id.search_list).setVisibility(View.VISIBLE); 
-	    	    	}
-	    	    });
-	    	
+				}
+				else
+				{
+					sendBroadcast();
+				}
 			}
 		}
     };

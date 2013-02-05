@@ -129,8 +129,8 @@ public class DateStringFormatter {
 		}
 		else
 		{
-			int numOfSecs = timeInterval.toPeriod(PeriodType.seconds()).getSeconds();
-			dateString = setUpString(numOfSecs, "s");
+			//int numOfSecs = timeInterval.toPeriod(PeriodType.seconds()).getSeconds();
+			dateString = "Just Now";
 		}
 		
 		return dateString;

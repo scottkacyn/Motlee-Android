@@ -50,6 +50,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -419,7 +420,7 @@ public class GlobalVariables {
 		
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context.getApplicationContext())
 		.threadPoolSize(1)
-		.threadPriority(Thread.MIN_PRIORITY + 1)
+		.threadPriority(Thread.NORM_PRIORITY + 1)
 		.memoryCache(new WeakMemoryCache())
         .discCache(new UnlimitedDiscCache(cacheDir))
         .discCacheExtraOptions(800, 800, CompressFormat.JPEG, 75)
@@ -464,6 +465,51 @@ public class GlobalVariables {
 		imageView.setMaxWidth(width);
 		
     	imageLoader.displayImage(url, imageView, options, WatermarkCache.getWatermark(width));
+	}
+	
+	public void downloadImageWithThumbnail(ImageView imageView, PhotoItem photo, Integer width)
+	{
+		if (imageLoader == null)
+		{
+			this.initializeImageLoader(imageView.getContext().getApplicationContext());
+		}
+		
+		String url = this.getAWSUrlCompressed(photo);
+		
+		String thumbnailUrl = this.getAWSUrlThumbnail(photo);
+		
+		Bitmap bitmap = getThumbnailBitmap(thumbnailUrl);
+		
+		//String thumbnail
+		
+		WatermarkCache.getInstance(imageView.getContext().getApplicationContext().getResources());
+		
+		imageView.setMaxHeight(width);
+		imageView.setMaxWidth(width);
+			
+		if (bitmap != null)
+		{
+			imageLoader.displayImage(url, imageView, options, new BitmapDrawable(bitmap));
+		}
+		else
+		{
+			imageLoader.displayImage(url, imageView, options, WatermarkCache.getWatermark(width));
+		}
+	}
+	
+	private Bitmap getThumbnailBitmap(String thumbnailUrl)
+	{
+		Bitmap bitmap = null;
+		
+		for (String url : imageLoader.getMemoryCache().keys())
+		{
+			if (url.contains(thumbnailUrl))
+			{
+				bitmap = imageLoader.getMemoryCache().get(url);
+			}
+		}
+		
+		return bitmap;
 	}
 	
 	public int getDisplayHeight()

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete element from project &apos;com.motlee.android.MotleeLoginActivity&apos;&#x0A;- Original project: &apos;com.motlee.android.MotleeLoginActivity&apos;&#x0A;- Original element: &apos;event_detail_photo_container_bg.xml&apos;" description="Delete element" element1="res/drawable/event_detail_photo_container_bg.xml" elements="0" flags="589830" id="org.eclipse.jdt.ui.delete" resources="1" stamp="1359732645787" subPackages="false" version="1.0"/>
+</session>

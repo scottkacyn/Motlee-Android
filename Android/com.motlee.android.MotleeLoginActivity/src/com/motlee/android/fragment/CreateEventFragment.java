@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 
+import com.motlee.android.CreateEventActivity;
 import com.motlee.android.R;
 import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
@@ -27,6 +29,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -35,9 +38,11 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
@@ -65,6 +70,8 @@ public class CreateEventFragment extends BaseMotleeFragment {
 	private StretchedBackgroundTableLayout eventInfoLayout;
 	private StretchedBackgroundTableLayout eventFriendLayout;
 	
+	private ArrayList<UserInfo> attendeeMap = new ArrayList<UserInfo>();
+	
 	private View mDatePickerStartView;
 	private View mDatePickerEndView;
 	
@@ -76,7 +83,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
     private ImageLoader imageDownloader;
     private DisplayImageOptions mOptions;
 	
-    private ArrayList<Long> mAttendees;
+    //private ArrayList<Long> mAttendees;
     
     private LocationInfo mLocation;
     
@@ -103,7 +110,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		this.inflater = inflater;
 		view = (View) this.inflater.inflate(R.layout.activity_event_create, null);
 		
-		mAttendees = new ArrayList<Long>();
+		//mAttendees = new ArrayList<Long>();
 		
 		mHelper = DatabaseHelper.getInstance(this.getActivity().getApplicationContext());
 		dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
@@ -118,7 +125,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		{
 			setPageHeader(pageTitle);
 			showRightHeaderButton("Start!");
-			view.findViewById(R.id.event_create_delete_button).setVisibility(View.GONE);
+			view.findViewById(R.id.event_create_delete_event).setVisibility(View.GONE);
 		}
 		else
 		{
@@ -126,7 +133,8 @@ public class CreateEventFragment extends BaseMotleeFragment {
 			setPageHeader(pageTitle);
 			setHeaderIcon(EDIT_EVENTS);
 			showRightHeaderButton("Save");
-			view.findViewById(R.id.event_create_delete_button).setVisibility(View.VISIBLE);
+			((TextView) view.findViewById(R.id.delete_event_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+			view.findViewById(R.id.event_create_delete_event).setVisibility(View.VISIBLE);
 		}
 		showLeftHeaderButton();
 		
@@ -176,6 +184,8 @@ public class CreateEventFragment extends BaseMotleeFragment {
 				}
 			}
 		}
+
+		((CreateEventActivity) getActivity()).setupUI(view);
 		
 		return view;
 	}
@@ -549,6 +559,18 @@ public class CreateEventFragment extends BaseMotleeFragment {
 	                ((EditText) v).setTextColor(Color.WHITE);
 	                ((EditText) v).setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 	            } 
+	            else
+	            {
+	                InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+	                // NOTE: In the author's example, he uses an identifier
+	                // called searchBar. If setting this code on your EditText
+	                // then use v.getWindowToken() as a reference to your 
+	                // EditText is passed into this callback as a TextView
+
+	                in.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+	                //editText.clearFocus();
+	            }
 	        }
 	    });
 		
@@ -578,7 +600,17 @@ public class CreateEventFragment extends BaseMotleeFragment {
 
 	public ArrayList<Long> getAttendeeList()
 	{
-		return mAttendees;
+		ArrayList<Long> facebookIDs = new ArrayList<Long>();
+		for (UserInfo user : attendeeMap)
+		{
+			facebookIDs.add(user.uid);
+		}
+		return facebookIDs;
+	}
+	
+	public ArrayList<UserInfo> getTempAttendeeList()
+	{
+		return attendeeMap;
 	}
 	
 	public void removePersonFromEvent(Long facebookID)
@@ -586,13 +618,17 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		for (int i = 0; i < eventFriendLayout.getChildCount(); i++)
 		{
 			View viewButton = eventFriendLayout.getChildAt(i).findViewById(R.id.edit_attendee_remove);
-			if (viewButton != null && Integer.parseInt(viewButton.getContentDescription().toString()) == facebookID)
+			if (viewButton != null && Long.parseLong(viewButton.getContentDescription().toString()) == facebookID)
 			{
 				eventFriendLayout.removeViewAt(i);
 				break;
 			}
 		}
-		mAttendees.remove(facebookID);
+		
+		UserInfo tempUser = new UserInfo();
+		tempUser.uid = facebookID;
+		
+		attendeeMap.remove(tempUser);
 	}
 	
 	public void clearPeopleFromEvent()
@@ -605,7 +641,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 				eventFriendLayout.removeViewAt(i);
 			}
 		}
-		mAttendees.clear();
+		attendeeMap.clear();
 	}
 	
 	public void addPersonToEvent(Long facebookID, String attendeeName) {
@@ -632,7 +668,11 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		tr.setTag(false);
 		eventFriendLayout.addView(tr);
 		
-		mAttendees.add(facebookID);
+		UserInfo user = new UserInfo();
+		user.name = attendeeName;
+		user.uid = facebookID;
+		
+		attendeeMap.add(user);
 	}
 
 	public void updatePageHeader() {

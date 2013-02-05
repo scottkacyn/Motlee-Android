@@ -33,6 +33,7 @@
 	            android:layout_gravity="top"
 	            android:paddingLeft="10dp"
 	            android:paddingTop="5dp"
+	            android:paddingBottom="5dp"
 	            android:layout_weight=".20" />
 	        <LinearLayout
 	            android:layout_width="0dp"
@@ -48,6 +49,7 @@
 			        android:paddingLeft="15dp"
 			        android:paddingTop="5dp"
 			        android:singleLine="false"
+			        android:lineSpacingMultiplier="1.2"
 			        style="@style/CodeFont.Small"
 			        android:background="@android:color/transparent" />
 			    

@@ -26,6 +26,7 @@ import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,7 +66,8 @@ public class ImageAdapter extends BaseAdapter {
     	
     	mOriginalPhotoList.add(NO_PHOTO);
     	
-    	mPullOutDrawer = (FrameLayout) this.inflater.inflate(R.layout.event_list_pull_out_drawer, null);
+    	setUpPullOutDrawer();
+
     	
     	for (int i = 0; i < MIN_SIZE; i++)
     	{
@@ -73,7 +75,33 @@ public class ImageAdapter extends BaseAdapter {
     	}
     }
     
-    public void setEventId(int eventId)
+    private void setUpPullOutDrawer() {
+		
+		int imageHeight = GlobalVariables.getInstance().getMaxEventListImageHeight();
+		
+		double scale = ((double) imageHeight) / 219.0;
+		
+		int headerWidth = (int) (scale * 128.0);
+    	
+    	mPullOutDrawer = (FrameLayout) this.inflater.inflate(R.layout.event_list_pull_out_drawer, null);
+    	
+    	mPullOutDrawer.setLayoutParams(new ViewGroup.LayoutParams(headerWidth, imageHeight));
+    	
+		GradientDrawable gradient = (GradientDrawable) context.getResources().getDrawable(R.drawable.event_list_background_gradient);
+		
+		gradient.mutate();
+		
+		gradient.setSize(headerWidth, imageHeight);
+    	
+		mPullOutDrawer.setBackgroundDrawable(gradient);
+		
+    	//GradientDrawable gradient = (GradientDrawable) mPullOutDrawer.getBackground();
+    	
+    	//gradient.setSize(headerWidth, imageHeight);
+		
+	}
+
+	public void setEventId(int eventId)
     {
     	this.eventId = eventId;
     }

@@ -94,15 +94,18 @@ public class UserProfileAdapter extends ArrayAdapter<EventDetail> {
         
         ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>(dbWrapper.getPhotos(event.getEventID()));
         
+        holder.search_event_picture.setMaxHeight(mEventPictureHeight - DrawableCache.convertDpToPixel(4));
+        holder.search_event_picture.setMaxWidth(mEventPictureHeight - DrawableCache.convertDpToPixel(4));
+        
         if (photos.size() > 0)
         {
         	GlobalVariables.getInstance().downloadImage(holder.search_event_picture, 
         			GlobalVariables.getInstance().getAWSUrlThumbnail(photos.get(0)), 
-        			mEventPictureHeight);
+        			mEventPictureHeight - DrawableCache.convertDpToPixel(4));
         }
         else
         {
-        	holder.search_event_picture.setImageDrawable(WatermarkCache.getWatermark(mEventPictureHeight));
+        	holder.search_event_picture.setImageDrawable(WatermarkCache.getWatermark(mEventPictureHeight - DrawableCache.convertDpToPixel(4)));
         }
         
         holder.search_event_name.setText(event.getEventName());

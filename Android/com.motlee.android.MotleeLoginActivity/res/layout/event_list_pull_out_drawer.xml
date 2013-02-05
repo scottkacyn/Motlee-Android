@@ -1,8 +1,15 @@
-<com.motlee.android.layouts.VerticalAspectFrameLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-	android:background="@drawable/event_list_slide_out_full" > 
+    android:layout_height="match_parent" > 
+    
+    <ImageView
+        android:id="@+id/background"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:src="@drawable/event_list_slide_out_full" />
     
     <ImageView
         android:id="@+id/pull_out_drawer_camera"
@@ -26,4 +33,4 @@
         android:src="@drawable/event_list_eye_ball"
         android:visibility="gone" />
     
-</com.motlee.android.layouts.VerticalAspectFrameLayout>
+</FrameLayout>

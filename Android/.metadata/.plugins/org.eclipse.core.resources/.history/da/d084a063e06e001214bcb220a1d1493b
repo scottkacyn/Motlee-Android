@@ -1,0 +1,41 @@
+package com.motlee.android.object;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+
+public class TempAttendee {
+	
+	private static HashMap<Integer, ArrayList<UserInfo>> events = new HashMap<Integer, ArrayList<UserInfo>>();
+	
+	public TempAttendee()
+	{
+		
+	}
+	
+	public static ArrayList<UserInfo> getTempAttendees(Integer eventId)
+	{
+		return events.get(eventId);
+	}
+	
+	public static void setTempAttendee(Integer eventId, UserInfo tempUser)
+	{
+		if (events.containsKey(eventId))
+		{
+			events.get(eventId).add(tempUser);
+		}
+		else
+		{
+			events.put(eventId, new ArrayList<UserInfo>());
+			events.get(eventId).add(tempUser);
+		}
+	}
+	
+	public static void removeTempAttendee(Integer eventId, UserInfo tempUser)
+	{
+		if (events.containsKey(eventId))
+		{
+			events.get(eventId).remove(tempUser);
+		}
+	}
+}

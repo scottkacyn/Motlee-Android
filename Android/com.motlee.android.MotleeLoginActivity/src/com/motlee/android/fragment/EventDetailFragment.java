@@ -97,6 +97,8 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 	
 	private DatabaseWrapper dbWrapper;
 	
+	private View headerView;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -149,10 +151,20 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		
 		if (gridAdapter.getCount() == 0 && listViewLayout.getHeaderViewsCount() == 0)
 		{
-			View headerView = inflater.inflate(R.layout.event_detail_no_photo_header, null);
+			headerView = inflater.inflate(R.layout.event_detail_no_photo_header, null);
 			
 			TextView text = (TextView) headerView.findViewById(R.id.event_detail_no_photo_text);
 			text.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+			if (!dbWrapper.isAttending(mEventDetail.getEventID()))
+			{
+				text.setText(R.string.no_photo_friend_text);
+				headerView.findViewById(R.id.event_detail_no_photo_button).setVisibility(View.GONE);
+			}
+			else
+			{
+				text.setText(R.string.no_photo_text);
+				headerView.findViewById(R.id.event_detail_no_photo_button).setVisibility(View.VISIBLE);
+			}
 			
 			headerView.findViewById(R.id.event_detail_no_photo_button).setOnClickListener(takePhotoListener);
 			listViewLayout.addHeaderView(headerView);
@@ -195,6 +207,7 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		if (mEventDetail != null)
 		{
 			showRightHeaderButton(mEventDetail, this.getActivity().getApplicationContext());
+			setHeaderIcon(mEventDetail, getActivity());
 		}
 		
 		//checkBottomCommentBar();
@@ -309,6 +322,17 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		if (view != null)
 		{
 			setGridAdapter();
+			
+			if (gridAdapter.getCount() > 0)
+			{
+				if (listViewLayout != null && listViewLayout.getHeaderViewsCount() > 0)
+				{
+					if (headerView != null)
+					{
+						listViewLayout.removeHeaderView(headerView);
+					}
+				}
+			}
 			
 			gridAdapter.notifyDataSetChanged();
 		}

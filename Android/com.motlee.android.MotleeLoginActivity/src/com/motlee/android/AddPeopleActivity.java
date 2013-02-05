@@ -28,6 +28,7 @@ import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.SharePref;
+import com.motlee.android.object.TempAttendee;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
@@ -87,6 +88,10 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
             	if (!initialAttendees.contains(uid))
             	{
             		peopleToAdd.add(uid);
+            		UserInfo tempUser = new UserInfo();
+            		tempUser.uid = uid;
+            		tempUser.name = person.getString("name");
+            		TempAttendee.setTempAttendee(eventId, tempUser);
             	}
             }
         }

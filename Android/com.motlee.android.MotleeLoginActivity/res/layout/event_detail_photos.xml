@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent"
+    android:background="@drawable/event_detail_photo_container"
     android:id="@+id/event_detail_main" >    
     
     <include layout="@layout/event_detail_header"
@@ -32,6 +32,8 @@
 	    android:layout_below="@id/progress_bar"
         android:background="@android:color/transparent"
         android:divider="@null"
-        android:overScrollFooter="@null" />
+        android:overScrollFooter="@null"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp" />
     
 </RelativeLayout>

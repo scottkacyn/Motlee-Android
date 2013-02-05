@@ -93,7 +93,7 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 		
 		double scale = ((double) imageHeight) / 219.0;
 		
-		mHeaderWidth = (int) (scale * 125.0) - (int) (scale * 32.0);
+		mHeaderWidth = (int) (scale * 128.0) - (int) (scale * 32.0);
 		
 		Log.d("HLV.setHeaderWidth", "mHeaderWidth: " + mHeaderWidth + ", imageHeight: " + imageHeight);
 		

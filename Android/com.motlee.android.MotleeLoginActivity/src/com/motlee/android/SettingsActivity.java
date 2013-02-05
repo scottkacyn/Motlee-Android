@@ -169,6 +169,7 @@ public class SettingsActivity extends BaseMotleeActivity implements SettingsList
 		.setPositiveButton("Delete", deleteAccountListener)
 		.setNegativeButton("No way", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
+				
 				dialog.cancel();
 			}
 		});
@@ -181,7 +182,11 @@ public class SettingsActivity extends BaseMotleeActivity implements SettingsList
 
 			//progressDialog = ProgressDialog.show(SettingsActivity.this, "", "Deleting Account");
 			
-			EventServiceBuffer.deleteAccount(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
+			EventServiceBuffer.deleteAccount();
+			
+			//EventServiceBuffer.deleteAccount();
+			
+			Session.getActiveSession().closeAndClearTokenInformation();
 		}
 	};
     

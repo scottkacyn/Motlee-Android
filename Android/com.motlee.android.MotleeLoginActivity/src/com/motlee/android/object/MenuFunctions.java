@@ -389,7 +389,7 @@ public class MenuFunctions {
 		{
 			EventListActivity eventListActivity = (EventListActivity) activity;
 			
-			eventListActivity.requestNewDataForList(params.dataContent, params.headerText);
+			eventListActivity.requestNewDataForList(params.dataContent, params.headerText, true);
 		}
 		else
 		{

@@ -22,6 +22,7 @@ import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.SharePref;
+import com.motlee.android.object.TempAttendee;
 import com.motlee.android.object.UserInfo;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -35,6 +36,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -76,7 +78,7 @@ public class PeopleListFragment extends BaseDetailFragment {
 	{
 		super.onResume();
 		
-		eventDetailPeopleList = (ListView) view.findViewById(R.id.event_detail_people_list);
+		
 		//eventDetailPeopleList.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
 		
 		Attendee attendee = new Attendee(SharePref.getIntPref(getActivity().getApplicationContext(), SharePref.USER_ID));
@@ -115,8 +117,11 @@ public class PeopleListFragment extends BaseDetailFragment {
 		if (mEventDetail != null)
 		{
 			showRightHeaderButton(mEventDetail, this.getActivity().getApplicationContext());
+			setHeaderIcon(mEventDetail, getActivity());
 		}
 		showLeftHeaderButton();
+		
+		eventDetailPeopleList = (ListView) view.findViewById(R.id.event_detail_people_list);
 		
 		return view;
 	}
@@ -155,6 +160,7 @@ public class PeopleListFragment extends BaseDetailFragment {
 		TextView labelButtonText = (TextView) inviteFriendsHeader.findViewById(R.id.label_button_text);
 		labelButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 		labelButtonText.setText("Invite other people to join");
+		labelButtonText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 17);
 		
 		inviteFriendsHeader.findViewById(R.id.label_button).setOnClickListener(addFriendsListener);
 		
@@ -198,6 +204,8 @@ public class PeopleListFragment extends BaseDetailFragment {
 			}
 		}
 		
+		mUsers.addAll(TempAttendee.getTempAttendees(mEventDetail.getEventID()));
+		
 		if (mUsers.size() > 0)
 		{
 			Collections.sort(mUsers);
@@ -205,12 +213,25 @@ public class PeopleListFragment extends BaseDetailFragment {
 		
 		if (getActivity() != null)
 		{
-			mAdapter = new PeopleListAdapter(getActivity(), R.layout.people_list_item, mUsers);
+			if (mAdapter == null)
+			{
+				mAdapter = new PeopleListAdapter(getActivity(), R.layout.people_list_item, mUsers);
+				eventDetailPeopleList.setAdapter(mAdapter);
+			}
+			else
+			{
+				mAdapter.clear();
+				mAdapter.addAll(mUsers);
+				if (eventDetailPeopleList.getAdapter() == null)
+				{
+					eventDetailPeopleList.setAdapter(mAdapter);
+				}
+				else
+				{
+					mAdapter.notifyDataSetChanged();
+				}
+			}
 		}
-
-		
-		eventDetailPeopleList.setAdapter(mAdapter);
-
 	}
 
 	public void setEventDetail(EventDetail eventDetail)

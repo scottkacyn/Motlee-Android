@@ -91,6 +91,8 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
     
     private UserInfo user;
     
+    private String mUserName;
+    
     private ArrayList<PhotoItem> photos;
     
     private ArrayList<EventDetail> events;
@@ -101,11 +103,17 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
     
     private View notFriendHeader;
     
+    private View notMotleeHeader;
+    
     private DatabaseWrapper dbWrapper;
 	
     private int maxHeightPic;
     
     private boolean isFriend = true;
+    
+    private boolean isMotlee = true;
+    
+    private View noPhotoHeader;
     
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
@@ -151,7 +159,23 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 			isFriend = true;
 		}
 		
-		setPageHeader(user.name);
+		if (user == null || user.sign_in_count > 0)
+		{
+			isMotlee = true;
+		}
+		else
+		{
+			isMotlee = false;
+		}
+		
+		if (user != null)
+		{
+			setPageHeader(user.name);
+		}
+		else
+		{
+			setPageHeader(mUserName);
+		}
 		showLeftHeaderButton();
 
 		this.setPageLayout();
@@ -171,10 +195,12 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 		this.birthDate = object.getProperty("birthday").toString();
 	}*/
 	
-	public void setUserId(int userID, Long facebookID)
+	public void setUserId(int userID, Long facebookID, String userName)
 	{
 		this.mUserID = userID;
 
+		this.mUserName = userName;
+		
 		this.facebookID = facebookID;
 		if (view != null)
 		{
@@ -194,13 +220,36 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 		
 		if (isFriend)
 		{
-			setGridAdapter();
-			
-			headerView.findViewById(R.id.profile_number_glow).setVisibility(View.VISIBLE);
-			
-			headerView.findViewById(R.id.profile_events_glow).setVisibility(View.GONE);
-			
-			headerView.findViewById(R.id.profile_friends_glow).setVisibility(View.GONE);
+			if (isMotlee)
+			{
+				setGridAdapter();
+				
+				headerView.findViewById(R.id.profile_number_glow).setVisibility(View.VISIBLE);
+				
+				headerView.findViewById(R.id.profile_events_glow).setVisibility(View.GONE);
+				
+				headerView.findViewById(R.id.profile_friends_glow).setVisibility(View.GONE);
+			}
+			else
+			{
+				notMotleeHeader = inflater.inflate(R.layout.user_profile_not_motlee, null);
+				((TextView) notMotleeHeader.findViewById(R.id.event_detail_not_motlee_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+				
+				if (userInfoList.getHeaderViewsCount() == 0)
+				{
+					userInfoList.addHeaderView(notMotleeHeader);
+				}
+				
+				headerView.findViewById(R.id.profile_number_glow).setVisibility(View.GONE);
+				
+				headerView.findViewById(R.id.profile_events_glow).setVisibility(View.GONE);
+				
+				headerView.findViewById(R.id.profile_friends_glow).setVisibility(View.GONE);
+				
+				profilePictures.setClickable(false);
+				profileEvents.setClickable(false);
+				profileFriends.setClickable(false);
+			}
 		}
 		else
 		{
@@ -221,6 +270,17 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 			profilePictures.setClickable(false);
 			profileEvents.setClickable(false);
 			profileFriends.setClickable(false);
+		}
+		
+		if (photos.size() < 1)
+		{
+			if (userInfoList.getHeaderViewsCount() == 0 && userInfoList.getAdapter() == null)
+			{
+				noPhotoHeader = inflater.inflate(R.layout.user_profile_no_photo_text, null);
+				((TextView) noPhotoHeader.findViewById(R.id.event_detail_no_photo_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+				
+				userInfoList.addHeaderView(noPhotoHeader);
+			}
 		}
 		
 		userInfoList.setAdapter(photoGridAdapter);
@@ -332,6 +392,11 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 			
 			headerView.findViewById(R.id.profile_friends_glow).setVisibility(View.VISIBLE);
 			
+			if (noPhotoHeader != null)
+			{
+				noPhotoHeader.findViewById(R.id.event_detail_no_photo_text).setVisibility(View.GONE);
+			}
+			
 			userInfoList.setAdapter(friendsAdapter);
 			
 		}
@@ -348,6 +413,11 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 			
 			headerView.findViewById(R.id.profile_friends_glow).setVisibility(View.GONE);
 			
+			if (noPhotoHeader != null)
+			{
+				noPhotoHeader.findViewById(R.id.event_detail_no_photo_text).setVisibility(View.VISIBLE);
+			}
+			
 			userInfoList.setAdapter(photoGridAdapter);
 		}
 		
@@ -362,6 +432,11 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 			headerView.findViewById(R.id.profile_events_glow).setVisibility(View.VISIBLE);
 			
 			headerView.findViewById(R.id.profile_friends_glow).setVisibility(View.GONE);
+			
+			if (noPhotoHeader != null)
+			{
+				noPhotoHeader.findViewById(R.id.event_detail_no_photo_text).setVisibility(View.GONE);
+			}
 			
 			userInfoList.setAdapter(eventAdapter);
 			

@@ -68,7 +68,10 @@ public class DrawableCache {
 	
 	private static DrawableWithHeight scaleBackgroundImage(int resource, int width)
 	{
-		Bitmap bitmap = ((BitmapDrawable) mResources.getDrawable(resource)).getBitmap();
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+		options.inDither = false;
+		Bitmap bitmap = BitmapFactory.decodeResource(mResources, resource, options);
 	
 		float scaleFactor = ((float) width) / bitmap.getWidth();
 
@@ -76,12 +79,14 @@ public class DrawableCache {
 		scale.postScale(scaleFactor, scaleFactor);
 		
 		int layout_height = (int)(((float) bitmap.getHeight()) * scaleFactor);
+		bitmap.setHasAlpha(true);
+		bitmap = Bitmap.createScaledBitmap(bitmap, width, layout_height, false);
 		
-		//bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false);
+		//bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), scale, false);
 		
-		bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), scale, false);
+		BitmapDrawable d = new BitmapDrawable(mResources, bitmap);
 		
-		Drawable d = new BitmapDrawable(mResources, bitmap);
+		d.setDither(false);
 		
 		bitmap = null;
 		

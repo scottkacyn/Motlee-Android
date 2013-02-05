@@ -101,10 +101,16 @@ public class LocationDetailFragment extends BaseDetailFragment {
 		}
 		
 		setPageHeader(pageTitle);
-		if (pageTitle.equals(NEARBY_EVENTS))
+		
+		if (mEventDetail != null)
+		{
+			setHeaderIcon(mEventDetail, getActivity());
+		}
+		
+		/*if (pageTitle.equals(NEARBY_EVENTS))
 		{
 			setHeaderIcon(NEARBY_EVENTS);
-		}
+		}*/
 		
 		showLeftHeaderButton();
 		

@@ -4,7 +4,7 @@ import android.app.Application;
 import org.acra.*;
 import org.acra.annotation.*;
 
-@ReportsCrashes(formKey = "dGthMjI0Q29YUTg4YmRtTkRqOG1FM1E6MQ") 
+@ReportsCrashes(formKey = "dHJ1M3UzUVUyVDVtU0JGZXJBLVgtVkE6MQ") 
 public class MotleeApplication extends Application {
 
 	@Override

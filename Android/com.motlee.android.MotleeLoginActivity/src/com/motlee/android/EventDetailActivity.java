@@ -123,6 +123,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	
 	private View checkBox;
 	
+	private PhotoItem tempPhotoEventDetailLoad;
+	
 	/*
 	 * (non-Javadoc)
 	 * @see com.google.android.maps.MapActivity#onNewIntent(android.content.Intent)
@@ -135,7 +137,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
 		mEventID = intent.getExtras().getInt("EventID");
 		mNewPhoto = intent.getParcelableExtra("NewPhoto");
-		firstScreen = getIntent().getExtras().getString("Page");
+		firstScreen = intent.getExtras().getString("Page");
 		
 		eDetail = dbWrapper.getEvent(mEventID);
 		
@@ -330,8 +332,10 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
 		userProfile.putExtra("UserID", user.id);
 		userProfile.putExtra("UID", user.uid);
+		userProfile.putExtra("Name", user.name);
 		
 		startActivity(userProfile);
+
 	}
 	
     protected void publishStoryOnFacebookFeed() {
@@ -780,6 +784,17 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	        	dbWrapper.createPhoto(mNewPhoto);
 	        }
 	        
+	        if (tempPhotoEventDetailLoad != null)
+	        {
+	        	PhotoItem photo = dbWrapper.getPhoto(tempPhotoEventDetailLoad.id);
+	        	if (photo == null)
+	        	{
+	        		dbWrapper.createPhoto(tempPhotoEventDetailLoad);
+	        	}
+	        	
+	        	tempPhotoEventDetailLoad = null;
+	        }
+	        
 			if (fragment instanceof EventDetailFragment)
 			{
 				fragment.hideProgressBar();
@@ -795,7 +810,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 				fragment.hideProgressBar();
 				((PeopleListFragment) fragment).setEventDetail(eDetail);
 			}
-			else if (fragment instanceof LocationFragment)
+			else if (fragment instanceof LocationDetailFragment)
 			{
 				fragment.hideProgressBar();
 				((LocationDetailFragment) fragment).addEventDetail(eDetail);
@@ -912,7 +927,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	private void showDeletedEventDialog() {
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(EventDetailActivity.this);
-		builder.setMessage("This event has been deleted.")
+		builder.setMessage("The host canceled this event.")
 		.setCancelable(true)
 		.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 			
@@ -1038,6 +1053,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		FragmentManager     fm = getSupportFragmentManager();
         
         Fragment fragment = fm.findFragmentById(R.id.fragment_content);
+               
+        tempPhotoEventDetailLoad = e.getPhoto();
         
         if (fragment != null)
         {

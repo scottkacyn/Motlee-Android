@@ -150,7 +150,8 @@
 		            android:layout_width="wrap_content"
 		            android:scaleType="fitXY"
 		            android:adjustViewBounds="true"
-		            android:src="@drawable/event_list_slide_out_partial" />
+		            android:src="@drawable/event_list_slide_out_partial"
+		            android:background="@drawable/event_list_background_gradient" />
 		    </RelativeLayout>
 		    
 			<LinearLayout android:id="@+id/event_footer"

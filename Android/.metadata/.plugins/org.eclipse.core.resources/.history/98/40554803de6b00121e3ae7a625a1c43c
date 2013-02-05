@@ -1,0 +1,226 @@
+package com.motlee.android.fragment;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+
+import com.facebook.android.Facebook;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.motlee.android.AddPeopleActivity;
+import com.motlee.android.R;
+import com.motlee.android.adapter.ImageAdapter;
+import com.motlee.android.adapter.PeopleListAdapter;
+import com.motlee.android.database.DatabaseHelper;
+import com.motlee.android.database.DatabaseWrapper;
+import com.motlee.android.layouts.StretchedBackgroundTableLayout;
+import com.motlee.android.object.Attendee;
+import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.DrawableWithHeight;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.SharePref;
+import com.motlee.android.object.UserInfo;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
+
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.TableLayout.LayoutParams;
+
+public class PeopleListFragment extends BaseDetailFragment {
+	
+	private String tag = "PeopleListFragment";
+	
+	private String pageTitle = "All Events";
+	
+	private ListView eventDetailPeopleList;
+	
+	private LayoutInflater inflater;
+	
+	private PeopleListAdapter mAdapter;
+	
+	private ArrayList<UserInfo> mUsers = new ArrayList<UserInfo>();
+
+    private LinearLayout eventHeader;
+    
+	private String pageLabel;
+	
+	private View inviteFriendsHeader;
+	
+	private DatabaseWrapper dbWrapper;
+	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		eventDetailPeopleList = (ListView) view.findViewById(R.id.event_detail_people_list);
+		//eventDetailPeopleList.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		
+		Attendee attendee = new Attendee(SharePref.getIntPref(getActivity().getApplicationContext(), SharePref.USER_ID));
+		
+		if (eventDetailPeopleList.getHeaderViewsCount() == 0 && dbWrapper.getAttendees(mEventDetail.getEventID()).contains(attendee))
+		{
+			eventDetailPeopleList.addHeaderView(inviteFriendsHeader);
+		}
+		
+		if (eventDetailPeopleList.getFooterViewsCount() == 0)
+		{
+			setUpFooter();
+		}
+		
+		setUpPeopleList();
+
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+		
+		Log.w(tag, "onCreateView");
+		
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.event_detail_people_list, null);
+
+		dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
+		
+		setUpPageHeader();
+		
+		setUpInviteFriendsHeader();
+		
+		setPageHeader(pageTitle);
+		if (mEventDetail != null)
+		{
+			showRightHeaderButton(mEventDetail, this.getActivity().getApplicationContext());
+		}
+		showLeftHeaderButton();
+		
+		return view;
+	}
+
+	private void setUpFooter() {
+		
+		LinearLayout blank = new LinearLayout(getActivity());
+		
+		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.event_list_load_more, GlobalVariables.DISPLAY_WIDTH);
+		
+		blank.setLayoutParams(new ListView.LayoutParams(drawable.getWidth(), drawable.getHeight()));
+		
+		blank.setBackgroundColor(android.R.color.transparent);
+				
+		eventDetailPeopleList.addFooterView(blank);
+		
+	}
+	
+	
+	private void setUpPageHeader() 
+	{
+		eventHeader = (LinearLayout) view.findViewById(R.id.event_detail_header);
+		eventHeader.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getDrawable());
+		
+		eventHeader.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getHeight()));
+		
+		((ImageButton) eventHeader.findViewById(R.id.event_detail_friends)).setEnabled(false);
+	}
+	
+	private void setUpInviteFriendsHeader()
+	{
+		inviteFriendsHeader = getActivity().getLayoutInflater().inflate(R.layout.event_detail_info_button, null);
+		
+		inviteFriendsHeader.findViewById(R.id.label_button_icon).setVisibility(View.GONE);
+		
+		TextView labelButtonText = (TextView) inviteFriendsHeader.findViewById(R.id.label_button_text);
+		labelButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		labelButtonText.setText("Invite other people to join");
+		
+		inviteFriendsHeader.findViewById(R.id.label_button).setOnClickListener(addFriendsListener);
+		
+		//inviteFriendsHeader.findViewById(R.id.label_button_content).setVisibility(View.GONE);
+	}
+	
+	private OnClickListener addFriendsListener = new OnClickListener(){
+
+		public void onClick(View arg0) {
+			
+			Intent addFriendIntent = new Intent(getActivity(), AddPeopleActivity.class);
+			
+			ArrayList<String> attendeeUIDs = new ArrayList<String>();
+			
+			for (Attendee attendee : dbWrapper.getAttendees(mEventDetail.getEventID()))
+			{
+				UserInfo user = dbWrapper.getUser(attendee.user_id);
+				
+				attendeeUIDs.add(String.valueOf(user.uid));
+			}
+			
+			addFriendIntent.putStringArrayListExtra("Attendees", attendeeUIDs);
+			addFriendIntent.putExtra("EventId", mEventDetail.getEventID());
+			
+			getActivity().startActivity(addFriendIntent);
+			
+		}
+		
+	};
+	
+	public void setUpPeopleList() 
+	{
+		mUsers = new ArrayList<UserInfo>(); 
+				
+		for (Attendee user : dbWrapper.getAttendees(mEventDetail.getEventID()))
+		{		
+			UserInfo userInfo = dbWrapper.getUser(user.user_id);
+			if (userInfo != null)
+			{
+				mUsers.add(userInfo);
+			}
+		}
+		
+		if (mUsers.size() > 0)
+		{
+			Collections.sort(mUsers);
+		}
+		
+		if (getActivity() != null)
+		{
+			mAdapter = new PeopleListAdapter(getActivity(), R.layout.people_list_item, mUsers);
+		}
+
+		
+		eventDetailPeopleList.setAdapter(mAdapter);
+
+	}
+
+	public void setEventDetail(EventDetail eventDetail)
+	{
+		mEventDetail = eventDetail;
+		this.pageTitle = mEventDetail.getEventName();
+		
+		if (eventDetailPeopleList != null && mAdapter != null)
+		{
+			setUpPeopleList();
+		}
+	}
+}

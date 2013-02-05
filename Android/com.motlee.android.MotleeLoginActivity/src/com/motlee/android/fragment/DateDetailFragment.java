@@ -61,6 +61,10 @@ public class DateDetailFragment extends BaseDetailFragment {
 		this.inflater = inflater;
 		view = (View) this.inflater.inflate(R.layout.event_detail_date, null);
 		
+		View blankSpace = view.findViewById(R.id.blank_space);
+		
+		blankSpace.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, SharePref.getIntPref(getActivity(), SharePref.DISPLAY_HEIGHT)));
+		
 		((LinearLayout) view.findViewById(R.id.date_calendar_time_start)).setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_time_background, (int) (SharePref.getIntPref(getActivity(), SharePref.DISPLAY_WIDTH) * .8) - DrawableCache.convertDpToPixel(20)).getDrawable()); 
 		
 		((LinearLayout) view.findViewById(R.id.date_calendar_start)).setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_time_calendar, (int) (SharePref.getIntPref(getActivity(), SharePref.DISPLAY_WIDTH) * .8 * .33)).getDrawable()); 
@@ -85,6 +89,7 @@ public class DateDetailFragment extends BaseDetailFragment {
 		if (mEventDetail != null)
 		{
 			showRightHeaderButton(mEventDetail, this.getActivity().getApplicationContext());
+			setHeaderIcon(mEventDetail, getActivity());
 		}
 		showLeftHeaderButton();
 		

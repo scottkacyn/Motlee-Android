@@ -78,10 +78,16 @@ public class PeopleListAdapter extends ArrayAdapter<UserInfo> {
     	this.notifyDataSetChanged();
     }
     
+    public void addAll(ArrayList<UserInfo> users)
+    {
+    	this.mData.addAll(users);
+    }
+    
     public void clear()
     {
     	Log.w(tag, "clear");
-    	this.notifyDataSetChanged();
+    	this.mData.clear();
+    	//this.notifyDataSetChanged();
     }
     
     /**

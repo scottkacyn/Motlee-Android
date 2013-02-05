@@ -136,6 +136,7 @@ public class NotificationActivity extends BaseMotleeActivity {
     		
     		Intent intent = new Intent(this, EventDetailActivity.class);
     		intent.putExtra("EventID", notification.objectId);
+    		intent.putExtra("Page", EventDetailActivity.PHOTOS);
     		
     		startActivity(intent);
     	}

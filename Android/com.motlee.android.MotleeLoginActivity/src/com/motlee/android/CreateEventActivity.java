@@ -33,6 +33,7 @@ import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
+import com.motlee.android.object.TempAttendee;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
@@ -44,6 +45,7 @@ import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
 import com.motlee.android.view.DateTimePicker;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -62,10 +64,16 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -170,6 +178,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
         
         searchPlacesFragment = new SearchPlacesFragment();
         
+        setupUI(findViewById(R.id.main_frame_layout));
+        
         //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
         
         FragmentManager     fm = getSupportFragmentManager();
@@ -204,18 +214,62 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     	{
     		BaseMotleeFragment mainFragment = (BaseMotleeFragment) fm.findFragmentByTag(MAIN_FRAGMENT);
     		mainFragment.setPageHeader("Create Event");
+    		
+    		InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); 
+
+    		inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    		
             if (isEditing)
             {
+            	findViewById(R.id.header_right_layout_button).setVisibility(View.VISIBLE);
             	((TextView) findViewById(R.id.header_right_text)).setText("Save");
             }
             else
             {
+            	findViewById(R.id.header_right_layout_button).setVisibility(View.VISIBLE);
             	((TextView) findViewById(R.id.header_right_text)).setText("Start!");
             }
     		ft.show(mainFragment)
     		.commit( );
     	}
     }
+    
+	public static void hideSoftKeyboard(Activity activity) {
+	    InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(activity.INPUT_METHOD_SERVICE);
+	    if (activity.getCurrentFocus() != null)
+	    {
+	    	inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+	    }
+    }
+	
+	public void setupUI(View view) {
+
+	    //Set up touch listener for non-text box views to hide keyboard.
+	    if(!(view instanceof EditText)) {
+
+	        view.setOnTouchListener(new OnTouchListener() {
+
+				public boolean onTouch(View v, MotionEvent event) {
+					
+					hideSoftKeyboard(CreateEventActivity.this);
+					
+					return false;
+				}
+
+	        });
+	    }
+
+	    //If a layout container, iterate over children and seed recursion.
+	    if (view instanceof ViewGroup) {
+
+	        for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+
+	            View innerView = ((ViewGroup) view).getChildAt(i);
+
+	            setupUI(innerView);
+	        }
+	    }
+	}
     
     /*
      * removes a person from the event. gets the facebookUID and view and removes from 
@@ -393,7 +447,9 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
             	
 	            for (JSONObject person : peopleToAdd)
 	            {
-	            	createEventFragment.addPersonToEvent(person.getLong("uid"), person.getString("name"));
+	            	Long uid = person.getLong("uid");
+	            	String name = person.getString("name");
+	            	createEventFragment.addPersonToEvent(uid, name);
 	            }
             }
             catch (JSONException e)
@@ -573,6 +629,12 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
             {
                 progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Inviting Friends");
                 
+    	    	CreateEventFragment fragment = (CreateEventFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
+    	    	for (UserInfo user : fragment.getTempAttendeeList())
+    	    	{
+    	    		TempAttendee.setTempAttendee(mEventID, user);
+    	    	}
+                
                 EventServiceBuffer.setAttendeeListener(attendeeListener);
                 
                 EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees, isFacebookEvent);
@@ -605,6 +667,12 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
             if (mEventAttendees.size() > 0)
             {
                 progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Updating Friends");
+                
+    	    	CreateEventFragment fragment = (CreateEventFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
+    	    	for (UserInfo user : fragment.getTempAttendeeList())
+    	    	{
+    	    		TempAttendee.setTempAttendee(mEventID, user);
+    	    	}
                 
                 EventServiceBuffer.setAttendeeListener(attendeeListener);
                 

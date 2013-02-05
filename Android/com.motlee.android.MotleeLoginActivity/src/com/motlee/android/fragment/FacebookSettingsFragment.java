@@ -65,8 +65,8 @@ public class FacebookSettingsFragment extends BaseMotleeFragment {
 
 	private void setNavigationButtons() {
 		
-		setSettingToggleLabel(getActivity().getResources().getString(R.string.fb_on_create_settings_message), settings.fb_on_event_create, false);
-		setSettingToggleLabel(getActivity().getResources().getString(R.string.fb_on_join_settings_message), settings.fb_on_event_invite, true);
+		setSettingToggleLabel(getActivity().getResources().getString(R.string.fb_on_create_settings_message), settings.fb_on_event_create, true);
+		//setSettingToggleLabel(getActivity().getResources().getString(R.string.fb_on_join_settings_message), settings.fb_on_event_invite, true);
 	}
 
 	private void setLogoutButton() {
