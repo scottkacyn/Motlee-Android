@@ -28,7 +28,7 @@
 	    android:scrollbars="none" 
 	    android:layout_below="@id/progress_bar"
 	    android:divider="@null" 
-	    android:paddingLeft="2dp"
-	    android:paddingRight="2dp"
+	    android:paddingLeft="6dp"
+	    android:paddingRight="6dp"
 	    android:overScrollFooter="@null"/>
 </RelativeLayout>

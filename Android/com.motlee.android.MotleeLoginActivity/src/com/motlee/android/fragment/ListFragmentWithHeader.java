@@ -15,6 +15,7 @@ public class ListFragmentWithHeader extends ListFragment {
 	public static final String MY_EVENTS = "My Events";
 	public static final String ALL_EVENTS = "All Events";
 	public static final String NEARBY_EVENTS = "Nearby Events";
+	public static final String SEARCH = "Search";
 	
 	public View mHeaderView;
 	
@@ -38,6 +39,12 @@ public class ListFragmentWithHeader extends ListFragment {
 			icon.setVisibility(View.VISIBLE);
 			icon.setPadding(0, 4, 0, 2);
 			icon.setImageResource(R.drawable.icon_button_map);
+		}
+		else if (headerIcon == SEARCH)
+		{
+			icon.setVisibility(View.VISIBLE);
+			icon.setPadding(0, 0, 0, 0);
+			icon.setImageResource(R.drawable.icon_button_search);
 		}
 	}
 	

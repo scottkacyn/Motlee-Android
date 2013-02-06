@@ -25,6 +25,7 @@
     <string name="title_first_use_activity">FirstUseActivity</string>
     <string name="title_like_list_activity">LikeListActivity</string>
     <string name="title_zoom_activity">ZoomActivity</string>
+    <string name="title_temp_photo_activity">TempTakePhotoActivity</string>
     <string name="app_id">283790891721595</string>
     <string name="album_name">Motlee Pictures</string>
     <string name="map_key">0oE1cuDjQWjAeMp6PSnXQ2-zp6QB_nyPeeQEEQA</string>

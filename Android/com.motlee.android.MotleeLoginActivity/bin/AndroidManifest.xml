@@ -46,6 +46,14 @@
         </activity>
         
         <activity
+            android:name=".TempTakePhotoActivity"
+            android:label="@string/title_temp_photo_activity" 
+            android:theme="@style/no_anim"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
             android:name=".LikeListActivity"
             android:label="@string/title_like_list_activity" 
             android:theme="@style/app_theme"

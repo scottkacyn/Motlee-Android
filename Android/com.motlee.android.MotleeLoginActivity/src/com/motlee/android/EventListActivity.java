@@ -47,6 +47,7 @@ import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.StopWatch;
 import com.motlee.android.object.TempAttendee;
+import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
@@ -262,7 +263,6 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
         Collections.sort(events);
         
         updateEventAdapter(events, false);
-   	
     }
     
     @Override
@@ -509,23 +509,32 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
 					
 					for (EventDetail eDetail : eventsToShow)
 					{
-						eDetail.setPhotos(dbWrapper.getPhotos(eDetail.getEventID()));
-						eDetail.setOwnerInfo(dbWrapper.getUser(eDetail.getOwnerID()));
-						
-						eDetail.setAttendeeCount(eDetail.getAttendeeCount() + TempAttendee.getTempAttendees(eDetail.getEventID()).size());
-						
-						if (eDetail.getLocationID() != null)
+						UserInfo owner = dbWrapper.getUser(eDetail.getOwnerID());
+						if (owner != null)
 						{
-							eDetail.setLocationInfo(dbWrapper.getLocation(eDetail.getLocationID()));
-						}
-	
-						if (eDetail.getStartTime().compareTo(new Date()) < 0)
-						{
-							eventsToDisplay.add(eDetail);
+							
+							eDetail.setPhotos(dbWrapper.getPhotos(eDetail.getEventID()));
+							eDetail.setOwnerInfo(dbWrapper.getUser(eDetail.getOwnerID()));
+							
+							eDetail.setAttendeeCount(eDetail.getAttendeeCount() + TempAttendee.getTempAttendees(eDetail.getEventID()).size());
+							
+							if (eDetail.getLocationID() != null)
+							{
+								eDetail.setLocationInfo(dbWrapper.getLocation(eDetail.getLocationID()));
+							}
+		
+							if (eDetail.getStartTime().compareTo(new Date()) < 0)
+							{
+								eventsToDisplay.add(eDetail);
+							}
+							else
+							{
+								upcomingEvents.add(eDetail);
+							}
 						}
 						else
 						{
-							upcomingEvents.add(eDetail);
+							dbWrapper.deleteEvent(eDetail);
 						}
 					}
 					
@@ -675,7 +684,11 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
     	
     	eventDetail.putExtra("EventID", eventID);
     	
+    	Log.d("Transition", "Started transition to EventDetail");
+    	
     	startActivity(eventDetail);
+    	
+    	overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
     
     @Override

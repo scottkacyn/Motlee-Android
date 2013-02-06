@@ -256,7 +256,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 				TextView text = (TextView) view.findViewById(R.id.event_create_facebook_event_text);
 				text.setText(R.string.facebook_event_false);
 				v.setTag(false);
-				isFacebookEvent = true;
+				isFacebookEvent = false;
 			}
 			else
 			{
@@ -264,7 +264,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 				TextView text = (TextView) view.findViewById(R.id.event_create_facebook_event_text);
 				text.setText(R.string.facebook_event_true);
 				v.setTag(true);
-				isFacebookEvent = false;
+				isFacebookEvent = true;
 			}
 			
 		}

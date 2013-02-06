@@ -22,9 +22,13 @@ public final class R {
         public static final int gd_shrink_from_top=0x7f04000a;
         public static final int gd_shrink_from_topleft_to_bottomright=0x7f04000b;
         public static final int gd_shrink_from_topright_to_bottomleft=0x7f04000c;
-        public static final int slide_in_left=0x7f04000d;
-        public static final int slide_in_right=0x7f04000e;
-        public static final int slide_out_left=0x7f04000f;
+        public static final int push_left_in=0x7f04000d;
+        public static final int push_left_out=0x7f04000e;
+        public static final int push_right_in=0x7f04000f;
+        public static final int push_right_out=0x7f040010;
+        public static final int slide_in_left=0x7f040011;
+        public static final int slide_in_right=0x7f040012;
+        public static final int slide_out_left=0x7f040013;
     }
     public static final class attr {
         /**  Actions layout ID to link at view creation time. 
@@ -1938,12 +1942,13 @@ containing a value of this type.
         public static final int slidingmenurow=0x7f03008b;
         public static final int splash_screen=0x7f03008c;
         public static final int temp_main=0x7f03008d;
-        public static final int thumbnail=0x7f03008e;
-        public static final int thumbnail_grid=0x7f03008f;
-        public static final int timepicker=0x7f030090;
-        public static final int user_profile_no_photo_text=0x7f030091;
-        public static final int user_profile_not_friend=0x7f030092;
-        public static final int user_profile_not_motlee=0x7f030093;
+        public static final int temp_take_photo=0x7f03008e;
+        public static final int thumbnail=0x7f03008f;
+        public static final int thumbnail_grid=0x7f030090;
+        public static final int timepicker=0x7f030091;
+        public static final int user_profile_no_photo_text=0x7f030092;
+        public static final int user_profile_not_friend=0x7f030093;
+        public static final int user_profile_not_motlee=0x7f030094;
     }
     public static final class menu {
         public static final int activity_event_list=0x7f0c0000;
@@ -1953,8 +1958,8 @@ containing a value of this type.
         public static final int event_list_detail_background=0x7f050000;
     }
     public static final class string {
-        public static final int album_name=0x7f060056;
-        public static final int app_id=0x7f060055;
+        public static final int album_name=0x7f060057;
+        public static final int app_id=0x7f060056;
         public static final int app_name=0x7f060001;
         public static final int com_facebook_choose_friends=0x7f060015;
         public static final int com_facebook_dialogloginactivity_ok_button=0x7f060006;
@@ -1982,10 +1987,10 @@ containing a value of this type.
         public static final int com_facebook_usersettingsfragment_logged_in=0x7f06000f;
         public static final int com_facebook_usersettingsfragment_not_logged_in=0x7f060010;
         public static final int facebook_app_id=0x7f060041;
-        public static final int facebook_event_false=0x7f06006a;
-        public static final int facebook_event_true=0x7f060069;
-        public static final int fb_on_create_settings_message=0x7f060062;
-        public static final int fb_on_join_settings_message=0x7f060063;
+        public static final int facebook_event_false=0x7f06006b;
+        public static final int facebook_event_true=0x7f06006a;
+        public static final int fb_on_create_settings_message=0x7f060063;
+        public static final int fb_on_join_settings_message=0x7f060064;
         public static final int ga_appName=0x7f06003c;
         /** Replace placeholder ID with your tracking ID
          */
@@ -2020,22 +2025,22 @@ containing a value of this type.
         public static final int gd_trashcan=0x7f060034;
         public static final int hello=0x7f060000;
         public static final int hello_world=0x7f06003d;
-        public static final int map_key=0x7f060057;
+        public static final int map_key=0x7f060058;
         public static final int menu_settings=0x7f06003e;
-        public static final int no_event_text=0x7f06005c;
-        public static final int no_message_text=0x7f06005d;
-        public static final int no_notification_text=0x7f06005e;
-        public static final int no_photo_friend_text=0x7f06005b;
-        public static final int no_photo_text=0x7f06005a;
-        public static final int not_event_invitations=0x7f060064;
-        public static final int not_event_messages=0x7f060065;
-        public static final int not_friend_text=0x7f06005f;
-        public static final int not_friends_joining=0x7f060068;
-        public static final int not_motlee_text=0x7f060060;
-        public static final int not_photo_comments=0x7f060066;
-        public static final int not_photo_likes=0x7f060067;
-        public static final int public_event_false=0x7f060059;
-        public static final int public_event_true=0x7f060058;
+        public static final int no_event_text=0x7f06005d;
+        public static final int no_message_text=0x7f06005e;
+        public static final int no_notification_text=0x7f06005f;
+        public static final int no_photo_friend_text=0x7f06005c;
+        public static final int no_photo_text=0x7f06005b;
+        public static final int not_event_invitations=0x7f060065;
+        public static final int not_event_messages=0x7f060066;
+        public static final int not_friend_text=0x7f060060;
+        public static final int not_friends_joining=0x7f060069;
+        public static final int not_motlee_text=0x7f060061;
+        public static final int not_photo_comments=0x7f060067;
+        public static final int not_photo_likes=0x7f060068;
+        public static final int public_event_false=0x7f06005a;
+        public static final int public_event_true=0x7f060059;
         public static final int pull_to_refresh_pull_label=0x7f060002;
         public static final int pull_to_refresh_refreshing_label=0x7f060004;
         public static final int pull_to_refresh_release_label=0x7f060003;
@@ -2059,9 +2064,10 @@ containing a value of this type.
         public static final int title_settings_activity=0x7f060048;
         public static final int title_settings_detail_activity=0x7f060049;
         public static final int title_take_photo_activity=0x7f060046;
+        public static final int title_temp_photo_activity=0x7f060055;
         public static final int title_user_profile_activity=0x7f060045;
         public static final int title_zoom_activity=0x7f060054;
-        public static final int user_profile_no_photo_text=0x7f060061;
+        public static final int user_profile_no_photo_text=0x7f060062;
     }
     public static final class style {
         public static final int CodeFont=0x7f0a0040;

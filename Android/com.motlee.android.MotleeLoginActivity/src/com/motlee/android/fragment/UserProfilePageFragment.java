@@ -419,6 +419,10 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 			}
 			
 			userInfoList.setAdapter(photoGridAdapter);
+			
+			userInfoList.setPadding(DrawableCache.convertDpToPixel(4), DrawableCache.convertDpToPixel(4), DrawableCache.convertDpToPixel(4), 0);
+			
+			userInfoList.invalidate();
 		}
 		
 	};
@@ -439,6 +443,10 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 			}
 			
 			userInfoList.setAdapter(eventAdapter);
+			
+			userInfoList.setPadding(DrawableCache.convertDpToPixel(6), DrawableCache.convertDpToPixel(7), DrawableCache.convertDpToPixel(6), 0);
+			
+			userInfoList.invalidate();
 			
 		}
 		

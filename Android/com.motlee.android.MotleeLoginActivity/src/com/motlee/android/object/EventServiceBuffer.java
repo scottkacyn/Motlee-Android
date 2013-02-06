@@ -922,7 +922,6 @@ public class EventServiceBuffer extends Object {
 			} catch (ParseException e) {
 				e.printStackTrace();
 			} */ 
-			
 			formData.putString("updatedAfter", SharePref.getStringPref(mContext.getApplicationContext(), SharePref.LAST_UPDATED));
 		}
 		
@@ -2373,10 +2372,12 @@ public class EventServiceBuffer extends Object {
    		    
    		    if (eDetail.is_deleted)
    		    {
+   		    	Log.d("EventTask", "event is deleted: " + eDetail.getEventID());
    		    	dbWrapper.deleteEvent(eDetail);
    		    }
    		    else
    		    {
+   		    	Log.d("EventTask", "event is about to be processed: " + eDetail.getEventID());
    		    	JsonArray attendees = event.getAsJsonArray("people_attending");
 			    	
 		    	Collection<Attendee> newAttendees = new ArrayList<Attendee>();

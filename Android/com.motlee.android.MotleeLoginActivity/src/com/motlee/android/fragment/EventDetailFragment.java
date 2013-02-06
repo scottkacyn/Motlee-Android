@@ -455,8 +455,14 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 	
 	public void clearEditTextFocus()
 	{
-		photoDescriptionEdit.clearFocus();
-		listViewLayout.requestFocus();
+		if (photoDescriptionEdit != null)
+		{
+			photoDescriptionEdit.clearFocus();
+		}
+		if (listViewLayout != null)
+		{
+			listViewLayout.requestFocus();
+		}
 	}
 	
 	public void switchToListView(View view)

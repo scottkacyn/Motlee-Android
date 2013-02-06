@@ -18,6 +18,8 @@ public class BaseMotleeFragment extends Fragment {
 	public static final String ALL_EVENTS = "All Events";
 	public static final String NEARBY_EVENTS = "Nearby Events";
 	public static final String EDIT_EVENTS = "Edit Events";
+	public static final String SEARCH = "Search";
+	public static final String NOTIFICATIONS = "Notifications";
 	
 	protected View mHeaderView;
 	
@@ -47,6 +49,18 @@ public class BaseMotleeFragment extends Fragment {
 			icon.setVisibility(View.VISIBLE);
 			icon.setPadding(0, 0, 0, 0);
 			icon.setImageResource(R.drawable.icon_button_gear);
+		}
+		else if (headerIcon == NOTIFICATIONS)
+		{
+			icon.setVisibility(View.VISIBLE);
+			icon.setPadding(4, 1, 0, 2);
+			icon.setImageResource(R.drawable.icon_button_alert);
+		}
+		else if (headerIcon == SEARCH)
+		{
+			icon.setVisibility(View.VISIBLE);
+			icon.setPadding(0, 0, 0, 0);
+			icon.setImageResource(R.drawable.icon_button_search);
 		}
 	}
 	

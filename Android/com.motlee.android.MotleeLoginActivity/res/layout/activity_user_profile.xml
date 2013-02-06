@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" 
-    android:background="@android:color/transparent"
+    android:background="@drawable/event_detail_photo_container"
     android:id="@+id/user_profile_main" >  
 	
     <include layout="@layout/profile_page_top"
@@ -18,6 +18,9 @@
         android:clipToPadding="false"
         android:divider="@null"
         android:overScrollFooter="@null"
+        android:paddingTop="4dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
         android:cacheColorHint="@android:color/transparent"
         android:background="@android:color/transparent" />
     

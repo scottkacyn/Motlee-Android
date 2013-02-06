@@ -142,7 +142,7 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
     @Override
     public void setContentView(int layout)
     {
-    	Log.d(tag, "setContentView");
+    	Log.d(tag, "startSetContentView");
     	
     	super.setContentView(layout);
     	
@@ -152,7 +152,7 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
     	
     	menuBadge = new BadgeView(this, target);
     	
-    	
+    	Log.d(tag, "finishSetContentView");
     }
     
     @Override

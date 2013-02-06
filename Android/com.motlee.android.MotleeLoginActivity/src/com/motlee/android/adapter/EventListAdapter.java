@@ -295,7 +295,11 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				
 				UserInfo eventOwner = item.getOwnerInfo();
 				
-				if (eventOwner.id == SharePref.getIntPref(mContext.getApplicationContext(), SharePref.USER_ID))
+				if (eventOwner == null)
+				{
+					holder.event_footer_owner.setText(" ");
+				}
+				else if (eventOwner.id == SharePref.getIntPref(mContext.getApplicationContext(), SharePref.USER_ID))
 				{
 					holder.event_footer_owner.setText("You");
 				}

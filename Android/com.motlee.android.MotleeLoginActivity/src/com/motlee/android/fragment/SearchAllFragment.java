@@ -116,6 +116,8 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
     	
     	view.findViewById(R.id.search_list).setVisibility(View.VISIBLE); 
 		
+    	setHeaderIcon(SEARCH);
+    	
 		EventServiceBuffer.setFriendsListener(this);
 		
 		EventServiceBuffer.requestMotleeFriends(SharePref.getIntPref(getActivity().getApplicationContext(), SharePref.USER_ID));

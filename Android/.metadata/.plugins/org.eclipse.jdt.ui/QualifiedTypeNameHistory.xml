@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="com.motlee.android.view.Panel"/>
-<fullyQualifiedTypeName name="android.widget.ImageView"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.Attendee"/>
 <fullyQualifiedTypeName name="android.widget.LinearLayout"/>
 <fullyQualifiedTypeName name="android.widget.TableLayout"/>
@@ -39,7 +37,6 @@
 <fullyQualifiedTypeName name="android.view.ViewGroup.LayoutParams"/>
 <fullyQualifiedTypeName name="android.graphics.drawable.GradientDrawable"/>
 <fullyQualifiedTypeName name="android.util.TypedValue"/>
-<fullyQualifiedTypeName name="com.motlee.android.R.drawable"/>
 <fullyQualifiedTypeName name="android.graphics.drawable.Drawable"/>
 <fullyQualifiedTypeName name="android.widget.LinearLayout.LayoutParams"/>
 <fullyQualifiedTypeName name="android.widget.RelativeLayout.LayoutParams"/>
@@ -60,4 +57,7 @@
 <fullyQualifiedTypeName name="android.util.Log"/>
 <fullyQualifiedTypeName name="com.motlee.android.object.TempAttendee"/>
 <fullyQualifiedTypeName name="com.motlee.android.R.id"/>
+<fullyQualifiedTypeName name="com.motlee.android.R.anim"/>
+<fullyQualifiedTypeName name="com.motlee.android.object.UserInfo"/>
+<fullyQualifiedTypeName name="com.motlee.android.R.drawable"/>
 </qualifiedTypeNameHistroy>

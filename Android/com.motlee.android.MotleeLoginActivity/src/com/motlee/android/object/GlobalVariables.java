@@ -2,9 +2,13 @@ package com.motlee.android.object;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -57,6 +61,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.util.LruCache;
 import android.util.Log;
@@ -116,6 +121,8 @@ public class GlobalVariables {
     public static File file = new File(Environment.getExternalStorageDirectory() + File.separator + "test2.txt");
     
 	private static GlobalVariables instance;
+	
+	private static Handler handler = new Handler();
 	
 	public static synchronized GlobalVariables getInstance()
 	{
@@ -452,12 +459,9 @@ public class GlobalVariables {
 		return this.maxEventListImageHeight;
 	}
 	
-	public void downloadImage(ImageView imageView, String url, Integer width)
+	public void downloadImage(ImageView imageView, String url, Integer width, boolean checkUntilURLPresent)
 	{
-		if (imageLoader == null)
-		{
-			this.initializeImageLoader(imageView.getContext().getApplicationContext());
-		}
+		this.initializeImageLoader(imageView.getContext().getApplicationContext());
 		
 		WatermarkCache.getInstance(imageView.getContext().getApplicationContext().getResources());
 		
@@ -465,6 +469,11 @@ public class GlobalVariables {
 		imageView.setMaxWidth(width);
 		
     	imageLoader.displayImage(url, imageView, options, WatermarkCache.getWatermark(width));
+	}
+	
+	public void downloadImage(ImageView imageView, String url, Integer width)
+	{
+		downloadImage(imageView, url, width, false);
 	}
 	
 	public void downloadImageWithThumbnail(ImageView imageView, PhotoItem photo, Integer width)

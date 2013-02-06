@@ -1,0 +1,26 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="@drawable/event_detail_photo_container"
+    android:id="@+id/user_profile_main" >  
+	
+    <include layout="@layout/profile_page_top"
+        android:id="@+id/profile_page_top" 
+        android:layout_alignParentTop="true"/>
+    
+	<ListView
+        android:id="@+id/user_profile_list_view"
+        android:layout_below="@id/profile_page_top"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:divider="@null"
+        android:overScrollFooter="@null"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:cacheColorHint="@android:color/transparent"
+        android:background="@android:color/transparent" />
+    
+</RelativeLayout>

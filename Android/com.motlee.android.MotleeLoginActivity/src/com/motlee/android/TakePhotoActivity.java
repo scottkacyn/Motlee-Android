@@ -48,6 +48,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 	private static final int PIC_CROP = 2;
 	private static final int ACTION_GET_PHOTO = 3;
 	private static final int CROP_IMAGE = 4;
+	private static final int TEMP_ACTIVITY = 5;
 	
 	private static final String JPEG_FILE_PREFIX = "IMG_";
 	private static final String JPEG_FILE_SUFFIX = ".jpg";
@@ -179,13 +180,11 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 					mCurrentPhotoPath = getPath(picUri);
 				}
 				
-				MediaScannerConnection.scanFile(this,
-				          new String[] { mCurrentPhotoPath }, null,
-				          new MediaScannerConnection.OnScanCompletedListener() {
-				      public void onScanCompleted(String path, Uri uri) {
-				          performCrop();
-				      }
-				 });
+				Intent tempPhotoActivity = new Intent(this, TempTakePhotoActivity.class);
+				
+				tempPhotoActivity.putExtra("PhotoPath", mCurrentPhotoPath);
+				
+				startActivityForResult(tempPhotoActivity, TEMP_ACTIVITY);
 				
 				//performCrop();
 			}
@@ -264,6 +263,15 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 				finish();
 			}
 
+			break;
+		}
+		case TEMP_ACTIVITY :
+		{
+			if (resultCode == RESULT_OK)
+			{
+				performCrop();
+			}
+			
 			break;
 		}
 		default: {

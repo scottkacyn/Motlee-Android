@@ -1,5 +1,7 @@
 package com.motlee.android;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,6 +10,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -80,6 +84,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
@@ -152,6 +157,11 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		eDetail = dbWrapper.getEvent(mEventID);
 		
 		
+		if (menu == null)
+		{
+	        menu = GlobalActivityFunctions.setUpSlidingMenu(this);
+		}
+		
 		if (eDetail == null)
 		{
 			
@@ -181,13 +191,19 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         
         setContentView(R.layout.main);
         
-        menu = GlobalActivityFunctions.setUpSlidingMenu(this);
+        Log.d(this.toString(), "onCreate: about to setUpSlidingMenu");
+        
+        Log.d(this.toString(), "onCreate: about to setup databaseWRapper");
         
         dbWrapper = new DatabaseWrapper(this.getApplicationContext());
+        
+        Log.d(this.toString(), "onCreate: about to get mainLayout");
         
         View mainLayout = findViewById(R.id.main_frame_layout);
         mainLayout.setClickable(true);
         //mainLayout.setOnClickListener(onClick);
+        
+        Log.d(this.toString(), "onCreate: about to get all intents");
         
         firstScreen = getIntent().getExtras().getString("Page");
         
@@ -198,6 +214,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         header = findViewById(R.id.header);
         mNewPhoto = getIntent().getParcelableExtra("NewPhoto");
         
+        
+        Log.d(this.toString(), "About to finish getting all this info");
         //progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading " + eDetail.getEventName());
         
         //showMenuButtons();
@@ -210,6 +228,11 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         ft.add(new EmptyFragmentWithCallbackOnResume(), "EmptyFragment")
         .commit();
         
+		mShowProgressBar = true;
+		
+		//showEvent();
+        
+		Log.d(this.toString(), "finish onCreate");
     }
 
 	private void setUpFragments() {
@@ -945,6 +968,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 
 	public void OnFragmentAttached() {
 		
+		Log.d("Transition", "About to commit");
+		
 		if (progressDialog != null && progressDialog.isShowing())
 		{
 		
@@ -1000,6 +1025,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	        
 		}
 		
+		Log.d("Transition", "Finishing transition");
+		
 	}
 	
 	public void onClickOpenComment(View view)
@@ -1036,6 +1063,9 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	    imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
 	    findViewById(R.id.menu_buttons).setVisibility(View.VISIBLE);
 	    super.backButtonPressed();
+	    
+	    this.overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+	    
 		//super.onBackPressed();
 	}
     
@@ -1049,21 +1079,74 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	public void photoEvent(UpdatedPhotoEvent e) {
 		
 		EventServiceBuffer.removePhotoListener(this);
-		
-		FragmentManager     fm = getSupportFragmentManager();
+
+        mNewPhoto = null;
         
-        Fragment fragment = fm.findFragmentById(R.id.fragment_content);
-               
         tempPhotoEventDetailLoad = e.getPhoto();
         
-        if (fragment != null)
-        {
-	        if (fragment instanceof EventDetailFragment)
-	        {
-	        	((EventDetailFragment) fragment).photoEvent();
-	        }
-        }
-        
-        mNewPhoto = null;
+		Timer timer = new Timer();
+		
+		timer.schedule(new MyTimerTask(e.getPhoto()), 200, 200);
+		
 	}
+	
+	public class MyTimerTask extends TimerTask
+	{
+		PhotoItem photo;
+		String url;
+
+		public MyTimerTask(PhotoItem photo) 
+		{
+			this.photo = photo;
+			this.url = GlobalVariables.getInstance().getAWSUrlThumbnail(photo);
+		}
+	     
+		@Override
+		public void run() 
+		{
+			Log.d("DownloadImageTimer", "Starting to check image");
+			if (urlExists(url))
+			{
+				handler.post(new Runnable(){
+
+					public void run() {
+						
+						FragmentManager     fm = getSupportFragmentManager();
+						
+				        Fragment fragment = fm.findFragmentById(R.id.fragment_content);
+				        
+				        if (fragment != null)
+				        {
+					        if (fragment instanceof EventDetailFragment)
+					        {
+					        	((EventDetailFragment) fragment).photoEvent();
+					        }
+				        }
+					}
+					
+				});
+
+				cancel();
+			}
+		}
+	}
+	
+	public static boolean urlExists(String URLName)
+	{
+		try 
+		{
+			HttpURLConnection.setFollowRedirects(false);
+			// note : you may also need
+			//        HttpURLConnection.setInstanceFollowRedirects(false)
+			HttpURLConnection con = (HttpURLConnection) new URL(URLName).openConnection();
+			
+			con.setRequestMethod("HEAD");
+			return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+	    }
+	    catch (Exception e) 
+	    {
+	    	e.printStackTrace();
+	    	return false;
+	    }
+    }  
 }

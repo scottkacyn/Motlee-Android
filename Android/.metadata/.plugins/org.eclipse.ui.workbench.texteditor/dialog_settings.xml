@@ -13,16 +13,16 @@
 		<item value="false" key="isRegEx"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="EventListAdapter" key="selection"/>
+		<item value="downloadImage" key="selection"/>
 		<list key="findhistory">
-			<item value="EventListAdapter"/>
-			<item value="Adapter"/>
-			<item value="setEventAdapter"/>
-			<item value="deleteAcc"/>
-			<item value="delete"/>
+			<item value="downloadImage"/>
+			<item value="getEventsFromJson"/>
 			<item value="getEvents"/>
-			<item value="getUserInfo"/>
-			<item value="getUserIfno"/>
+			<item value="mNewPhoto"/>
+			<item value="backbutton"/>
+			<item value="Log"/>
+			<item value="menu"/>
+			<item value="onFragmentAtt"/>
 		</list>
 		<list key="replacehistory">
 			<item value="EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);"/>
