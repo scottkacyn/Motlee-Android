@@ -8992,3 +8992,52 @@ java.lang.SecurityException: Prohibited package name: java.lang
 	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:577)
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1410)
 	at org.eclipse.equinox.launcher.Main.main(Main.java:1386)
+!SESSION 2013-02-06 10:03:29.378 -----------------------------------------------
+eclipse.buildId=I20110613-1736
+java.version=1.6.0_24
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY org.eclipse.core.resources 2 10035 2013-02-06 10:03:34.313
+!MESSAGE The workspace exited with unsaved changes in the previous session; refreshing workspace to recover changes.
+
+!ENTRY org.eclipse.ui 4 4 2013-02-06 10:11:38.693
+!MESSAGE Invalid preference page path: XML Syntax
+!SESSION 2013-02-06 10:12:01.090 -----------------------------------------------
+eclipse.buildId=I20110613-1736
+java.version=1.6.0_24
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY org.eclipse.ui 4 4 2013-02-06 10:16:13.665
+!MESSAGE Invalid preference page path: XML Syntax
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2013-02-06 15:34:58.375
+!MESSAGE Error validating /home/zackmartinsek/Downloads/android-sdk-linux/tools/lib/devices.xml
+!STACK 0
+org.xml.sax.SAXParseException; lineNumber: 4; columnNumber: 63; cvc-elt.1: Cannot find the declaration of element 'd:devices'.
+	at org.apache.xerces.util.ErrorHandlerWrapper.createSAXParseException(Unknown Source)
+	at org.apache.xerces.util.ErrorHandlerWrapper.error(Unknown Source)
+	at org.apache.xerces.impl.XMLErrorReporter.reportError(Unknown Source)
+	at org.apache.xerces.impl.XMLErrorReporter.reportError(Unknown Source)
+	at org.apache.xerces.impl.XMLErrorReporter.reportError(Unknown Source)
+	at org.apache.xerces.impl.xs.XMLSchemaValidator.handleStartElement(Unknown Source)
+	at org.apache.xerces.impl.xs.XMLSchemaValidator.startElement(Unknown Source)
+	at org.apache.xerces.impl.XMLNSDocumentScannerImpl.scanStartElement(Unknown Source)
+	at org.apache.xerces.impl.XMLNSDocumentScannerImpl$NSContentDispatcher.scanRootElementHook(Unknown Source)
+	at org.apache.xerces.impl.XMLDocumentFragmentScannerImpl$FragmentContentDispatcher.dispatch(Unknown Source)
+	at org.apache.xerces.impl.XMLDocumentFragmentScannerImpl.scanDocument(Unknown Source)
+	at org.apache.xerces.parsers.XML11Configuration.parse(Unknown Source)
+	at org.apache.xerces.parsers.XML11Configuration.parse(Unknown Source)
+	at org.apache.xerces.jaxp.validation.StreamValidatorHelper.validate(Unknown Source)
+	at org.apache.xerces.jaxp.validation.ValidatorImpl.validate(Unknown Source)
+	at javax.xml.validation.Validator.validate(Validator.java:124)
+	at com.android.ide.eclipse.adt.internal.sdk.LayoutDeviceManager.parseLayoutDevices(LayoutDeviceManager.java:310)
+	at com.android.ide.eclipse.adt.internal.sdk.LayoutDeviceManager.loadDefaultLayoutDevices(LayoutDeviceManager.java:342)
+	at com.android.ide.eclipse.adt.internal.sdk.LayoutDeviceManager.loadDefaultAndUserDevices(LayoutDeviceManager.java:272)
+	at com.android.ide.eclipse.adt.internal.sdk.Sdk.<init>(Sdk.java:748)
+	at com.android.ide.eclipse.adt.internal.sdk.Sdk.loadSdk(Sdk.java:276)
+	at com.android.ide.eclipse.adt.AdtPlugin$7.run(AdtPlugin.java:1364)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)

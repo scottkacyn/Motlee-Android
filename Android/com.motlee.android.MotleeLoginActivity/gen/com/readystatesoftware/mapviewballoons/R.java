@@ -1991,6 +1991,7 @@ containing a value of this type.
         public static final int facebook_event_true=0x7f06006a;
         public static final int fb_on_create_settings_message=0x7f060063;
         public static final int fb_on_join_settings_message=0x7f060064;
+        public static final int flurry_key=0x7f06006c;
         public static final int ga_appName=0x7f06003c;
         /** Replace placeholder ID with your tracking ID
          */

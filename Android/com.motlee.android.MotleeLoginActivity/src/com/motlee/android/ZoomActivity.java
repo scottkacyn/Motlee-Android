@@ -15,6 +15,8 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 
+import com.flurry.android.FlurryAgent;
+import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.PhotoItem;
@@ -44,12 +46,29 @@ public class ZoomActivity extends Activity implements OnTouchListener
     PointF mid = new PointF();
     float oldDist = 1f;
 
+    @Override
+    public void onStart()
+    {
+    	super.onStart();
+    	
+    	FlurryAgent.onStartSession(this, getResources().getString(R.string.flurry_key));
+    }
+    
+    @Override
+    public void onStop() 
+    {
+    	super.onStop();
+    	FlurryAgent.onEndSession(this);
+    }
+    
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) 
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.event_item_zoom);
+        
+        FlurryAgent.logEvent("ZoomPicture");
         
         PhotoItem photo = (PhotoItem) getIntent().getParcelableExtra("Photo");
         

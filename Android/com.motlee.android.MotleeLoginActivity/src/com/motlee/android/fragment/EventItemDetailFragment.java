@@ -155,6 +155,17 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 			requestPhotoDetail(0);
 		}
 		
+		EventDetail eDetail = dbWrapper.getEvent(eventItem.event_id);
+		
+		if (eDetail != null)
+		{
+			if (pageTitle.equals(eDetail.getEventName()))
+			{
+				setHeaderIcon(eDetail, getActivity());
+			}
+		}
+
+		
 		setPageHeader(this.pageTitle);
 		showLeftHeaderButton();
 		this.showRightHeaderButton("Options", showMenu);

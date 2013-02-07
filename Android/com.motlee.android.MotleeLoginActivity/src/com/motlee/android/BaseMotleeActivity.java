@@ -2,7 +2,7 @@ package com.motlee.android;
 
 import java.io.File;
 
-import com.google.analytics.tracking.android.EasyTracker;
+import com.flurry.android.FlurryAgent;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventServiceBuffer;
@@ -129,14 +129,14 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
     	
     	super.onStart();
     	
-    	EasyTracker.getInstance().activityStart(this);
+    	FlurryAgent.onStartSession(this, getResources().getString(R.string.flurry_key));
     }
     
     @Override
     public void onStop() 
     {
     	super.onStop();
-    	EasyTracker.getInstance().activityStop(this);
+    	FlurryAgent.onEndSession(this);
     }
     
     @Override

@@ -1,0 +1,454 @@
+package com.motlee.android;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+
+import com.droid4you.util.cropimage.CropImage;
+import com.motlee.android.fragment.TakePhotoFragment;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.SharePref;
+import com.motlee.android.object.event.UpdatedEventDetailEvent;
+import com.motlee.android.object.event.UpdatedEventDetailListener;
+
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.provider.MediaStore;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
+
+public class TakePhotoActivity extends BaseMotleeActivity {
+
+	public static boolean mTakenPhoto;
+	
+	public static final int TAKE_PHOTO = 10;
+	public static final int GET_PHOTO_LIBRARY = 11;
+	
+	private static final int ACTION_TAKE_PHOTO = 1;
+	private static final int PIC_CROP = 2;
+	private static final int ACTION_GET_PHOTO = 3;
+	private static final int CROP_IMAGE = 4;
+	private static final int TEMP_ACTIVITY = 5;
+	
+	private static final String JPEG_FILE_PREFIX = "IMG_";
+	private static final String JPEG_FILE_SUFFIX = ".jpg";
+	private static final String TAKEN_PHOTO = "TakenPhoto";
+	private static final String CURRENT_PATH = "CurrentPath";
+	private static final String EVENT_ID = "EventId";
+	
+	private static URI photoURI;
+	
+	private static final String MOTLEE_PATH = "Pictures/Motlee/";
+	
+	private boolean recropping = false;
+	
+	private String mCurrentPhotoPath;
+	//private String mCurrentCroppedPhotoPath;
+	private Uri picUri;
+	private int mEventId;
+	
+	private static final String CAMERA_DIR = "/dcim/";
+	private static final String TAKE_PHOTO_FRAGMENT = "TakePhotoFragment";
+	
+	private Handler mHandler;
+	
+	private boolean cameFromEventDetail;
+	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+	}
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+        super.onCreate(savedInstanceState);
+        
+        // Check whether we're recreating a previously destroyed instance
+        if (savedInstanceState != null) {
+            // Restore value of members from saved state
+        	mTakenPhoto = savedInstanceState.getBoolean(TAKEN_PHOTO);
+        } else {
+            mTakenPhoto = false;
+        }
+        
+        
+        setContentView(R.layout.main);
+        
+        //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
+        
+        Intent intent = getIntent();
+        
+        int actionToTake = intent.getIntExtra("Action", TAKE_PHOTO);
+        
+        mEventId = intent.getIntExtra("EventID", -1);
+        cameFromEventDetail = intent.getBooleanExtra("EventDetail", false);
+        
+        mHandler = new Handler();
+        
+        if (!mTakenPhoto && actionToTake == TAKE_PHOTO)
+        {
+        	mTakenPhoto = true;
+        	
+			Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+	
+			File f = null;
+			
+			try 
+			{
+				f = setUpPhotoFile();
+				mCurrentPhotoPath = f.getAbsolutePath();
+				takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+			} 
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+				f = null;
+				mCurrentPhotoPath = null;
+			}
+				
+		    startActivityForResult(takePictureIntent, ACTION_TAKE_PHOTO);
+        }
+        else if (!mTakenPhoto && actionToTake == GET_PHOTO_LIBRARY)
+        {
+        	mTakenPhoto = true;
+        	
+            Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            photoPickerIntent.setType("image/*");
+            
+			File f = null;
+			
+			try 
+			{
+				f = setUpPhotoFile();
+				mCurrentPhotoPath = f.getAbsolutePath();
+				photoPickerIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+			} 
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+				f = null;
+				mCurrentPhotoPath = null;
+			}
+			
+            startActivityForResult(photoPickerIntent, ACTION_GET_PHOTO);
+        }
+        	
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+		case ACTION_TAKE_PHOTO: {
+			if (resultCode == RESULT_OK) {
+				
+				if (data != null)
+				{
+					picUri = data.getData();
+				}
+				if (picUri == null)
+				{
+					if (mCurrentPhotoPath == null)
+					{
+						Log.e("TakePhotoActivity", mCurrentPhotoPath);
+					}
+					picUri = Uri.fromFile(new File(mCurrentPhotoPath));
+				}
+				else
+				{
+					mCurrentPhotoPath = getPath(picUri);
+				}
+				
+				Intent tempPhotoActivity = new Intent(this, TempTakePhotoActivity.class);
+				
+				tempPhotoActivity.putExtra("PhotoPath", mCurrentPhotoPath);
+				
+				startActivityForResult(tempPhotoActivity, TEMP_ACTIVITY);
+				
+				//performCrop();
+			}
+			else
+			{
+				finish();
+			}
+			break;
+		} // ACTION_TAKE_PHOTO_B
+		case ACTION_GET_PHOTO: {
+			if (resultCode == RESULT_OK) {
+				
+				if (data != null)
+				{
+					picUri = data.getData();
+				}
+				if (picUri == null)
+				{
+					picUri = Uri.fromFile(new File(mCurrentPhotoPath));
+				}
+				else
+				{
+					mCurrentPhotoPath = getPath(picUri);
+				}
+				performCrop();
+			}
+			else
+			{
+				finish();
+			}
+			break;
+		}
+		case CROP_IMAGE: {
+			
+			if (data != null)
+			{
+				try {
+					photoURI = new URI(data.getAction());
+				} catch (URISyntaxException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				if (photoURI != null)
+				{
+
+					File croppedPhoto = new File(photoURI);
+					if (croppedPhoto.exists())
+					{
+						handleCameraPic();
+		
+						System.gc();
+						
+						mHandler.post(new Runnable() {
+						    
+						    public void run() {
+						    	setUpFragmentWithPicture();
+						    	mTakenPhoto = false;
+						    }
+						});
+					}
+				}
+				else
+				{
+					Toast toast = Toast.makeText(getApplicationContext(), "Cannot load photo from camera", 3000);
+					toast.show();
+					
+					finish();
+				}
+			}
+			else
+			{
+				Toast toast = Toast.makeText(getApplicationContext(), "Cannot load photo from camera", 3000);
+				toast.show();
+				
+				finish();
+			}
+
+			break;
+		}
+		case TEMP_ACTIVITY :
+		{
+			if (resultCode == RESULT_OK)
+			{
+				performCrop();
+			}
+			
+			break;
+		}
+		default: {
+			finish();
+		}
+		} // switch
+	}
+	
+	private String getCroppedPhotoPath(String fileName) {
+		
+		File file = new File(Environment.getExternalStorageDirectory(), MOTLEE_PATH);
+	    if (!file.exists()) {
+	        if (!file.mkdirs()) {
+	            Log.e("TravellerLog :: ", "Problem creating Image folder");
+	        }
+	    }
+		
+	    File croppedFile = new File(file, fileName);
+	    
+	    /*if (croppedFile.exists())
+	    {
+	    	croppedFile.delete();
+	    }*/
+	    
+	    return croppedFile.getAbsolutePath();
+	}
+
+	public void onRecropPicture(View view)
+	{
+		this.recropping = true;
+		
+		performCrop();
+	}
+	
+	private void setUpFragmentWithPicture()
+	{
+		if (recropping)
+		{
+			FragmentManager fm = getSupportFragmentManager();
+			FragmentTransaction ft = fm.beginTransaction();
+			
+			TakePhotoFragment takePhotoFragment = new TakePhotoFragment();
+			takePhotoFragment.setHeaderView(findViewById(R.id.header));
+			//takePhotoFragment.setScrollWheelAdapter(mAdapter);
+			takePhotoFragment.setPhotoURI(photoURI);
+			takePhotoFragment.setCameFromEventDetail(cameFromEventDetail);
+			
+			ft.replace(R.id.fragment_content, takePhotoFragment, TAKE_PHOTO_FRAGMENT)
+			.commit();
+			
+			recropping = false;
+		}
+		else
+		{
+			//Date dateTimeNow = new Date();
+			
+			/*Integer[] eventIDs = GlobalEventList.myEventDetails.toArray(new Integer[GlobalEventList.myEventDetails.size()]);
+			ArrayList<Integer> happeningNowEvents = new ArrayList<Integer>();
+			
+			for (Integer eventID : eventIDs)
+			{{
+				EventDetail eDetail = GlobalEventList.eventDetailMap.get(eventID);
+				
+				if (eDetail.getStartTime().compareTo(dateTimeNow) < 0 && eDetail.getEndTime().compareTo(dateTimeNow) > 0)
+				{
+					happeningNowEvents.add(eventID);
+				}
+			}
+			
+			if (!happeningNowEvents.contains(this.mEventId))
+			{
+				happeningNowEvents.add(this.mEventId);
+			}*/
+			
+			FragmentManager fm = getSupportFragmentManager();
+			FragmentTransaction ft = fm.beginTransaction();
+			
+			//mAdapter = new CurrentEventWheelAdapter(this, happeningNowEvents.toArray(new Integer[happeningNowEvents.size()]));
+			
+			TakePhotoFragment takePhotoFragment = new TakePhotoFragment();
+			takePhotoFragment.setHeaderView(findViewById(R.id.header));
+			//takePhotoFragment.setScrollWheelAdapter(mAdapter);
+			takePhotoFragment.setPhotoURI(photoURI);
+			takePhotoFragment.setDefaultEvent(mEventId);
+			takePhotoFragment.setCameFromEventDetail(cameFromEventDetail);
+			
+			ft.add(R.id.fragment_content, takePhotoFragment, TAKE_PHOTO_FRAGMENT)
+			.commit();
+		}
+	}
+	
+	private void handleCameraPic() {
+		
+		if (mCurrentPhotoPath != null) {
+			galleryAddPic();
+		}
+	}
+	
+	private void galleryAddPic() 
+	{
+	    Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
+		File f = new File(mCurrentPhotoPath);
+	    Uri contentUri = Uri.fromFile(f);
+	    mediaScanIntent.setData(contentUri);
+	    this.sendBroadcast(mediaScanIntent);
+	}
+	
+	private File setUpPhotoFile() throws IOException 
+	{
+		
+		File f = GlobalVariables.createImageFile(this.getApplicationContext());
+		mCurrentPhotoPath = f.getAbsolutePath();
+		
+		return f;
+	}
+	
+    /**
+     * Helper method to carry out crop operation
+     */
+    private void performCrop(){
+    	//take care of exceptions
+    	try {
+    		//call the standard crop action intent (the user device may not support it)
+			Intent intent = new Intent(this, CropImage.class);
+			intent.putExtra("image-path", mCurrentPhotoPath);
+			
+			String[] splitFile = mCurrentPhotoPath.split("/");	
+			String fileName = splitFile[splitFile.length - 1];
+			//mCurrentCroppedPhotoPath = getCroppedPhotoPath(fileName);
+			intent.putExtra("image-save", mCurrentPhotoPath);
+			intent.putExtra("aspectX", 1);
+			intent.putExtra("aspectY", 1);
+			int screenWidth = SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH);
+			int outputSize = screenWidth > 800 ? screenWidth : 800;
+			intent.putExtra("outputX", outputSize);
+			intent.putExtra("outputY", outputSize);
+			intent.putExtra("scale", true);
+			startActivityForResult(intent, CROP_IMAGE); 
+    	}
+    	//respond to users whose devices do not support the crop action
+    	catch(ActivityNotFoundException anfe){
+    		//display an error message
+    		String errorMessage = "Whoops - your device doesn't support the crop action!";
+    		Toast toast = Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT);
+    		toast.show();
+    	}
+    }
+    
+    public String getPath(Uri uri) {
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = managedQuery(uri, projection, null, null, null);
+        int column_index = cursor
+                .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
+    }
+    
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save the user's current game state
+        savedInstanceState.putBoolean(TAKEN_PHOTO, mTakenPhoto);
+        savedInstanceState.putString(CURRENT_PATH, mCurrentPhotoPath);
+        savedInstanceState.putInt(EVENT_ID, mEventId);
+        
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+    }
+    
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        // Always call the superclass so it can restore the view hierarchy
+        super.onRestoreInstanceState(savedInstanceState);
+       
+        // Restore state members from saved instance
+        mTakenPhoto = savedInstanceState.getBoolean(TAKEN_PHOTO);
+        mCurrentPhotoPath = savedInstanceState.getString(CURRENT_PATH);
+        mEventId = savedInstanceState.getInt(EVENT_ID);
+    }
+}

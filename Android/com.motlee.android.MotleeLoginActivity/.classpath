@@ -15,7 +15,6 @@
 	<classpathentry kind="lib" path="libs/android-viewbadger.jar"/>
 	<classpathentry kind="lib" path="libs/ormlite-android-4.42.jar"/>
 	<classpathentry kind="lib" path="libs/ormlite-core-4.42.jar"/>
-	<classpathentry kind="lib" path="libs/libGoogleAnalyticsV2.jar"/>
 	<classpathentry kind="lib" path="libs/universalimageloader.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

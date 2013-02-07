@@ -775,7 +775,7 @@ public class EventServiceBuffer extends Object {
         mContext.startService(intent);
 	}
 	
-	public static void sendNewEventToDatabase(EventDetail eDetail, LocationInfo locationInfo)
+	public static void sendNewEventToDatabase(EventDetail eDetail, LocationInfo locationInfo, boolean postToFacebook)
 	{
 		Bundle eventDetailBundle = new Bundle();
 		
@@ -789,6 +789,10 @@ public class EventServiceBuffer extends Object {
 		eventDetailBundle.putDouble("location[lat]", locationInfo.lat);
 		eventDetailBundle.putDouble("location[lon]", locationInfo.lon);
 		eventDetailBundle.putBoolean("event[is_private]", eDetail.getIsPrivate());
+		if (postToFacebook)
+		{
+			eventDetailBundle.putString("post_to_fb", "true");
+		}
 		if (locationInfo.uid != null)
 		{
 			eventDetailBundle.putString("location[uid]", locationInfo.uid.toString());
@@ -799,6 +803,7 @@ public class EventServiceBuffer extends Object {
 		}
 		eventDetailBundle.putString("location[fsid]", "0");
 		eventDetailBundle.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+		eventDetailBundle.putString("access_token", SharePref.getStringPref(mContext, SharePref.ACCESS_TOKEN));
 		
         Intent intent = new Intent(mContext, RubyService.class);
         intent.setData(Uri.parse(WEB_SERVICE_URL + "events"));

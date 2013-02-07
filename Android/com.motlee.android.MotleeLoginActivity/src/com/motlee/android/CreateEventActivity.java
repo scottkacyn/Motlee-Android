@@ -5,7 +5,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.json.JSONException;
@@ -18,8 +20,11 @@ import com.facebook.Request;
 import com.facebook.RequestAsyncTask;
 import com.facebook.Response;
 import com.facebook.Session;
+import com.facebook.SessionState;
+import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.WebDialog;
 import com.facebook.widget.WebDialog.OnCompleteListener;
+import com.flurry.android.FlurryAgent;
 import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.BaseMotleeFragment;
@@ -43,6 +48,7 @@ import com.motlee.android.object.event.UpdatedLocationEvent;
 import com.motlee.android.object.event.UpdatedLocationListener;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
+import com.motlee.android.service.RubyService;
 import com.motlee.android.view.DateTimePicker;
 
 import android.app.Activity;
@@ -52,6 +58,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -83,7 +90,10 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	public static String MAIN_FRAGMENT = "MainFragment";
 	public static String SEARCH_PEOPLE = "SearchPeople";
 	public static String SEARCH_PLACES = "SearchPlaces";
+	
 	private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
+	private static final String PENDING_PUBLISH_KEY = "pendingPublishReauthorization";
+	private boolean pendingPublishReauthorization = false;
 	
 	private static final Location SAN_FRANCISCO_LOCATION = new Location("") {{
         setLatitude(37.7750);
@@ -111,6 +121,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	private ArrayList<Integer> removedAttendees = new ArrayList<Integer>();
 	
 	private ArrayList<Attendee> currentAttendees = new ArrayList<Attendee>();
+	
+    private UiLifecycleHelper uiHelper;
 	
 	public boolean isEditing = false;
 	/*
@@ -157,6 +169,11 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
         
         mEventID = getIntent().getIntExtra("EventID", -1);
         
+        if (savedInstanceState != null) {
+            pendingPublishReauthorization = 
+                savedInstanceState.getBoolean(PENDING_PUBLISH_KEY, false);
+        }
+        
         if (mEventID > 0)
         {
         	mCreatedEvent = dbWrapper.getEvent(mEventID);
@@ -175,6 +192,18 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
             
             selectLocation = new LocationInfo("My Location", mLocation.getLatitude(), mLocation.getLongitude(), null);
         }
+        
+        Session.StatusCallback callback = new Session.StatusCallback() {
+
+            // callback when session changes state
+  	          public void call(Session session, SessionState state, Exception exception) {
+  	        	  
+  	        	  onSessionChange(session, state, exception);
+  	          }
+        };
+        
+        uiHelper = new UiLifecycleHelper(this, callback);
+        uiHelper.onCreate(savedInstanceState);
         
         searchPlacesFragment = new SearchPlacesFragment();
         
@@ -195,6 +224,19 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
         .commit();
         
     }
+    
+    public void onSessionChange(Session session, SessionState state, Exception exception)
+    {
+		if (session.isOpened())
+		{
+			if (pendingPublishReauthorization && 
+			        state.equals(SessionState.OPENED_TOKEN_UPDATED)) {
+			    pendingPublishReauthorization = false;
+			    sendNewEventToDatabase();
+			}
+		}
+    }
+    
     
     @Override
     protected void backButtonPressed()
@@ -217,7 +259,10 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     		
     		InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); 
 
-    		inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    		if (getCurrentFocus() != null)
+    		{
+    			inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    		}
     		
             if (isEditing)
             {
@@ -472,7 +517,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
             }
     	}
     	else if (!isEditing)
-    	{
+    	{    		
 	    	CreateEventFragment fragment = (CreateEventFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
 	    	mEventAttendees = fragment.getAttendeeList();
 	    	mCreatedEvent = new EventDetail();
@@ -485,11 +530,30 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	    	
 	    	isFacebookEvent = fragment.getIsFacebookEvent();
 	    	
+    		Map<String, String> params = new HashMap<String, String>();
+    		if (isFacebookEvent)
+    		{
+    			params.put("PostToFacebook", "true");
+    		}
+    		else
+    		{
+    			params.put("PostToFacebook", "false");
+    		}
+    		
+    		FlurryAgent.logEvent("CreateEvent", params);
+            
 	    	EventServiceBuffer.setEventDetailListener(this);
 	    	
 	    	EventServiceBuffer.setAttendeeListener(attendeeListener);
 	    	
-	    	EventServiceBuffer.sendNewEventToDatabase(mCreatedEvent, fragment.getLocationInfo());
+	    	if (mEventAttendees.size() < 1 && isFacebookEvent)
+	    	{
+	    		sendNewEventToDatabase();
+	    	}
+	    	else
+	    	{
+	    		EventServiceBuffer.sendNewEventToDatabase(mCreatedEvent, fragment.getLocationInfo(), false);
+	    	}
 	    	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Creating Event");
     	}
     	else
@@ -523,6 +587,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	    	
 	    	isFacebookEvent = fragment.getIsFacebookEvent();
 	    	
+	    	FlurryAgent.logEvent("UpdateEvent");
+	    	
 	    	EventServiceBuffer.setEventDetailListener(this);
 	    	
 	    	EventServiceBuffer.setAttendeeListener(attendeeListener);
@@ -531,6 +597,44 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	    	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Updating Event");
     	}
     	
+    }
+    
+    private void sendNewEventToDatabase()
+    {
+		Session session = Session.getActiveSession();
+		if (session != null)
+		{
+			List<String> permissions = session.getPermissions();
+	        if (!isSubsetOf(PERMISSIONS, permissions)) {
+	            pendingPublishReauthorization = true;
+	            Session.NewPermissionsRequest newPermissionsRequest = new Session
+	                    .NewPermissionsRequest(this, PERMISSIONS);
+	        session.requestNewPublishPermissions(newPermissionsRequest);
+	            return;
+	        }
+		
+		
+			FragmentManager fm = getSupportFragmentManager();
+			
+			Fragment fragment = fm.findFragmentById(R.id.fragment_content);
+			
+			if (fragment != null)
+			{
+				if (fragment instanceof CreateEventFragment)
+				{
+					EventServiceBuffer.sendNewEventToDatabase(mCreatedEvent, ((CreateEventFragment) fragment).getLocationInfo(), true);
+				}			
+			}
+		}
+    }
+    
+    private boolean isSubsetOf(Collection<String> subset, Collection<String> superset) {
+        for (String string : subset) {
+            if (!superset.contains(string)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /*private void createRequestDialog(String eventName)
@@ -627,6 +731,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 			
             if (mEventAttendees.size() > 0)
             {
+            	FlurryAgent.logEvent("InvitedFriendsWhileCreating");
+            	
                 progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Inviting Friends");
                 
     	    	CreateEventFragment fragment = (CreateEventFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
@@ -666,6 +772,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 
             if (mEventAttendees.size() > 0)
             {
+            	FlurryAgent.logEvent("InvitedFriendsWhileEditing");
+            	
                 progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Updating Friends");
                 
     	    	CreateEventFragment fragment = (CreateEventFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
@@ -680,6 +788,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
             }
             else if (removedAttendees.size() > 0)
             {
+            	FlurryAgent.logEvent("RemovedFriendsWhileEditing");
+            	
             	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Updating Friends");
             	
             	EventServiceBuffer.setAttendeeListener(deleteAttendeeListener);
@@ -694,6 +804,40 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 		
 	}
 	
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        
+        outState.putBoolean(PENDING_PUBLISH_KEY, pendingPublishReauthorization);
+        
+        uiHelper.onSaveInstanceState(outState);
+    }
+	
+    @Override
+    public void onDestroy()
+    {
+    	super.onDestroy();
+    	uiHelper.onDestroy();
+    }
+    
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+      super.onActivityResult(requestCode, resultCode, data);
+      uiHelper.onActivityResult(requestCode, resultCode, data);
+    }
+    
+    @Override
+    protected void onResume() {
+        super.onResume();
+        uiHelper.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        uiHelper.onPause();
+    }
+    
 	public void myEventOccurred(UpdatedEventDetailEvent evt) {
 
 		

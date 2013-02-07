@@ -1,9 +1,13 @@
 package com.motlee.android.fragment;
 
 import com.motlee.android.R;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.SharePref;
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,6 +22,7 @@ public class BaseMotleeFragment extends Fragment {
 	public static final String ALL_EVENTS = "All Events";
 	public static final String NEARBY_EVENTS = "Nearby Events";
 	public static final String EDIT_EVENTS = "Edit Events";
+	public static final String SETTINGS = EDIT_EVENTS;
 	public static final String SEARCH = "Search";
 	public static final String NOTIFICATIONS = "Notifications";
 	
@@ -61,6 +66,35 @@ public class BaseMotleeFragment extends Fragment {
 			icon.setVisibility(View.VISIBLE);
 			icon.setPadding(0, 0, 0, 0);
 			icon.setImageResource(R.drawable.icon_button_search);
+		}
+	}
+	
+	protected void setHeaderIcon(EventDetail eDetail, Context context)
+	{
+		ImageView icon = (ImageView) mHeaderView.findViewById(R.id.header_icon);
+		
+		if (eDetail.getOwnerID() == SharePref.getIntPref(context, SharePref.USER_ID))
+		{
+			icon.setVisibility(View.VISIBLE);
+			icon.setPadding(2, 2, 0, 2);
+			icon.setImageResource(R.drawable.icon_button_gear);
+		}
+		else
+		{			
+			DatabaseWrapper dbWrapper = new DatabaseWrapper(context.getApplicationContext());
+			
+			if (dbWrapper.isAttending(eDetail.getEventID()))
+			{
+				icon.setVisibility(View.VISIBLE);
+				icon.setPadding(2, 2, 0, 0);
+				icon.setImageResource(R.drawable.icon_button_star);
+			}
+			else
+			{
+				icon.setVisibility(View.VISIBLE);
+				icon.setPadding(4, 2, 0, 4);
+				icon.setImageResource(R.drawable.icon_button_friends);
+			}
 		}
 	}
 	

@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
+import com.flurry.android.FlurryAgent;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.SettingsFragment;
 import com.motlee.android.object.EventServiceBuffer;
@@ -79,6 +80,8 @@ public class SettingsActivity extends BaseMotleeActivity implements SettingsList
 
         setContentView(R.layout.main);
         
+        FlurryAgent.logEvent("Settings");
+        
         Session.StatusCallback callback = new Session.StatusCallback() {
 
             // callback when session changes state
@@ -117,6 +120,8 @@ public class SettingsActivity extends BaseMotleeActivity implements SettingsList
 		{
 			if (session.isClosed())
 			{					  
+				FlurryAgent.logEvent("UserLoggedOut");
+				
 				SharePref.setStringPref(this, SharePref.ACCESS_TOKEN, "");
 				
 			    session.closeAndClearTokenInformation();
@@ -181,6 +186,8 @@ public class SettingsActivity extends BaseMotleeActivity implements SettingsList
 		public void onClick(DialogInterface dialog, int id) {
 
 			//progressDialog = ProgressDialog.show(SettingsActivity.this, "", "Deleting Account");
+			
+			FlurryAgent.logEvent("UserDeletedAccount");
 			
 			EventServiceBuffer.deleteAccount();
 			

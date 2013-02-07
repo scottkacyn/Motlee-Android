@@ -27,6 +27,7 @@ import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
 import com.facebook.android.Util;
 import com.facebook.android.Facebook.DialogListener;
+import com.flurry.android.FlurryAgent;
 import com.motlee.android.adapter.EventListAdapter;
 import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
@@ -263,6 +264,8 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
         Collections.sort(events);
         
         updateEventAdapter(events, false);
+        
+        FlurryAgent.logEvent("EventList");
     }
     
     @Override

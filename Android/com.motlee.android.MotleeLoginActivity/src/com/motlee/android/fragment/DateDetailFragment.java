@@ -3,6 +3,7 @@ package com.motlee.android.fragment;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.flurry.android.FlurryAgent;
 import com.motlee.android.R;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.DrawableCache;
@@ -60,6 +61,8 @@ public class DateDetailFragment extends BaseDetailFragment {
 	
 		this.inflater = inflater;
 		view = (View) this.inflater.inflate(R.layout.event_detail_date, null);
+		
+		FlurryAgent.logEvent("ClockPage");
 		
 		View blankSpace = view.findViewById(R.id.blank_space);
 		

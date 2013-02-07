@@ -24,34 +24,6 @@ public class BaseDetailFragment extends BaseMotleeFragment {
 	
 	protected EventDetail mEventDetail;
 	
-	protected void setHeaderIcon(EventDetail eDetail, Context context)
-	{
-		ImageView icon = (ImageView) mHeaderView.findViewById(R.id.header_icon);
-		
-		if (eDetail.getOwnerID() == SharePref.getIntPref(context, SharePref.USER_ID))
-		{
-			icon.setVisibility(View.VISIBLE);
-			icon.setPadding(2, 2, 0, 2);
-			icon.setImageResource(R.drawable.icon_button_gear);
-		}
-		else
-		{			
-			DatabaseWrapper dbWrapper = new DatabaseWrapper(context.getApplicationContext());
-			
-			if (dbWrapper.isAttending(eDetail.getEventID()))
-			{
-				icon.setVisibility(View.VISIBLE);
-				icon.setPadding(2, 2, 0, 0);
-				icon.setImageResource(R.drawable.icon_button_star);
-			}
-			else
-			{
-				icon.setVisibility(View.VISIBLE);
-				icon.setPadding(4, 2, 0, 4);
-				icon.setImageResource(R.drawable.icon_button_friends);
-			}
-		}
-	}
 	
 	@Override
 	public void onResume()

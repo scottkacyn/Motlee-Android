@@ -48,5 +48,6 @@
     <string name="not_friends_joining">Friends joining Motlee</string>
     <string name="facebook_event_true">Post event on your Facebook wall</string>
     <string name="facebook_event_false">Do not post event on Facebook</string>
+    <string name="flurry_key">5J72NDWKQ945HCPPQCYG</string>
     
 </resources>

@@ -23,6 +23,7 @@ import com.facebook.RequestAsyncTask;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.model.GraphUser;
+import com.flurry.android.FlurryAgent;
 import com.google.android.maps.MapView;
 import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
@@ -190,6 +191,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         Log.d(this.toString(), "onCreate");
         
         setContentView(R.layout.main);
+        
+        FlurryAgent.logEvent("ViewEventDetail");
         
         Log.d(this.toString(), "onCreate: about to setUpSlidingMenu");
         

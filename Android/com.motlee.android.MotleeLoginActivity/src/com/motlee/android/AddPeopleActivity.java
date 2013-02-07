@@ -19,6 +19,7 @@ import com.facebook.FacebookException;
 import com.facebook.Session;
 import com.facebook.widget.WebDialog;
 import com.facebook.widget.WebDialog.OnCompleteListener;
+import com.flurry.android.FlurryAgent;
 import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.CreateEventFragment;
@@ -102,6 +103,8 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
         
         if (peopleToAdd.size() > 0)
         {
+        	FlurryAgent.logEvent("AddFriendsAfterCreation");
+        	
         	progressDialog = ProgressDialog.show(AddPeopleActivity.this, "", "Adding Friends");
         
         	EventServiceBuffer.setAttendeeListener(AddPeopleActivity.this);

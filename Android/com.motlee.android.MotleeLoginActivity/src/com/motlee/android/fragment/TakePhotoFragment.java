@@ -41,6 +41,7 @@ import android.widget.TextView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.flurry.android.FlurryAgent;
 import com.motlee.android.CreateEventActivity;
 import com.motlee.android.EventDetailActivity;
 import com.motlee.android.EventItemDetailActivity;
@@ -131,6 +132,8 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 		showRightHeaderButton("Upload", headerRightButtonClick);
 		showLeftHeaderButton();
 		
+		setHeaderIcon(eDetail, getActivity());
+		
 		setUpPicture();
 		setUpPhotoDetailLabels();
 		//setUpScrollViewButton();
@@ -167,6 +170,8 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 			else
 			{*/
 
+			FlurryAgent.logEvent("TakePhoto");
+			
 			File photoFile = new File(photoURI);
 			
 				PhotoItem photo = new PhotoItem(mEventID, EventItemType.PICTURE, SharePref.getIntPref(getActivity().getApplicationContext(), SharePref.USER_ID), 

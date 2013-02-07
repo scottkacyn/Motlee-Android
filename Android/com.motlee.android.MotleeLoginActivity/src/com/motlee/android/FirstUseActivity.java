@@ -2,7 +2,7 @@ package com.motlee.android;
 
 import java.util.ArrayList;
 
-import com.google.analytics.tracking.android.EasyTracker;
+import com.flurry.android.FlurryAgent;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.SharePref;
 
@@ -43,7 +43,7 @@ public class FirstUseActivity extends Activity {
 	{
 		super.onStart();
 		
-		EasyTracker.getInstance().activityStart(this);
+		FlurryAgent.onStartSession(this, getResources().getString(R.string.flurry_key));
 	}
 	
 	@Override
@@ -51,7 +51,7 @@ public class FirstUseActivity extends Activity {
 	{
 		super.onStop();
 		
-		EasyTracker.getInstance().activityStart(this);
+		FlurryAgent.onEndSession(this);
 	}
 	
 	@Override

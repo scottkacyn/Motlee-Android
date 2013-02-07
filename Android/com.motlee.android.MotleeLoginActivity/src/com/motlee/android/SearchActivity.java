@@ -1,5 +1,6 @@
 package com.motlee.android;
 
+import com.flurry.android.FlurryAgent;
 import com.motlee.android.fragment.CreateEventFragment;
 import com.motlee.android.fragment.SearchAllFragment;
 import com.motlee.android.object.EventDetail;
@@ -22,6 +23,8 @@ public class SearchActivity extends BaseMotleeActivity {
         setContentView(R.layout.main);
  
         //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
+        
+        FlurryAgent.logEvent("Search");
         
         FragmentManager     fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();

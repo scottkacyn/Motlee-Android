@@ -7,7 +7,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
+import com.flurry.android.FlurryAgent;
 import com.motlee.android.adapter.PhotoDetailPagedViewAdapter;
 import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
@@ -85,8 +87,6 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 	private static final int REPORT = 2;
 	private static final int DOWNLOAD = 3;
 	
-	
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -94,6 +94,8 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
         setContentView(R.layout.main);
         
         //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
+        
+        FlurryAgent.logEvent("ViewingPhotoDetail");
         
     	newComments = new HashMap<PhotoItem, ArrayList<Comment>>();
     	likeMap = new HashMap<PhotoItem, Boolean>();
@@ -287,6 +289,13 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 		.setCancelable(true)
 		.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
+				
+				Map<String, String> params = new HashMap<String, String>();
+				
+				params.put("PhotoItem", String.valueOf(mEventItem.id));
+						
+				FlurryAgent.logEvent("ReportedPhoto", params);
+				
 				dialog.cancel();
 			}
 		});
@@ -332,6 +341,8 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
     	{
 	    	//EventServiceBuffer.addCommentToEventItem(mEventItem, fragment.getCommentText());
 	    	
+    		FlurryAgent.logEvent("CommentPhoto");
+    		
     		Comment comment = new Comment(currentPhoto.event_id, EventItemType.COMMENT, SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID), new Date(), fragment.getCommentText());
     		
     		if (newComments.containsKey(currentPhoto))
@@ -394,6 +405,8 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 		{
 			likeMap.put(photo, true);
 		}
+		
+		FlurryAgent.logEvent("LikePhoto");
 		
 		updateLikeInAdapter(photo);
 		

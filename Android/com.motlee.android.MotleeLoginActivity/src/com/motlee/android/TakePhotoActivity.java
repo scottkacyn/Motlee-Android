@@ -11,10 +11,12 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.droid4you.util.cropimage.CropImage;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.TakePhotoFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 
@@ -62,6 +64,8 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 	
 	private boolean recropping = false;
 	
+	private DatabaseWrapper dbWrapper;
+	
 	private String mCurrentPhotoPath;
 	//private String mCurrentCroppedPhotoPath;
 	private Uri picUri;
@@ -84,6 +88,8 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 	public void onCreate(Bundle savedInstanceState)
 	{
         super.onCreate(savedInstanceState);
+        
+        dbWrapper = new DatabaseWrapper(getApplicationContext());
         
         // Check whether we're recreating a previously destroyed instance
         if (savedInstanceState != null) {
@@ -404,7 +410,8 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			intent.putExtra("image-save", mCurrentPhotoPath);
 			intent.putExtra("aspectX", 1);
 			intent.putExtra("aspectY", 1);
-			int outputSize = GlobalVariables.DISPLAY_WIDTH > 720 ? GlobalVariables.DISPLAY_WIDTH : 720;
+			int screenWidth = SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH);
+			int outputSize = screenWidth > 800 ? screenWidth : 800;
 			intent.putExtra("outputX", outputSize);
 			intent.putExtra("outputY", outputSize);
 			intent.putExtra("scale", true);

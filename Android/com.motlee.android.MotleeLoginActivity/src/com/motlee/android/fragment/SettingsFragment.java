@@ -50,6 +50,8 @@ public class SettingsFragment extends BaseMotleeFragment {
 		
 		setPageHeader("Settings");
 		
+		setHeaderIcon(SETTINGS);
+		
 		showLeftHeaderButton();
 		
 		return view;

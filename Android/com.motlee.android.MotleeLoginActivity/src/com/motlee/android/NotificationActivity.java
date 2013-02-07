@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 
+import com.flurry.android.FlurryAgent;
 import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.NotificationObjectType;
@@ -37,6 +38,8 @@ public class NotificationActivity extends BaseMotleeActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        
+        FlurryAgent.logEvent("Notifications");
         
         dbWrapper = new DatabaseWrapper(this.getApplicationContext());
         

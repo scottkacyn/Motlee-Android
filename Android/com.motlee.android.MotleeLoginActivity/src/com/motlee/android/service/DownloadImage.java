@@ -16,13 +16,13 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import com.google.analytics.tracking.android.Log;
 import com.motlee.android.TakePhotoActivity;
 import com.motlee.android.object.GlobalVariables;
 
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Gravity;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -104,7 +104,7 @@ public class DownloadImage extends IntentService {
 
 		//catch some possible errors...
 		} catch (MalformedURLException e) {
-			Log.e("Failed to parse URL Exception");
+			Log.e("DownloadImage", "Failed to parse URL Exception");
 			handler.post(new Runnable(){
 
 				public void run() {
@@ -114,7 +114,7 @@ public class DownloadImage extends IntentService {
 			});
 
 		} catch (IOException e) {
-			Log.e("IO Exception");
+			Log.e("DownloadImage", "IO Exception");
 			handler.post(new Runnable(){
 
 				public void run() {
@@ -124,7 +124,7 @@ public class DownloadImage extends IntentService {
 			});
 		} catch (URISyntaxException e)
 		{
-			Log.e("URISyntaxException");
+			Log.e("DownloadImage", "URISyntaxException");
 			handler.post(new Runnable(){
 
 				public void run() {
