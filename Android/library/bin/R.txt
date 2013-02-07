@@ -1,0 +1,8 @@
+int attr areHeadersSticky 0x7f010000
+int id __stickylistheaders_divider_view 0x7f020003
+int id __stickylistheaders_header_view 0x7f020000
+int id __stickylistheaders_list_item_view 0x7f020001
+int id __stickylistheaders_list_view 0x7f020002
+int id __stickylistheaders_wrapper_view 0x7f020004
+int[] styleable StickyListHeadersListView { 0x7f010000 }
+int styleable StickyListHeadersListView_areHeadersSticky 0

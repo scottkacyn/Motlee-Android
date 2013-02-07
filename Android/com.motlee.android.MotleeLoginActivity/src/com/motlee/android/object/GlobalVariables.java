@@ -426,7 +426,7 @@ public class GlobalVariables {
 		File cacheDir = StorageUtils.getOwnCacheDirectory(context, "motlee/Cache");
 		
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context.getApplicationContext())
-		.threadPoolSize(1)
+		.threadPoolSize(5)
 		.threadPriority(Thread.NORM_PRIORITY + 1)
 		.memoryCache(new WeakMemoryCache())
         .discCache(new UnlimitedDiscCache(cacheDir))

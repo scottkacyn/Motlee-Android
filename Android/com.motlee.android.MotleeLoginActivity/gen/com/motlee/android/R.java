@@ -1389,8 +1389,6 @@ containing a value of this type.
         public static final int watermark=0x7f020139;
         public static final int watermark_camera=0x7f02013a;
         public static final int watermark_no_content=0x7f02013b;
-        public static final int wheel_bg=0x7f02013c;
-        public static final int wheel_val=0x7f02013d;
     }
     public static final class id {
         public static final int CancelDialog=0x7f07007f;

@@ -4,10 +4,6 @@ import java.io.File;
 import java.net.URI;
 import java.util.Date;
 
-import kankan.wheel.widget.WheelView;
-import kankan.wheel.widget.adapters.AbstractWheelAdapter;
-import kankan.wheel.widget.adapters.ArrayWheelAdapter;
-import kankan.wheel.widget.adapters.WheelViewAdapter;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
