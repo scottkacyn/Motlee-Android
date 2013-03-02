@@ -6,9 +6,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.util.AttributeSet;
-import android.view.View.MeasureSpec;
 import android.widget.FrameLayout;
-import android.widget.ImageView.ScaleType;
 
 public class VerticalAspectFrameLayout extends FrameLayout {
 

@@ -17,8 +17,6 @@
 package com.motlee.android.view;
 
 import java.util.Calendar;
-import java.util.Date;
-
 import com.motlee.android.R;
 
 import android.content.Context;

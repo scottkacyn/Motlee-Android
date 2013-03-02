@@ -5,7 +5,6 @@ import java.util.Date;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.motlee.android.enums.EventItemType;
@@ -41,6 +40,7 @@ public class Like extends EventItem {
 		super.writeToParcel(out, flags);
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         public Like createFromParcel(Parcel in) {
             return new Like(in);

@@ -2,11 +2,6 @@ package com.motlee.android.adapter;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,7 +14,6 @@ import com.emilsjolander.components.StickyListHeaders.StickyListHeadersBaseAdapt
 import com.motlee.android.R;
 import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
-import com.motlee.android.layouts.HorizontalRatioLinearLayout;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;

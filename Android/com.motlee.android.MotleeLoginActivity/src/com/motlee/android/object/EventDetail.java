@@ -4,16 +4,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 
-import com.j256.ormlite.dao.ForeignCollection;
+import android.util.Log;
+
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
-import com.motlee.android.object.event.UserInfoEvent;
-import com.motlee.android.object.event.UserInfoListener;
 
 @DatabaseTable(tableName = "events")
 public class EventDetail implements Comparable<EventDetail> {
@@ -43,10 +40,10 @@ public class EventDetail implements Comparable<EventDetail> {
 	private Date created_at;
 	
 	@DatabaseField(columnName = "lat", dataType = DataType.DOUBLE)
-	private double lat;
+	public double lat;
 	
 	@DatabaseField(columnName = "lon", dataType = DataType.DOUBLE)
-	private double lon;
+	public double lon;
 	
 	@DatabaseField(columnName = "updated", dataType = DataType.DATE)
 	public Date updated_at;
@@ -340,32 +337,58 @@ public class EventDetail implements Comparable<EventDetail> {
 	public int compareTo(EventDetail another) {
 		
 		Date dateNow = new Date();
-		boolean thisIsHappeningNow = (this.getStartTime().compareTo(dateNow) < 0 && this.getEndTime().compareTo(dateNow) > 0);
-		boolean anotherIsHappeningNow = (another.getStartTime().compareTo(dateNow) < 0 && another.getEndTime().compareTo(dateNow) > 0);
+		//boolean thisIsHappeningNow = (this.getStartTime().compareTo(dateNow) < 0 && this.getEndTime().compareTo(dateNow) > 0);
+		Calendar updatedDate = Calendar.getInstance();
+		updatedDate.setTime(this.updated_at);
+		updatedDate.add(Calendar.HOUR_OF_DAY, 6);
+		
+		Calendar currentDate = Calendar.getInstance();
+		currentDate.setTime(new Date());
+		
+		Calendar otherUpdatedDate = Calendar.getInstance();
+		otherUpdatedDate.setTime(another.updated_at);
+		otherUpdatedDate.add(Calendar.HOUR_OF_DAY, 6);
+		
+		boolean thisIsHappeningNow = (updatedDate.getTime().compareTo(currentDate.getTime()) > 0);
+		boolean anotherIsHappeningNow = (otherUpdatedDate.getTime().compareTo(currentDate.getTime()) > 0);
+		
+		int result = 0;
 		
 		if (thisIsHappeningNow && anotherIsHappeningNow)
 		{
 			if (another.created_at != null && this.created_at != null)
 			{
-				return another.created_at.compareTo(this.created_at);
+				result = another.created_at.compareTo(this.created_at);
 			}
 			else
 			{
-				return another.getEndTime().compareTo(this.getEndTime());
+				result =  otherUpdatedDate.getTime().compareTo(updatedDate.getTime());
 			}
 		}
 		else if (thisIsHappeningNow)
 		{
-			return -1;
+			result = -1;
 		}
 		else if (anotherIsHappeningNow)
 		{
-			return 1;
+			result = 1;
 		}
 		else
 		{
-			return another.getEndTime().compareTo(this.getEndTime());
+			if (another.created_at != null && this.created_at != null)
+			{
+				result = another.created_at.compareTo(this.created_at);
+			}
+			else
+			{
+				result = otherUpdatedDate.getTime().compareTo(updatedDate.getTime());
+			}
 		}
+		
+		//Log.d("EventDetailCompare", "thisUpdatedAt: " + this.updated_at + ", otherUpdatedAt: " + another.updated_at + ", thisCreatedAt: " + this.created_at + ", otherCreatedAt: " + another.created_at + ", result: " + result);
+		
+		return result;
+		
 	}
 	
 	

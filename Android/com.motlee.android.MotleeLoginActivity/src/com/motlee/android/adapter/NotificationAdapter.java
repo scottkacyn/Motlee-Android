@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import com.emilsjolander.components.StickyListHeaders.StickyListHeadersBaseAdapter;
 import com.motlee.android.R;
 import com.motlee.android.database.DatabaseHelper;
-import com.motlee.android.layouts.HorizontalRatioLinearLayout;
 import com.motlee.android.object.DateStringFormatter;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
@@ -19,11 +18,9 @@ import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class NotificationAdapter extends StickyListHeadersBaseAdapter {
@@ -136,12 +133,17 @@ public class NotificationAdapter extends StickyListHeadersBaseAdapter {
         
     	holder.notification_button.setImageDrawable(drawable.getDrawable());
         
-        holder.notification_profile.setMaxHeight(drawable.getHeight() - DrawableCache.convertDpToPixel(5));
-        holder.notification_profile.setMaxWidth(drawable.getHeight() - DrawableCache.convertDpToPixel(5));
+        holder.notification_profile.setMaxHeight(drawable.getHeight());
+        holder.notification_profile.setMaxWidth(drawable.getHeight());
+        holder.notification_profile.setLayoutParams(
+        		new LinearLayout.LayoutParams(
+        				0, 
+        				drawable.getHeight(), 
+        				.15f));
         
         GlobalVariables.getInstance().downloadImage(holder.notification_profile, 
         		GlobalVariables.getInstance().getFacebookPictureUrlLarge(notificationOwner.uid), 
-        		drawable.getHeight() - DrawableCache.convertDpToPixel(5));
+        		drawable.getHeight());
         // bind the data to the view object
         return convertView;
     }

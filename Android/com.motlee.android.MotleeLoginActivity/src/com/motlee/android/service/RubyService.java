@@ -1,6 +1,5 @@
 package com.motlee.android.service;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -8,9 +7,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
-import java.util.concurrent.ThreadPoolExecutor;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -24,22 +20,16 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-import com.motlee.android.object.EqualityIntent;
 import com.motlee.android.object.GlobalVariables;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ResultReceiver;
@@ -73,6 +63,8 @@ public class RubyService extends IntentService {
 	public static final int SETTINGS = 160000;
 	public static final int DELETE_EVENT = 170000;
 	public static final int DELETE_COMMENT = 180000;
+	public static final int FACEBOOK = 190000;
+	public static final int NEARBY_EVENT = 200000;
     
     public static final String EXTRA_HTTP_VERB       = "com.motlee.android.EXTRA_HTTP_VERB";
     public static final String EXTRA_PARAMS          = "com.motlee.android.EXTRA_PARAMS";

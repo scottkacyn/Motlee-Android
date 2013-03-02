@@ -4,23 +4,14 @@ import java.io.File;
 import java.net.URI;
 import java.util.Date;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.text.Editable;
-import android.text.InputType;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,17 +21,13 @@ import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.ImageView.ScaleType;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.flurry.android.FlurryAgent;
-import com.motlee.android.CreateEventActivity;
 import com.motlee.android.EventDetailActivity;
-import com.motlee.android.EventItemDetailActivity;
 import com.motlee.android.EventListActivity;
 import com.motlee.android.R;
 import com.motlee.android.database.DatabaseWrapper;
@@ -52,8 +39,6 @@ import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
-import com.motlee.android.object.event.UpdatedPhotoEvent;
-import com.motlee.android.object.event.UpdatedPhotoListener;
 
 public class TakePhotoFragment extends BaseMotleeFragment {
 	
@@ -169,6 +154,8 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 			FlurryAgent.logEvent("TakePhoto");
 			
 			File photoFile = new File(photoURI);
+			
+			mLocation = GlobalVariables.getInstance().getLocationInfo();
 			
 				PhotoItem photo = new PhotoItem(mEventID, EventItemType.PICTURE, SharePref.getIntPref(getActivity().getApplicationContext(), SharePref.USER_ID), 
 						new Date(), photoDescriptionEdit.getText().toString().trim(), photoFile.getAbsolutePath());

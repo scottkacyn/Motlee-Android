@@ -6,7 +6,6 @@ import java.util.TimerTask;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.widget.Toast;
 
 public class ProgressDialogWithTimeout extends ProgressDialog {
 

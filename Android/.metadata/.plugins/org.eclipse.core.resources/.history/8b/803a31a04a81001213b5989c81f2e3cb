@@ -1,0 +1,97 @@
+package com.motlee.android.fragment;
+
+import android.content.Context;
+import android.view.View;
+import android.view.View.OnClickListener;
+
+import com.motlee.android.BaseDetailActivity;
+import com.motlee.android.R;
+import com.motlee.android.database.DatabaseWrapper;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.SharePref;
+
+public class BaseDetailFragment extends BaseMotleeFragment {
+	
+	protected View view;
+	
+	//protected boolean mShowProgressBar;
+	
+	protected EventDetail mEventDetail;
+	
+	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		/*if (mShowProgressBar)
+		{
+			view.findViewById(R.id.progress_bar).setVisibility(View.VISIBLE);
+		}
+		else
+		{
+			view.findViewById(R.id.progress_bar).setVisibility(View.GONE);
+		}*/
+	}
+	
+	/*public void showRightHeaderButton(EventDetail eDetail, Context context)
+	{
+		if (eDetail.getOwnerID() == SharePref.getIntPref(context, SharePref.USER_ID))
+		{
+			super.showRightHeaderButton("Options", showMenu);
+		}
+		else
+		{			
+			DatabaseWrapper dbWrapper = new DatabaseWrapper(context.getApplicationContext());
+			
+			if (dbWrapper.isAttending(eDetail.getEventID()))
+			{
+				super.showRightHeaderButton("Options", showMenu);
+			}
+			else
+			{
+				mHeaderView.findViewById(R.id.header_right_layout_button).setVisibility(View.GONE);
+			}
+		}
+	}*/
+	
+	private OnClickListener showMenu = new OnClickListener(){
+
+		public void onClick(View v) {
+			
+			getActivity().openOptionsMenu();
+			
+		}
+		
+	};
+	
+	/*public void showProgressBar()
+	{
+		if (view != null)
+		{
+			View progressBar = view.findViewById(R.id.progress_bar);
+			
+			if (progressBar != null)
+			{
+				progressBar.setVisibility(View.VISIBLE);
+			}
+		}
+		
+		mShowProgressBar = true;
+	}
+	
+	public void hideProgressBar()
+	{
+		if (view != null)
+		{
+			View progressBar = view.findViewById(R.id.progress_bar);
+			
+			if (progressBar != null)
+			{
+				progressBar.setVisibility(View.GONE);
+			}
+		}
+		
+		mShowProgressBar = false;
+	}*/
+}

@@ -5,7 +5,7 @@
     android:layout_height="match_parent" 
     android:background="@drawable/event_detail_photo_container">
     
-    <include layout="@layout/event_detail_header"
+    <!-- <include layout="@layout/event_detail_header"
         android:id="@+id/event_detail_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -19,7 +19,7 @@
         style="?android:attr/progressBarStyle"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/event_detail_header"
-        android:visibility="gone"/>
+        android:visibility="gone"/> -->
     
 	<ListView
 	    android:id="@+id/event_detail_people_list"

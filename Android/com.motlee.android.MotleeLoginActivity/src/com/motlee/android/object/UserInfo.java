@@ -42,7 +42,7 @@ public class UserInfo implements Comparable<UserInfo> {
 	public String birthday;
 	
 	@DatabaseField(columnName = "sign_in_count", dataType = DataType.INTEGER_OBJ)
-	public Integer sign_in_count = 1;
+	public Integer sign_in_count;
 	
 	public UserInfo(int userID, int facebookID, String name, String email, Gender gender, String profilePicture, Date birthDate, LocationInfo locationInfo)
 	{

@@ -1,65 +1,28 @@
 package com.motlee.android.fragment;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.facebook.android.Facebook;
-import com.facebook.android.FacebookError;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.motlee.android.R;
 import com.motlee.android.adapter.EventDetailGridAdapter;
 import com.motlee.android.adapter.PeopleListAdapter;
 import com.motlee.android.adapter.UserProfileAdapter;
-import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
-import com.motlee.android.layouts.StretchedBackgroundLinearLayout;
-import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
-import com.motlee.android.object.Friend;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.GridPictures;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
-import com.motlee.android.object.event.UserInfoEvent;
-import com.motlee.android.object.event.UserInfoListener;
-import com.motlee.android.object.event.UserWithEventsPhotosEvent;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
-
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 public class UserProfilePageFragment extends BaseMotleeFragment {
@@ -159,7 +122,7 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 			isFriend = true;
 		}
 		
-		if (user == null || user.sign_in_count > 0)
+		if (user == null || (user.sign_in_count != null && user.sign_in_count > 0))
 		{
 			isMotlee = true;
 		}
@@ -416,6 +379,7 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 			if (noPhotoHeader != null)
 			{
 				noPhotoHeader.findViewById(R.id.event_detail_no_photo_text).setVisibility(View.VISIBLE);
+				((TextView) noPhotoHeader.findViewById(R.id.event_detail_no_photo_text)).setText(R.string.user_profile_no_photo_text);
 			}
 			
 			userInfoList.setAdapter(photoGridAdapter);
@@ -439,7 +403,14 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 			
 			if (noPhotoHeader != null)
 			{
-				noPhotoHeader.findViewById(R.id.event_detail_no_photo_text).setVisibility(View.GONE);
+				if (eventAdapter.getCount() < 1)
+				{
+					((TextView) noPhotoHeader.findViewById(R.id.event_detail_no_photo_text)).setText("No events yet...");
+				}
+				else
+				{
+					noPhotoHeader.findViewById(R.id.event_detail_no_photo_text).setVisibility(View.GONE);
+				}
 			}
 			
 			userInfoList.setAdapter(eventAdapter);

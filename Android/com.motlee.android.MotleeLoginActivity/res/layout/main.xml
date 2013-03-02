@@ -11,14 +11,27 @@
      	 <include layout="@layout/header"
 	         android:id="@+id/header"
 	         android:layout_gravity="top"/>
+     	 <include layout="@layout/event_detail_header"
+	        android:id="@+id/event_detail_header"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@id/header"
+	        android:visibility="gone" />
 	     <LinearLayout 
 	          android:id="@+id/fragment_content"
 	          android:layout_width="match_parent"
 	          android:layout_height="match_parent"
-	          android:layout_below="@id/header"
+	          android:layout_below="@id/event_detail_header"
 	          android:background="@android:color/transparent"/>
 	     
     </RelativeLayout>
+    
+   <ProgressBar 
+       android:id="@+id/main_progress_bar"
+       android:layout_width="25dp"
+       android:layout_height="25dp"
+       android:layout_gravity="center"
+       android:visibility="gone"/>
     
           <include layout="@layout/menu_buttons"
 	          android:id="@+id/menu_buttons"

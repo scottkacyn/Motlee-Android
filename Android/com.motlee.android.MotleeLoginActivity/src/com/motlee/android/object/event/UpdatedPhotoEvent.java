@@ -1,8 +1,6 @@
 package com.motlee.android.object.event;
 
 import java.util.EventObject;
-import java.util.Set;
-
 import com.motlee.android.object.PhotoItem;
 
 public class UpdatedPhotoEvent extends EventObject {

@@ -12,8 +12,6 @@ import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.SharePref;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +43,7 @@ public class DateDetailFragment extends BaseDetailFragment {
 	{
 		super.onResume();
 		
+		FlurryAgent.logEvent("ClockPage");
 		
 		setDateTime();
 		//eventInfoLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_detail_info);
@@ -61,8 +60,6 @@ public class DateDetailFragment extends BaseDetailFragment {
 	
 		this.inflater = inflater;
 		view = (View) this.inflater.inflate(R.layout.event_detail_date, null);
-		
-		FlurryAgent.logEvent("ClockPage");
 		
 		View blankSpace = view.findViewById(R.id.blank_space);
 		
@@ -109,7 +106,7 @@ public class DateDetailFragment extends BaseDetailFragment {
 		
 		eventHeader.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getHeight()));
 		
-		((ImageButton) eventHeader.findViewById(R.id.event_detail_time)).setEnabled(false);
+		//((ImageButton) eventHeader.findViewById(R.id.event_detail_time)).setEnabled(false);
 		
 	}
 

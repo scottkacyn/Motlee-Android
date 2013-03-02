@@ -1,27 +1,15 @@
 package com.motlee.android;
 
-import java.util.ArrayList;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.View;
 
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
 import com.motlee.android.fragment.AboutSettingsFragment;
-import com.motlee.android.fragment.DateDetailFragment;
 import com.motlee.android.fragment.FacebookSettingsFragment;
-import com.motlee.android.fragment.LocationFragment;
 import com.motlee.android.fragment.NotificationSettingsFragment;
-import com.motlee.android.fragment.PeopleListFragment;
 import com.motlee.android.fragment.TermsSettingsFragment;
-import com.motlee.android.object.EventDetail;
-import com.motlee.android.object.EventServiceBuffer;
-import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Settings;
 import com.motlee.android.object.SharePref;
 

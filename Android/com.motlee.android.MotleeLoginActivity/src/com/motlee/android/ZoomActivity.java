@@ -3,7 +3,6 @@ package com.motlee.android;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch.OnImageViewTouchDoubleTapListener;
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.os.Bundle;
@@ -11,13 +10,10 @@ import android.util.FloatMath;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 
 import com.flurry.android.FlurryAgent;
-import com.motlee.android.object.DrawableCache;
-import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
@@ -52,6 +48,8 @@ public class ZoomActivity extends Activity implements OnTouchListener
     	super.onStart();
     	
     	FlurryAgent.onStartSession(this, getResources().getString(R.string.flurry_key));
+    	
+    	FlurryAgent.setCaptureUncaughtExceptions(false);
     }
     
     @Override

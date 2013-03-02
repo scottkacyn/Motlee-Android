@@ -13,18 +13,19 @@
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="onCreate" key="selection"/>
+		<item value="EventDetailActivity" key="selection"/>
 		<list key="findhistory">
-			<item value="onCreate"/>
-			<item value="onRight"/>
-			<item value="setPageTitle"/>
-			<item value="pageTitle"/>
-			<item value="onSave"/>
-			<item value="onDestroy"/>
-			<item value="sendNew"/>
-			<item value="downloadImage"/>
+			<item value="EventDetailActivity"/>
+			<item value="getUserInfoFromService"/>
+			<item value="getUserInfoFrom"/>
+			<item value="getUserAuth"/>
+			<item value="getUserInfo"/>
+			<item value="getUserFrom"/>
+			<item value="getUser"/>
+			<item value="registerDevice"/>
 		</list>
 		<list key="replacehistory">
+			<item value=".EventListActivity"/>
 			<item value="EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);"/>
 		</list>
 	</section>

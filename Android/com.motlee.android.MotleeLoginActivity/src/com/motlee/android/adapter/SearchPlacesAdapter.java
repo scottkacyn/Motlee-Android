@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 
 import com.facebook.model.GraphPlace;
-import com.facebook.model.GraphUser;
 import com.motlee.android.R;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.GlobalVariables;
@@ -21,7 +20,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
 

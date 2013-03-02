@@ -4,17 +4,35 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent" >
     
-    <ImageView
-        android:id="@+id/imageThumbnail"
+    <FrameLayout
+        android:id="@+id/thumbnailWithProfile"
         android:paddingLeft="1dp"
         android:paddingRight="1dp"
         android:layout_height="match_parent"
-        android:layout_width="wrap_content"
-        android:adjustViewBounds="true"
-        android:scaleType="fitXY" />
-        <!--  android:onClick="showPictureDetail"
-        android:clickable="false"
-        android:longClickable="true" -->
+        android:layout_width="wrap_content" >
+        
+	    <ImageView
+	        android:id="@+id/imageThumbnail"
+	        android:layout_height="match_parent"
+	        android:layout_width="wrap_content"
+	        android:adjustViewBounds="true"
+	        android:scaleType="fitXY" />
+	        <!--  android:onClick="showPictureDetail"
+	        android:clickable="false"
+	        android:longClickable="true" -->
+	        
+	    <!-- <ImageView
+	        android:id="@+id/imageProfilePic"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:background="#000000"
+	        android:paddingTop="2dp"
+	        android:paddingLeft="2dp"
+	        android:layout_gravity="bottom|right"
+	       	android:adjustViewBounds="true"
+	        android:scaleType="fitXY" /> -->
+        
+    </FrameLayout>
     
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	    android:layout_width="match_parent"

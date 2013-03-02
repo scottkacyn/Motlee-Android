@@ -13,7 +13,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.motlee.android.R;
-import com.motlee.android.fragment.CreateEventFragment;
 import com.motlee.android.view.DateTimePicker;
 
 public class DatePicker {

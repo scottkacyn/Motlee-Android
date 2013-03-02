@@ -3,7 +3,6 @@ package com.motlee.android.object.event;
 import java.util.ArrayList;
 import java.util.EventObject;
 
-import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.UserInfo;
 

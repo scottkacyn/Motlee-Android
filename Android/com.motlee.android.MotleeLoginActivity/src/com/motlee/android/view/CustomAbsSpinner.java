@@ -233,7 +233,7 @@ public abstract class CustomAbsSpinner extends CustomAdapterView<SpinnerAdapter>
     @Override
     protected ViewGroup.LayoutParams generateDefaultLayoutParams() {
         return new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.FILL_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
     }
     

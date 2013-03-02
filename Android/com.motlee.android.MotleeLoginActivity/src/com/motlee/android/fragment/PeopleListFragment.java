@@ -1,21 +1,13 @@
 package com.motlee.android.fragment;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import com.facebook.android.Facebook;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import com.flurry.android.FlurryAgent;
 import com.motlee.android.AddPeopleActivity;
 import com.motlee.android.R;
-import com.motlee.android.adapter.ImageAdapter;
 import com.motlee.android.adapter.PeopleListAdapter;
-import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
-import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.Attendee;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
@@ -24,17 +16,8 @@ import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.TempAttendee;
 import com.motlee.android.object.UserInfo;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
-
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -42,14 +25,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.TableLayout.LayoutParams;
 
 public class PeopleListFragment extends BaseDetailFragment {
 	
@@ -78,6 +57,7 @@ public class PeopleListFragment extends BaseDetailFragment {
 	{
 		super.onResume();
 		
+		FlurryAgent.logEvent("AttendeeList");
 		
 		//eventDetailPeopleList.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
 		
@@ -109,14 +89,14 @@ public class PeopleListFragment extends BaseDetailFragment {
 
 		dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
 		
-		setUpPageHeader();
+		//setUpPageHeader();
 		
 		setUpInviteFriendsHeader();
 		
 		setPageHeader(pageTitle);
 		if (mEventDetail != null)
 		{
-			showRightHeaderButton(mEventDetail, this.getActivity().getApplicationContext());
+			//showRightHeaderButton(mEventDetail, this.getActivity().getApplicationContext());
 			setHeaderIcon(mEventDetail, getActivity());
 		}
 		showLeftHeaderButton();
@@ -141,7 +121,7 @@ public class PeopleListFragment extends BaseDetailFragment {
 	}
 	
 	
-	private void setUpPageHeader() 
+	/*private void setUpPageHeader() 
 	{
 		eventHeader = (LinearLayout) view.findViewById(R.id.event_detail_header);
 		eventHeader.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getDrawable());
@@ -149,7 +129,7 @@ public class PeopleListFragment extends BaseDetailFragment {
 		eventHeader.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getHeight()));
 		
 		((ImageButton) eventHeader.findViewById(R.id.event_detail_friends)).setEnabled(false);
-	}
+	}*/
 	
 	private void setUpInviteFriendsHeader()
 	{

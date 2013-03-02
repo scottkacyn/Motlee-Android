@@ -2,35 +2,26 @@ package com.motlee.android.fragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Timer;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.facebook.Request;
-import com.facebook.Session;
 import com.motlee.android.R;
 import com.motlee.android.adapter.CommentAdapter;
-import com.motlee.android.adapter.SearchPeopleAdapter;
 import com.motlee.android.object.Comment;
 import com.motlee.android.object.DrawableCache;
-import com.motlee.android.object.EventItem;
 import com.motlee.android.object.GlobalVariables;
 
 public class CommentFragment extends ListFragmentWithHeader {

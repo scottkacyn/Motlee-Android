@@ -16,7 +16,6 @@ import com.motlee.android.object.Attendee;
 import com.motlee.android.object.Comment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.Friend;
-import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
@@ -86,6 +85,32 @@ public class DatabaseWrapper {
 		catch (SQLException e) 
 		{
 			Log.e("DatabaseWrapper", "Failed to createOrUpdate eventDetail", e);
+		}
+	}
+	
+	public PhotoItem getMostRecentPhoto(Integer eventId)
+	{
+		try
+		{
+			QueryBuilder<PhotoItem, Integer> qb = helper.getPhotoDao().queryBuilder();
+			qb.where().eq("event_detail", eventId);
+			qb.orderBy("created_at", true);
+			
+			ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>(helper.getPhotoDao().query(qb.prepare()));
+			
+			if (photos.size() > 0)
+			{
+				return photos.get(0);
+			}
+			else
+			{
+				return null;
+			}
+		}
+		catch (Exception ex)
+		{
+			Log.e("DatabaseWrapper", "Failed to getMostRecentPhoto for eventId " + eventId, ex);
+			return null;
 		}
 	}
 	
@@ -392,6 +417,7 @@ public class DatabaseWrapper {
 		}
 	}
 	
+	@SuppressWarnings("finally")
 	public EventDetail getEvent(Integer eventId)
 	{
 		EventDetail event = null;

@@ -3,34 +3,21 @@ package com.motlee.android.fragment;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.facebook.android.Facebook;
-import com.motlee.android.AddPeopleActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.PeopleListAdapter;
 import com.motlee.android.database.DatabaseWrapper;
-import com.motlee.android.object.Attendee;
-import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
-import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.PhotoItem;
-import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class LikeListFragment extends BaseMotleeFragment {
 	
@@ -54,17 +41,8 @@ public class LikeListFragment extends BaseMotleeFragment {
 	private PeopleListAdapter mAdapter;
 	
 	private ArrayList<UserInfo> mUsers = new ArrayList<UserInfo>();
-	
-	private Facebook facebook = new Facebook(GlobalVariables.FB_APP_ID);
-    private ImageLoader imageDownloader;
-    private DisplayImageOptions mOptions;
-    private PhotoItem mPhoto;
 
-    private LinearLayout eventHeader;
-    
-	private String pageLabel;
-	
-	private View inviteFriendsHeader;
+    private PhotoItem mPhoto;
 	
 	private DatabaseWrapper dbWrapper;
 	

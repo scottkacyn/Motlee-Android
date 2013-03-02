@@ -1,6 +1,5 @@
 package com.motlee.android.object;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import android.os.Parcel;

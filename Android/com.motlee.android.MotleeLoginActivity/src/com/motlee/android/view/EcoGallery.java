@@ -7,8 +7,6 @@ import com.motlee.android.adapter.ImageAdapter;
 import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoItem;
-import com.motlee.android.object.SharePref;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;

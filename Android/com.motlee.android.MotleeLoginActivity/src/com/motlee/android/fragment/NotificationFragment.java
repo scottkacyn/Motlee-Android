@@ -1,11 +1,8 @@
 package com.motlee.android.fragment;
 
-import java.util.ArrayList;
-
 import com.motlee.android.R;
 import com.motlee.android.adapter.NotificationAdapter;
 import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.Notification;
 import com.motlee.android.object.NotificationList;
 
 import android.os.Bundle;

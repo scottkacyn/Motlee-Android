@@ -3,16 +3,11 @@ package com.motlee.android.fragment;
 import java.util.Arrays;
 
 import com.facebook.widget.LoginButton;
-import com.facebook.android.*;
-import com.facebook.android.Facebook.*;
 import com.motlee.android.R;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 public class LoginPageFragment extends BaseMotleeFragment {

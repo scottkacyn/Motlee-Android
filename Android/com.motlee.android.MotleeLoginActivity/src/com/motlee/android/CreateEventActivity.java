@@ -1,31 +1,20 @@
 package com.motlee.android;
 
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.facebook.FacebookException;
-import com.facebook.FacebookRequestError;
-import com.facebook.HttpMethod;
-import com.facebook.Request;
-import com.facebook.RequestAsyncTask;
-import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
-import com.facebook.widget.WebDialog;
-import com.facebook.widget.WebDialog.OnCompleteListener;
 import com.flurry.android.FlurryAgent;
-import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.BaseMotleeFragment;
 import com.motlee.android.fragment.CreateEventFragment;
@@ -36,7 +25,6 @@ import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
-import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.TempAttendee;
 import com.motlee.android.object.UserInfo;
@@ -44,11 +32,7 @@ import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
-import com.motlee.android.object.event.UpdatedLocationEvent;
-import com.motlee.android.object.event.UpdatedLocationListener;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
-import com.motlee.android.object.event.UpdatedPhotoListener;
-import com.motlee.android.service.RubyService;
 import com.motlee.android.view.DateTimePicker;
 
 import android.app.Activity;
@@ -58,16 +42,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -77,13 +55,11 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEventDetailListener {
 	
@@ -96,8 +72,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	private boolean pendingPublishReauthorization = false;
 	
 	private static final Location SAN_FRANCISCO_LOCATION = new Location("") {{
-        setLatitude(37.7750);
-        setLongitude(-122.4183);
+        setLatitude(41.933096);
+        setLongitude(-87.659931);
 	}};
 	
 	private Location mLocation;
@@ -109,7 +85,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	private boolean isFacebookEvent = false;
 	
 	private LocationInfo selectLocation;
-	private SearchPlacesFragment searchPlacesFragment;
+	//private SearchPlacesFragment searchPlacesFragment;
 
 	private Integer mEventID;
 	
@@ -143,16 +119,10 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 		        	mLocation = SAN_FRANCISCO_LOCATION;
 		        }
 		    }
-		    if (mLocation != null) {
-		        // Configure the place picker: search center, radius,
-		        // query, and maximum results.
-		    	searchPlacesFragment.setLocation(mLocation);
-		    	searchPlacesFragment.setRadiusInMeters(SEARCH_RADIUS_METERS);
-		    	searchPlacesFragment.setSearchText(SEARCH_TEXT);
-		    	searchPlacesFragment.setResultsLimit(SEARCH_RESULT_LIMIT);
-		    } else {
+		    if (mLocation == null) {
 		            // If no location found, show an error
 		        Log.e("CreateEventActivity", "No Location Was Found");
+		        mLocation = SAN_FRANCISCO_LOCATION;
 		    }
 		} catch (Exception ex) {
 		    Log.e("CreateEventActivity", "Something failed");
@@ -205,7 +175,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
         uiHelper = new UiLifecycleHelper(this, callback);
         uiHelper.onCreate(savedInstanceState);
         
-        searchPlacesFragment = new SearchPlacesFragment();
+        //searchPlacesFragment = new SearchPlacesFragment();
         
         setupUI(findViewById(R.id.main_frame_layout));
         
@@ -316,16 +286,34 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	    }
 	}
     
+	public void showPrivacyInfo(View view)
+	{
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+		alertDialogBuilder
+		.setTitle("What is Event Privacy?")
+		.setMessage("ON = Event can only be seen by people you invite. \n \nOFF = Event can be seen by any of your Facebook friends.")
+		.setCancelable(true)
+		.setPositiveButton("Ok, Thanks!",new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {				
+				
+				dialog.cancel();
+			}
+		  });
+		
+		alertDialogBuilder.show();
+	}
+	
     /*
      * removes a person from the event. gets the facebookUID and view and removes from 
      * person list.
      */
-    public void removePersonFromEvent(View view)
+    /*public void removePersonFromEvent(View view)
     {
     	CreateEventFragment fragment = (CreateEventFragment) getSupportFragmentManager().findFragmentByTag(MAIN_FRAGMENT);
     	
     	fragment.removePersonFromEvent(Long.parseLong((String) view.getContentDescription()));
-    }
+    }*/
     
     /*
     public void addPersonToEvent(View view)
@@ -368,7 +356,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	        .commit();
         }
         
-        if (view.getContentDescription() == "Location")
+        /*if (view.getContentDescription() == "Location")
         {
 
         	setUpLocationListener();
@@ -377,7 +365,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
         	
 	        ft.add(R.id.fragment_content, searchPlacesFragment, SEARCH_PLACES)
 	        .commit();
-        }
+        }*/
     }
     
     public void onDeleteEvent(View view)
@@ -454,18 +442,27 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 				LocationInfo location = dbWrapper.getLocation(eDetail.getLocationID());
 				if (location == null)
 				{
-					FragmentManager fm = getSupportFragmentManager();
+					/*FragmentManager fm = getSupportFragmentManager();
 					FragmentTransaction ft = fm.beginTransaction();
 					
 					CreateEventFragment fragment = (CreateEventFragment) fm.findFragmentById(R.id.fragment_content);
 					
-					LocationInfo eventLocation = fragment.getLocationInfo();
-					eventLocation.id = eDetail.getLocationID();
+					LocationInfo eventLocation = fragment.getLocationInfo();*/
+					selectLocation.id = eDetail.getLocationID();
 					
-					dbWrapper.createLocation(eventLocation);
+					dbWrapper.createLocation(selectLocation);
 				}
 			}
 		}
+	}
+	
+	public void onLeftHeaderClick(View view)
+	{
+        progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Creating Event");
+        
+        EventServiceBuffer.setEventDetailListener(this);
+        
+        EventServiceBuffer.sendNewEventToDatabase(mCreatedEvent, selectLocation, false);
 	}
 	
     /*
@@ -486,15 +483,23 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
             CreateEventFragment createEventFragment = (CreateEventFragment) fm.findFragmentByTag(MAIN_FRAGMENT);
             ft.show(createEventFragment);
             
+            mEventAttendees = new ArrayList<Long>();
+            
             try
             {
-	            createEventFragment.clearPeopleFromEvent();
+	            //createEventFragment.clearPeopleFromEvent();
             	
 	            for (JSONObject person : peopleToAdd)
 	            {
 	            	Long uid = person.getLong("uid");
-	            	String name = person.getString("name");
-	            	createEventFragment.addPersonToEvent(uid, name);
+	            	mEventAttendees.add(uid);
+	            	/*String name = person.getString("name");
+	            	createEventFragment.addPersonToEvent(uid, name);*/
+	            	UserInfo user = new UserInfo();
+	            	user.uid = uid;
+	            	user.name = person.getString("name");
+	            	
+	            	TempAttendee.setTempAttendee(mEventID, user);
 	            }
             }
             catch (JSONException e)
@@ -502,10 +507,16 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
             	Log.e(this.toString(), e.getMessage());
             }
             
-            ft.remove(searchPeopleFragment)
-            .commit();
+            //ft.remove(searchPeopleFragment)
+            //.commit();
             
-            createEventFragment.updatePageHeader();
+            progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Creating Event");
+            
+            EventServiceBuffer.setEventDetailListener(this);
+            
+            EventServiceBuffer.sendNewEventToDatabase(mCreatedEvent, selectLocation, false);
+            
+            /*createEventFragment.updatePageHeader();
             
             if (isEditing)
             {
@@ -514,23 +525,38 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
             else
             {
             	((TextView) findViewById(R.id.header_right_text)).setText("Start!");
-            }
+            }*/
     	}
     	else if (!isEditing)
-    	{    		
+    	{    		    		
 	    	CreateEventFragment fragment = (CreateEventFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
-	    	mEventAttendees = fragment.getAttendeeList();
+	    	//mEventAttendees = fragment.getAttendeeList();
 	    	mCreatedEvent = new EventDetail();
 	    	
 	    	mCreatedEvent.setEventName(fragment.getEventName());
-	    	mCreatedEvent.setStartTime(fragment.getStartTime().getTime());
-	    	mCreatedEvent.setEndTime(fragment.getEndTime().getTime());
+	    	mCreatedEvent.setStartTime(new Date());
+	    	mCreatedEvent.setEndTime(new Date());
 	    	mCreatedEvent.setOwnerID(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
 	    	mCreatedEvent.setIsPrivate(fragment.getIsPrivate());
 	    	
+	    	selectLocation = fragment.getLocationInfo();
+	    	
 	    	isFacebookEvent = fragment.getIsFacebookEvent();
 	    	
-    		Map<String, String> params = new HashMap<String, String>();
+    		FragmentManager fm = getSupportFragmentManager();
+    		
+    		FragmentTransaction ft = fm.beginTransaction();
+    		
+    		ft.remove(fragment);
+    		
+	        searchPeopleFragment = new SearchPeopleFragment();
+	        searchPeopleFragment.setHeaderView(findViewById(R.id.header));
+	        searchPeopleFragment.setInitialFriendList(new ArrayList<Long>());
+	        searchPeopleFragment.showSkipButton();
+	        ft.add(R.id.fragment_content, searchPeopleFragment, SEARCH_PEOPLE)
+	        .commit();
+	    	
+    		/*Map<String, String> params = new HashMap<String, String>();
     		if (isFacebookEvent)
     		{
     			params.put("PostToFacebook", "true");
@@ -538,11 +564,11 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     		else
     		{
     			params.put("PostToFacebook", "false");
-    		}
+    		}*/
     		
-    		FlurryAgent.logEvent("CreateEvent", params);
+    		FlurryAgent.logEvent("CreateEvent");
             
-	    	EventServiceBuffer.setEventDetailListener(this);
+	    	/*EventServiceBuffer.setEventDetailListener(this);
 	    	
 	    	EventServiceBuffer.setAttendeeListener(attendeeListener);
 	    	
@@ -554,12 +580,12 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	    	{
 	    		EventServiceBuffer.sendNewEventToDatabase(mCreatedEvent, fragment.getLocationInfo(), false);
 	    	}
-	    	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Creating Event");
+	    	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Creating Event");*/
     	}
     	else
     	{
 	    	CreateEventFragment fragment = (CreateEventFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
-	    	mEventAttendees = fragment.getAttendeeList();
+	    	/*mEventAttendees = fragment.getAttendeeList();
 	    	
 	    	removedAttendees = new ArrayList<Integer>();
 	    	
@@ -577,21 +603,23 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 		    			removedAttendees.add(user.id);
 		    		}
 	    		}
-	    	}
+	    	}*/
 	    	
 	    	mCreatedEvent.setEventName(fragment.getEventName());
-	    	mCreatedEvent.setStartTime(fragment.getStartTime().getTime());
-	    	mCreatedEvent.setEndTime(fragment.getEndTime().getTime());
+	    	//mCreatedEvent.setStartTime(fragment.getStartTime().getTime());
+	    	//mCreatedEvent.setEndTime(fragment.getEndTime().getTime());
 	    	mCreatedEvent.setOwnerID(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
 	    	mCreatedEvent.setIsPrivate(fragment.getIsPrivate());
 	    	
 	    	isFacebookEvent = fragment.getIsFacebookEvent();
 	    	
+	    	selectLocation = fragment.getLocationInfo();
+	    	
 	    	FlurryAgent.logEvent("UpdateEvent");
 	    	
 	    	EventServiceBuffer.setEventDetailListener(this);
 	    	
-	    	EventServiceBuffer.setAttendeeListener(attendeeListener);
+	    	//EventServiceBuffer.setAttendeeListener(attendeeListener);
 	    	
 	    	EventServiceBuffer.updateEventInDatabase(mCreatedEvent, fragment.getLocationInfo());
 	    	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Updating Event");
@@ -729,21 +757,13 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 			
 			progressDialog.dismiss();
 			
-            if (mEventAttendees.size() > 0)
+            if (mEventAttendees != null && mEventAttendees.size() > 0)
             {
             	FlurryAgent.logEvent("InvitedFriendsWhileCreating");
             	
                 progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Inviting Friends");
                 
-    	    	CreateEventFragment fragment = (CreateEventFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
-    	    	for (UserInfo user : fragment.getTempAttendeeList())
-    	    	{
-    	    		TempAttendee.setTempAttendee(mEventID, user);
-    	    	}
-                
-                EventServiceBuffer.setAttendeeListener(attendeeListener);
-                
-                EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees, isFacebookEvent);
+                EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees, false);
             } 
             else
             {
@@ -752,7 +772,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 		}
 		else
 		{
-			ArrayList<Long> oldAttendees = new ArrayList<Long>();
+			/*ArrayList<Long> oldAttendees = new ArrayList<Long>();
 			
 			for (Attendee attendee : dbWrapper.getAttendees(mEventID))
 			{				
@@ -762,7 +782,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 					oldAttendees.add(user.uid);
 					mEventAttendees.remove(user.uid);
 				}
-			}
+			}*/
 			
 			mEventID = mCreatedEvent.getEventID();
 			
@@ -770,17 +790,13 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 			
 			progressDialog.dismiss();
 
-            if (mEventAttendees.size() > 0)
+			endCreateEventActivity();
+			
+            /*if (mEventAttendees.size() > 0)
             {
             	FlurryAgent.logEvent("InvitedFriendsWhileEditing");
             	
                 progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Updating Friends");
-                
-    	    	CreateEventFragment fragment = (CreateEventFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
-    	    	for (UserInfo user : fragment.getTempAttendeeList())
-    	    	{
-    	    		TempAttendee.setTempAttendee(mEventID, user);
-    	    	}
                 
                 EventServiceBuffer.setAttendeeListener(attendeeListener);
                 
@@ -799,7 +815,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
             else
             {
             	endCreateEventActivity();
-            }
+            }*/
 		}
 		
 	}
@@ -868,16 +884,16 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     /*
      * opens the DateTimePicker dialog
      */
-	public void openDateTimePicker(View view) {
+	/*public void openDateTimePicker(View view) {
 
 		mCurrentDateTimePickerFocus = (View) view.getParent();
 		showDateTimeDialog();
-	}
+	}*/
 
 	/*
 	 * initializes the DateTimePicker dialog
 	 */
-	private void showDateTimeDialog() {
+	/*private void showDateTimeDialog() {
 		// Create the dialog
 		final Dialog mDateTimeDialog = new Dialog(this);
 		// Inflate the root layout
@@ -939,5 +955,5 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 		mDateTimeDialog.setContentView(mDateTimeDialogView);
 		// Display the dialog
 		mDateTimeDialog.show();
-	}
+	}*/
 }

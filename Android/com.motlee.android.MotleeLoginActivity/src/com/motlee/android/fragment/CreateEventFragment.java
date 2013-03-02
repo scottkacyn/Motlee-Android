@@ -1,13 +1,7 @@
 package com.motlee.android.fragment;
 
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-
 import com.motlee.android.CreateEventActivity;
 import com.motlee.android.R;
 import com.motlee.android.database.DatabaseHelper;
@@ -22,37 +16,29 @@ import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.Settings;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
-import com.motlee.android.view.DateTimePicker;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.Window;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -66,9 +52,6 @@ public class CreateEventFragment extends BaseMotleeFragment {
 	private LayoutInflater inflater;
 	private EventDetail mEventDetail = null;
 	private String pageTitle = "Create Event";
-	
-	private StretchedBackgroundTableLayout eventInfoLayout;
-	private StretchedBackgroundTableLayout eventFriendLayout;
 	
 	private ArrayList<UserInfo> attendeeMap = new ArrayList<UserInfo>();
 	
@@ -87,7 +70,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
     
     private LocationInfo mLocation;
     
-    private TextView locationTextView;
+    private EditText locationTextView;
     
     private DatabaseHelper mHelper;
     private DatabaseWrapper dbWrapper;
@@ -115,17 +98,22 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		mHelper = DatabaseHelper.getInstance(this.getActivity().getApplicationContext());
 		dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
 		
-		eventInfoLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_create_info);
-		eventInfoLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		View createEventBg = view.findViewById(R.id.create_event_bg);
 		
-		eventFriendLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_create_friend_list);
-		eventFriendLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
+		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.create_event_bg, GlobalVariables.DISPLAY_WIDTH);
+		
+		createEventBg.setBackgroundDrawable(drawable.getDrawable());
+		
+		createEventBg.setLayoutParams(new LinearLayout.LayoutParams(drawable.getWidth(), drawable.getHeight()));
+		
+		//eventFriendLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.event_create_friend_list);
+		//eventFriendLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
 		
 		if (mEventDetail == null)
 		{
 			setPageHeader(pageTitle);
 			showRightHeaderButton("Start!");
-			view.findViewById(R.id.event_create_delete_event).setVisibility(View.GONE);
+			//view.findViewById(R.id.event_create_delete_event).setVisibility(View.GONE);
 		}
 		else
 		{
@@ -133,12 +121,12 @@ public class CreateEventFragment extends BaseMotleeFragment {
 			setPageHeader(pageTitle);
 			setHeaderIcon(EDIT_EVENTS);
 			showRightHeaderButton("Save");
-			((TextView) view.findViewById(R.id.delete_event_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-			view.findViewById(R.id.event_create_delete_event).setVisibility(View.VISIBLE);
+			//((TextView) view.findViewById(R.id.delete_event_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+			//view.findViewById(R.id.event_create_delete_event).setVisibility(View.VISIBLE);
 		}
 		showLeftHeaderButton();
 		
-		if (mEventDetail == null)
+		/*if (mEventDetail == null)
 		{
 			initializeTime();
 		}
@@ -149,14 +137,15 @@ public class CreateEventFragment extends BaseMotleeFragment {
 			
 			mStartTime.setTime(mEventDetail.getStartTime());
 			mEndTime.setTime(mEventDetail.getEndTime());
-		}
-		setDateLabels();
-		setFriendLayout();
+		}*/
+		//setDateLabels();
+		//setFriendLayout();
+		setEventNameEdit();
 		setLocationLabel();
 		setPublicEventToggle();
-		setFacebookEventToggle();
+		//setFacebookEventToggle();
 		
-		ImageScaleType ist = ImageScaleType.IN_SAMPLE_POWER_OF_2;
+		/*ImageScaleType ist = ImageScaleType.IN_SAMPLE_POWER_OF_2;
 		
 		mOptions = new DisplayImageOptions.Builder()
 		.showStubImage(R.drawable.stubimage)
@@ -169,9 +158,9 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		
 		imageDownloader = ImageLoader.getInstance();
     	
-    	imageDownloader.init(ImageLoaderConfiguration.createDefault(getActivity()));
+    	imageDownloader.init(ImageLoaderConfiguration.createDefault(getActivity()));*/
 
-		if (mEventDetail != null)
+		/*if (mEventDetail != null)
 		{
 			for (Attendee attendee : dbWrapper.getAttendees(mEventDetail.getEventID()))
 			{
@@ -183,7 +172,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 					addPersonToEvent(user.uid, user.name);
 				}
 			}
-		}
+		}*/
 
 		((CreateEventActivity) getActivity()).setupUI(view);
 		
@@ -196,31 +185,31 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		{
 			ImageButton toggle = (ImageButton) view.findViewById(R.id.event_create_public_switcher);
 			toggle.setOnClickListener(publicToggleListener);
-			toggle.setTag(true);
+			toggle.setTag(false);
 		}
 		else
 		{
 			if (mEventDetail.getIsPrivate())
 			{
 				ImageButton toggle = (ImageButton) view.findViewById(R.id.event_create_public_switcher);
-				toggle.setImageResource(R.drawable.switcher_button_off);
+				toggle.setImageResource(R.drawable.switcher_button_on);
 				toggle.setOnClickListener(publicToggleListener);
-				TextView text = (TextView) view.findViewById(R.id.event_create_public_event_text);
-				text.setText(R.string.public_event_false);
-				toggle.setTag(false);
+				//TextView text = (TextView) view.findViewById(R.id.event_create_public_event_text);
+				//text.setText(R.string.public_event_false);
+				toggle.setTag(true);
 				isPrivate = true;
 			}
 			else
 			{
 				ImageButton toggle = (ImageButton) view.findViewById(R.id.event_create_public_switcher);
 				toggle.setOnClickListener(publicToggleListener);
-				toggle.setTag(true);
+				toggle.setTag(false);
 			}
 		}
 		
 	}
 	
-	private void setFacebookEventToggle() {
+	/*private void setFacebookEventToggle() {
 		
 		Settings settings = SharePref.getSettings(getActivity().getApplicationContext());
 
@@ -242,9 +231,9 @@ public class CreateEventFragment extends BaseMotleeFragment {
 			isFacebookEvent = true;
 		}
 		
-	}
+	}*/
 	
-	private OnClickListener facebookToggleListener = new OnClickListener()
+	/*private OnClickListener facebookToggleListener = new OnClickListener()
 	{
 		public void onClick(View v) {
 			
@@ -268,7 +257,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 			}
 			
 		}
-	};
+	};*/
 
 	private OnClickListener publicToggleListener = new OnClickListener()
 	{
@@ -280,18 +269,18 @@ public class CreateEventFragment extends BaseMotleeFragment {
 			if (switcherState)
 			{
 				((ImageView) v).setImageResource(R.drawable.switcher_button_off);
-				TextView text = (TextView) view.findViewById(R.id.event_create_public_event_text);
-				text.setText(R.string.public_event_false);
+				//TextView text = (TextView) view.findViewById(R.id.event_create_public_event_text);
+				//text.setText(R.string.public_event_false);
 				v.setTag(false);
-				isPrivate = true;
+				isPrivate = false;
 			}
 			else
 			{
 				((ImageView) v).setImageResource(R.drawable.switcher_button_on);
-				TextView text = (TextView) view.findViewById(R.id.event_create_public_event_text);
-				text.setText(R.string.public_event_true);
+				//TextView text = (TextView) view.findViewById(R.id.event_create_public_event_text);
+				//text.setText(R.string.public_event_true);
 				v.setTag(true);
-				isPrivate = false;
+				isPrivate = true;
 			}
 			
 		}
@@ -300,7 +289,8 @@ public class CreateEventFragment extends BaseMotleeFragment {
 	
 	public LocationInfo getLocationInfo()
 	{
-		return this.mLocation;
+		LocationInfo newLocation = new LocationInfo(locationTextView.getText().toString(), mLocation.lat, mLocation.lon, Long.getLong("0"));
+		return newLocation;
 	}
 	
 	
@@ -330,21 +320,21 @@ public class CreateEventFragment extends BaseMotleeFragment {
 	
 	private void setLocationLabel() 
 	{
-		View labelButton = inflater.inflate(R.layout.event_detail_info_button, null);
-		labelButton.findViewById(R.id.label_button).setContentDescription("Location");
+		View labelButton = view.findViewById(R.id.create_event_location_bg);
+		//labelButton.findViewById(R.id.label_button).setContentDescription("Location");
 		
-		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH - DrawableCache.convertDpToPixel(20));
+		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.create_event_location_bg, GlobalVariables.DISPLAY_WIDTH - DrawableCache.convertDpToPixel(50));
 		
 		labelButton.setBackgroundDrawable(drawable.getDrawable());
 		
-		ImageView icon = (ImageView) labelButton.findViewById(R.id.label_button_icon);
-		icon.setImageDrawable(getResources().getDrawable(R.drawable.icon_map_background_normal));
+		//ImageView icon = (ImageView) labelButton.findViewById(R.id.edit_event_date_icon);
+		//icon.setImageDrawable(getResources().getDrawable(R.drawable.icon_map_background_normal));
 		
-		locationTextView = (TextView) labelButton.findViewById(R.id.label_button_text);
+		locationTextView = (EditText) labelButton.findViewById(R.id.edit_event_location_text);
 		locationTextView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		if (mEventDetail == null)
 		{
-			locationTextView.setText(mLocation.name);
+			locationTextView.setHint("Location (Optional)");
 		}
 		else
 		{
@@ -355,20 +345,16 @@ public class CreateEventFragment extends BaseMotleeFragment {
 			}
 			else
 			{
-				locationTextView.setText("My Location");
+				locationTextView.setHint("Location (Optional)");
 			}
+			/*else
+			{
+				locationTextView.setText("My Location");
+			}*/
 		}
-		
-		labelButton.findViewById(R.id.divider).setVisibility(View.GONE);
-		
-		TableRow tr = new TableRow(getActivity());
-		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		tr.setLayoutParams(lp);
-		tr.addView(labelButton);
-		eventInfoLayout.addView(tr);
 	}
 
-	private void setFriendLayout() {
+	/*private void setFriendLayout() {
 		View labelButton = inflater.inflate(R.layout.event_detail_info_button, null);
 		
 		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH - DrawableCache.convertDpToPixel(20));
@@ -390,7 +376,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		tr.addView(labelButton);
 		tr.setTag(true);
 		eventFriendLayout.addView(tr);
-	}
+	}*/
 
 	public Calendar getStartTime()
 	{
@@ -407,6 +393,11 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		return mEventName.toString();
 	}
 	
+	public String getLocationName()
+	{
+		return locationTextView.getText().toString();
+	}
+	
 	/*
 	 * setTime sets the selected time from the dialog into
 	 * it's respective start or end time.
@@ -414,7 +405,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 	 * If endTime < startTime, startTime = endTime
 	 */
 	
-	public void setTime(View view, Calendar time)
+	/*public void setTime(View view, Calendar time)
 	{
 		if (view.getParent() == mDatePickerStartView)
 		{
@@ -443,7 +434,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 			
 			updateDateTimeText(mDatePickerEndView, mEndTime);
 		}
-	}
+	}*/
 	
 	private void updateDateTimeText(View view, Calendar time)
 	{
@@ -480,7 +471,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		mEndTime.add(Calendar.DATE, 1);
 	}
 	
-	private void setDateLabels() 
+	/*private void setDateLabels() 
 	{
 		eventInfoLayout.removeAllViews();
 		
@@ -489,8 +480,6 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH - DrawableCache.convertDpToPixel(20));
 		
 		label.setBackgroundDrawable(drawable.getDrawable());
-		
-		setEventNameEdit(label);
 		
 		mDatePickerStartView = this.inflater.inflate(R.layout.edit_time_picker, null);
 		
@@ -509,14 +498,20 @@ public class CreateEventFragment extends BaseMotleeFragment {
 			setDateTimePicker(mDatePickerStartView, GlobalVariables.getInstance().getDateFormatter().format(mStartTime.getTime()), "Start");
 		}
 		setDateTimePicker(mDatePickerEndView, GlobalVariables.getInstance().getDateFormatter().format(mEndTime.getTime()), "End");
-	}
+	}*/
 	
-	private void setEventNameEdit(View label)
+	private void setEventNameEdit()
 	{
+		View label = view.findViewById(R.id.create_event_name_bg);
+		
+		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.create_event_name_bg, GlobalVariables.DISPLAY_WIDTH - DrawableCache.convertDpToPixel(50));
+		
+		label.setBackgroundDrawable(drawable.getDrawable());
+		
 		// set up EditText view. set to "final" so we can use in the editText listeners
 		final EditText editText = (EditText) label.findViewById(R.id.edit_event_name_text);
 		editText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-		editText.setTextColor(R.color.label_color);
+		//editText.setTextColor(R.color.label_color);
 		if (mEventDetail == null)
 		{
 			editText.setHint("Event Name");
@@ -556,8 +551,8 @@ public class CreateEventFragment extends BaseMotleeFragment {
 			// if we have focus, change color for input text
 	        public void onFocusChange(View v, boolean hasFocus) {
 	            if (hasFocus) {
-	                ((EditText) v).setTextColor(Color.WHITE);
-	                ((EditText) v).setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+	                //((EditText) v).setTextColor(Color.WHITE);
+	                //((EditText) v).setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 	            } 
 	            else
 	            {
@@ -573,15 +568,9 @@ public class CreateEventFragment extends BaseMotleeFragment {
 	            }
 	        }
 	    });
-		
-		TableRow tr = new TableRow(getActivity());
-		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		tr.setLayoutParams(lp);
-		tr.addView(label);
-		eventInfoLayout.addView(tr);
 	}
 	
-	private void setDateTimePicker(View label, String dateString, String timeLabel)
+	/*private void setDateTimePicker(View label, String dateString, String timeLabel)
 	{
 		TextView textView = (TextView) label.findViewById(R.id.edit_event_date_time_text);
 		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
@@ -596,7 +585,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		tr.setLayoutParams(lp);
 		tr.addView(label);
 		eventInfoLayout.addView(tr);
-	}
+	}*/
 
 	public ArrayList<Long> getAttendeeList()
 	{
@@ -608,7 +597,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		return facebookIDs;
 	}
 	
-	public ArrayList<UserInfo> getTempAttendeeList()
+	/*public ArrayList<UserInfo> getTempAttendeeList()
 	{
 		return attendeeMap;
 	}
@@ -673,7 +662,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		user.uid = facebookID;
 		
 		attendeeMap.add(user);
-	}
+	}*/
 
 	public void updatePageHeader() {
 		

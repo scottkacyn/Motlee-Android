@@ -1,6 +1,5 @@
 package com.motlee.android;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
@@ -10,18 +9,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.View;
 
 import com.flurry.android.FlurryAgent;
-import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.NotificationObjectType;
 import com.motlee.android.fragment.NotificationFragment;
-import com.motlee.android.fragment.SearchPeopleFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
-import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Notification;
 import com.motlee.android.object.NotificationList;
 import com.motlee.android.object.PhotoItem;
@@ -85,33 +80,41 @@ public class NotificationActivity extends BaseMotleeActivity {
     
     public void userWithEventsPhotos(UserWithEventsPhotosEvent e)
     {
-    	if (e != null)
+    	try
     	{
-    		Integer userId = e.getUserInfo().id;
-    		
-    		if (users.contains(userId))
-			{
-    			users.remove(userId);
-			}
-    		
-    		if (users.size() > 0)
-    		{
-    			EventServiceBuffer.getUserInfoFromService(users.get(0));
-    		}
-    		else
-    		{
-    			EventServiceBuffer.removeUserInfoListener(this);
-    			
-    	        FragmentManager     fm = getSupportFragmentManager();
-    	        FragmentTransaction ft = fm.beginTransaction();
-    	        
-    	        NotificationFragment fragment = new NotificationFragment();
-    	        fragment.setHeaderView(findViewById(R.id.header));
-    	        ft.add(R.id.fragment_content, fragment)
-    	        .commit();
-    	        
-    	        progressDialog.dismiss();
-    		}
+	    	if (e != null)
+	    	{
+	    		Integer userId = e.getUserInfo().id;
+	    		
+	    		if (users.contains(userId))
+				{
+	    			users.remove(userId);
+				}
+	    		
+	    		if (users.size() > 0)
+	    		{
+	    			EventServiceBuffer.getUserInfoFromService(users.get(0));
+	    		}
+	    		else
+	    		{
+	    			EventServiceBuffer.removeUserInfoListener(this);
+	    			
+	    	        FragmentManager     fm = getSupportFragmentManager();
+	    	        FragmentTransaction ft = fm.beginTransaction();
+	    	        
+	    	        NotificationFragment fragment = new NotificationFragment();
+	    	        fragment.setHeaderView(findViewById(R.id.header));
+	    	        ft.add(R.id.fragment_content, fragment)
+	    	        .commit();
+	    	        
+	    	        progressDialog.dismiss();
+	    		}
+	    	}
+    	}
+    	catch (Exception ex)
+    	{
+    		progressDialog.dismiss();
+    		finish();
     	}
     }
     

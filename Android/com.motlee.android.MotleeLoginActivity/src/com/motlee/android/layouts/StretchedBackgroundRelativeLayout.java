@@ -1,10 +1,7 @@
 package com.motlee.android.layouts;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.NinePatchDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.RelativeLayout;

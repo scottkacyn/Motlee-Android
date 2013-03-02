@@ -11,15 +11,16 @@
       android:layout_weight="0.2"
       android:layout_height="wrap_content">   
       
-	  <com.motlee.android.view.HorizontalAspectImageButton
+	  <ImageButton
 	      android:id="@+id/menu_button"
 	      android:layout_width="match_parent"
 	      android:layout_height="wrap_content"
 	      android:src="@drawable/main_menu_button"
 	      android:background="@android:color/transparent"
-	      android:layout_gravity="left|bottom"
 	      android:scaleType="fitXY"
-	      android:onClick="onClickOpenMainMenu" />
+	      android:adjustViewBounds="true"
+	      android:onClick="onClickOpenMainMenu"
+	      android:layout_gravity="left|bottom" />
   
 	  <View
 	    android:id="@+id/invisible_for_badge_view"
@@ -53,13 +54,14 @@
       android:layout_weight="0.2"
       android:layout_height="wrap_content" >
       
-	  <com.motlee.android.view.HorizontalAspectImageButton
+	  <ImageButton
 	      android:id="@+id/plus_menu_button"
 	      android:layout_width="match_parent"
 	      android:layout_height="wrap_content"
 	      android:src="@drawable/right_menu_button"
 	      android:background="@android:color/transparent"
-	      android:scaleType="fitXY" 
+	      android:scaleType="fitCenter" 
+	      android:adjustViewBounds="true"
 	      android:onClick="onClickOpenPlusMenu"
 	      android:layout_gravity="right|bottom" />
 	  
@@ -70,7 +72,7 @@
 	      android:paddingTop="15dp"
 	      android:paddingLeft="17dp"
 	      android:paddingRight="5dp"
-	      android:paddingBottom="3dp"
+	      android:paddingBottom="0dp"
 	      android:scaleType="fitCenter"
 	      android:adjustViewBounds="true" />
 

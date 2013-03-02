@@ -3,16 +3,11 @@ package com.motlee.android.object;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
-import com.motlee.android.R;
-
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.BitmapFactory.Options;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 
 public class DrawableCache {

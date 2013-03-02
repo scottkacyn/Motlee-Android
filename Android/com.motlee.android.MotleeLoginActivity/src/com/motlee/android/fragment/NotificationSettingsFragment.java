@@ -39,7 +39,7 @@ public class NotificationSettingsFragment extends BaseMotleeFragment {
 		
 		setNavigationButtons();
 		
-		setPageHeader("Notificaiton Settings");
+		setPageHeader("Notification Settings");
 		showRightHeaderButton("Save");
 		
 		rightHeaderButton = mHeaderView.findViewById(R.id.header_right_button);
@@ -53,7 +53,7 @@ public class NotificationSettingsFragment extends BaseMotleeFragment {
 	private void setNavigationButtons() {
 
 		setSettingToggleLabel(getActivity().getResources().getString(R.string.not_event_invitations), settings.on_event_invite, false);
-		setSettingToggleLabel(getActivity().getResources().getString(R.string.not_event_messages), settings.on_event_message, false);
+		//setSettingToggleLabel(getActivity().getResources().getString(R.string.not_event_messages), settings.on_event_message, false);
 		setSettingToggleLabel(getActivity().getResources().getString(R.string.not_photo_comments), settings.on_photo_comment, false);
 		setSettingToggleLabel(getActivity().getResources().getString(R.string.not_photo_likes), settings.on_photo_like, false);
 		setSettingToggleLabel(getActivity().getResources().getString(R.string.not_friends_joining), settings.on_friend_join, true);

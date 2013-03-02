@@ -1,0 +1,7 @@
+package com.motlee.android.fragment;
+
+import com.google.android.gms.maps.SupportMapFragment;
+
+public class NearbyEventsFragment extends SupportMapFragment {
+
+}

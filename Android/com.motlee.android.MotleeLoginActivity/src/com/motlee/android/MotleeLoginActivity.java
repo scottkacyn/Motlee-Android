@@ -1,31 +1,13 @@
 package com.motlee.android;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.HashSet;
-import java.util.List;
-
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
-import com.facebook.android.DialogError;
-import com.facebook.android.Facebook;
-import com.facebook.android.FacebookError;
-import com.facebook.android.Facebook.DialogListener;
 import com.flurry.android.FlurryAgent;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
 import com.motlee.android.fragment.LoginPageFragment;
-import com.motlee.android.fragment.SplashScreenFragment;
-import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventServiceBuffer;
-import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
@@ -34,19 +16,15 @@ import com.motlee.android.object.event.UserInfoListener;
 import com.motlee.android.object.event.UserWithEventsPhotosEvent;
 import com.motlee.android.service.RubyService;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -60,9 +38,6 @@ import android.widget.Toast;
 
 public class MotleeLoginActivity extends FragmentActivity implements UserInfoListener, UpdatedEventDetailListener, OnFragmentAttachedListener {
 
-    Facebook facebook = new Facebook(GlobalVariables.FB_APP_ID);
-    private SharedPreferences mPrefs;
-    private MotleeLoginActivity instance = this;
     private LoginPageFragment loginPageFragment;
     private UiLifecycleHelper uiHelper;
     
@@ -82,6 +57,8 @@ public class MotleeLoginActivity extends FragmentActivity implements UserInfoLis
 		super.onStart();
 		
 		FlurryAgent.onStartSession(this, getResources().getString(R.string.flurry_key));
+		
+		FlurryAgent.setCaptureUncaughtExceptions(false);
 	}
 	
 	@Override

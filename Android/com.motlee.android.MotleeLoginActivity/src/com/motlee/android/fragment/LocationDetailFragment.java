@@ -1,6 +1,5 @@
 package com.motlee.android.fragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -24,17 +23,14 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
-import com.google.android.maps.OverlayItem;
 import com.motlee.android.R;
 import com.motlee.android.database.DatabaseWrapper;
-import com.motlee.android.object.ClickableBalloonItemizedOverlay;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.NonClickableItemizedOverlay;
 import com.motlee.android.object.OverlayItemWithEventID;
-import com.readystatesoftware.mapviewballoons.BalloonItemizedOverlay;
 
 public class LocationDetailFragment extends BaseDetailFragment {
 	private static final String JOIN = "Join";
@@ -122,7 +118,7 @@ public class LocationDetailFragment extends BaseDetailFragment {
 		mShowHeader = true;
 	}
 	
-	public void setMapOverlays() {
+	private void setMapOverlays() {
 		
 		LocationInfo location = null;
 		

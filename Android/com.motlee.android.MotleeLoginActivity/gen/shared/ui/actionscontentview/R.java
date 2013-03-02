@@ -8,11 +8,11 @@ package shared.ui.actionscontentview;
 
 public final class R {
 	public static final class id {
-		public static final int right_offset = 0x7f070021;
-		public static final int actions_width = 0x7f070022;
+		public static final int right_offset = 0x7f060024;
+		public static final int actions_width = 0x7f060025;
 	}
 	public static final class styleable {
-		public static final int[] ActionsContentView = { 0x7f010079, 0x7f01007a, 0x7f01007b, 0x7f01007c, 0x7f01007d, 0x7f01007e, 0x7f01007f };
+		public static final int[] ActionsContentView = { 0x7f010087, 0x7f010088, 0x7f010089, 0x7f01008a, 0x7f01008b, 0x7f01008c, 0x7f01008d };
 		public static final int ActionsContentView_actions_layout = 3;
 		public static final int ActionsContentView_spacing = 1;
 		public static final int ActionsContentView_spacing_type = 0;
@@ -22,13 +22,13 @@ public final class R {
 		public static final int ActionsContentView_content_layout = 4;
 	}
 	public static final class attr {
-		public static final int actions_layout = 0x7f01007c;
-		public static final int shadow_width = 0x7f01007f;
-		public static final int actions_spacing = 0x7f01007b;
-		public static final int shadow_drawable = 0x7f01007e;
-		public static final int content_layout = 0x7f01007d;
-		public static final int spacing_type = 0x7f010079;
-		public static final int spacing = 0x7f01007a;
+		public static final int actions_layout = 0x7f01008a;
+		public static final int shadow_width = 0x7f01008d;
+		public static final int actions_spacing = 0x7f010089;
+		public static final int shadow_drawable = 0x7f01008c;
+		public static final int content_layout = 0x7f01008b;
+		public static final int spacing_type = 0x7f010087;
+		public static final int spacing = 0x7f010088;
 	}
 	public static final class dimen {
 		public static final int default_actionscontentview_spacing = 0x7f09001d;

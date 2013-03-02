@@ -8,17 +8,17 @@ package com.emilsjolander.components.StickyListHeaders;
 
 public final class R {
 	public static final class id {
-		public static final int __stickylistheaders_divider_view = 0x7f07001d;
-		public static final int __stickylistheaders_list_view = 0x7f07001c;
-		public static final int __stickylistheaders_list_item_view = 0x7f07001b;
-		public static final int __stickylistheaders_header_view = 0x7f07001a;
-		public static final int __stickylistheaders_wrapper_view = 0x7f07001e;
+		public static final int __stickylistheaders_divider_view = 0x7f060020;
+		public static final int __stickylistheaders_list_view = 0x7f06001f;
+		public static final int __stickylistheaders_list_item_view = 0x7f06001e;
+		public static final int __stickylistheaders_header_view = 0x7f06001d;
+		public static final int __stickylistheaders_wrapper_view = 0x7f060021;
 	}
 	public static final class styleable {
-		public static final int[] StickyListHeadersListView = { 0x7f010078 };
+		public static final int[] StickyListHeadersListView = { 0x7f010086 };
 		public static final int StickyListHeadersListView_areHeadersSticky = 0;
 	}
 	public static final class attr {
-		public static final int areHeadersSticky = 0x7f010078;
+		public static final int areHeadersSticky = 0x7f010086;
 	}
 }

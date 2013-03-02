@@ -6,18 +6,10 @@ import java.util.List;
 import java.util.Vector;
 
 import com.motlee.android.R;
-import com.motlee.android.enums.EventItemType;
-import com.motlee.android.layouts.RatioBackgroundRelativeLayout;
-import com.motlee.android.layouts.StretchedBackgroundRelativeLayout;
-import com.motlee.android.object.DateStringFormatter;
 import com.motlee.android.object.DrawableCache;
-import com.motlee.android.object.EventItem;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.GridPictures;
-import com.motlee.android.object.LocationInfo;
-import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
-import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.WatermarkCache;
 
 import android.content.Context;
@@ -28,9 +20,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {

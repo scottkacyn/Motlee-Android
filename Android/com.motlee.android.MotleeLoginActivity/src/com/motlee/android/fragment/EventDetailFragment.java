@@ -1,20 +1,14 @@
 package com.motlee.android.fragment;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import com.emilsjolander.components.StickyListHeaders.StickyListHeadersListView;
-import com.motlee.android.BaseDetailActivity;
-import com.motlee.android.EventDetailActivity;
+import com.flurry.android.FlurryAgent;
 import com.motlee.android.R;
 import com.motlee.android.adapter.EventDetailGridAdapter;
-import com.motlee.android.adapter.EventListAdapter;
 import com.motlee.android.database.DatabaseWrapper;
-import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.Attendee;
-import com.motlee.android.object.DateStringFormatter;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
@@ -23,54 +17,31 @@ import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
-import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.GridPictures;
-import com.motlee.android.object.EventListParams;
 import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.event.UpdatedLikeEvent;
-import com.motlee.android.object.event.UpdatedPhotoEvent;
-import com.motlee.android.object.event.UpdatedPhotoListener;
 import com.motlee.android.object.event.UpdatedStoryEvent;
 import com.motlee.android.object.event.UpdatedStoryListener;
-import com.motlee.android.view.HorizontalAspectImageButton;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.text.InputType;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.view.View.OnFocusChangeListener;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.TableLayout.LayoutParams;
-import android.widget.TextView.OnEditorActionListener;
 
 public class EventDetailFragment extends BaseDetailFragment implements UpdatedStoryListener {
 	private String tag = "EventDetailFragment";
@@ -109,6 +80,8 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 	public void onResume()
 	{
 		super.onResume();
+		
+		FlurryAgent.logEvent("PhotoGridPage");
 		
 		listViewLayout = (ListView) view.findViewById(R.id.event_detail_list_view);
 		//listAdapter = new EventDetailListAdapter(getActivity(), R.layout.event_item_detail_photo, new ArrayList<EventItem>());
@@ -206,14 +179,14 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		setPageHeader(pageTitle);
 		if (mEventDetail != null)
 		{
-			showRightHeaderButton(mEventDetail, this.getActivity().getApplicationContext());
+			//showRightHeaderButton(mEventDetail, this.getActivity().getApplicationContext());
 			setHeaderIcon(mEventDetail, getActivity());
 		}
 		
 		//checkBottomCommentBar();
 		
 		
-		setUpPageHeader();
+		//setUpPageHeader();
 		
 		showLeftHeaderButton();
 		
@@ -252,7 +225,7 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		
 	}
 
-	private void setUpPageHeader() 
+	/*private void setUpPageHeader() 
 	{
 		eventHeader = (LinearLayout) view.findViewById(R.id.event_detail_header);
 		eventHeader.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getDrawable());
@@ -261,7 +234,7 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		
 		((ImageButton) eventHeader.findViewById(R.id.event_detail_photos)).setEnabled(false);
 		
-	}
+	}*/
 
 	private OnTouchListener touchListener = new OnTouchListener(){
 
@@ -314,10 +287,10 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		this.pageTitle = mEventDetail.getEventName();
 		setPageHeader(pageTitle);
 		
-		if (mEventDetail != null && getActivity() != null)
+		/*if (mEventDetail != null && getActivity() != null)
 		{
 			showRightHeaderButton(mEventDetail, getActivity().getApplicationContext());
-		}
+		}*/
 		
 		if (view != null)
 		{

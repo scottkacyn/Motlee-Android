@@ -77,6 +77,7 @@ public class PhotoItem extends EventItem {
 		out.writeParcelable(this.location, flags);
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         public PhotoItem createFromParcel(Parcel in) {
             return new PhotoItem(in);

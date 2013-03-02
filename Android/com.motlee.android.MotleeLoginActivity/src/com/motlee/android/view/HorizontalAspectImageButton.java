@@ -7,12 +7,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.Display;
-import android.view.WindowManager;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 
 public class HorizontalAspectImageButton extends ImageButton {
 

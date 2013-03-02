@@ -9,11 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Display;
-import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.View.MeasureSpec;
 import android.widget.RelativeLayout;
 
 public class RatioBackgroundRelativeLayout extends RelativeLayout {

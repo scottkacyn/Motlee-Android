@@ -2,13 +2,9 @@ package com.motlee.android.adapter;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
-
 import com.motlee.android.R;
 import com.motlee.android.database.DatabaseHelper;
-import com.motlee.android.object.Comment;
 import com.motlee.android.object.DateStringFormatter;
-import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.StoryItem;

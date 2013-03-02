@@ -6,11 +6,9 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.text.method.KeyListener;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -234,9 +232,9 @@ public class Panel extends LinearLayout {
 		if (mWeight > 0) {
 			ViewGroup.LayoutParams params = mContent.getLayoutParams();
 			if (mOrientation == VERTICAL) {
-				params.height = ViewGroup.LayoutParams.FILL_PARENT;
+				params.height = ViewGroup.LayoutParams.MATCH_PARENT;
 			} else {
-				params.width = ViewGroup.LayoutParams.FILL_PARENT;
+				params.width = ViewGroup.LayoutParams.MATCH_PARENT;
 			}
 			mContent.setLayoutParams(params);
 		}

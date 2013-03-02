@@ -1,65 +1,28 @@
 package com.motlee.android;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
-import com.facebook.Request;
-import com.facebook.Request.GraphUserCallback;
-import com.facebook.Response;
-import com.facebook.Session;
-import com.facebook.android.AsyncFacebookRunner;
-import com.facebook.android.Facebook;
-import com.facebook.android.FacebookError;
-import com.facebook.android.AsyncFacebookRunner.RequestListener;
-import com.motlee.android.adapter.PhotoDetailPagedViewAdapter;
-import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
-import com.motlee.android.fragment.CreateEventFragment;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
-import com.motlee.android.fragment.ProgressBarFragment;
 import com.motlee.android.fragment.UserProfilePageFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
-import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.MenuFunctions;
-import com.motlee.android.object.PhotoDetail;
 import com.motlee.android.object.PhotoItem;
-import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
-import com.motlee.android.object.event.UpdatedEventDetailListener;
 import com.motlee.android.object.event.UpdatedFriendsEvent;
 import com.motlee.android.object.event.UpdatedFriendsListener;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UserInfoEvent;
-import com.motlee.android.object.event.UserInfoListener;
 import com.motlee.android.object.event.UserWithEventsPhotosEvent;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
-
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 public class UserProfilePageActivity extends BaseMotleeActivity implements OnFragmentAttachedListener, UpdatedFriendsListener {

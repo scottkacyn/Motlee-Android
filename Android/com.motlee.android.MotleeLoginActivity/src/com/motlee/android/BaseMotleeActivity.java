@@ -4,10 +4,8 @@ import java.io.File;
 
 import com.flurry.android.FlurryAgent;
 import com.motlee.android.object.DrawableCache;
-import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalActivityFunctions;
-import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.NotificationList;
 import com.motlee.android.object.SharePref;
@@ -35,13 +33,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -130,6 +126,8 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
     	super.onStart();
     	
     	FlurryAgent.onStartSession(this, getResources().getString(R.string.flurry_key));
+    	
+    	FlurryAgent.setCaptureUncaughtExceptions(false);
     }
     
     @Override
@@ -148,7 +146,7 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
     	
     	View target = findViewById(R.id.invisible_for_badge_view);
     	
-    	target.setLayoutParams(new LayoutParams((int) (GlobalVariables.DISPLAY_WIDTH * 0.15), (int) (GlobalVariables.DISPLAY_WIDTH * 0.13333)));
+    	target.setLayoutParams(new FrameLayout.LayoutParams((int) (SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH) * 0.15), (int) (SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH) * 0.12), Gravity.BOTTOM|Gravity.LEFT));
     	
     	menuBadge = new BadgeView(this, target);
     	
@@ -259,28 +257,42 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
 		View menuButtons = findViewById(R.id.menu_buttons);
 		if (menuButtons != null)
 		{
-			menuButtons.setVisibility(View.VISIBLE);
+			
 			
 			if (iconToShow == CREATE_EVENT)
 			{
+				menuButtons.setVisibility(View.VISIBLE);
 				((ImageView) findViewById(R.id.plus_menu_button)).setClickable(true);
-				((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_plus_icon);
+				ImageView rightIcon = (ImageView) findViewById(R.id.right_menu_icon);
+				//rightIcon.setMaxWidth((int) (SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH) * .20)); 
+				//rightIcon.setMaxHeight((int) (SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH) * .20 * .50));
+				rightIcon.setImageResource(R.drawable.right_menu_plus_icon);
+				((ImageView) findViewById(R.id.menu_button)).setImageResource(R.drawable.main_menu_button);
+				menuBadge.setVisibility(View.VISIBLE);
 			}
 			else if (iconToShow == TAKE_PICTURE)
 			{
+				menuButtons.setVisibility(View.VISIBLE);
 				((ImageView) findViewById(R.id.plus_menu_button)).setImageResource(R.drawable.right_menu_button);
 				((ImageView) findViewById(R.id.plus_menu_button)).setClickable(true);
 				((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_photo_icon);
+				((ImageView) findViewById(R.id.menu_button)).setImageResource(R.drawable.main_menu_button);
+				menuBadge.setVisibility(View.VISIBLE);
 			}
 			else if (iconToShow == JOIN_EVENT)
 			{
+				menuButtons.setVisibility(View.VISIBLE);
 				((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_join_icon);
+				menuBadge.setVisibility(View.VISIBLE);
 			}
 			else if (iconToShow == NOT_APART_OF)
 			{
+				//menuButtons.setVisibility(View.GONE);	
 				((ImageView) findViewById(R.id.plus_menu_button)).setImageResource(android.R.color.transparent);
 				((ImageView) findViewById(R.id.plus_menu_button)).setClickable(false);
 				((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(android.R.color.transparent);
+				((ImageView) findViewById(R.id.menu_button)).setImageResource(android.R.color.transparent);
+				menuBadge.setVisibility(View.GONE);
 			}
 		}
 	}
@@ -303,7 +315,12 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
 		}
 
 		public void updatedEventOccurred(Integer eventId) {
-			// TODO Auto-generated method stub
+			
+			EventServiceBuffer.removeEventDetailListener(this);
+			
+			finish();
+			
+			progressDialog.dismiss();
 			
 		}
 		

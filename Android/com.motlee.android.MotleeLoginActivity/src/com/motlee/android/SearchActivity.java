@@ -1,16 +1,13 @@
 package com.motlee.android;
 
 import com.flurry.android.FlurryAgent;
-import com.motlee.android.fragment.CreateEventFragment;
 import com.motlee.android.fragment.SearchAllFragment;
 import com.motlee.android.object.EventDetail;
-import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.UserInfo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;

@@ -1,36 +1,20 @@
 package com.motlee.android.adapter;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.motlee.android.R;
 import com.motlee.android.layouts.HorizontalRatioLinearLayout;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.UserInfo;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
-
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
 import android.widget.TextView;
 
 public class PeopleListAdapter extends ArrayAdapter<UserInfo> {
@@ -137,19 +121,22 @@ public class PeopleListAdapter extends ArrayAdapter<UserInfo> {
         				background.getHeight() - DrawableCache.convertDpToPixel(5), 
         				.15f));
         
-        if (person.sign_in_count > 0)
-        {
-        	if (holder.search_motlee_text != null)
-        	{
-        		holder.search_motlee_text.setImageResource(R.drawable.logo);
-        	}
-        }
-        else
-        {
-        	if (holder.search_motlee_text != null)
-        	{
-        		holder.search_motlee_text.setImageResource(R.drawable.facebook_icon_small);
-        	}
+        if (person.sign_in_count != null)
+        {        
+	        if (person.sign_in_count > 0)
+	        {
+	        	if (holder.search_motlee_text != null)
+	        	{
+	        		holder.search_motlee_text.setImageResource(R.drawable.logo);
+	        	}
+	        }
+	        else
+	        {
+	        	if (holder.search_motlee_text != null)
+	        	{
+	        		holder.search_motlee_text.setImageResource(R.drawable.facebook_icon_small);
+	        	}
+	        }
         }
         
         GlobalVariables.getInstance().downloadImage(holder.search_people_profile_pic, 

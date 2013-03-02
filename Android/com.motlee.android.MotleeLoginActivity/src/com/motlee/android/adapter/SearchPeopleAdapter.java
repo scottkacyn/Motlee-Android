@@ -1,24 +1,17 @@
 package com.motlee.android.adapter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.facebook.model.GraphObject;
-import com.facebook.model.GraphUser;
 import com.motlee.android.R;
 import com.motlee.android.layouts.HorizontalRatioLinearLayout;
 import com.motlee.android.object.DrawableCache;
-import com.motlee.android.object.FacebookPerson;
 import com.motlee.android.object.GlobalVariables;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -32,9 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;

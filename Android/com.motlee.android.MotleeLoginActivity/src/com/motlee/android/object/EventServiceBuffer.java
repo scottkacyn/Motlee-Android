@@ -1,20 +1,15 @@
 package com.motlee.android.object;
 
-import java.io.ByteArrayOutputStream;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.Vector;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -26,16 +21,13 @@ import org.acra.ACRA;
 import org.apache.http.HttpStatus;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.os.ResultReceiver;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -45,17 +37,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.j256.ormlite.dao.Dao.CreateOrUpdateStatus;
-import com.motlee.android.EventListActivity;
-import com.motlee.android.R;
-import com.motlee.android.adapter.EventListAdapter;
 import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.EventItemType;
-import com.motlee.android.fragment.EventListFragment;
 import com.motlee.android.object.event.DeletePhotoListener;
 import com.motlee.android.object.event.SettingsListener;
-import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.object.event.UpdatedCommentEvent;
 import com.motlee.android.object.event.UpdatedCommentListener;
@@ -67,14 +53,11 @@ import com.motlee.android.object.event.UpdatedFriendsEvent;
 import com.motlee.android.object.event.UpdatedFriendsListener;
 import com.motlee.android.object.event.UpdatedLikeEvent;
 import com.motlee.android.object.event.UpdatedLikeListener;
-import com.motlee.android.object.event.UpdatedLocationEvent;
-import com.motlee.android.object.event.UpdatedLocationListener;
 import com.motlee.android.object.event.UpdatedNotificationListener;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
 import com.motlee.android.object.event.UpdatedStoryEvent;
 import com.motlee.android.object.event.UpdatedStoryListener;
-import com.motlee.android.object.event.UserInfoEvent;
 import com.motlee.android.object.event.UserInfoListener;
 import com.motlee.android.object.event.UserWithEventsPhotosEvent;
 import com.motlee.android.service.RubyService;
@@ -90,7 +73,7 @@ public class EventServiceBuffer extends Object {
 	private static Context mContext;
 	private static ResultReceiver mReceiver;
 	
-    private static final String WEB_SERVICE_URL = "http://staging.motleeapp.com/api/";
+    private static final String WEB_SERVICE_URL = "http://www.motleeapp.com/api/";
     private static String AUTH_TOK = "auth_token";
     
     public static final String MY_EVENTS = "me";
@@ -100,6 +83,7 @@ public class EventServiceBuffer extends Object {
     // HTTP Success code is 200. We add a constant to that code to in RubyService
     // avoiding other types of HTTP codes
     public static final int eventSuccessCode = HttpStatus.SC_OK + RubyService.EVENT;
+    public static final int nearbyEventSuccessCode = HttpStatus.SC_OK + RubyService.NEARBY_EVENT;
     public static final int userSuccessCode = HttpStatus.SC_OK + RubyService.USER;
     public static final int storySuccessCode = HttpStatus.SC_OK + RubyService.STORY;
     public static final int userAuthSuccessCode = HttpStatus.SC_OK + RubyService.USER_AUTH;
@@ -120,6 +104,8 @@ public class EventServiceBuffer extends Object {
     public static final int settingsSuccessCode = HttpStatus.SC_OK + RubyService.SETTINGS;
     public static final int deleteEventSuccessCode = HttpStatus.SC_OK + RubyService.DELETE_EVENT;
     public static final int deleteCommentSuccessCode = HttpStatus.SC_OK + RubyService.DELETE_COMMENT;
+    public static final int facebookShareSuccessCode = HttpStatus.SC_OK + RubyService.FACEBOOK;
+    public static final int registerDeviceSuccessCode = HttpStatus.SC_OK - 1;
     
     private static Vector<UpdatedEventDetailListener> mEventDetailListener;
     private static Vector<UpdatedLikeListener> mLikeListener;
@@ -366,6 +352,26 @@ public class EventServiceBuffer extends Object {
         intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
         intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.DELETE);
         intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.DELETE_COMMENT);
+        intent.putExtra(RubyService.EXTRA_PARAMS, params);
+        
+        mContext.startService(intent);
+	}
+	
+	public static void shareEventOnFacebook(Integer eventId)
+	{
+		Bundle params = new Bundle();
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+		params.putString("access_token", SharePref.getStringPref(mContext, SharePref.ACCESS_TOKEN));
+		
+        Intent intent = new Intent(mContext, RubyService.class);
+        intent.setData(Uri.parse(WEB_SERVICE_URL + "events/" + eventId + "/share"));
+		
+        // Here we are going to place our REST call parameters. Note that
+        // we could have just used Uri.Builder and appendQueryParameter()
+        // here, but I wanted to illustrate how to use the Bundle params.
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.POST);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.FACEBOOK);
         intent.putExtra(RubyService.EXTRA_PARAMS, params);
         
         mContext.startService(intent);
@@ -895,6 +901,8 @@ public class EventServiceBuffer extends Object {
 	
 	public static void getEventsFromService(String eventParam)
 	{
+		Log.d("EventServiceBuffer", "Getting events from the database");
+		
 		if (mContext == null)
 		{
 			ACRA.getErrorReporter().putCustomData("getEventsFromService:mContext", "null");
@@ -944,6 +952,27 @@ public class EventServiceBuffer extends Object {
         mContext.startService(intent);
 	}
     
+	public static void registerDevice(String regId)
+	{
+        Intent intent = new Intent(mContext, RubyService.class);
+        intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + SharePref.getIntPref(mContext, SharePref.USER_ID) + "/device"));
+        
+        Log.d("Register", "Registering the device for: " + regId);
+        
+        Bundle formData = new Bundle();
+        formData.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+
+        formData.putString("device_id", regId);
+        formData.putString("type", "Android");
+		
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.POST);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, -1);
+        intent.putExtra(RubyService.EXTRA_PARAMS, formData);
+        // Here we send our Intent to our RESTService.
+        mContext.startService(intent);
+	}
+	
 	public static void getEventsFromService(String eventParam, double lat, double lon)
 	{
         Intent intent = new Intent(mContext, RubyService.class);
@@ -967,7 +996,7 @@ public class EventServiceBuffer extends Object {
 		
         intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
         intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
-        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.EVENT);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.NEARBY_EVENT);
         intent.putExtra(RubyService.EXTRA_PARAMS, formData);
         // Here we send our Intent to our RESTService.
         mContext.startService(intent);
@@ -1084,13 +1113,13 @@ public class EventServiceBuffer extends Object {
         
         // Check to see if we got an HTTP 200 code and have some data.
     	// We add
-        if (code == eventSuccessCode && result != null) {
-            
-            // For really complicated JSON decoding I usually do my heavy lifting
-            // with Gson and proper model classes, but for now let's keep it simple
-            // and use a utility method that relies on some of the built in0
-            // JSON utilities on Android.
-            getEventsFromJson(result);
+        if (code == eventSuccessCode && result != null) 
+        {
+            getEventsFromJson(result, false);
+        }
+        else if (code == nearbyEventSuccessCode && result != null)
+        {
+        	getEventsFromJson(result, true);
         }
         else if (code == updateEventSuccessCode && result != null)
         {
@@ -1103,6 +1132,10 @@ public class EventServiceBuffer extends Object {
         else if (code == fomoSuccessCode && result != null)
         {
         	getFomoFromJson(result);
+        }
+        else if (code == facebookShareSuccessCode && result != null)
+        {
+        	getFacebookShareFromJson(result);
         }
         else if (code == userAuthSuccessCode && result != null)
         {
@@ -1172,6 +1205,10 @@ public class EventServiceBuffer extends Object {
         {
         	getDeleteCommentFromJson(result);
         }
+        else if (code == registerDeviceSuccessCode)
+        {
+        	
+        }
         else {
         	
             if (mContext instanceof Activity) {
@@ -1186,7 +1223,26 @@ public class EventServiceBuffer extends Object {
         }
     }
 
-    private void getDeleteCommentFromJson(String result) {
+    private void getFacebookShareFromJson(String result) {
+		
+		if (mFriendsListener != null)
+		{
+			Vector<UpdatedFriendsListener> targets;
+		    synchronized (this) {
+		        targets = (Vector<UpdatedFriendsListener>) mFriendsListener.clone();
+		    }
+			
+			Enumeration<UpdatedFriendsListener> e = targets.elements();
+	        while (e.hasMoreElements()) 
+	        {
+	        	UpdatedFriendsListener l = e.nextElement();
+	        	l.friendsEvent(null);
+	        }
+		}
+		
+	}
+
+	private void getDeleteCommentFromJson(String result) {
 		
     	Gson gson = new Gson();
     	
@@ -1209,10 +1265,10 @@ public class EventServiceBuffer extends Object {
 		        targets = (Vector<UpdatedCommentListener>) mCommentListener.clone();
 		    }
 			
-			Enumeration e = targets.elements();
+			Enumeration<UpdatedCommentListener> e = targets.elements();
 	        while (e.hasMoreElements()) 
 	        {
-	        	UpdatedCommentListener l = (UpdatedCommentListener) e.nextElement();
+	        	UpdatedCommentListener l = e.nextElement();
 	        	l.commentSuccess(params);
 	        }
 		}
@@ -1241,10 +1297,10 @@ public class EventServiceBuffer extends Object {
     	        targets = (Vector<UpdatedEventDetailListener>) mEventDetailListener.clone();
     	    }
     		
-    		Enumeration e = targets.elements();
+    		Enumeration<UpdatedEventDetailListener> e = targets.elements();
 	        while (e.hasMoreElements()) 
 	        {
-	        	UpdatedEventDetailListener l = (UpdatedEventDetailListener) e.nextElement();
+	        	UpdatedEventDetailListener l = e.nextElement();
 	        	l.updatedEventOccurred(eDetail.getEventID());
 	        }
     	}
@@ -1281,10 +1337,10 @@ public class EventServiceBuffer extends Object {
 	        targets = (Vector<UpdatedNotificationListener>) mNotificationListener.clone();
 	    }
 		
-		Enumeration e = targets.elements();
+		Enumeration<UpdatedNotificationListener> e = targets.elements();
         while (e.hasMoreElements()) 
         {
-        	UpdatedNotificationListener l = (UpdatedNotificationListener) e.nextElement();
+        	UpdatedNotificationListener l = e.nextElement();
         	l.receivedAllNotifications();
         }
 		
@@ -1299,10 +1355,10 @@ public class EventServiceBuffer extends Object {
 	        targets = (Vector<UpdatedNotificationListener>) mNotificationListener.clone();
 	    }
 		
-		Enumeration e = targets.elements();
+		Enumeration<UpdatedNotificationListener> e = targets.elements();
         while (e.hasMoreElements()) 
         {
-        	UpdatedNotificationListener l = (UpdatedNotificationListener) e.nextElement();
+        	UpdatedNotificationListener l = e.nextElement();
         	l.receivedNewNotifications();
         }
 		
@@ -1399,10 +1455,10 @@ public class EventServiceBuffer extends Object {
 		        targets = (Vector<UpdatedFriendsListener>) mFriendsListener.clone();
 		    }
 			
-			Enumeration e = targets.elements();
+			Enumeration<UpdatedFriendsListener> e = targets.elements();
 	        while (e.hasMoreElements()) 
 	        {
-	        	UpdatedFriendsListener l = (UpdatedFriendsListener) e.nextElement();
+	        	UpdatedFriendsListener l = e.nextElement();
 	        	l.friendsEvent(evt);
 	        }
     	}
@@ -1419,10 +1475,10 @@ public class EventServiceBuffer extends Object {
     	        targets = (Vector<UpdatedEventDetailListener>) mEventDetailListener.clone();
     	    }
     		
-    		Enumeration e = targets.elements();
+    		Enumeration<UpdatedEventDetailListener> e = targets.elements();
 	        while (e.hasMoreElements()) 
 	        {
-	        	UpdatedEventDetailListener l = (UpdatedEventDetailListener) e.nextElement();
+	        	UpdatedEventDetailListener l = e.nextElement();
 	        	l.myEventOccurred(event);
 	        }
     	}
@@ -1444,10 +1500,10 @@ public class EventServiceBuffer extends Object {
 	        targets = (Vector<UpdatedFomoListener>) mFomoListener.clone();
 	    }
 		
-		Enumeration e = targets.elements();
+		Enumeration<UpdatedFomoListener> e = targets.elements();
         while (e.hasMoreElements()) 
         {
-        	UpdatedFomoListener l = (UpdatedFomoListener) e.nextElement();
+        	UpdatedFomoListener l = e.nextElement();
         	l.fomoSuccess(event);
         }
 	}
@@ -1494,10 +1550,10 @@ public class EventServiceBuffer extends Object {
 		        targets = (Vector<UpdatedCommentListener>) mCommentListener.clone();
 		    }
 			
-			Enumeration e = targets.elements();
+			Enumeration<UpdatedCommentListener> e = targets.elements();
 	        while (e.hasMoreElements()) 
 	        {
-	        	UpdatedCommentListener l = (UpdatedCommentListener) e.nextElement();
+	        	UpdatedCommentListener l = e.nextElement();
 	        	l.commentSuccess(params);
 	        }
 		}
@@ -1558,10 +1614,10 @@ public class EventServiceBuffer extends Object {
 		        targets = (Vector<UpdatedLikeListener>) mLikeListener.clone();
 		    }
 			
-			Enumeration e = targets.elements();
+			Enumeration<UpdatedLikeListener> e = targets.elements();
 	        while (e.hasMoreElements()) 
 	        {
-	        	UpdatedLikeListener l = (UpdatedLikeListener) e.nextElement();
+	        	UpdatedLikeListener l = e.nextElement();
 	        	l.likeSuccess(params);
 	        }
 		}
@@ -1670,11 +1726,7 @@ public class EventServiceBuffer extends Object {
 			   		    	
 			   		    	newAttendees.add(new Attendee(user.id, eDetail));
 			   		    	
-			    			try {
-								helper.getUserDao().createIfNotExists(user);
-							} catch (SQLException e1) {
-								Log.e("DatabaseHelper", "Failed to createOrUpdate user", e1);
-							}
+			   		    	dbWrapper.createOrUpdateUser(user);
 			   		    }
 			   		    
 			   		    dbWrapper.updateAttendees(eDetail.getEventID(), newAttendees);
@@ -1757,10 +1809,10 @@ public class EventServiceBuffer extends Object {
 				    	        targets = (Vector<UpdatedEventDetailListener>) mEventDetailListener.clone();
 				    	    }
 				    		
-				    		Enumeration e = targets.elements();
+				    		Enumeration<UpdatedEventDetailListener> e = targets.elements();
 					        while (e.hasMoreElements()) 
 					        {
-					        	UpdatedEventDetailListener l = (UpdatedEventDetailListener) e.nextElement();
+					        	UpdatedEventDetailListener l = e.nextElement();
 					        	l.updatedEventOccurred(eventId);
 					        }
 							
@@ -1812,10 +1864,10 @@ public class EventServiceBuffer extends Object {
     	        targets = (Vector<UpdatedPhotoListener>) mPhotoListener.clone();
     	    }
     		
-    		Enumeration e = targets.elements();
+    		Enumeration<UpdatedPhotoListener> e = targets.elements();
 	        while (e.hasMoreElements()) 
 	        {
-	        	UpdatedPhotoListener l = (UpdatedPhotoListener) e.nextElement();
+	        	UpdatedPhotoListener l = e.nextElement();
 	        	l.photoEvent(event);
 	        }
 		}
@@ -1860,10 +1912,10 @@ public class EventServiceBuffer extends Object {
     	        targets = (Vector<UpdatedPhotoListener>) mPhotoListener.clone();
     	    }
     		
-    		Enumeration e = targets.elements();
+    		Enumeration<UpdatedPhotoListener> e = targets.elements();
 	        while (e.hasMoreElements()) 
 	        {
-	        	UpdatedPhotoListener l = (UpdatedPhotoListener) e.nextElement();
+	        	UpdatedPhotoListener l = e.nextElement();
 	        	l.photoEvent(event);
 	        }
 		}
@@ -1949,21 +2001,19 @@ public class EventServiceBuffer extends Object {
 		    		{
 			    		setOwner(element.getAsJsonObject().get("photo").getAsJsonObject().get("owner"));
 			    		
-			    		JsonArray comments = element.getAsJsonObject().get("photo").getAsJsonObject().get("comments").getAsJsonArray();
-			    		for (JsonElement comment : comments)
-			    		{
-			    			setOwner(comment.getAsJsonObject().get("owner"));
-			    		}
-			    		
 			    		PhotoItem photo = gson.fromJson(element, PhotosHolder.class).photo;
 			    		
 			    		dbWrapper.clearComments(photo.id);
 			    		for (JsonElement commentElement : element.getAsJsonObject().getAsJsonObject("photo").getAsJsonArray("comments"))
 			    		{
 			    			Comment comment = gson.fromJson(commentElement, Comment.class);
-			    			comment.event_id = photo.event_id;
-			    			comment.photo = photo;
-			    			dbWrapper.createComment(comment);
+			    			setOwner(commentElement.getAsJsonObject().get("owner"));
+			    			if (dbWrapper.getUser(comment.user_id) != null)
+			    			{
+				    			comment.event_id = photo.event_id;
+				    			comment.photo = photo;
+				    			dbWrapper.createComment(comment);
+			    			}
 			    		}
 			    		
 			    		dbWrapper.clearLikes(photo.id);
@@ -1971,9 +2021,12 @@ public class EventServiceBuffer extends Object {
 			    		{
 			    			Like like = gson.fromJson(likeElement, Like.class);
 			    			setOwner(likeElement.getAsJsonObject().get("owner"));
-			    			like.event_id = photo.event_id;
-			    			like.photo = photo;
-			    			dbWrapper.createLike(like);
+			    			if (dbWrapper.getUser(like.user_id) != null)
+			    			{
+				    			like.event_id = photo.event_id;
+				    			like.photo = photo;
+				    			dbWrapper.createLike(like);
+			    			}
 			    		}
 			    		
 			    		Collection<Like> likes = dbWrapper.getLikes(photo.id);
@@ -2137,10 +2190,10 @@ public class EventServiceBuffer extends Object {
     	        targets = (Vector<UserInfoListener>) mUserInfoListener.clone();
     	    }
     		
-    		Enumeration e = targets.elements();
+    		Enumeration<UserInfoListener> e = targets.elements();
 	        while (e.hasMoreElements()) 
 	        {
-	        	UserInfoListener l = (UserInfoListener) e.nextElement();
+	        	UserInfoListener l = e.nextElement();
 	        	l.userWithEventsPhotos(event);
 	        }
     	}
@@ -2151,7 +2204,7 @@ public class EventServiceBuffer extends Object {
     	public UserInfo user;
     }
 	
-    private void getEventsFromJson(final String json) 
+    private void getEventsFromJson(final String json, final boolean isNearby) 
     {        
     	Log.d("EventServiceBuffer", "events call: " + sw.getElapsedTime() + " ms");
     	
@@ -2236,7 +2289,7 @@ public class EventServiceBuffer extends Object {
 		        	if (mEventDetailListener != null && mEventDetailListener.size() > 0)
 		        	{
 		        		
-			        	final UpdatedEventDetailEvent event = new UpdatedEventDetailEvent(this, eventIDs);
+			        	final UpdatedEventDetailEvent event = new UpdatedEventDetailEvent(this, eventIDs, isNearby);
 			        	
 			        	handler.post(new Runnable(){
 
@@ -2246,10 +2299,10 @@ public class EventServiceBuffer extends Object {
 					    	        targets = (Vector<UpdatedEventDetailListener>) mEventDetailListener.clone();
 					    	    }
 					    		
-					    		Enumeration e = targets.elements();
+					    		Enumeration<UpdatedEventDetailListener> e = targets.elements();
 						        while (e.hasMoreElements()) 
 						        {
-						        	UpdatedEventDetailListener l = (UpdatedEventDetailListener) e.nextElement();
+						        	UpdatedEventDetailListener l = e.nextElement();
 						        	l.myEventOccurred(event);
 						        }
 							}
@@ -2300,7 +2353,7 @@ public class EventServiceBuffer extends Object {
     	
     	Gson gson = new Gson();
     	
-		if (!userObject.isJsonNull())
+		if (userObject != null && !userObject.isJsonNull())
 		{
 			JsonArray user = userObject.getAsJsonArray();
     		for (JsonElement userElement : user)
@@ -2321,13 +2374,7 @@ public class EventServiceBuffer extends Object {
     
     private class EventDetailHolder
     {
-    	
     	public EventDetail event;
-    	
-    	public EventDetailHolder()
-    	{
-    		
-    	}
     }
     
     private static class MyTask implements Callable<Integer> {  
@@ -2393,7 +2440,15 @@ public class EventServiceBuffer extends Object {
 	   		    	
 	   		    	TempAttendee.removeTempAttendee(eDetail.getEventID(), user);
 	   		    	
-	   		    	dbWrapper.createOrUpdateUser(user);
+	   		    	try
+	   		    	{
+	   		    		helper.getUserDao().createIfNotExists(user);
+	   		    	}
+	   		    	catch (Exception e)
+	   		    	{
+	   		    		Log.e("EventServiceBUffer", "Error occurred", e);
+	   		    	}
+	   		    	//dbWrapper.createOrUpdateUser(user);
 	   		    	
 	   		    	newAttendees.add(new Attendee(user.id, eDetail));
 	   		    }

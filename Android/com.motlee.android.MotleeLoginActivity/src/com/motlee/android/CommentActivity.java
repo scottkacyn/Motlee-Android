@@ -2,18 +2,15 @@ package com.motlee.android;
 
 import java.util.ArrayList;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.CommentFragment;
-import com.motlee.android.fragment.CreateEventFragment;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
 import com.motlee.android.object.Comment;

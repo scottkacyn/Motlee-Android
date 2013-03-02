@@ -1,6 +1,5 @@
 package com.motlee.android.object;
 
-import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

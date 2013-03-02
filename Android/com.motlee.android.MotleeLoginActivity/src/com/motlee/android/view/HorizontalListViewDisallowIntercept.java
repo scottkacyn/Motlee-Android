@@ -4,34 +4,24 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v4.app.FragmentActivity;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.View.MeasureSpec;
-import android.widget.AbsListView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.SlidingDrawer;
-
 import com.motlee.android.view.HorizontalListView;
 import com.motlee.android.R;
-import com.motlee.android.adapter.HeaderViewListAdapter;
 import com.motlee.android.adapter.ImageAdapter;
 import com.motlee.android.object.FixedViewInfo;
 import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharePref;
 
 public class HorizontalListViewDisallowIntercept extends HorizontalListView implements android.widget.AdapterView.OnItemClickListener {
 
@@ -86,7 +76,7 @@ public class HorizontalListViewDisallowIntercept extends HorizontalListView impl
 		{
 			if (mSlidingDrawer != null && mSlidingDrawer.hasBeenLaidOut())
 			{
-				mSlidingDrawer.setOpen(false, false);
+				mSlidingDrawer.setOpen(ftlse, false);
 			}
 		}*/
 		
@@ -105,7 +95,7 @@ public class HorizontalListViewDisallowIntercept extends HorizontalListView impl
 		
 		//addHeaderView(mPullOutDrawer);
 		
-		int imageHeight = GlobalVariables.getInstance().getMaxEventListImageHeight();
+		int imageHeight = SharePref.getIntPref(getContext(), SharePref.MAX_EVENT_LIST_PHOTO_SIZE);
 		
 		double scale = 123.0 / ((double) imageHeight);
 		

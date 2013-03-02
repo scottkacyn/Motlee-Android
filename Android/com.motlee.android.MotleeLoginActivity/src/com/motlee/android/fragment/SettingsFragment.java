@@ -1,8 +1,6 @@
 package com.motlee.android.fragment;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +16,6 @@ import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.Settings;
 
 public class SettingsFragment extends BaseMotleeFragment {
 

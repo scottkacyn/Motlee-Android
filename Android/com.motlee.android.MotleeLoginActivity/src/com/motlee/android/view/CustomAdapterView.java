@@ -13,8 +13,6 @@ import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.ListView;
 
-import java.lang.annotation.Annotation;
-import android.view.ViewDebug.CapturedViewProperty;
 import android.view.ViewDebug;
 import android.view.accessibility.AccessibilityEvent;
 

@@ -1,25 +1,17 @@
 package com.motlee.android;
 
-import java.util.ArrayList;
-
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.DateDetailFragment;
-import com.motlee.android.fragment.EventDetailFragment;
 import com.motlee.android.fragment.LocationFragment;
 import com.motlee.android.fragment.PeopleListFragment;
-import com.motlee.android.object.Attendee;
 import com.motlee.android.object.EventDetail;
-import com.motlee.android.object.EventItem;
 import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.UserInfo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.MotionEvent;
 import android.view.View;
 
 public class MoreEventDetailActivity extends BaseMotleeActivity {

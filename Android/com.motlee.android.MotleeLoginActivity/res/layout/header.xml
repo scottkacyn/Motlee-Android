@@ -21,6 +21,30 @@
         	android:onClick="goBack"
         	android:layout_alignParentLeft="true" />
         
+   	    <FrameLayout
+	        android:layout_height="match_parent"
+	        android:layout_width="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:id="@+id/header_left_layout_button"
+	        android:visibility="gone">
+		    <com.motlee.android.view.VerticalAspectImageButton 
+		        android:id="@+id/header_left_square_button"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:padding="5dp"
+		        android:src="@drawable/header_right_button"
+		        android:onClick="onLeftHeaderClick"
+		        android:background="@android:color/transparent" />
+		    
+		    <TextView 
+		        android:id="@+id/header_left_text"
+	    	    android:layout_width="match_parent"
+		        android:layout_height="match_parent"
+		        android:gravity="center|center_vertical"
+		        android:padding="5dp"
+		        android:background="@android:color/transparent" />
+	    </FrameLayout>
+        
          <com.motlee.android.view.VerticalAspectImageButton
             android:id="@+id/header_menu_button"
         	android:visibility="gone"

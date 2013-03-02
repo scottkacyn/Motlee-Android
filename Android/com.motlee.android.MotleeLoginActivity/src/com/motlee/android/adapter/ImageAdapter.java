@@ -20,13 +20,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import com.motlee.android.R;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.EventItemType;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
+import com.motlee.android.object.UserInfo;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +38,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
 
 public class ImageAdapter extends BaseAdapter {
 
@@ -45,6 +47,8 @@ public class ImageAdapter extends BaseAdapter {
 	
 	private static final int MAX_SIZE = 10;
 	private static final int MIN_SIZE = 3;
+	
+	private static final double PROFILE_SCALE = .28;
 	
 	public static final PhotoItem NO_PHOTO = new PhotoItem(-10, EventItemType.PICTURE, -10, null, null, null);
 	public static final PhotoItem HEADER = new PhotoItem(-5, EventItemType.PICTURE, -5, null, null, null);
@@ -56,6 +60,10 @@ public class ImageAdapter extends BaseAdapter {
     
     private FrameLayout mPullOutDrawer;
     
+    private DatabaseWrapper dbWrapper;
+    
+    private int maxPhotoSize;
+    
     public ImageAdapter(Context context, int resource)
     {
     	super();
@@ -66,8 +74,11 @@ public class ImageAdapter extends BaseAdapter {
     	
     	mOriginalPhotoList.add(NO_PHOTO);
     	
+    	maxPhotoSize = SharePref.getIntPref(context, SharePref.MAX_EVENT_LIST_PHOTO_SIZE);
+    	
     	setUpPullOutDrawer();
 
+    	dbWrapper = new DatabaseWrapper(context.getApplicationContext());
     	
     	for (int i = 0; i < MIN_SIZE; i++)
     	{
@@ -77,7 +88,7 @@ public class ImageAdapter extends BaseAdapter {
     
     private void setUpPullOutDrawer() {
 		
-		int imageHeight = GlobalVariables.getInstance().getMaxEventListImageHeight();
+		int imageHeight = maxPhotoSize;
 		
 		double scale = ((double) imageHeight) / 219.0;
 		
@@ -213,13 +224,13 @@ public class ImageAdapter extends BaseAdapter {
 	    		holder.imagePlaceHolder.setVisibility(View.VISIBLE);
 	    		holder.blank_space.setVisibility(View.GONE);
 	    		
-	    		int imageHeight = GlobalVariables.getInstance().getMaxEventListImageHeight();
+	    		int imageHeight = maxPhotoSize;
 	    		
 	    		double scale = ((double) imageHeight) / 219.0;
 	    		
 	    		int imageWidth = (int) (scale * 32.0);
 	    		
-	    		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(SharePref.getIntPref(context.getApplicationContext(), SharePref.DISPLAY_WIDTH) - imageWidth, GlobalVariables.getInstance().getMaxEventListImageHeight());
+	    		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(SharePref.getIntPref(context.getApplicationContext(), SharePref.DISPLAY_WIDTH) - imageWidth, maxPhotoSize);
 	    		
 	    		holder.imagePlaceHolder.setLayoutParams(params);
 	    		//holder.imagePlaceHolder.setTag(eventId);
@@ -229,7 +240,7 @@ public class ImageAdapter extends BaseAdapter {
 	    		holder.imageView.setVisibility(View.GONE);
 	    		holder.imagePlaceHolder.setVisibility(View.GONE);
 	    		holder.blank_space.setVisibility(View.VISIBLE);
-	    		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(GlobalVariables.getInstance().getMaxEventListImageHeight(), GlobalVariables.getInstance().getMaxEventListImageHeight());
+	    		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(maxPhotoSize, maxPhotoSize);
 	    		
 	    		holder.blank_space.setLayoutParams(params);
 	    	}
@@ -238,16 +249,19 @@ public class ImageAdapter extends BaseAdapter {
 	    		holder.imagePlaceHolder.setVisibility(View.GONE);
 	    		holder.blank_space.setVisibility(View.GONE);
 	    		
-	    		holder.imageView.setMaxHeight(GlobalVariables.getInstance().getMaxEventListImageHeight());
-	    		holder.imageView.setMaxWidth(GlobalVariables.getInstance().getMaxEventListImageHeight());
+	    		holder.imageView.setMaxHeight(maxPhotoSize);
+	    		holder.imageView.setMaxWidth(maxPhotoSize);
 	    		
 	    		holder.imageView.setLayoutParams(
-	    				new RelativeLayout.LayoutParams(
-	    						GlobalVariables.getInstance().getMaxEventListImageHeight(), 
-	    						GlobalVariables.getInstance().getMaxEventListImageHeight()));
+	    				new FrameLayout.LayoutParams(
+	    						maxPhotoSize, 
+	    						maxPhotoSize));
 	    		
-	    		GlobalVariables.getInstance().downloadImage(holder.imageView, GlobalVariables.getInstance().getAWSUrlThumbnail(mPhotoList.get(position)), GlobalVariables.getInstance().getMaxEventListImageHeight());
-	        	holder.imageView.setVisibility(View.VISIBLE);
+	    		UserInfo user = dbWrapper.getUser(mPhotoList.get(position).user_id);
+	    		
+	    		GlobalVariables.getInstance().downloadImage(holder.imageView, GlobalVariables.getInstance().getAWSUrlThumbnail(mPhotoList.get(position)), maxPhotoSize);
+	    		
+	    		holder.imageView.setVisibility(View.VISIBLE);
 	        	holder.imageView.setTag(mPhotoList.get(position));
 	    	}
     	}

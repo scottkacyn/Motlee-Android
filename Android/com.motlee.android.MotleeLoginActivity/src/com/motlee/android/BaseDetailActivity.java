@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
-import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;

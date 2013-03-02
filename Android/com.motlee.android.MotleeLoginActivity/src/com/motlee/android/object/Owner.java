@@ -32,6 +32,7 @@ public class Owner implements Parcelable {
 		out.writeString(this.name);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         public Owner createFromParcel(Parcel in) {
             return new Owner(in);

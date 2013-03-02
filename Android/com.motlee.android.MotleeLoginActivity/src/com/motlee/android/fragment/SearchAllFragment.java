@@ -29,13 +29,10 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.emilsjolander.components.StickyListHeaders.StickyListHeadersListView;
-import com.facebook.HttpMethod;
 import com.facebook.Request;
 import com.facebook.Session;
-import com.motlee.android.EventDetailActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.SearchAllAdapter;
-import com.motlee.android.adapter.SearchPeopleAdapter;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventServiceBuffer;

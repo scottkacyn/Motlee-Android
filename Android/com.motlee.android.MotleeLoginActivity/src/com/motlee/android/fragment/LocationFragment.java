@@ -1,28 +1,21 @@
 package com.motlee.android.fragment;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.flurry.android.FlurryAgent;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
-import com.google.android.maps.OverlayItem;
 import com.motlee.android.R;
-import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
-import com.motlee.android.layouts.StretchedBackgroundTableLayout;
-import com.motlee.android.object.Attendee;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
-import com.motlee.android.object.Friend;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.ClickableBalloonItemizedOverlay;
 import com.motlee.android.object.OverlayItemWithEventID;
-import com.motlee.android.object.UserInfo;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -33,16 +26,12 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.RelativeLayout.LayoutParams;
 
 public class LocationFragment extends BaseDetailFragment {
 
@@ -75,6 +64,8 @@ public class LocationFragment extends BaseDetailFragment {
 	public void onResume()
 	{
 		super.onResume();
+		
+		FlurryAgent.logEvent("LocationPage");
 		
 		setMapOverlays();
 	}

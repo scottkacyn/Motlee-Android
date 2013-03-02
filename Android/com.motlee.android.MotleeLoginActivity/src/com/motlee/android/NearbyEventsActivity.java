@@ -1,20 +1,21 @@
 package com.motlee.android;
 
-import java.util.ArrayList;
-
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.google.android.gms.maps.SupportMapFragment;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
 import com.motlee.android.fragment.LocationFragment;
+import com.motlee.android.fragment.NearbyEventsFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalActivityFunctions;
@@ -39,6 +40,8 @@ public class NearbyEventsActivity extends BaseMotleeActivity implements UpdatedE
         
         showMenuButtons(BaseMotleeActivity.CREATE_EVENT);
         
+        showHeader();
+        
         setActionForRightMenu(plusMenuClick);
         
         FragmentManager fm = getSupportFragmentManager();
@@ -48,6 +51,21 @@ public class NearbyEventsActivity extends BaseMotleeActivity implements UpdatedE
         .commit();
         
         progressDialog = ProgressDialog.show(NearbyEventsActivity.this, "", "Loading");
+    }
+    
+    private void showHeader()
+    {
+    	ImageView icon = (ImageView) findViewById(R.id.header_icon);
+    	
+		icon.setVisibility(View.VISIBLE);
+		icon.setPadding(0, 4, 0, 2);
+		icon.setImageResource(R.drawable.icon_button_map);
+		
+		TextView tv = (TextView) findViewById(R.id.header_textView);
+		tv.setText("Nearby Events");
+		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		
+		findViewById(R.id.header_left_button).setVisibility(View.VISIBLE);
     }
 	
 	private OnClickListener plusMenuClick = new OnClickListener(){
@@ -65,35 +83,35 @@ public class NearbyEventsActivity extends BaseMotleeActivity implements UpdatedE
     {
     	Log.d(this.toString(), "myEventOccurred");
     	
-    	EventServiceBuffer.removeEventDetailListener(this);
-    	
-        FragmentManager     fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        
-        LocationFragment locationFragment = (LocationFragment) fm.findFragmentById(R.id.fragment_content);
-        
-        if (locationFragment == null)
-        {
-	        locationFragment = new LocationFragment();
+    	if (evt.getIsNearby())
+    	{
+	    	
+	    	EventServiceBuffer.removeEventDetailListener(this);
+	    	
+	        FragmentManager     fm = getSupportFragmentManager();
+	        FragmentTransaction ft = fm.beginTransaction();
 	        
-	        locationFragment.setHeaderView(findViewById(R.id.header));
-	
-	        locationFragment.setPageTitle("Nearby Events");
+	        NearbyEventsFragment locationFragment = (NearbyEventsFragment) fm.findFragmentById(R.id.fragment_content);
 	        
-	        for (Integer eventId : evt.getEventIds())
+	        if (locationFragment == null)
 	        {
-	        	EventDetail eDetail = dbWrapper.getEvent(eventId);
-	        	if (eDetail != null)
-	        	{
-	        		locationFragment.addEventDetail(dbWrapper.getEvent(eventId));
-	        	}
+		        locationFragment = new NearbyEventsFragment();
+		        
+		        for (Integer eventId : evt.getEventIds())
+		        {
+		        	EventDetail eDetail = dbWrapper.getEvent(eventId);
+		        	if (eDetail != null)
+		        	{
+		        		locationFragment.addEventDetail(dbWrapper.getEvent(eventId));
+		        	}
+		        }
+		        
+		        ft.add(R.id.fragment_content, locationFragment)
+		        .commit();
 	        }
 	        
-	        ft.add(R.id.fragment_content, locationFragment)
-	        .commit();
-        }
-        
-        progressDialog.dismiss();
+	        progressDialog.dismiss();
+    	}
     }
 
 	public void OnFragmentAttached() {

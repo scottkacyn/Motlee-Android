@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
-import android.view.View.MeasureSpec;
 import android.widget.LinearLayout;
 
 public class SetWidthRatioLinearLayout extends LinearLayout {

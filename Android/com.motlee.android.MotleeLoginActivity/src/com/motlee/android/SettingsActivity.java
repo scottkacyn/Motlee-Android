@@ -1,9 +1,6 @@
 package com.motlee.android;
 
-import java.util.ArrayList;
-
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;

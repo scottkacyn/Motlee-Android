@@ -1,12 +1,9 @@
 package com.motlee.android.database;
 
-import java.io.File;
-import java.io.InputStream;
 import java.sql.SQLException;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.util.Log;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
@@ -21,7 +18,6 @@ import com.motlee.android.object.Friend;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.PhotoItem;
-import com.motlee.android.object.Settings;
 import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.UserInfo;
 

@@ -1,8 +1,8 @@
 package com.motlee.android.fragment;
 
+import com.google.android.gms.maps.SupportMapFragment;
 import com.motlee.android.R;
 import com.motlee.android.database.DatabaseWrapper;
-import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.SharePref;
@@ -11,9 +11,7 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class BaseMotleeFragment extends Fragment {
@@ -30,42 +28,45 @@ public class BaseMotleeFragment extends Fragment {
 	
 	protected void setHeaderIcon(String headerIcon)
 	{
-		ImageView icon = (ImageView) mHeaderView.findViewById(R.id.header_icon);
-		if (headerIcon == MY_EVENTS)
+		if (mHeaderView != null)
 		{
-			icon.setVisibility(View.VISIBLE);
-			icon.setPadding(0, 2, 0, 0);
-			icon.setImageResource(R.drawable.icon_button_star);
-		}
-		else if (headerIcon == ALL_EVENTS)
-		{
-			icon.setVisibility(View.VISIBLE);
-			icon.setPadding(0, 0, 0, 0);
-			icon.setImageResource(R.drawable.icon_button_all_events);
-		}
-		else if (headerIcon == NEARBY_EVENTS)
-		{
-			icon.setVisibility(View.VISIBLE);
-			icon.setPadding(0, 4, 0, 2);
-			icon.setImageResource(R.drawable.icon_button_map);
-		}
-		else if (headerIcon == EDIT_EVENTS)
-		{
-			icon.setVisibility(View.VISIBLE);
-			icon.setPadding(0, 0, 0, 0);
-			icon.setImageResource(R.drawable.icon_button_gear);
-		}
-		else if (headerIcon == NOTIFICATIONS)
-		{
-			icon.setVisibility(View.VISIBLE);
-			icon.setPadding(4, 1, 0, 2);
-			icon.setImageResource(R.drawable.icon_button_alert);
-		}
-		else if (headerIcon == SEARCH)
-		{
-			icon.setVisibility(View.VISIBLE);
-			icon.setPadding(0, 0, 0, 0);
-			icon.setImageResource(R.drawable.icon_button_search);
+			ImageView icon = (ImageView) mHeaderView.findViewById(R.id.header_icon);
+			if (headerIcon == MY_EVENTS)
+			{
+				icon.setVisibility(View.VISIBLE);
+				icon.setPadding(0, 2, 0, 0);
+				icon.setImageResource(R.drawable.icon_button_star);
+			}
+			else if (headerIcon == ALL_EVENTS)
+			{
+				icon.setVisibility(View.VISIBLE);
+				icon.setPadding(0, 0, 0, 0);
+				icon.setImageResource(R.drawable.icon_button_all_events);
+			}
+			else if (headerIcon == NEARBY_EVENTS)
+			{
+				icon.setVisibility(View.VISIBLE);
+				icon.setPadding(0, 4, 0, 2);
+				icon.setImageResource(R.drawable.icon_button_map);
+			}
+			else if (headerIcon == EDIT_EVENTS)
+			{
+				icon.setVisibility(View.VISIBLE);
+				icon.setPadding(0, 0, 0, 0);
+				icon.setImageResource(R.drawable.icon_button_gear);
+			}
+			else if (headerIcon == NOTIFICATIONS)
+			{
+				icon.setVisibility(View.VISIBLE);
+				icon.setPadding(4, 1, 0, 2);
+				icon.setImageResource(R.drawable.icon_button_alert);
+			}
+			else if (headerIcon == SEARCH)
+			{
+				icon.setVisibility(View.VISIBLE);
+				icon.setPadding(0, 0, 0, 0);
+				icon.setImageResource(R.drawable.icon_button_search);
+			}
 		}
 	}
 	
@@ -145,6 +146,21 @@ public class BaseMotleeFragment extends Fragment {
 		headerRightButton.setTag(buttonText);
 		
 		TextView headerRightButtonText = (TextView) mHeaderView.findViewById(R.id.header_right_text);
+		headerRightButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		headerRightButtonText.setText(buttonText);
+	}
+	
+	protected void showLeftHeaderButton(String buttonText)
+	{
+		View headerRightButtonlayout = mHeaderView.findViewById(R.id.header_left_layout_button);
+		headerRightButtonlayout.setVisibility(View.VISIBLE);
+		
+		mHeaderView.findViewById(R.id.header_create_event_button).setVisibility(View.GONE);
+		
+		View headerRightButton = mHeaderView.findViewById(R.id.header_left_button);
+		headerRightButton.setTag(buttonText);
+		
+		TextView headerRightButtonText = (TextView) mHeaderView.findViewById(R.id.header_left_text);
 		headerRightButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 		headerRightButtonText.setText(buttonText);
 	}

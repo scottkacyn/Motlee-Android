@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.SharePref;
 
 import android.content.Context;
 import android.database.DataSetObserver;
@@ -39,10 +40,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
-import android.view.View.MeasureSpec;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
@@ -89,7 +88,7 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 	
 	private void setHeaderWidth() {
 		
-		int imageHeight = GlobalVariables.getInstance().getMaxEventListImageHeight();
+		int imageHeight = SharePref.getIntPref(getContext(), SharePref.MAX_EVENT_LIST_PHOTO_SIZE);
 		
 		double scale = ((double) imageHeight) / 219.0;
 		
@@ -175,7 +174,7 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 	private void addAndMeasureChild(final View child, int viewPos) {
 		LayoutParams params = child.getLayoutParams();
 		if(params == null) {
-			params = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+			params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		}
 
 		addViewInLayout(child, viewPos, params, true);

@@ -11,42 +11,24 @@ import com.motlee.android.object.DateStringFormatter;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
-import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
-import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
-import com.motlee.android.view.CustomAdapterView;
-import com.motlee.android.view.CustomAdapterView.OnItemLongClickListener;
-import com.motlee.android.view.EcoGallery;
 import com.motlee.android.view.HorizontalListViewDisallowIntercept;
-import com.motlee.android.view.Panel;
-import com.devsmart.android.ui.HorizontalListView;
-
-import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.GradientDrawable.Orientation;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.SlidingDrawer;
 import android.widget.TextView;
 
 public class EventListAdapter extends ArrayAdapter<EventDetail> {
@@ -96,7 +78,7 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
                 
                 dbWrapper = new DatabaseWrapper(context.getApplicationContext());
                 
-                if (this.data.size() < 4)
+                if (this.data.size() < 3)
                 {
                  this.data.add(SPACE);
                 }
@@ -147,7 +129,7 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
         public void addAll(ArrayList<EventDetail> eventIds)
         {
          this.data.addAll(eventIds);
-         if (eventIds.size() < 4)
+         if (eventIds.size() < 3)
          {
          this.data.add(SPACE);
          }
@@ -178,7 +160,8 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				holder.event_footer_background = (LinearLayout) convertView.findViewById(R.id.event_footer);
 				holder.event_header_button = (LinearLayout) convertView.findViewById(R.id.event_header);
 				holder.event_header_name = (TextView) convertView.findViewById(R.id.event_header_name);
-				holder.event_header_time = (TextView) convertView.findViewById(R.id.event_header_time);
+				//holder.event_header_time = (TextView) convertView.findViewById(R.id.event_header_time);
+				holder.event_list_map_icon = (ImageView) convertView.findViewById(R.id.event_list_map_icon);
 				holder.list_view = (HorizontalListViewDisallowIntercept) convertView.findViewById(R.id.listview);
 				holder.event_footer_owner = (TextView) convertView.findViewById(R.id.event_footer_owner);
 				holder.event_footer_location = (TextView) convertView.findViewById(R.id.event_footer_location);
@@ -208,7 +191,15 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
                 
          if (this.data.get(position) == SPACE)
          {
-	         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(GlobalVariables.DISPLAY_WIDTH, GlobalVariables.DISPLAY_HEIGHT);
+        	 LinearLayout.LayoutParams params;
+        	 if (data.size() < 2)
+        	 {
+        		 params = new LinearLayout.LayoutParams(GlobalVariables.DISPLAY_WIDTH, ((int) GlobalVariables.DISPLAY_HEIGHT));
+        	 }
+        	 else
+        	 {
+        		 params = new LinearLayout.LayoutParams(GlobalVariables.DISPLAY_WIDTH, ((int) GlobalVariables.DISPLAY_HEIGHT /2));
+        	 }
 	        
 	         holder.blank_space.setLayoutParams(params);
 	        
@@ -278,8 +269,8 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				holder.event_header_name.setText(item.getEventName());
 				holder.event_header_name.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 				
-				holder.event_header_time.setText(dateString);
-				holder.event_header_time.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+				//holder.event_header_time.setText(dateString);
+				//holder.event_header_time.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 				
 				//String attendeeText = "";
 				if (item.getAttendeeCount() > 1)
@@ -329,11 +320,27 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				
 				if (location != null)
 				{
-					holder.event_footer_location.setText(location.name);
+					String locationName = location.name;
+					if (locationName == null)
+					{
+						holder.event_footer_location.setText(" ");
+						holder.event_list_map_icon.setVisibility(View.GONE);
+					}
+					else if (!locationName.equals(""))
+					{
+						holder.event_footer_location.setText(location.name);
+						holder.event_list_map_icon.setVisibility(View.VISIBLE);
+					}
+					else
+					{
+						holder.event_footer_location.setText(" ");
+						holder.event_list_map_icon.setVisibility(View.GONE);
+					}
 				}
 				else
 				{
-					holder.event_footer_location.setText("No Location");
+					holder.event_footer_location.setText(" ");
+					holder.event_list_map_icon.setVisibility(View.GONE);
 				}
 				
 				holder.event_footer_location.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
@@ -362,7 +369,7 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				
 				holder.list_view.setEventId(item.getEventID());
 				holder.list_view.setIsAttending(isAttending);
-				holder.drawerHandle.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, GlobalVariables.getInstance().getMaxEventListImageHeight()));
+				holder.drawerHandle.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, SharePref.getIntPref(getContext(), SharePref.MAX_EVENT_LIST_PHOTO_SIZE)));
 				holder.list_view.setHandleImage(holder.drawerHandle);
 				holder.list_view.reset();
 				
@@ -381,7 +388,8 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
         private static class ViewHolder {
             public LinearLayout event_header_button;
             public TextView event_header_name;
-            public TextView event_header_time;
+            //public TextView event_header_time;
+            public ImageView event_list_map_icon;
             public TextView event_footer_owner;
             public TextView event_footer_location;
             public HorizontalListViewDisallowIntercept list_view;

@@ -1,33 +1,17 @@
 package com.motlee.android;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-
 import com.droid4you.util.cropimage.CropImage;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.TakePhotoFragment;
-import com.motlee.android.object.EventDetail;
-import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.SharePref;
-import com.motlee.android.object.event.UpdatedEventDetailEvent;
-import com.motlee.android.object.event.UpdatedEventDetailListener;
-
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;

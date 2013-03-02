@@ -1,13 +1,9 @@
 package com.motlee.android;
 
-import java.util.ArrayList;
-
 import com.flurry.android.FlurryAgent;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.SharePref;
 
-import greendroid.widget.PagedAdapter;
-import greendroid.widget.PagedView;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -16,11 +12,7 @@ import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 public class FirstUseActivity extends Activity {
 
@@ -44,6 +36,8 @@ public class FirstUseActivity extends Activity {
 		super.onStart();
 		
 		FlurryAgent.onStartSession(this, getResources().getString(R.string.flurry_key));
+		
+		FlurryAgent.setCaptureUncaughtExceptions(false);
 	}
 	
 	@Override

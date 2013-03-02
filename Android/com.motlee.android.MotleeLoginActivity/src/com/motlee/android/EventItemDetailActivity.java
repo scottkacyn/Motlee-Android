@@ -1,9 +1,7 @@
 package com.motlee.android;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,58 +9,36 @@ import java.util.Map;
 
 import com.flurry.android.FlurryAgent;
 import com.motlee.android.adapter.PhotoDetailPagedViewAdapter;
-import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.EventItemType;
-import com.motlee.android.fragment.EventDetailFragment;
 import com.motlee.android.fragment.EventItemDetailFragment;
 import com.motlee.android.object.Comment;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventServiceBuffer;
 
-import com.motlee.android.object.Attendee;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.PhotoDetail;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
-import com.motlee.android.object.StoryItem;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.DeletePhotoListener;
 import com.motlee.android.object.event.UpdatedCommentEvent;
 import com.motlee.android.object.event.UpdatedCommentListener;
-import com.motlee.android.object.event.UpdatedLikeEvent;
-import com.motlee.android.object.event.UpdatedLikeListener;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
 import com.motlee.android.service.DownloadImage;
-import com.motlee.android.service.RubyService;
-import com.motlee.android.view.ProgressDialogWithTimeout;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.text.InputType;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnFocusChangeListener;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 public class EventItemDetailActivity extends BaseMotleeActivity implements UpdatedPhotoListener, DeletePhotoListener, UpdatedCommentListener {

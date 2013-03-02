@@ -9,19 +9,14 @@ import org.json.JSONObject;
 
 import com.facebook.HttpMethod;
 import com.facebook.Request;
-import com.facebook.Request.GraphUserListCallback;
 import com.facebook.Response;
 import com.facebook.Request.Callback;
 import com.facebook.Session;
-import com.facebook.model.GraphUser;
-import com.motlee.android.R;
-import com.motlee.android.adapter.SearchPeopleAdapter;
 import com.motlee.android.database.DatabaseWrapper;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 
 public class GetFriendsFromFacebook extends AsyncTask<DatabaseWrapper, ArrayList<Long>, Boolean> {
 

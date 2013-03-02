@@ -11,7 +11,6 @@ import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
-import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.WatermarkCache;
 
 import android.content.Context;

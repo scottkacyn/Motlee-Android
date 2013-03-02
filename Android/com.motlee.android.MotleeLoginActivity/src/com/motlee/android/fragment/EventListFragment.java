@@ -14,7 +14,6 @@ import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventListParams;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.SharePref;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 
@@ -48,6 +47,7 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 	
 	private boolean showBackButton = false;
 	private boolean hideProgressBar = false;
+	private boolean hideNoEventText = false;
 	
 	private View progressBar;
 	
@@ -132,16 +132,23 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 		return view;
 	}
 	
+	private boolean adapterHasNoEvents()
+	{
+		return (mEventListAdapter == null || (mEventListAdapter.getCount() == 1 && mEventListAdapter.getItem(0) == null));
+	}
+	
 	private void setUpNoEventHeader()
 	{
 		noEventHeader = getActivity().getLayoutInflater().inflate(R.layout.event_list_no_event_text, null);
 		
 		((TextView) noEventHeader.findViewById(R.id.event_list_no_event_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 		
-		if (mEventListAdapter == null || (mEventListAdapter.getCount() == 1 && mEventListAdapter.getItem(0) == null))
+		ListView listView = (ListView) view.findViewById(android.R.id.list);
+		listView.addHeaderView(noEventHeader);
+		
+		if (adapterHasNoEvents() || progressBar != null || hideNoEventText)
 		{
-			ListView listView = (ListView) view.findViewById(android.R.id.list);
-			listView.addHeaderView(noEventHeader);
+			noEventHeader.findViewById(R.id.event_list_no_event_text).setVisibility(View.GONE);
 		}
 	}
 
@@ -188,9 +195,13 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 				//Log.d("EventListFragment", "headerCount: " + listView.getHeaderViewsCount());
 				if (noEventHeader != null)
 				{
-					if (mEventListAdapter.getCount() > 0)
+					if (!adapterHasNoEvents())
 					{
-						listView.removeHeaderView(noEventHeader);
+						noEventHeader.findViewById(R.id.event_list_no_event_text).setVisibility(View.GONE);
+					}
+					else
+					{
+						noEventHeader.findViewById(R.id.event_list_no_event_text).setVisibility(View.VISIBLE);
 					}
 				}
 				if (progressBar != null)
@@ -201,6 +212,11 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 		}
 		
 		hideProgressBar = true;
+	}
+	
+	public void hideNoEventHeader()
+	{
+		hideNoEventText = true;
 	}
 	
 	public void showUpcomingHeader(ArrayList<Integer> upcomingEvents)

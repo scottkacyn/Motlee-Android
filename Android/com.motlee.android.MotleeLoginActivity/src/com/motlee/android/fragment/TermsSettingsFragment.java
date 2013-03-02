@@ -6,10 +6,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
-
 import com.motlee.android.R;
-import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 
 public class TermsSettingsFragment extends BaseMotleeFragment {
 

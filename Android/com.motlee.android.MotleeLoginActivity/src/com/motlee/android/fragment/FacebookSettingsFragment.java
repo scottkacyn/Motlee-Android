@@ -1,10 +1,6 @@
 package com.motlee.android.fragment;
 
-import java.sql.SQLException;
-
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,13 +11,9 @@ import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
 
 import com.motlee.android.R;
-import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.layouts.StretchedBackgroundTableLayout;
 import com.motlee.android.object.DrawableCache;
-import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Settings;
-import com.motlee.android.object.SharePref;
-import com.motlee.android.object.UserInfo;
 
 public class FacebookSettingsFragment extends BaseMotleeFragment {
 	
@@ -29,8 +21,6 @@ public class FacebookSettingsFragment extends BaseMotleeFragment {
 	private View view;
 	
 	private StretchedBackgroundTableLayout settingsLayout;
-	
-	private DatabaseHelper helper;
 	
 	private Settings settings;
 	
@@ -46,8 +36,6 @@ public class FacebookSettingsFragment extends BaseMotleeFragment {
 		
 		settingsLayout = (StretchedBackgroundTableLayout) view.findViewById(R.id.settings_table_layout);
 		settingsLayout.setBackgroundDrawable(getResources().getDrawable( R.drawable.label_button_background));
-		
-		helper = DatabaseHelper.getInstance(this.getActivity().getApplicationContext());
 		
 		setNavigationButtons();
 		
@@ -67,38 +55,6 @@ public class FacebookSettingsFragment extends BaseMotleeFragment {
 		
 		setSettingToggleLabel(getActivity().getResources().getString(R.string.fb_on_create_settings_message), settings.fb_on_event_create, true);
 		//setSettingToggleLabel(getActivity().getResources().getString(R.string.fb_on_join_settings_message), settings.fb_on_event_invite, true);
-	}
-
-	private void setLogoutButton() {
-		
-		view.findViewById(R.id.auth_button).setVisibility(View.VISIBLE);
-		
-		View labelButton = this.inflater.inflate(R.layout.facebook_logout, null);
-		
-		settingsLayout.setShrinkAllColumns(true);
-		
-		UserInfo userInfo = null;
-		try {
-			userInfo = helper.getUserDao().queryForId(SharePref.getIntPref(getActivity().getApplicationContext(), SharePref.USER_ID));
-		} catch (SQLException e) {
-			Log.e("DatabaseHelper", "Failed to queryForId for user", e);
-		}
-		
-		ImageView imageView = (ImageView) labelButton.findViewById(R.id.facebook_profile_pic);
-		String facebookURL = GlobalVariables.getInstance().getFacebookPictureUrl(userInfo.uid);
-		
-		//GlobalVariables.getInstance().downloadImage(imageView, facebookURL);
-		
-		TextView textView = (TextView) labelButton.findViewById(R.id.facebook_user_name);
-		textView.setText(userInfo.name);
-		
-		labelButton.findViewById(R.id.facebook_content).setPadding(0, 10, 0, 10);
-		
-		TableRow tr = new TableRow(getActivity());
-		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		tr.setLayoutParams(lp);
-		tr.addView(labelButton);
-		settingsLayout.addView(tr);
 	}
 	
 	private void setSettingToggleLabel(String description, boolean defaultValue, boolean isLastLabel)

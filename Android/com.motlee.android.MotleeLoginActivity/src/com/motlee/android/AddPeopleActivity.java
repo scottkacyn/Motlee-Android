@@ -1,6 +1,5 @@
 package com.motlee.android;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.json.JSONException;
@@ -12,23 +11,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.facebook.FacebookException;
-import com.facebook.Session;
-import com.facebook.widget.WebDialog;
-import com.facebook.widget.WebDialog.OnCompleteListener;
 import com.flurry.android.FlurryAgent;
-import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
-import com.motlee.android.fragment.CreateEventFragment;
-import com.motlee.android.fragment.SearchAllFragment;
 import com.motlee.android.fragment.SearchPeopleFragment;
-import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
-import com.motlee.android.object.GlobalVariables;
-import com.motlee.android.object.SharePref;
 import com.motlee.android.object.TempAttendee;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;

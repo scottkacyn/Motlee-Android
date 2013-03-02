@@ -1,6 +1,5 @@
 package com.motlee.android.object.event;
 
-import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.Set;
 
@@ -8,6 +7,7 @@ import java.util.Set;
 public class UpdatedEventDetailEvent extends EventObject {
 
 	Set<Integer> mEventIds;
+	boolean isNearby = false;
 	
 	public UpdatedEventDetailEvent(Object source, Set<Integer> set) {
 		super(source);
@@ -15,8 +15,25 @@ public class UpdatedEventDetailEvent extends EventObject {
 		mEventIds = set;
 	}
 
+	public UpdatedEventDetailEvent(Object source, Set<Integer> set, boolean isNearby) {
+		super(source);
+		
+		mEventIds = set;
+		this.isNearby = isNearby;
+	}
+	
 	public Set<Integer> getEventIds()
 	{
 		return mEventIds;
+	}
+	
+	public void setIsNearby()
+	{
+		isNearby = true;
+	}
+	
+	public boolean getIsNearby()
+	{
+		return isNearby;
 	}
 }

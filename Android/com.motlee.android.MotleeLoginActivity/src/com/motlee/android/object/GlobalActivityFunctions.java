@@ -2,7 +2,6 @@ package com.motlee.android.object;
 
 import com.motlee.android.EventItemDetailActivity;
 import com.motlee.android.R;
-import com.motlee.android.SearchActivity;
 import com.motlee.android.UserProfilePageActivity;
 import com.slidingmenu.lib.SlidingMenu;
 
