@@ -10,6 +10,12 @@
         android:id="@+id/profile_page_top" 
         android:layout_alignParentTop="true"/>
     
+    <View
+        android:id="@+id/blank_space"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@android:color/transparent" />
+    
 	<ListView
         android:id="@+id/user_profile_list_view"
         android:layout_below="@id/profile_page_top"
@@ -18,7 +24,6 @@
         android:clipToPadding="false"
         android:divider="@null"
         android:overScrollFooter="@null"
-        android:paddingTop="4dp"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
         android:cacheColorHint="@android:color/transparent"

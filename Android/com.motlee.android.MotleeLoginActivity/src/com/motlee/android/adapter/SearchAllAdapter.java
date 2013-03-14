@@ -113,7 +113,7 @@ public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
     	}
     	else
     	{
-    		holder.category_title.setText("Events");
+    		holder.category_title.setText("Threads");
     	}
     	
     	return convertView;
@@ -203,7 +203,7 @@ public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
 	            holder.search_event_name.setText(event.getEventName());
 	            holder.search_event_name.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 	            
-	            holder.search_attendee_count.setText(event.getAttendeeCount() + " Attendees");
+	            holder.search_attendee_count.setText(event.getAttendeeCount() + " People");
 	            holder.search_attendee_count.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
             }
 

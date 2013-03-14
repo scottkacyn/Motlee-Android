@@ -5,9 +5,9 @@
     android:background="@android:color/transparent"
     android:orientation="vertical" >
     
-	<include layout="@layout/comment_text_bar"
+	<!-- <include layout="@layout/comment_text_bar"
 	    android:id="@+id/comment_text_bar" 
-	    android:layout_alignParentBottom="true"/>
+	    android:layout_alignParentBottom="true"/> -->
      
     <greendroid.widget.PagedView
         android:id="@+id/comment_paged_view"

@@ -1,0 +1,34 @@
+package com.motlee.android;
+
+import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.DrawableWithHeight;
+import com.motlee.android.object.SharePref;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
+
+public class AddCommentActivity extends Activity {
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.comment_add);
+		
+		setUpBottomBar();
+	}
+	
+	private void setUpBottomBar()
+	{
+        DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.photo_detail_rect, SharePref.getIntPref(this, SharePref.DISPLAY_WIDTH));
+        
+        RelativeLayout commentBar = (RelativeLayout) findViewById(R.id.comment_cancel_send_bar);
+        
+        commentBar.setBackgroundDrawable(drawable.getDrawable());
+        
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(drawable.getWidth(), drawable.getHeight());
+	}
+
+}

@@ -126,8 +126,6 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
     	super.onStart();
     	
     	FlurryAgent.onStartSession(this, getResources().getString(R.string.flurry_key));
-    	
-    	FlurryAgent.setCaptureUncaughtExceptions(false);
     }
     
     @Override
@@ -220,6 +218,12 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
 	{
 		menu.toggle();
 		MenuFunctions.showAllEvents(view, this);
+	}
+	
+	final public void onClickShowMyProfile(View view)
+	{
+		menu.toggle();
+		MenuFunctions.showMyProfile(view, this);
 	}
 	
 	final public void onClickShowMyEvents(View view)

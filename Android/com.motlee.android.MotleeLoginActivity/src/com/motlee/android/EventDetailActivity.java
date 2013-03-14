@@ -57,10 +57,14 @@ import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -201,13 +205,13 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
 		if (isOwner) 
 		{
-			menu.add(0, EDIT, 0, "Edit Event");
+			menu.add(0, EDIT, 0, "Edit Thread");
 			menu.add(0, SHARE, 1, "Share on FB");
-			menu.add(0, DELETE, 2, "Delete Event");
+			menu.add(0, DELETE, 2, "Delete Thread");
 		} 
 		else if (isApartOfEvent)
 		{
-			menu.add(0, LEAVE, 0, "Leave Event");
+			menu.add(0, LEAVE, 0, "Leave Thread");
 			menu.add(0, SHARE, 1, "Share on FB");
 		}
 	
@@ -247,7 +251,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
     private void shareEvent()
     {
 		AlertDialog.Builder builder = new AlertDialog.Builder(EventDetailActivity.this);
-		builder.setMessage("Share this event?")
+		builder.setMessage("Share this thread?")
 		.setCancelable(true)
 		.setPositiveButton("Facebook", new DialogInterface.OnClickListener() {
 			
@@ -309,7 +313,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	private void leaveEvent()
 	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(EventDetailActivity.this);
-		builder.setMessage("Leave This Event?")
+		builder.setMessage("Leave This Thread?")
 		.setCancelable(true)
 		.setPositiveButton("Leave", new DialogInterface.OnClickListener() {
 			
@@ -333,7 +337,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 		
 		alertDialogBuilder
-		.setMessage("Are you sure you want to delete this awesome event?")
+		.setMessage("Are you sure you want to delete this awesome thread?")
 		.setCancelable(true)
 		.setPositiveButton("Delete",new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog,int id) {
@@ -342,7 +346,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 				
 				if (eDetail != null)
 				{
-					progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Deleting Event");
+					progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Deleting Thread");
 					
 					EventServiceBuffer.setEventDetailListener(eventListener);
 					
@@ -377,14 +381,16 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		{			
 			//DatabaseWrapper dbWrapper = new DatabaseWrapper(context.getApplicationContext());
 			
-			if (dbWrapper.isAttending(eDetail.getEventID()))
+			showRightHeaderButton();
+			
+			/*if (dbWrapper.isAttending(eDetail.getEventID()))
 			{
 				showRightHeaderButton();
 			}
 			else
 			{
 				findViewById(R.id.header_right_layout_button).setVisibility(View.GONE);
-			}
+			}*/
 		}
 	}
 	
@@ -395,13 +401,26 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
 		findViewById(R.id.header_create_event_button).setVisibility(View.GONE);
 		
-		View headerRightButton = findViewById(R.id.header_right_button);
-		headerRightButton.setTag("Options");
-		headerRightButton.setOnClickListener(showMenu);		
-		
-		TextView headerRightButtonText = (TextView) findViewById(R.id.header_right_text);
-		headerRightButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		headerRightButtonText.setText("Options");
+		if (dbWrapper.isAttending(mEventID))
+		{
+			View headerRightButton = findViewById(R.id.header_right_button);
+			headerRightButton.setTag("Options");
+			headerRightButton.setOnClickListener(showMenu);		
+			
+			TextView headerRightButtonText = (TextView) findViewById(R.id.header_right_text);
+			headerRightButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+			headerRightButtonText.setText("Options");
+		}
+		else
+		{
+			View headerRightButton = findViewById(R.id.header_right_button);
+			headerRightButton.setTag("Join");
+			headerRightButton.setOnClickListener(joinMenuListener);		
+			
+			TextView headerRightButtonText = (TextView) findViewById(R.id.header_right_text);
+			headerRightButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+			headerRightButtonText.setText("Join");
+		}
 	}
 	
 	private OnClickListener showMenu = new OnClickListener(){
@@ -568,9 +587,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 			}
 			
 			AlertDialog.Builder builder = new AlertDialog.Builder(EventDetailActivity.this);
-			builder.setMessage("Join This Event?")
+			builder.setMessage("Join This Thread?")
 			.setCancelable(true)
-			.setView(checkBox)
 			.setPositiveButton("Join!", new DialogInterface.OnClickListener() {
 				
 				public void onClick(DialogInterface dialog, int which) {
@@ -593,11 +611,11 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	
 	public void joinAction()
 	{
-		CheckBox check = (CheckBox) checkBox.findViewById(R.id.checkbox);
+		//CheckBox check = (CheckBox) checkBox.findViewById(R.id.checkbox);
 		
 		EventServiceBuffer.setAttendeeListener(attendeeListener);
 
-		progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Joining Event");
+		progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Joining Thread");
 		
 		ArrayList<Long> attendees = new ArrayList<Long>();
 		
@@ -605,7 +623,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
 		attendees.add(user.uid);
 		
-		EventServiceBuffer.joinEvent(eDetail.getEventID(), check.isChecked());
+		EventServiceBuffer.joinEvent(eDetail.getEventID(), false);
 	}
 	
 	public DialogInterface.OnClickListener joinListener = new DialogInterface.OnClickListener() {
@@ -809,7 +827,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		else if (tag.equals(BaseDetailActivity.LEAVE))
 		{
 			AlertDialog.Builder builder = new AlertDialog.Builder(EventDetailActivity.this);
-			builder.setMessage("Leave This Event?")
+			builder.setMessage("Leave This Thread?")
 			.setCancelable(true)
 			.setPositiveButton("Leave", new DialogInterface.OnClickListener() {
 				
@@ -833,7 +851,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 			
 		EventServiceBuffer.setAttendeeListener(leaveEvent);
 
-		progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Leaving this event");
+		progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Leaving this thread");
 		
 		ArrayList<Integer> attendees = new ArrayList<Integer>();
 		
@@ -862,7 +880,10 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 			
 			dbWrapper.updateAttendees(eDetail.getEventID(), attendees);
 			
-			findViewById(R.id.header_right_layout_button).setVisibility(View.GONE);
+			
+			showRightHeaderButton();
+			
+			//findViewById(R.id.header_right_layout_button).setVisibility(View.GONE);
 			
 			ImageView icon = (ImageView) findViewById(R.id.header_icon);
 			icon.setVisibility(View.VISIBLE);
@@ -924,6 +945,10 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		eventHeader.findViewById(R.id.event_detail_friends).setEnabled(true);
 		eventHeader.findViewById(R.id.event_detail_map).setEnabled(false);
 		
+		checkIfGooglePlayIsInstalled();
+		
+		
+		
 		showFragment(locationFragment);
 		
 		/*locationFragment.addEventDetail(eDetail);
@@ -969,6 +994,76 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		ft.commit();*/
 	}
 	
+	private void checkIfGooglePlayIsInstalled() {
+		
+		// See if google play services are installed.
+		boolean services = false;
+		try
+		{
+			ApplicationInfo info = getPackageManager().getApplicationInfo("com.google.android.gms", 0);
+			services = true;
+		}
+		catch(PackageManager.NameNotFoundException e)
+		{
+			services = false;
+		}
+
+		if (services)
+		{
+			return;
+		}
+		else
+		{
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(EventDetailActivity.this);
+
+			// set dialog message
+			alertDialogBuilder
+					.setTitle("Google Play Services")
+					.setMessage("The map requires Google Play Services to be installed. \n \nAfter installing, come back to the app to see the map!")
+					.setCancelable(true)
+					.setPositiveButton("Install", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,int id) {
+							dialog.dismiss();
+							// Try the new HTTP method (I assume that is the official way now given that google uses it).
+							try
+							{
+								Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=com.google.android.gms"));
+								intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+								intent.setPackage("com.android.vending");
+								startActivity(intent);
+							}
+							catch (ActivityNotFoundException e)
+							{
+								// Ok that didn't work, try the market method.
+								try
+								{
+									Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.google.android.gms"));
+									intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+									intent.setPackage("com.android.vending");
+									startActivity(intent);
+								}
+								catch (ActivityNotFoundException f)
+								{
+									// Ok, weird. Maybe they don't have any market app. Just show the website.
+
+									Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=com.google.android.gms"));
+									intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+									startActivity(intent);
+								}
+							}
+						}
+					})
+					.setNegativeButton("No",new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,int id) {
+							dialog.cancel();
+						}
+					})
+					.create()
+					.show();
+		}
+		
+	}
+
 	public void showPhotos(View view)
 	{
 		removeMessageText();
@@ -1108,7 +1203,18 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	{
 		EventServiceBuffer.removeEventDetailListener(this);
 		
+		
+		
 		eDetail = dbWrapper.getEvent(mEventID);
+		
+		if (progressDialog != null && progressDialog.isShowing())
+		{
+			progressDialog.dismiss();
+			
+			showRightHeaderButton();
+			
+			updateMenuButtons();
+		}
 		
 		if (eDetail == null)
 		{
@@ -1169,6 +1275,22 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		}
 	}
 	
+	private void updateMenuButtons()
+	{
+        Attendee attendee = new Attendee(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
+        
+        if (dbWrapper.getAttendees(mEventID).contains(attendee))
+        {
+        	setActionForRightMenu(takePhotoListener);
+            showMenuButtons(BaseMotleeActivity.TAKE_PICTURE);
+        }
+        else
+        {
+        	//setActionForRightMenu(joinMenuListener);
+        	showMenuButtons(BaseMotleeActivity.NOT_APART_OF);
+        }
+	}
+	
 	public void showEvent()
 	{
         eDetail = dbWrapper.getEvent(mEventID); 
@@ -1190,18 +1312,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	        
 	        setUpFragments();
 	        
-	        Attendee attendee = new Attendee(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
-	        
-	        if (dbWrapper.getAttendees(mEventID).contains(attendee))
-	        {
-	        	setActionForRightMenu(takePhotoListener);
-	            showMenuButtons(BaseMotleeActivity.TAKE_PICTURE);
-	        }
-	        else
-	        {
-	        	//setActionForRightMenu(joinMenuListener);
-	        	showMenuButtons(BaseMotleeActivity.NOT_APART_OF);
-	        }
+	        updateMenuButtons();
 	        
 	    	if (mNewPhoto != null)
 	    	{
@@ -1352,7 +1463,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
 	}
 	
-	public void onClickOpenComment(View view)
+	/*public void onClickOpenComment(View view)
 	{
 		EventItem item = (EventItem) view.getTag();
 		
@@ -1361,7 +1472,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		openComment.putExtra(CommentActivity.EVENT_ID, mEventID);
 		
 		startActivity(openComment);
-	}
+	}*/
 	
 	@Override
 	public void showPictureDetail(View view)

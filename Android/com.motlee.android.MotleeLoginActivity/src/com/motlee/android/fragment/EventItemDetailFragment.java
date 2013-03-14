@@ -54,7 +54,7 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 	private EventItem eventItem;
 	private ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>();
 	
-	private EditText editText;
+	//private EditText editText;
 	
 	private boolean isPhotoDetail = false;
 	private boolean isStoryDetail = false;
@@ -140,16 +140,16 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		{
 			if (pageTitle.equals(eDetail.getEventName()))
 			{
-				setHeaderIcon(eDetail, getActivity());
+				//setHeaderIcon(eDetail, getActivity());
 			}
 		}
 
 		
-		setPageHeader(this.pageTitle);
-		showLeftHeaderButton();
-		this.showRightHeaderButton("Options", showMenu);
+		//setPageHeader(this.pageTitle);
+		//showLeftHeaderButton();
+		//this.showRightHeaderButton("Options", showMenu);
 		
-		setEditText();
+		//setEditText();
 		
 		return view;
 	}
@@ -364,7 +364,7 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		//headerView.findViewById(R.id.photo_detail_comment_bar).setVisibility(View.GONE);
 	}*/
 	
-	public String getCommentText()
+	/*public String getCommentText()
 	{
 		return editText.getText().toString();
 	}
@@ -383,7 +383,7 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		editText.setOnEditorActionListener(editorActionListener);
 		editText.setOnFocusChangeListener(focusChangeListener);
 		
-	}
+	}*/
 	
 	private OnFocusChangeListener focusChangeListener = new OnFocusChangeListener(){
 		// if we have focus, change color for input text
@@ -395,7 +395,7 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
         }
 	};
 	
-	private OnEditorActionListener editorActionListener = new OnEditorActionListener(){
+	/*private OnEditorActionListener editorActionListener = new OnEditorActionListener(){
 		
 		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 			
@@ -425,7 +425,7 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
         in.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 		
         editText.setText("");
-	}
+	}*/
 	public void setUpLikeInfo()
 	{
 		TextView text = (TextView) headerView.findViewById(R.id.photo_detail_like_button_text);

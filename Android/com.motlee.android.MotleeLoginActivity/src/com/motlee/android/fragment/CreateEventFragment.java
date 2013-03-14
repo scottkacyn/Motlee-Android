@@ -51,7 +51,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 	private View view;
 	private LayoutInflater inflater;
 	private EventDetail mEventDetail = null;
-	private String pageTitle = "Create Event";
+	private String pageTitle = "Create Thread";
 	
 	private ArrayList<UserInfo> attendeeMap = new ArrayList<UserInfo>();
 	
@@ -514,7 +514,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		//editText.setTextColor(R.color.label_color);
 		if (mEventDetail == null)
 		{
-			editText.setHint("Event Name");
+			editText.setHint("Thread Name");
 		}
 		else
 		{

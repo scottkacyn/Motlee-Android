@@ -3,6 +3,7 @@ package com.motlee.android.fragment;
 import java.util.ArrayList;
 import com.motlee.android.R;
 import com.motlee.android.adapter.EventDetailGridAdapter;
+import com.motlee.android.adapter.EventListAdapter;
 import com.motlee.android.adapter.PeopleListAdapter;
 import com.motlee.android.adapter.UserProfileAdapter;
 import com.motlee.android.database.DatabaseWrapper;
@@ -35,7 +36,7 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 	private ListView userInfoList;
 	
 	private EventDetailGridAdapter photoGridAdapter;
-	private UserProfileAdapter eventAdapter;
+	private EventListAdapter eventAdapter;
 	private PeopleListAdapter friendsAdapter;
 	
 	private LinearLayout profileEvents;
@@ -43,14 +44,6 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 	private LinearLayout profileFriends;
     
 	private Long facebookID;
-	
-    private String pictureURL;
-	
-    private String birthDate;
-    
-    private String gender;
-    
-    private String location;
     
     private UserInfo user;
     
@@ -100,7 +93,7 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 		headerView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, drawable.getHeight()));
 		
 		photoGridAdapter = new EventDetailGridAdapter(getActivity(), R.layout.event_detail_page_grid, new ArrayList<GridPictures>());
-		eventAdapter = new UserProfileAdapter(getActivity(), R.layout.search_event_item, events);
+		eventAdapter = new EventListAdapter(getActivity(), R.layout.event_list_item, events);
 		friendsAdapter = new PeopleListAdapter(getActivity(), R.layout.people_list_item, friends);
 		
 		profilePictures = (LinearLayout) headerView.findViewById(R.id.profile_photos);
@@ -173,7 +166,7 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 	
 	private void setPageLayout()
 	{
-		setPictureURL();
+		//setPictureURL();
 		
 		setProfilePicture();
 		
@@ -187,9 +180,9 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 			{
 				setGridAdapter();
 				
-				headerView.findViewById(R.id.profile_number_glow).setVisibility(View.VISIBLE);
+				headerView.findViewById(R.id.profile_number_glow).setVisibility(View.GONE);
 				
-				headerView.findViewById(R.id.profile_events_glow).setVisibility(View.GONE);
+				headerView.findViewById(R.id.profile_events_glow).setVisibility(View.VISIBLE);
 				
 				headerView.findViewById(R.id.profile_friends_glow).setVisibility(View.GONE);
 			}
@@ -197,6 +190,8 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 			{
 				notMotleeHeader = inflater.inflate(R.layout.user_profile_not_motlee, null);
 				((TextView) notMotleeHeader.findViewById(R.id.event_detail_not_motlee_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+				
+				eventAdapter = new EventListAdapter(getActivity(), R.layout.event_list_item, new ArrayList<EventDetail>());
 				
 				if (userInfoList.getHeaderViewsCount() == 0)
 				{
@@ -219,6 +214,8 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 			notFriendHeader = inflater.inflate(R.layout.user_profile_not_friend, null);
 			((TextView) notFriendHeader.findViewById(R.id.event_detail_no_photo_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 			
+			eventAdapter = new EventListAdapter(getActivity(), R.layout.event_list_item, new ArrayList<EventDetail>());
+			
 			if (userInfoList.getHeaderViewsCount() == 0)
 			{
 				userInfoList.addHeaderView(notFriendHeader);
@@ -235,18 +232,18 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 			profileFriends.setClickable(false);
 		}
 		
-		if (photos.size() < 1)
+		if (events.size() < 1)
 		{
 			if (userInfoList.getHeaderViewsCount() == 0 && userInfoList.getAdapter() == null)
 			{
 				noPhotoHeader = inflater.inflate(R.layout.user_profile_no_photo_text, null);
 				((TextView) noPhotoHeader.findViewById(R.id.event_detail_no_photo_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-				
+				((TextView) noPhotoHeader.findViewById(R.id.event_detail_no_photo_text)).setText("No events yet...");
 				userInfoList.addHeaderView(noPhotoHeader);
 			}
 		}
 		
-		userInfoList.setAdapter(photoGridAdapter);
+		userInfoList.setAdapter(eventAdapter);
 	}
 
 	/*private void setProfileInformation() {
@@ -296,11 +293,11 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 		//profileImageBackground.addView(tr);
 	}
 	
-	private void setPictureURL() {
+	/*private void setPictureURL() {
 		
 		pictureURL = "https://graph.facebook.com/" + facebookID + "/picture?type=large";
 		
-	}
+	}*/
 
 	private void setGridAdapter()
 	{
@@ -384,7 +381,7 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 			
 			userInfoList.setAdapter(photoGridAdapter);
 			
-			userInfoList.setPadding(DrawableCache.convertDpToPixel(4), DrawableCache.convertDpToPixel(4), DrawableCache.convertDpToPixel(4), 0);
+			userInfoList.setPadding(DrawableCache.convertDpToPixel(4), 0, DrawableCache.convertDpToPixel(4), 0);
 			
 			userInfoList.invalidate();
 		}
@@ -415,7 +412,7 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 			
 			userInfoList.setAdapter(eventAdapter);
 			
-			userInfoList.setPadding(DrawableCache.convertDpToPixel(6), DrawableCache.convertDpToPixel(7), DrawableCache.convertDpToPixel(6), 0);
+			userInfoList.setPadding(DrawableCache.convertDpToPixel(6), 0, DrawableCache.convertDpToPixel(6), 0);
 			
 			userInfoList.invalidate();
 			

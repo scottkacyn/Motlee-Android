@@ -129,7 +129,7 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
 		editText = (EditText) view.findViewById(R.id.search_text_box_text);
 		editText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		editText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-		editText.setHint("Search Friends/Events...");
+		editText.setHint("Search Friends/Threads...");
 		
 		editText.setOnEditorActionListener(editorActionListener);
 		editText.setOnFocusChangeListener(focusChangeListener);

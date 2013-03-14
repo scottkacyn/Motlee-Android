@@ -28,20 +28,24 @@ import com.motlee.android.object.event.UpdatedCommentListener;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
 import com.motlee.android.service.DownloadImage;
+
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class EventItemDetailActivity extends BaseMotleeActivity implements UpdatedPhotoListener, DeletePhotoListener, UpdatedCommentListener {
+public class EventItemDetailActivity extends FragmentActivity implements UpdatedPhotoListener, DeletePhotoListener, UpdatedCommentListener {
 	
 	private EventItem mEventItem;
 	private EventItemDetailFragment fragment;
@@ -57,6 +61,8 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 	
 	private DatabaseWrapper dbWrapper;
 	
+	private ProgressDialog progressDialog;
+	
 	boolean isApartOfEvent = false;
 	
 	private static final int DELETE = 1;
@@ -64,10 +70,25 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 	private static final int DOWNLOAD = 3;
 	
 	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		if (fragment != null)
+		{
+			PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+			if (adapter != null)
+			{
+				adapter.notifyDataSetChanged();
+			}
+		}
+	}
+	
+	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.photo_detail_main);
         
         //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
         
@@ -101,7 +122,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 	        FragmentTransaction ft = fm.beginTransaction();
 	        
 	        fragment = new EventItemDetailFragment();
-	        fragment.setHeaderView(findViewById(R.id.header));
+	        //fragment.setHeaderView(findViewById(R.id.header));
 	        
 	        fragment.setDetailImage((PhotoItem)mEventItem);
 	        
@@ -115,7 +136,9 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 	        	
 	        	fragment.setPhotoList(singlePhotoList);
 	        	
-	        	fragment.setPageTitle(user.name);
+	        	((TextView) findViewById(R.id.photo_detail_event_text)).setText(user.name);
+	        	
+	        	//fragment.setPageTitle(user.name);
 	        }
 	        else if (isUserPhotoRoll)
 	        {
@@ -123,18 +146,29 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 	        	
 	            fragment.setPhotoList(photos);
 	        	
-	            fragment.setPageTitle(user.name);
+	        	((TextView) findViewById(R.id.photo_detail_event_text)).setText(user.name);
+	            
+	            //fragment.setPageTitle(user.name);
 	        }
 	        else
 	        {
 		        fragment.setPhotoList(new ArrayList<PhotoItem>(dbWrapper.getPhotos(mEventItem.event_id)));
 	        	
-		        fragment.setPageTitle(dbWrapper.getEvent(mEventItem.event_id).getEventName());
+	        	((TextView) findViewById(R.id.photo_detail_event_text)).setText(dbWrapper.getEvent(mEventItem.event_id).getEventName());
+		        
+		        //fragment.setPageTitle(dbWrapper.getEvent(mEventItem.event_id).getEventName());
 	        }
+	        
+	        ((TextView) findViewById(R.id.photo_detail_event_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 	        
 	        ft.add(R.id.fragment_content, fragment)
 	        .commit();
         }
+	}
+	
+	public void openSettings(View view)
+	{
+		this.openOptionsMenu();
 	}
 	
 	public void deleteComment(View view)
@@ -181,13 +215,29 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 		
 	}
 	
+	public void closePhotoDetail(View view)
+	{
+		onBackPressed();
+	}
+	
 	public void onShowComments(View view)
 	{
-		PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+		PhotoDetail photoDetail = ((PhotoDetail) fragment.getAdapter().getItem(fragment.getPagedView().getCurrentPage()));
+		if (photoDetail.hasReceivedDetail)
+		{
+			Intent showCommentActivity = new Intent(this, CommentActivity.class);
+			
+			showCommentActivity.putExtra("PhotoDetail", photoDetail);
+			
+			startActivity(showCommentActivity);
+		}
+		
+		
+		/*PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
 		
 		adapter.showFirstComment();
 		
-		adapter.notifyDataSetChanged();
+		adapter.notifyDataSetChanged(); */
 	}
 	
 	private void setIsApartOfEvent()
@@ -313,7 +363,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
     	PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
 		PhotoItem currentPhoto = ((PhotoDetail) adapter.getItem(fragment.getPagedView().getCurrentPage())).photo;
 		
-    	if (!fragment.getCommentText().equals(""))
+    	/*if (!fragment.getCommentText().equals(""))
     	{
 	    	//EventServiceBuffer.addCommentToEventItem(mEventItem, fragment.getCommentText());
 	    	
@@ -337,7 +387,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 	    	
 			fragment.getAdapter().showFirstComment();
 	    	adapter.notifyDataSetChanged();
-    	}
+    	}*/
     }
 
 	private void updateCommentInAdapter(PhotoItem currentPhoto, Comment comment) {
@@ -366,6 +416,19 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 	    	Intent startLikeList = new Intent(EventItemDetailActivity.this, LikeListActivity.class);
 	    	startLikeList.putExtra("Photo", photo);
 	    	startActivity(startLikeList);
+    	}
+    }
+    
+    public void onCommentClick(View view)
+    {
+    	PhotoDetail photo = ((PhotoDetail) view.getTag());
+    	
+    	if (photo != null && photo.hasReceivedDetail)
+    	{
+    		Intent commentActivity = new Intent(this, CommentActivity.class);
+    		commentActivity.putExtra("PhotoDetail", photo);
+    		commentActivity.putExtra("OpenAddComment", true);
+    		startActivity(commentActivity);
     	}
     }
     
@@ -460,7 +523,7 @@ public class EventItemDetailActivity extends BaseMotleeActivity implements Updat
 		
 		if (photo != null)
 		{
-			for (int i = 0; i < fragment.getAdapter().getCount(); i++ )
+			for (int i = 0; i < fragment.getAdapter().getCount(); i++)
 			{
 				PhotoDetail photoDetail = ((PhotoDetail) fragment.getAdapter().getItem(i));
 				

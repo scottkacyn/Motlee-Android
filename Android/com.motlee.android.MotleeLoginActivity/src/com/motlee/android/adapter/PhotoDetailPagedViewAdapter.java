@@ -50,7 +50,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	private Context context;
 	private boolean showFirstComment = false;
 	
-	private SimpleDateFormat formatter = new SimpleDateFormat("M/dd '@' h:mm aa");
+	private SimpleDateFormat formatter = new SimpleDateFormat("M/d '@' h:mm aa");
 	
 	private DatabaseHelper helper;
 	
@@ -101,7 +101,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	
 	private class ViewHolder
 	{
-		public LinearLayout header_view;
+		public RelativeLayout header_view;
 		public View touch_overlay;
         public RelativeLayout photo_detail_story;
         public ImageView photo_detail_picture;
@@ -117,11 +117,13 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
         public View photo_detail_likes;
         public TextView photo_detail_likes_text;
         public TextView photo_detail_like_button_text;
-        public ListView comment_list;
+        public TextView photo_detail_comment_button_text;
+        public RelativeLayout photo_detail_user_row;
+        //public ListView comment_list;
         public TextView photo_detail_caption;
-        public ImageButton photo_detail_like_button;
+        //public ImageButton photo_detail_like_button;
         public ProgressBar photo_detail_download_progress;
-        public RelativeLayout photo_detail_comment_bar;
+        public LinearLayout photo_detail_comment_bar;
         public View photo_detail_comments;
         public ImageView photo_detail_comment_image;
         public TextView photo_detail_comments_text;
@@ -133,12 +135,13 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 			 ViewHolder holder = new ViewHolder();
 	         
 	         if (convertView == null) {
-	         	Log.w(this.toString(), "inflating resource: " + R.layout.activity_photo_detail);
-	                     convertView = this.inflater.inflate(R.layout.activity_photo_detail, null);
+	         	Log.w(this.toString(), "inflating resource: " + R.layout.event_item_detail);
+	                     convertView = this.inflater.inflate(R.layout.event_item_detail, null);
 	                     
-	                     holder.header_view = (LinearLayout) this.inflater.inflate(R.layout.event_item_detail, null);
-	                     holder.comment_list = (ListView) convertView.findViewById(R.id.comment_list_view);
+	                     holder.header_view = (RelativeLayout) convertView;
+	                     //holder.comment_list = (ListView) convertView.findViewById(R.id.comment_list_view);
 	                     holder.photo_detail_thumbnail = (ImageView) holder.header_view.findViewById(R.id.photo_detail_thumbnail);
+	                     holder.photo_detail_user_row = (RelativeLayout) holder.header_view.findViewById(R.id.photo_detail_user_row);
 	                     holder.photo_detail_name_text = (TextView) holder.header_view.findViewById(R.id.photo_detail_name_text);
 	                     holder.photo_detail_story = (RelativeLayout) holder.header_view.findViewById(R.id.photo_detail_story);
 	                     holder.photo_detail_picture = (ImageView) holder.header_view.findViewById(R.id.photo_detail_picture);
@@ -152,13 +155,14 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	                     holder.photo_detail_thumb_image = (ImageView) holder.header_view.findViewById(R.id.photo_detail_thumb_image);
 	                     holder.photo_detail_like_button_text = (TextView) holder.header_view.findViewById(R.id.photo_detail_like_button_text);
 	                     holder.touch_overlay = holder.header_view.findViewById(R.id.photo_detail_touch_overlay);
-	                     holder.photo_detail_caption = (TextView) holder.touch_overlay.findViewById(R.id.photo_detail_description);
-	                     holder.photo_detail_like_button = (ImageButton) holder.header_view.findViewById(R.id.photo_detail_like_button);
+	                     holder.photo_detail_comment_button_text = (TextView) holder.header_view.findViewById(R.id.photo_detail_comment_button_text);
+	                     holder.photo_detail_caption = (TextView) holder.header_view.findViewById(R.id.photo_detail_description);
+	                     //holder.photo_detail_like_button = (ImageButton) holder.header_view.findViewById(R.id.photo_detail_like_button);
 	                     holder.photo_detail_download_progress = (ProgressBar) holder.header_view.findViewById(R.id.photo_detail_download_progress);
 	                     holder.photo_detail_comments = holder.header_view.findViewById(R.id.photo_detail_comments);
 	                     holder.photo_detail_comments_text = (TextView) holder.header_view.findViewById(R.id.photo_detail_comments_text);
 	                     holder.photo_detail_comment_image = (ImageView) holder.header_view.findViewById(R.id.photo_detail_comment_image);
-	                     holder.photo_detail_comment_bar = (RelativeLayout) holder.header_view.findViewById(R.id.photo_detail_comment_bar);
+	                     holder.photo_detail_comment_bar = (LinearLayout) holder.header_view.findViewById(R.id.photo_detail_comment_bar);
 	                     
 	                     convertView.setTag(holder);
 	         			
@@ -191,7 +195,10 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	
 	 	ArrayList<Comment> comments = new ArrayList<Comment>(dbWrapper.getComments(photo.photo.id));
 	 	
-	 	Collections.sort(comments);
+	 	holder.photo_detail_like_button_text.setTag(photo);
+	 	holder.photo_detail_comment_button_text.setTag(photo);
+	 	
+	 	/*Collections.sort(comments);
 	 	
 	 	holder.photo_detail_like_button.setTag(photo);
 	 	
@@ -260,16 +267,16 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	 	{
 		 	CommentAdapter adapter = new CommentAdapter(context, R.layout.comment_list_item, new ArrayList<Comment>());
 	 		holder.comment_list.setAdapter(adapter);
-	 	}
+	 	}*/
 	 	
 	 	holder.photo_detail_comments_text.setText(String.valueOf(comments.size()));
 	 	holder.photo_detail_comments_text.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 	 	
-	 	if (this.showFirstComment)
+	 	/*if (this.showFirstComment)
 	 	{
 	 		holder.comment_list.setSelection(1);
 	 		this.showFirstComment = false;
-	 	}
+	 	}*/
 	 	
 	 	//holder.photo_detail_comment_icon.setTag(item);
 	 	//holder.photo_detail_thumb_icon.setTag(item);
@@ -292,7 +299,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 		    	
 		    	location = photo.photo.location;
 		    	
-		    	if (!photo.photo.caption.equals(""))
+		    	/*if (!photo.photo.caption.equals(""))
 		    	{
 		    		holder.touch_overlay.setVisibility(View.VISIBLE);
 		    		holder.touch_overlay.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.photo_detail_overlay, GlobalVariables.DISPLAY_WIDTH).getDrawable());
@@ -300,9 +307,11 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 		    	else
 		    	{
 		    		holder.touch_overlay.setVisibility(View.GONE);
-		    	}
+		    	}*/
 		    	
-		    	final View touchOverlay = holder.touch_overlay;
+		    	holder.touch_overlay.setVisibility(View.GONE);
+		    	
+		    	//final View touchOverlay = holder.touch_overlay;
 		    	
 		    	holder.photo_detail_picture.setMaxHeight(SharePref.getIntPref(context, SharePref.DISPLAY_WIDTH));
 		    	holder.photo_detail_picture.setMaxWidth(SharePref.getIntPref(context, SharePref.DISPLAY_WIDTH));
@@ -316,7 +325,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 		        		photo.photo, 
 		        		SharePref.getIntPref(context.getApplicationContext(), SharePref.DISPLAY_WIDTH));
 		        
-				holder.photo_detail_caption.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+				holder.photo_detail_caption.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 				holder.photo_detail_caption.setText(photo.photo.caption);
 				
 				holder.photo_detail_picture.setClickable(true);
@@ -339,7 +348,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 			}
 			
 	        holder.photo_detail_picture.setVisibility(View.VISIBLE);
-					
+	        
 	        if (photo.hasReceivedDetail)
 	        {
 	        	holder.photo_detail_download_progress.setVisibility(View.GONE);
@@ -351,9 +360,13 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	        
 	        DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.photo_detail_rect, SharePref.getIntPref(context, SharePref.DISPLAY_WIDTH));
 	        
-	        holder.photo_detail_comment_bar.setBackgroundDrawable(drawable.getDrawable());
+	        //holder.photo_detail_comment_bar.setBackgroundDrawable(drawable.getDrawable());
 			
-	        holder.photo_detail_comment_bar.setLayoutParams(new LinearLayout.LayoutParams(drawable.getWidth(), drawable.getHeight()));
+	        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(drawable.getWidth(), drawable.getHeight());
+	        
+	        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+	        
+	        holder.photo_detail_comment_bar.setLayoutParams(params);
 	        
 			setUpStoryPictureHeader(holder, photo.photo, height, location);
 	 }
@@ -371,8 +384,8 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 		
 		holder.photo_detail_thumbnail.setTag(photoOwner);
 		
-		holder.photo_detail_thumbnail_bg.setMaxHeight(background.getHeight());
-		holder.photo_detail_thumbnail_bg.setMaxWidth(background.getHeight());
+		//holder.photo_detail_thumbnail_bg.setMaxHeight(background.getHeight());
+		//holder.photo_detail_thumbnail_bg.setMaxWidth(background.getHeight());
 		
 		if (photoOwner != null)
 		{
@@ -392,11 +405,15 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 			
 			holder.photo_detail_like_button_text.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 			
+			//holder.photo_detail_like_button_text.setTag(item);
+			
+			holder.photo_detail_comment_button_text.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+			
 			holder.photo_detail_likes_text.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 			
 			Collection<Like> likes = dbWrapper.getLikes(item.id);
 			
-			holder.photo_detail_likes.setTag(item);
+			//holder.photo_detail_likes.setTag(item);
 			
 			if (likes.size() > 0)
 			{

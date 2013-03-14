@@ -29,7 +29,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
-public class EventListFragment extends ListFragmentWithHeader implements UpdatedEventDetailListener {
+public class EventListFragment extends BaseMotleeFragment implements UpdatedEventDetailListener {
 	
 	private String tag = "EventListFragment";
 	
@@ -54,6 +54,8 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 	private View noEventHeader;
 	
 	private DatabaseWrapper dbWrapper;
+	
+	private ListView eventList;
 	
 	@Override
 	public void onResume()
@@ -84,7 +86,7 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 		view = (View) getActivity().getLayoutInflater().inflate(R.layout.activity_event_list, null);
 		
 		//view.findViewById(R.id.buffer).setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, GlobalVariables.getInstance().getMenuButtonsHeight()));
-		ListView listView = (ListView) view.findViewById(android.R.id.list);
+		ListView listView = (ListView) view.findViewById(R.id.event_list);
 		
 		if (!this.hideProgressBar)
 		{
@@ -97,7 +99,9 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 		
 		setUpNoEventHeader();
 		
-		setListAdapter(mEventListAdapter);
+		eventList = (ListView) view.findViewById(R.id.event_list);
+		
+		eventList.setAdapter(mEventListAdapter);
 		
 		/*
 		 * Not 100% why this happens, but sometimes mHeaderView can be null.
@@ -143,7 +147,7 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 		
 		((TextView) noEventHeader.findViewById(R.id.event_list_no_event_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 		
-		ListView listView = (ListView) view.findViewById(android.R.id.list);
+		ListView listView = (ListView) view.findViewById(R.id.event_list);
 		listView.addHeaderView(noEventHeader);
 		
 		if (adapterHasNoEvents() || progressBar != null || hideNoEventText)
@@ -162,7 +166,7 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 		
 		blank.setBackgroundColor(android.R.color.transparent);
 		
-		ListView listView = (ListView) view.findViewById(android.R.id.list);
+		ListView listView = (ListView) view.findViewById(R.id.event_list);
 		listView.addFooterView(blank);
 		
 	}
@@ -181,7 +185,7 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 		
 		bar.setLayoutParams(params);
 		
-		ListView listView = (ListView) view.findViewById(android.R.id.list);
+		ListView listView = (ListView) view.findViewById(R.id.event_list);
 		listView.addHeaderView(progressBar);
 	}
 	
@@ -189,7 +193,7 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 	{
 		if (view != null)
 		{
-			ListView listView = (ListView) view.findViewById(android.R.id.list);
+			ListView listView = (ListView) view.findViewById(R.id.event_list);
 			if (listView != null)
 			{
 				//Log.d("EventListFragment", "headerCount: " + listView.getHeaderViewsCount());
@@ -261,9 +265,9 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 		labelButtonText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		labelButtonText.setText("Upcoming Events");
 		
-		ListView listView = (ListView) view.findViewById(android.R.id.list);
+		ListView listView = (ListView) view.findViewById(R.id.event_list);
 		listView.addHeaderView(upcomingHeader);
-		
+		 
 		upcomingHeader.findViewById(R.id.label_button_content).setVisibility(View.GONE);
 	}
 	
@@ -308,14 +312,18 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 	
 	public PullToRefreshListView getPullToRefreshListView()
 	{
-		return (PullToRefreshListView) this.getListView();
+		return (PullToRefreshListView) eventList;
 	}
 	
 	public void addEventListAdapter(EventListAdapter eAdapter) {
 		Log.w(tag, "addEventListAdapter");
 		mEventListAdapter = eAdapter;
 		
-		setListAdapter(mEventListAdapter);
+		if (eventList != null)
+		{
+			eventList.setAdapter(mEventListAdapter);
+		}
+		//setListAdapter(mEventListAdapter);
 	}
 	
 	public EventListAdapter getEventListAdapter()
@@ -340,7 +348,11 @@ public class EventListFragment extends ListFragmentWithHeader implements Updated
 		
 		mEventListAdapter = eAdapter;
 		
-		setListAdapter(mEventListAdapter);
+		if (eventList != null)
+		{
+			eventList.setAdapter(mEventListAdapter);
+		}
+		//setListAdapter(mEventListAdapter);
 		
 	}
 

@@ -8,5 +8,7 @@
         <color name="gray">#968f87</color>
         <color name="dark_gray">#544f49</color>
         <color name="see_through_gray">#88968f87</color>
+        <color name="see_through_white">#88FFFFFF</color>
         <color name="normal">#00FFFFFF</color>
+        <color name="navy_blue">#23238E</color>
     </resources>

@@ -17,6 +17,6 @@
         android:focusable="true"
         android:background="@android:color/transparent"
         android:listSelector="@drawable/selector"
-        android:overScrollFooter="@null" />
+        android:overScrollFooter="@null" /> 
     
 </RelativeLayout>

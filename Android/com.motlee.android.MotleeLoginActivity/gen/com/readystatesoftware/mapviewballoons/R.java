@@ -8,12 +8,12 @@ package com.readystatesoftware.mapviewballoons;
 
 public final class R {
 	public static final class id {
-		public static final int balloon_disclosure = 0x7f060057;
+		public static final int balloon_disclosure = 0x7f060059;
 		public static final int balloon_inner_layout = 0x7f060022;
 		public static final int balloon_close = 0x7f060023;
-		public static final int balloon_main_layout = 0x7f060054;
-		public static final int balloon_item_title = 0x7f060055;
-		public static final int balloon_item_snippet = 0x7f060056;
+		public static final int balloon_main_layout = 0x7f060056;
+		public static final int balloon_item_title = 0x7f060057;
+		public static final int balloon_item_snippet = 0x7f060058;
 	}
 	public static final class layout {
 		public static final int balloon_overlay = 0x7f030010;

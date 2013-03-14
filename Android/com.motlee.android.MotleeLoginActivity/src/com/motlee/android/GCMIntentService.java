@@ -53,6 +53,8 @@ public class GCMIntentService extends GCMBaseIntentService implements UpdatedEve
 	    final Integer eventId = Integer.parseInt(intent.getExtras().getString("event_id"));
 	    message = intent.getExtras().getString("message_text");
 	    
+	    EventServiceBuffer.getInstance(getApplicationContext());
+	    
 	    EventServiceBuffer.setEventDetailListener(this); 	
 	    
 	    EventServiceBuffer.getEventsFromService(eventId);

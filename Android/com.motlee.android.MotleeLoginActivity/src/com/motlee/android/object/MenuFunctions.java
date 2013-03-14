@@ -9,6 +9,8 @@ import com.motlee.android.R;
 import com.motlee.android.SearchActivity;
 import com.motlee.android.SettingsActivity;
 import com.motlee.android.TakePhotoActivity;
+import com.motlee.android.UserProfilePageActivity;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.BaseMotleeFragment;
 import com.slidingmenu.lib.SlidingMenu;
 
@@ -392,5 +394,23 @@ public class MenuFunctions {
 			
 			activity.finish();
 		}
+	}
+
+	public static void showMyProfile(View view, FragmentActivity activity) {
+		
+		//Intent intent = new Intent(activity, UserProfilePageActivity.class);
+		
+    	Intent userProfile = new Intent(activity, UserProfilePageActivity.class);
+    	
+    	DatabaseWrapper dbWrapper = new DatabaseWrapper(activity.getApplicationContext());
+    	
+    	UserInfo user = dbWrapper.getUser(SharePref.getIntPref(activity, SharePref.USER_ID));
+    	
+    	userProfile.putExtra("UserID", user.id);
+    	userProfile.putExtra("UID", user.uid);
+    	
+    	activity.startActivity(userProfile);
+		
+		
 	}
 }

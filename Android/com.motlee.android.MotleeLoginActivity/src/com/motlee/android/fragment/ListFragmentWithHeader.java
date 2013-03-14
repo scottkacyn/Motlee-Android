@@ -12,9 +12,9 @@ import android.widget.TextView;
 
 public class ListFragmentWithHeader extends ListFragment {
 	
-	public static final String MY_EVENTS = "My Events";
-	public static final String ALL_EVENTS = "All Events";
-	public static final String NEARBY_EVENTS = "Nearby Events";
+	public static final String MY_EVENTS = "Threads";
+	public static final String ALL_EVENTS = "Threads";
+	public static final String NEARBY_EVENTS = "Nearby";
 	public static final String SEARCH = "Search";
 	
 	public View mHeaderView;
@@ -22,13 +22,13 @@ public class ListFragmentWithHeader extends ListFragment {
 	protected void setHeaderIcon(String headerIcon)
 	{
 		ImageView icon = (ImageView) mHeaderView.findViewById(R.id.header_icon);
-		if (headerIcon == MY_EVENTS)
+		/*if (headerIcon == MY_EVENTS)
 		{
 			icon.setVisibility(View.VISIBLE);
 			icon.setPadding(0, 2, 0, 0);
 			icon.setImageResource(R.drawable.icon_button_star);
 		}
-		else if (headerIcon == ALL_EVENTS)
+		else */if (headerIcon == ALL_EVENTS)
 		{
 			icon.setVisibility(View.VISIBLE);
 			icon.setPadding(0, 0, 0, 0);

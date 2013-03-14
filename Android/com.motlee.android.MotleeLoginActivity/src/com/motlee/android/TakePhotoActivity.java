@@ -51,7 +51,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 	private DatabaseWrapper dbWrapper;
 	
 	private String mCurrentPhotoPath;
-	//private String mCurrentCroppedPhotoPath;
+	private String mCurrentCroppedPhotoPath;
 	private Uri picUri;
 	private int mEventId;
 	
@@ -390,8 +390,8 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			
 			String[] splitFile = mCurrentPhotoPath.split("/");	
 			String fileName = splitFile[splitFile.length - 1];
-			//mCurrentCroppedPhotoPath = getCroppedPhotoPath(fileName);
-			intent.putExtra("image-save", mCurrentPhotoPath);
+			mCurrentCroppedPhotoPath = getCroppedPhotoPath(fileName);
+			intent.putExtra("image-save", mCurrentCroppedPhotoPath);
 			intent.putExtra("aspectX", 1);
 			intent.putExtra("aspectY", 1);
 			int screenWidth = SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH);

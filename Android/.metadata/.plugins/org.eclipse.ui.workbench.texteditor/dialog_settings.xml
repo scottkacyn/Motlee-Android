@@ -2,9 +2,9 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="530" key="DIALOG_WIDTH"/>
-		<item value="580" key="DIALOG_Y_ORIGIN"/>
-		<item value="226" key="DIALOG_HEIGHT"/>
-		<item value="912" key="DIALOG_X_ORIGIN"/>
+		<item value="578" key="DIALOG_Y_ORIGIN"/>
+		<item value="227" key="DIALOG_HEIGHT"/>
+		<item value="914" key="DIALOG_X_ORIGIN"/>
 		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
@@ -13,16 +13,16 @@
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="EventDetailActivity" key="selection"/>
+		<item value="sendPhoto" key="selection"/>
 		<list key="findhistory">
-			<item value="EventDetailActivity"/>
-			<item value="getUserInfoFromService"/>
-			<item value="getUserInfoFrom"/>
-			<item value="getUserAuth"/>
-			<item value="getUserInfo"/>
-			<item value="getUserFrom"/>
-			<item value="getUser"/>
-			<item value="registerDevice"/>
+			<item value="sendPhoto"/>
+			<item value="AWS_URL"/>
+			<item value="android.R.id.list"/>
+			<item value="getList"/>
+			<item value="listview"/>
+			<item value="getListView"/>
+			<item value="getListVirew"/>
+			<item value="PullToRefresh"/>
 		</list>
 		<list key="replacehistory">
 			<item value=".EventListActivity"/>

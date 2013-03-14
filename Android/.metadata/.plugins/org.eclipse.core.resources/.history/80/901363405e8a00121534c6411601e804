@@ -1,0 +1,118 @@
+package com.motlee.android;
+
+import java.util.ArrayList;
+
+import com.motlee.android.adapter.CommentAdapter;
+import com.motlee.android.database.DatabaseWrapper;
+import com.motlee.android.object.Comment;
+import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.PhotoDetail;
+import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharePref;
+import com.motlee.android.object.event.UpdatedPhotoEvent;
+import com.motlee.android.object.event.UpdatedPhotoListener;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
+
+public class CommentActivity extends Activity implements UpdatedPhotoListener {
+	
+	private PhotoDetail mPhoto;
+	
+	private DatabaseWrapper dbWrapper;
+	
+	private ListView commentList;
+	
+	private CommentAdapter mAdapter;
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.comment_main);
+        
+        photo = getIntent().getExtras().getParcelable("PhotoDetail");
+        
+        ArrayList<Comment> comments = new ArrayList<Comment>(dbWrapper.getComments(photo.photo.id));
+        
+        commentList = (ListView) findViewById(R.id.comment_list);
+        
+        if (photo.hasReceivedDetail)
+        {
+        	mAdapter = new CommentAdapter(this, R.layout.comment_list_item, comments);
+        }
+        else
+        {
+        	mAdapter = new CommentAdapter(this, R.layout.comment_list_item, new ArrayList<Comment>());
+        }
+        
+        commentList.setAdapter(mAdapter);
+        
+	 	commentList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
+
+			public boolean onItemLongClick(AdapterView<?> adapter, View view, int position, long id) {
+				
+				final Comment comment = (Comment) adapter.getItemAtPosition(position);
+				
+				if (comment.user_id == SharePref.getIntPref(CommentActivity.this, SharePref.USER_ID))
+				{
+					AlertDialog.Builder builder = new AlertDialog.Builder(CommentActivity.this);
+					builder.setMessage("Delete your comment?")
+					.setCancelable(true)
+					.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							
+							if (comment.id < 0)
+							{
+								dbWrapper.deleteComment(comment);
+								
+								mAdapter.notifyDataSetChanged();
+							}
+							else
+							{
+							
+								comment.body = "Deleting...";
+								
+								dbWrapper.updateComment(comment);
+								
+								mAdapter.notifyDataSetChanged();
+								
+								EventServiceBuffer.deleteComment(comment);
+							}
+							
+							dialog.cancel();
+						}
+					})
+					.setNegativeButton("Nope", new DialogInterface.OnClickListener() {
+						
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+							
+						}
+					});
+					
+					builder.create().show();
+				}
+				
+				return false;
+			}
+	 	
+	 	});
+	}
+
+	public void photoEvent(UpdatedPhotoEvent e) {
+		
+		PhotoItem photo = e.getPhoto();
+		
+		if (photo != null)
+		{
+			ArrayList<Comment> comments = new ArrayList<Comment>(dbWrapper.getComments(photo))
+		}
+	}
+
+}

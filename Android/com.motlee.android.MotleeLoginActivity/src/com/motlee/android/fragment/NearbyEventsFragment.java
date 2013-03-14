@@ -267,25 +267,28 @@ private DatabaseWrapper dbWrapper;
 	
     private void setUpGoogleMapOnClick() {
 	
-    	getMap().setOnInfoWindowClickListener(new OnInfoWindowClickListener(){
-
-			public void onInfoWindowClick(Marker marker) {
-				
-				Integer eventId = mIdEventList.get(marker.getId());
-		    	
-		    	Intent eventDetail = new Intent(getActivity(), EventDetailActivity.class);
-		    	
-		    	eventDetail.putExtra("EventID", eventId);
-		    	
-		    	Log.d("Transition", "Started transition to EventDetail");
-		    	
-		    	getActivity().startActivity(eventDetail);
-		    	
-		    	getActivity().overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-				
-			}
-    		
-    	});
+    	if (getMap() != null)
+    	{
+	    	getMap().setOnInfoWindowClickListener(new OnInfoWindowClickListener(){
+	
+				public void onInfoWindowClick(Marker marker) {
+					
+					Integer eventId = mIdEventList.get(marker.getId());
+			    	
+			    	Intent eventDetail = new Intent(getActivity(), EventDetailActivity.class);
+			    	
+			    	eventDetail.putExtra("EventID", eventId);
+			    	
+			    	Log.d("Transition", "Started transition to EventDetail");
+			    	
+			    	getActivity().startActivity(eventDetail);
+			    	
+			    	getActivity().overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+					
+				}
+	    		
+	    	});
+    	}
 		
 	}
 

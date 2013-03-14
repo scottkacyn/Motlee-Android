@@ -1,0 +1,45 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:weightSum="1"
+    android:orientation="vertical">
+    
+    <RelativeLayout 
+        android:layout_weight="0.1"
+        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:background="@android:color/transparent" >
+        
+        <TextView 
+            android:id="@+id/photo_detail_event_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/CodeFont"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:paddingLeft="4dp" />
+        
+        <ImageButton 
+            android:id="@+id/photo_detail_close"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="3dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true" 
+            android:src="@drawable/icon_close_normal" 
+            android:onClick="closePhotoDetail" />
+        
+    </RelativeLayout>
+    
+    <LinearLayout
+        android:id="@+id/fragment_content"
+        android:layout_weight="0.9"
+        android:layout_height="0dp"
+        android:layout_width="match_parent" />
+    
+</LinearLayout>

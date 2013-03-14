@@ -57,8 +57,6 @@ public class MotleeLoginActivity extends FragmentActivity implements UserInfoLis
 		super.onStart();
 		
 		FlurryAgent.onStartSession(this, getResources().getString(R.string.flurry_key));
-		
-		FlurryAgent.setCaptureUncaughtExceptions(false);
 	}
 	
 	@Override

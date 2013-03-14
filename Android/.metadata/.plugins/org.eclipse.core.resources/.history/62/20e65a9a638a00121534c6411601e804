@@ -1,0 +1,33 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/see_through_white" >
+    
+    <RelativeLayout 
+        android:id="@+id/comment_cancel_send_bar"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        
+        <FrameLayout
+	        android:layout_height="match_parent"
+	        android:layout_width="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:id="@+id/photo_detail_like_layout" >
+	        
+		    <com.motlee.android.view.VerticalAspectImageButton 
+		        android:id="@+id/photo_detail_like_button"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:padding="5dp"
+		        android:src="@drawable/button_orange"
+		        android:onClick="onLikeClick"
+		        android:background="@android:color/transparent" />
+		    
+		    
+	    </FrameLayout>
+        
+    </RelativeLayout>
+    
+</LinearLayout>

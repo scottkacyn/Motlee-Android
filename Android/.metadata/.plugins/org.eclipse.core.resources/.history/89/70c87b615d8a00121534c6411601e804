@@ -1,0 +1,32 @@
+package com.motlee.android.object;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class PhotoDetail implements Parcelable {
+
+	public PhotoItem photo;
+	public boolean hasSentDetailRequest = false;
+	public boolean hasReceivedDetail = false;
+	
+	public PhotoDetail(PhotoItem photo)
+	{
+		this.photo = photo;
+	}
+
+	public int describeContents() {
+		return 0;
+	}
+
+	protected PhotoDetail(Parcel in)
+	{
+		super(in);
+		this.hasReceivedDetail = in.readByte() == 1;
+		this.hasSentDetailRequest = in.readByte() == 1;
+	}
+	
+	public void writeToParcel(Parcel dest, int flags) {
+		// TODO Auto-generated method stub
+		
+	}
+}

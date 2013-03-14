@@ -1,0 +1,431 @@
+package com.motlee.android.fragment;
+
+import java.util.ArrayList;
+import com.motlee.android.R;
+import com.motlee.android.adapter.EventDetailGridAdapter;
+import com.motlee.android.adapter.EventListAdapter;
+import com.motlee.android.adapter.PeopleListAdapter;
+import com.motlee.android.adapter.UserProfileAdapter;
+import com.motlee.android.database.DatabaseWrapper;
+import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.DrawableWithHeight;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.GridPictures;
+import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharePref;
+import com.motlee.android.object.UserInfo;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+public class UserProfilePageFragment extends BaseMotleeFragment {
+	
+	private View view;
+	private LayoutInflater inflater;
+	private String pageTitle = "Create Event";
+	private int mUserID;
+	
+	private ListView userInfoList;
+	
+	private EventDetailGridAdapter photoGridAdapter;
+	private EventListAdapter eventAdapter;
+	private PeopleListAdapter friendsAdapter;
+	
+	private LinearLayout profileEvents;
+	private LinearLayout profilePictures;
+	private LinearLayout profileFriends;
+    
+	private Long facebookID;
+    
+    private UserInfo user;
+    
+    private String mUserName;
+    
+    private ArrayList<PhotoItem> photos;
+    
+    private ArrayList<EventDetail> events;
+    
+    private ArrayList<UserInfo> friends;
+    
+    private View headerView;
+    
+    private View notFriendHeader;
+    
+    private View notMotleeHeader;
+    
+    private DatabaseWrapper dbWrapper;
+	
+    private int maxHeightPic;
+    
+    private boolean isFriend = true;
+    
+    private boolean isMotlee = true;
+    
+    private View noPhotoHeader;
+    
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+	        Bundle savedInstanceState)
+	{
+	
+		this.inflater = inflater;
+		view = (View) this.inflater.inflate(R.layout.activity_user_profile, null);
+		
+		headerView = view.findViewById(R.id.profile_page_top);
+		
+		userInfoList = (ListView) view.findViewById(R.id.user_profile_list_view);
+
+		dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
+		
+		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.user_profile_header_background, GlobalVariables.DISPLAY_WIDTH);
+		
+		maxHeightPic = drawable.getHeight();
+		
+		headerView.setBackgroundDrawable(drawable.getDrawable());
+		headerView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, drawable.getHeight()));
+		
+		photoGridAdapter = new EventDetailGridAdapter(getActivity(), R.layout.event_detail_page_grid, new ArrayList<GridPictures>());
+		eventAdapter = new EventListAdapter(getActivity(), R.layout.event_list_item, events);
+		friendsAdapter = new PeopleListAdapter(getActivity(), R.layout.people_list_item, friends);
+		
+		profilePictures = (LinearLayout) headerView.findViewById(R.id.profile_photos);
+		profileEvents = (LinearLayout) headerView.findViewById(R.id.profile_events);
+		profileFriends = (LinearLayout) headerView.findViewById(R.id.profile_friends);
+		
+		profilePictures.setOnClickListener(showPictureGrid);
+		profileEvents.setOnClickListener(showEvents);
+		profileFriends.setOnClickListener(showFriendsList);
+		
+		user = dbWrapper.getUser(mUserID);
+		
+		if (!dbWrapper.isFriend(facebookID) && mUserID != SharePref.getIntPref(getActivity(), SharePref.USER_ID))
+		{
+			isFriend = false;
+		}
+		else
+		{
+			isFriend = true;
+		}
+		
+		if (user == null || (user.sign_in_count != null && user.sign_in_count > 0))
+		{
+			isMotlee = true;
+		}
+		else
+		{
+			isMotlee = false;
+		}
+		
+		if (user != null)
+		{
+			setPageHeader(user.name);
+		}
+		else
+		{
+			setPageHeader(mUserName);
+		}
+		showLeftHeaderButton();
+
+		this.setPageLayout();
+		
+		return view;
+	}
+	
+	
+	/*public void setLocationObject(GraphObject object)
+	{
+		JSONObject location = (JSONObject) object.getProperty("location");
+		try {
+			this.location = location.getString("name");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		this.birthDate = object.getProperty("birthday").toString();
+	}*/
+	
+	public void setUserId(int userID, Long facebookID, String userName)
+	{
+		this.mUserID = userID;
+
+		this.mUserName = userName;
+		
+		this.facebookID = facebookID;
+		if (view != null)
+		{
+			setPageLayout();
+		}
+	}
+	
+	private void setPageLayout()
+	{
+		setPictureURL();
+		
+		setProfilePicture();
+		
+		//setProfileInformation();
+		
+		setAttendeePictureCount();
+		
+		if (isFriend)
+		{
+			if (isMotlee)
+			{
+				setGridAdapter();
+				
+				headerView.findViewById(R.id.profile_number_glow).setVisibility(View.VISIBLE);
+				
+				headerView.findViewById(R.id.profile_events_glow).setVisibility(View.GONE);
+				
+				headerView.findViewById(R.id.profile_friends_glow).setVisibility(View.GONE);
+			}
+			else
+			{
+				notMotleeHeader = inflater.inflate(R.layout.user_profile_not_motlee, null);
+				((TextView) notMotleeHeader.findViewById(R.id.event_detail_not_motlee_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+				
+				if (userInfoList.getHeaderViewsCount() == 0)
+				{
+					userInfoList.addHeaderView(notMotleeHeader);
+				}
+				
+				headerView.findViewById(R.id.profile_number_glow).setVisibility(View.GONE);
+				
+				headerView.findViewById(R.id.profile_events_glow).setVisibility(View.GONE);
+				
+				headerView.findViewById(R.id.profile_friends_glow).setVisibility(View.GONE);
+				
+				profilePictures.setClickable(false);
+				profileEvents.setClickable(false);
+				profileFriends.setClickable(false);
+			}
+		}
+		else
+		{
+			notFriendHeader = inflater.inflate(R.layout.user_profile_not_friend, null);
+			((TextView) notFriendHeader.findViewById(R.id.event_detail_no_photo_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+			
+			if (userInfoList.getHeaderViewsCount() == 0)
+			{
+				userInfoList.addHeaderView(notFriendHeader);
+			}
+			
+			headerView.findViewById(R.id.profile_number_glow).setVisibility(View.GONE);
+			
+			headerView.findViewById(R.id.profile_events_glow).setVisibility(View.GONE);
+			
+			headerView.findViewById(R.id.profile_friends_glow).setVisibility(View.GONE);
+			
+			profilePictures.setClickable(false);
+			profileEvents.setClickable(false);
+			profileFriends.setClickable(false);
+		}
+		
+		if (photos.size() < 1)
+		{
+			if (userInfoList.getHeaderViewsCount() == 0 && userInfoList.getAdapter() == null)
+			{
+				noPhotoHeader = inflater.inflate(R.layout.user_profile_no_photo_text, null);
+				((TextView) noPhotoHeader.findViewById(R.id.event_detail_no_photo_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+				
+				userInfoList.addHeaderView(noPhotoHeader);
+			}
+		}
+		
+		userInfoList.setAdapter(photoGridAdapter);
+	}
+
+	/*private void setProfileInformation() {
+		
+		TextView textView = (TextView) headerView.findViewById(R.id.profile_text_top);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(this.birthDate);
+		
+		textView = (TextView) headerView.findViewById(R.id.profile_text_middle);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(this.location);
+	}*/
+
+	private void setAttendeePictureCount()
+	{
+		TextView textView = (TextView) headerView.findViewById(R.id.profile_number_events_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(Integer.toString(this.events.size()));
+		
+		textView = (TextView) headerView.findViewById(R.id.profile_events_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		
+		textView = (TextView) headerView.findViewById(R.id.profile_number_photos_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(Integer.toString(this.photos.size()));
+		
+		textView = (TextView) headerView.findViewById(R.id.profile_photos_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		
+		textView = (TextView) headerView.findViewById(R.id.profile_number_friends_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		textView.setText(Integer.toString(this.friends.size()));
+		
+		textView = (TextView) headerView.findViewById(R.id.profile_friends_text);
+		textView.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
+		
+	}
+	
+	private void setProfilePicture() {
+		final ImageView imageView = (ImageView) headerView.findViewById(R.id.profile_picture);
+		
+		GlobalVariables.getInstance().downloadImage(imageView, GlobalVariables.getInstance().getFacebookPictureUrlLarge(facebookID), maxHeightPic);
+		//TableRow tr = new TableRow(getActivity());
+		//LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		//tr.setLayoutParams(lp);
+		//tr.addView(thumbnailView);
+		//profileImageBackground.addView(tr);
+	}
+	
+	private void setPictureURL() {
+		
+		pictureURL = "https://graph.facebook.com/" + facebookID + "/picture?type=large";
+		
+	}
+
+	private void setGridAdapter()
+	{
+		GridPictures gridPictures = new GridPictures();
+		
+		ArrayList<GridPictures> gridList = new ArrayList<GridPictures>();
+		
+		int imageCount = photos.size();
+		
+		PhotoItem[] imageArray = (PhotoItem[])photos.toArray(new PhotoItem[imageCount]);
+		
+		for (int i = 0; i < imageCount; i++)
+		{
+			if (i%3 == 0)
+			{
+				gridPictures = new GridPictures();
+				gridPictures.image1 = imageArray[i];
+			}
+			
+			if (i%3 == 1)
+			{
+				gridPictures.image2 = imageArray[i];
+			}
+			
+			if (i%3 == 2)
+			{
+				gridPictures.image3 = imageArray[i];
+			}
+			
+			if (i%3 == 2 || imageCount - 1 == i)
+			{
+				gridList.add(gridPictures);
+			}
+		}	
+		
+		photoGridAdapter.replaceData(gridList);
+	}
+
+	public void setPhotos(ArrayList<PhotoItem> photos) {
+		
+		this.photos = photos;
+		
+	}
+
+	private OnClickListener showFriendsList = new OnClickListener(){
+
+		public void onClick(View v) {
+			
+			headerView.findViewById(R.id.profile_number_glow).setVisibility(View.GONE);
+			
+			headerView.findViewById(R.id.profile_events_glow).setVisibility(View.GONE);
+			
+			headerView.findViewById(R.id.profile_friends_glow).setVisibility(View.VISIBLE);
+			
+			if (noPhotoHeader != null)
+			{
+				noPhotoHeader.findViewById(R.id.event_detail_no_photo_text).setVisibility(View.GONE);
+			}
+			
+			userInfoList.setAdapter(friendsAdapter);
+			
+		}
+		
+	};
+	
+	private OnClickListener showPictureGrid = new OnClickListener(){
+
+		public void onClick(View v) {
+
+			headerView.findViewById(R.id.profile_number_glow).setVisibility(View.VISIBLE);
+			
+			headerView.findViewById(R.id.profile_events_glow).setVisibility(View.GONE);
+			
+			headerView.findViewById(R.id.profile_friends_glow).setVisibility(View.GONE);
+			
+			if (noPhotoHeader != null)
+			{
+				noPhotoHeader.findViewById(R.id.event_detail_no_photo_text).setVisibility(View.VISIBLE);
+				((TextView) noPhotoHeader.findViewById(R.id.event_detail_no_photo_text)).setText(R.string.user_profile_no_photo_text);
+			}
+			
+			userInfoList.setAdapter(photoGridAdapter);
+			
+			userInfoList.setPadding(DrawableCache.convertDpToPixel(4), DrawableCache.convertDpToPixel(4), DrawableCache.convertDpToPixel(4), 0);
+			
+			userInfoList.invalidate();
+		}
+		
+	};
+
+	private OnClickListener showEvents = new OnClickListener(){
+
+		public void onClick(View v) {
+			
+			headerView.findViewById(R.id.profile_number_glow).setVisibility(View.GONE);
+			
+			headerView.findViewById(R.id.profile_events_glow).setVisibility(View.VISIBLE);
+			
+			headerView.findViewById(R.id.profile_friends_glow).setVisibility(View.GONE);
+			
+			if (noPhotoHeader != null)
+			{
+				if (eventAdapter.getCount() < 1)
+				{
+					((TextView) noPhotoHeader.findViewById(R.id.event_detail_no_photo_text)).setText("No events yet...");
+				}
+				else
+				{
+					noPhotoHeader.findViewById(R.id.event_detail_no_photo_text).setVisibility(View.GONE);
+				}
+			}
+			
+			userInfoList.setAdapter(eventAdapter);
+			
+			userInfoList.setPadding(DrawableCache.convertDpToPixel(6), DrawableCache.convertDpToPixel(7), DrawableCache.convertDpToPixel(6), 0);
+			
+			userInfoList.invalidate();
+			
+		}
+		
+	};
+	
+	public void setEvents(ArrayList<EventDetail> events) {
+		
+		this.events = events;
+		
+	}
+
+
+	public void setFriends(ArrayList<UserInfo> friends) {
+		
+		this.friends = friends;
+		
+	}
+}

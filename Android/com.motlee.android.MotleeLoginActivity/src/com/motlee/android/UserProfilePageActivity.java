@@ -12,6 +12,7 @@ import com.motlee.android.fragment.UserProfilePageFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.TempAttendee;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedFriendsEvent;
@@ -23,6 +24,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 
 public class UserProfilePageActivity extends BaseMotleeActivity implements OnFragmentAttachedListener, UpdatedFriendsListener {
@@ -112,6 +114,18 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
 		Collections.sort(photos);
 		
 		ArrayList<EventDetail> friendEvents = new ArrayList<EventDetail>(dbWrapper.getEventsForUser(mUserID));
+		
+		for (EventDetail eDetail : friendEvents)
+		{
+			eDetail.setPhotos(dbWrapper.getPhotos(eDetail.getEventID()));
+			eDetail.setOwnerInfo(dbWrapper.getUser(eDetail.getOwnerID()));
+			eDetail.setAttendeeCount(eDetail.getAttendeeCount() + TempAttendee.getTempAttendees(eDetail.getEventID()).size());
+			
+			if (eDetail.getLocationID() != null)
+			{
+				eDetail.setLocationInfo(dbWrapper.getLocation(eDetail.getLocationID()));
+			}
+		}
 		
 		Collections.sort(friendEvents);
 		
@@ -214,15 +228,19 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
 		startActivity(showPictureIntent);
 	}
 	
-	public void showEventPeopleDetail(View view)
+	public void onClickGetEventDetail(View view)
 	{
-		EventDetail eDetail = (EventDetail) view.getTag();
+    	Integer eventID = Integer.parseInt(view.getContentDescription().toString());
     	
     	Intent eventDetail = new Intent(UserProfilePageActivity.this, EventDetailActivity.class);
     	
-    	eventDetail.putExtra("EventID", eDetail.getEventID());
+    	eventDetail.putExtra("EventID", eventID);
+    	
+    	Log.d("Transition", "Started transition to EventDetail");
     	
     	startActivity(eventDetail);
+    	
+    	overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 	}
 
 	public void friendsEvent(UpdatedFriendsEvent evt) {

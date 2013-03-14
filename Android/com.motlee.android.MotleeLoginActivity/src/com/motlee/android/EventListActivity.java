@@ -61,7 +61,7 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
 	public static int SPLASH_PAGE = 1;
 	
 	private EventListAdapter eventListAdapter;
-	private EventListParams currentEventListParams = new EventListParams("All Events", EventServiceBuffer.NO_EVENT_FILTER);
+	private EventListParams currentEventListParams = new EventListParams("Threads", EventServiceBuffer.NO_EVENT_FILTER);
 	
 	private EventListFragment mEventListFragment;
 	
@@ -99,7 +99,6 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
 				refreshListData();
 			}
 		}
-		
 	}	
 	
 	private void refreshListData()
@@ -461,7 +460,7 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
 	        EventListParams params = new EventListParams("Upcoming Events", EventServiceBuffer.MY_EVENTS);
 	    	upcomingFragment.setHeaderView(findViewById(R.id.header));
 	    	upcomingFragment.setEventListParams(params);
-	    	upcomingFragment.setListAdapter(upcomingListAdapter);
+	    	upcomingFragment.addEventListAdapter(upcomingListAdapter);
 	    	upcomingFragment.updateListAdapter(upcomingListAdapter);
 	    	upcomingFragment.showBackButton();
 	    	upcomingFragment.hideProgressBar();

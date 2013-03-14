@@ -29,7 +29,7 @@
  	        android:layout_width="match_parent"
  	        android:layout_height="0dp"
  	        android:layout_weight="0.4"
- 	        android:text="All Events"
+ 	        android:text="Threads"
  	        android:layout_marginBottom="8dp"
  	        android:gravity="bottom|center_horizontal" />
  	</com.motlee.android.layouts.SetWidthRatioLinearLayout>
@@ -37,37 +37,7 @@
 	 	        android:layout_width="match_parent"
 	 	        android:layout_height="wrap_content"
 	 	        android:src="@drawable/main_menu_opened_divider" />
-	 <com.motlee.android.layouts.SetWidthRatioLinearLayout
- 	    android:layout_width="match_parent"
- 	    android:layout_height="wrap_content"
- 	    android:background="@drawable/main_menu_opened_button"
- 	    android:clickable="true"
-        android:onClick="onClickShowMyEvents"
-        android:orientation="vertical" >
-
-	 	    <ImageView
-	 	        android:layout_width="match_parent"
-	 	        android:layout_height="0dp"
-	 	        android:layout_weight="0.6"
-	 	        android:paddingTop="15dp"
-	 	        android:src="@drawable/icon_button_star"
-	 	        android:layout_gravity="bottom" />
-	 	    
-	 	    <TextView
-	 	        android:id="@+id/main_menu_button_star"
-	 	        android:layout_width="match_parent"
-	 	        android:layout_height="0dp"
-	 	        android:layout_weight="0.4"
-	 	        android:text="My Events"
-	 	        android:paddingBottom="8dp"
-	 	        android:gravity="bottom|center_horizontal" />
-
- 	</com.motlee.android.layouts.SetWidthRatioLinearLayout>
- 		 	    	 	    <ImageView
-	 	        android:layout_width="match_parent"
-	 	        android:layout_height="wrap_content"
-	 	        android:src="@drawable/main_menu_opened_divider" />
- 	 <com.motlee.android.layouts.SetWidthRatioLinearLayout
+ 	<com.motlee.android.layouts.SetWidthRatioLinearLayout
  	    android:layout_width="match_parent"
  	    android:layout_height="wrap_content"
  	    android:background="@drawable/main_menu_opened_button"
@@ -91,6 +61,36 @@
 	 	        android:text="Nearby"
 	 	        android:paddingBottom="8dp"
 	 	        android:gravity="bottom|center_horizontal" />
+ 	</com.motlee.android.layouts.SetWidthRatioLinearLayout>
+ 		 	    	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="wrap_content"
+	 	        android:src="@drawable/main_menu_opened_divider" />
+	 <com.motlee.android.layouts.SetWidthRatioLinearLayout
+ 	    android:layout_width="match_parent"
+ 	    android:layout_height="wrap_content"
+ 	    android:background="@drawable/main_menu_opened_button"
+ 	    android:clickable="true"
+        android:onClick="onClickShowMyProfile"
+        android:orientation="vertical" >
+
+	 	    <ImageView
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.6"
+	 	        android:paddingTop="15dp"
+	 	        android:src="@drawable/icon_button_star"
+	 	        android:layout_gravity="bottom" />
+	 	    
+	 	    <TextView
+	 	        android:id="@+id/main_menu_button_star"
+	 	        android:layout_width="match_parent"
+	 	        android:layout_height="0dp"
+	 	        android:layout_weight="0.4"
+	 	        android:text="My Profile"
+	 	        android:paddingBottom="8dp"
+	 	        android:gravity="bottom|center_horizontal" />
+
  	</com.motlee.android.layouts.SetWidthRatioLinearLayout>
  		 	    	 	    <ImageView
 	 	        android:layout_width="match_parent"

@@ -73,7 +73,8 @@ public class EventServiceBuffer extends Object {
 	private static Context mContext;
 	private static ResultReceiver mReceiver;
 	
-    private static final String WEB_SERVICE_URL = "http://www.motleeapp.com/api/";
+    private static final String WEB_SERVICE_URL = "http://staging.motleeapp.com/api/";
+    //private static final String WEB_SERVICE_URL = "http://10.0.2.2:3000/api/";
     private static String AUTH_TOK = "auth_token";
     
     public static final String MY_EVENTS = "me";
@@ -642,6 +643,8 @@ public class EventServiceBuffer extends Object {
 			PhotoItem photo = params.getParcelable("photoObject");
 			
 			params.remove("photoObject");
+			params.putString("access_token", SharePref.getStringPref(mContext, SharePref.ACCESS_TOKEN));
+			params.putString("post_to_fb", "true");
 			
 	        Intent intent = new Intent(mContext, RubyService.class);
 	        intent.setData(Uri.parse(WEB_SERVICE_URL + "events/" + eventID + "/photos"));
@@ -673,6 +676,8 @@ public class EventServiceBuffer extends Object {
 		params.putString("photo[caption]", caption);
 		params.putInt("photo[user_id]", SharePref.getIntPref(mContext, SharePref.USER_ID));
 		params.putString("photo[image]", mCurrentPhotoPath);
+		params.putString("access_token", SharePref.getStringPref(mContext, SharePref.ACCESS_TOKEN));
+		params.putString("post_to_fb", "true");
 		
 		//image.recycle();
 		
@@ -1071,7 +1076,7 @@ public class EventServiceBuffer extends Object {
     public static void getPhotosForEventFromService(int eventID)
     {
         Intent intent = new Intent(mContext, RubyService.class);
-        
+      
         String uri = WEB_SERVICE_URL + "events/" + eventID + "/photos";
         
         intent.setData(Uri.parse(uri));

@@ -48,8 +48,6 @@ public class ZoomActivity extends Activity implements OnTouchListener
     	super.onStart();
     	
     	FlurryAgent.onStartSession(this, getResources().getString(R.string.flurry_key));
-    	
-    	FlurryAgent.setCaptureUncaughtExceptions(false);
     }
     
     @Override

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class EventListParams {
 
-	public String headerText = "All Events";
+	public String headerText = "Threads";
 	public String dataContent = EventServiceBuffer.NO_EVENT_FILTER;
 	public ArrayList<Integer> upcomingEvents = new ArrayList<Integer>();
 	

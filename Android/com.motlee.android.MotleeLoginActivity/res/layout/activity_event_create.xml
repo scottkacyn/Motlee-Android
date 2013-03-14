@@ -25,7 +25,7 @@
                 android:layout_height="match_parent"
                 android:paddingLeft="35dp"
                 android:paddingRight="7dp"
-                android:hint="Event Name"
+                android:hint="Thread Name"
                 android:capitalize="words"
                 android:background="@android:color/transparent" />
             
@@ -65,10 +65,10 @@
                 android:id="@+id/event_create_public_event_header"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.48"
+                android:layout_weight="0.54"
                 android:gravity="center_vertical"
                 style="@style/CodeFont.VeryLarge"
-                android:text="Event Privacy" />
+                android:text="Thread Privacy" />
             
             <ImageButton 
                 android:id="@+id/create_event_info_button"
@@ -84,7 +84,7 @@
             
             <View
                 android:layout_width="0dp"
-                android:layout_weight="0.15"
+                android:layout_weight="0.09"
                 android:layout_height="1dp"
                 android:background="@android:color/transparent" />
             

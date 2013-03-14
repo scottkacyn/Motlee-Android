@@ -16,10 +16,10 @@ import android.widget.TextView;
 
 public class BaseMotleeFragment extends Fragment {
 	
-	public static final String MY_EVENTS = "My Events";
-	public static final String ALL_EVENTS = "All Events";
-	public static final String NEARBY_EVENTS = "Nearby Events";
-	public static final String EDIT_EVENTS = "Edit Events";
+	public static final String MY_EVENTS = "Threads";
+	public static final String ALL_EVENTS = "Threads";
+	public static final String NEARBY_EVENTS = "Nearby";
+	public static final String EDIT_EVENTS = "Edit Thread";
 	public static final String SETTINGS = EDIT_EVENTS;
 	public static final String SEARCH = "Search";
 	public static final String NOTIFICATIONS = "Notifications";
@@ -31,37 +31,37 @@ public class BaseMotleeFragment extends Fragment {
 		if (mHeaderView != null)
 		{
 			ImageView icon = (ImageView) mHeaderView.findViewById(R.id.header_icon);
-			if (headerIcon == MY_EVENTS)
+			if (headerIcon.equals(MY_EVENTS))
 			{
 				icon.setVisibility(View.VISIBLE);
 				icon.setPadding(0, 2, 0, 0);
 				icon.setImageResource(R.drawable.icon_button_star);
 			}
-			else if (headerIcon == ALL_EVENTS)
+			else if (headerIcon.equals(ALL_EVENTS))
 			{
 				icon.setVisibility(View.VISIBLE);
 				icon.setPadding(0, 0, 0, 0);
 				icon.setImageResource(R.drawable.icon_button_all_events);
 			}
-			else if (headerIcon == NEARBY_EVENTS)
+			else if (headerIcon.equals(NEARBY_EVENTS))
 			{
 				icon.setVisibility(View.VISIBLE);
 				icon.setPadding(0, 4, 0, 2);
 				icon.setImageResource(R.drawable.icon_button_map);
 			}
-			else if (headerIcon == EDIT_EVENTS)
+			else if (headerIcon.equals(EDIT_EVENTS))
 			{
 				icon.setVisibility(View.VISIBLE);
 				icon.setPadding(0, 0, 0, 0);
 				icon.setImageResource(R.drawable.icon_button_gear);
 			}
-			else if (headerIcon == NOTIFICATIONS)
+			else if (headerIcon.equals(NOTIFICATIONS))
 			{
 				icon.setVisibility(View.VISIBLE);
 				icon.setPadding(4, 1, 0, 2);
 				icon.setImageResource(R.drawable.icon_button_alert);
 			}
-			else if (headerIcon == SEARCH)
+			else if (headerIcon.equals(SEARCH))
 			{
 				icon.setVisibility(View.VISIBLE);
 				icon.setPadding(0, 0, 0, 0);

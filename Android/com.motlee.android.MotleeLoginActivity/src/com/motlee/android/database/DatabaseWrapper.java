@@ -438,10 +438,18 @@ public class DatabaseWrapper {
 	public Collection<EventDetail> getAllEvents()
 	{
 		try {	
-			return helper.getEventDao().queryForAll();
+			Collection<EventDetail> events = helper.getEventDao().queryForAll();
+			if (events != null)
+			{
+				return events;
+			}
+			else
+			{
+				return new ArrayList<EventDetail>();
+			}
 		} catch (SQLException e) {
 			Log.e("DatabaseWrapper", "Failed to getAllEvents", e);
-			return null;
+			return new ArrayList<EventDetail>();
 		}
 	}
 	
