@@ -18,18 +18,18 @@
 		        android:onClick="onClickGetEventDetail"
 		        android:gravity="top" >
 		        
-    		    <ImageView
+    		    <!-- <ImageView
     		        android:id="@+id/event_header_icon"
 		            android:layout_width="0dp"
 		            android:layout_weight=".06"
 		            android:layout_height="match_parent"
 		            android:src="@drawable/icon_button_gear"
 		            android:scaleType="fitCenter"
-		            android:paddingLeft="3dp"  />
+		            android:paddingLeft="3dp"  /> -->
 		        
 		        <TextView android:id="@+id/event_header_name"
 					android:layout_width="0dp"
-					android:layout_weight="0.82"
+					android:layout_weight="0.78"
 		            android:layout_height="match_parent"
 		            android:gravity="left|center_vertical"
 		            style="@style/CodeFont.Message"
@@ -52,15 +52,17 @@
 		            android:textColor="@color/orange"
 		            android:paddingRight="3dp" /> -->
 		        
-		        <ImageView android:id="@+id/get_event_detail"
+		        <ImageView android:id="@+id/take_photo"
 		            android:layout_width="0dp"
-		            android:layout_weight="0.1"
+		            android:layout_weight="0.2"
 		            android:layout_height="match_parent"
-		            android:src="@drawable/navigation_arrow"
-		            android:padding="6dp"
+		            android:src="@drawable/event_list_camera_button"
+		            android:padding="3dp"
 		            android:scaleType="fitCenter"
 		            android:background="@android:color/transparent"
-		            android:contentDescription="Arrow" />
+		            android:clickable="true"
+		            android:onClick="takePhoto"
+		            android:contentDescription="Camera" />
 		        
 		    </LinearLayout>
 	
@@ -144,14 +146,14 @@
 					android:layout_height="match_parent"
 					android:background="@android:color/transparent" />
 	            
-	            <ImageView 
+	            <!-- <ImageView 
 		            android:id="@+id/pull_out_sliver"
 		            android:layout_height="match_parent"
 		            android:layout_width="wrap_content"
 		            android:scaleType="fitXY"
 		            android:adjustViewBounds="true"
 		            android:src="@drawable/event_list_slide_out_partial"
-		            android:background="@drawable/event_list_background_gradient" />
+		            android:background="@drawable/event_list_background_gradient" /> -->
 		    </RelativeLayout>
 		    
 			<LinearLayout android:id="@+id/event_footer"

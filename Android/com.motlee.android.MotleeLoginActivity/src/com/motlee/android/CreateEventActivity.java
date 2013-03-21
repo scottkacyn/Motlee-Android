@@ -291,8 +291,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
 		alertDialogBuilder
-		.setTitle("What is Thread Privacy?")
-		.setMessage("ON = Thread can only be seen by people you invite. \n \nOFF = Thread can be seen by any of your Facebook friends.")
+		.setTitle("What is Event Privacy?")
+		.setMessage("ON = Event can only be seen by people you invite. \n \nOFF = Event can be seen by any of your Facebook friends.")
 		.setCancelable(true)
 		.setPositiveButton("Ok, Thanks!",new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog,int id) {				
@@ -382,7 +382,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 				
 				if (mEventID != null)
 				{
-					progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Deleting Thread");
+					progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Deleting Event");
 					
 					EventServiceBuffer.setEventDetailListener(eventListener);
 					
@@ -458,7 +458,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	
 	public void onLeftHeaderClick(View view)
 	{
-        progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Creating Thread");
+        progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Creating Event");
         
         EventServiceBuffer.setEventDetailListener(this);
         
@@ -510,7 +510,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
             //ft.remove(searchPeopleFragment)
             //.commit();
             
-            progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Creating Thread");
+            progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Creating Event");
             
             EventServiceBuffer.setEventDetailListener(this);
             
@@ -622,7 +622,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	    	//EventServiceBuffer.setAttendeeListener(attendeeListener);
 	    	
 	    	EventServiceBuffer.updateEventInDatabase(mCreatedEvent, fragment.getLocationInfo());
-	    	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Updating Thread");
+	    	progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Updating Event");
     	}
     	
     }
@@ -725,7 +725,9 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     {
 		public void raised(UpdatedAttendeeEvent e) {
 			
-			if (removedAttendees.size() > 0)
+			endCreateEventActivity();
+			
+			/*if (removedAttendees.size() > 0)
 			{
 				EventServiceBuffer.setAttendeeListener(deleteAttendeeListener);
 				
@@ -734,7 +736,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 			else
 			{
 				endCreateEventActivity();
-			}
+			}*/
 		}
 	};
     
@@ -762,6 +764,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
             	FlurryAgent.logEvent("InvitedFriendsWhileCreating");
             	
                 progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Inviting Friends");
+                
+                EventServiceBuffer.setAttendeeListener(attendeeListener);
                 
                 EventServiceBuffer.sendAttendeesForEvent(mEventID, mEventAttendees, false);
             } 

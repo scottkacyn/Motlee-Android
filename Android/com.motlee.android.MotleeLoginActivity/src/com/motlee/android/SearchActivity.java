@@ -14,12 +14,25 @@ import android.view.View;
 
 public class SearchActivity extends BaseMotleeActivity {
 	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		if (menu == null)
+		{
+	        menu = GlobalActivityFunctions.setUpSlidingMenu(this);
+		}
+	}
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
  
         //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
+        
+        showMenuButtons();
         
         FlurryAgent.logEvent("Search");
         

@@ -45,16 +45,30 @@
 		        android:background="@android:color/transparent" />
 	    </FrameLayout>
         
-         <com.motlee.android.view.VerticalAspectImageButton
-            android:id="@+id/header_menu_button"
-        	android:visibility="gone"
-        	android:layout_height="match_parent"
-        	android:padding="10dp"
-        	android:layout_width="wrap_content"
-        	android:src="@drawable/icon_button_list_view"
-        	android:onClick="onClickOpenMainMenu"
-        	android:layout_alignParentLeft="true" />
-        
+   	    <FrameLayout
+   	        android:layout_height="match_parent"
+	        android:layout_width="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:id="@+id/top_menu_layout_button"
+	        android:visibility="gone">
+		    
+	         <com.motlee.android.view.VerticalAspectImageButton
+	            android:id="@+id/header_menu_button"
+	        	android:layout_height="match_parent"
+	        	android:padding="5dp"
+	        	android:layout_width="wrap_content"
+	        	android:src="@drawable/top_menu_button"
+	        	android:onClick="onClickOpenMainMenu"
+	        	android:layout_alignParentLeft="true" />
+	         
+         	  <View
+			    android:id="@+id/invisible_for_badge_view"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:visibility="gone"
+				android:layout_gravity="left|bottom" />
+	         
+        </FrameLayout>
         <!--<ImageView android:id="@+id/logo"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -94,7 +108,7 @@
         	android:layout_height="match_parent"
         	android:padding="5dp"
         	android:layout_width="wrap_content"
-        	android:src="@drawable/icon_button_create_event"
+        	android:src="@drawable/top_plus_button"
         	android:onClick="onClickCreateEvent"
         	android:layout_alignParentRight="true" />
 	    

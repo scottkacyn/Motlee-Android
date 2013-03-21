@@ -36,7 +36,7 @@ public class DrawableCache {
 		drawables.remove(resource);
 	}
 
-	public static DrawableWithHeight getDrawable(int resource, int width)
+	public static DrawableWithHeight getDrawable(int resource, int height, boolean isHeight)
 	{
 		WeakReference<DrawableWithHeight> wr = drawables.get(resource);
 		
@@ -49,11 +49,25 @@ public class DrawableCache {
 			}
 		}
 		
-		WeakReference<DrawableWithHeight> drawable = new WeakReference<DrawableWithHeight>(scaleBackgroundImage(resource, width));
+		WeakReference<DrawableWithHeight> drawable;
+		
+		if (!isHeight)
+		{
+			drawable = new WeakReference<DrawableWithHeight>(scaleBackgroundImage(resource, height));
+		}
+		else
+		{
+			drawable = new WeakReference<DrawableWithHeight>(scaleBackgroundImageHeight(resource, height));
+		}
 		
 		drawables.put(resource, drawable);
 		
 		return drawable.get();
+	}
+	
+	public static DrawableWithHeight getDrawable(int resource, int width)
+	{
+		return getDrawable(resource, width, false);
 	}
 	
 	/*private static DrawableWithHeight scaleBackgroundImage(Drawable drawable)
@@ -86,6 +100,33 @@ public class DrawableCache {
 		bitmap = null;
 		
 		return new DrawableWithHeight(d, layout_height, width);
+	}
+	
+	private static DrawableWithHeight scaleBackgroundImageHeight(int resource, int height)
+	{
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+		options.inDither = false;
+		Bitmap bitmap = BitmapFactory.decodeResource(mResources, resource, options);
+	
+		float scaleFactor = ((float) height) / bitmap.getHeight();
+
+		Matrix scale = new Matrix();
+		scale.postScale(scaleFactor, scaleFactor);
+		
+		int width = (int)(((float) bitmap.getWidth()) * scaleFactor);
+		bitmap.setHasAlpha(true);
+		bitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
+		
+		//bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), scale, false);
+		
+		BitmapDrawable d = new BitmapDrawable(mResources, bitmap);
+		
+		d.setDither(false);
+		
+		bitmap = null;
+		
+		return new DrawableWithHeight(d, height, width);
 	}
 	
 	/**

@@ -1,0 +1,55 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:layout_weight="1"
+	android:id="@+id/main_frame_layout" >
+	   
+   <RelativeLayout
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+     	 <include layout="@layout/header"
+	         android:id="@+id/header"
+	         android:layout_gravity="top"/>
+     	 <include layout="@layout/event_detail_header"
+	        android:id="@+id/event_detail_header"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@id/header"
+	        android:visibility="gone" />
+	     <RelativeLayout 
+	          android:id="@+id/fragment_content"
+	          android:layout_width="match_parent"
+	          android:layout_height="match_parent"
+	          android:layout_below="@id/event_detail_header"
+	          android:background="@android:color/transparent"/>
+	     
+    </RelativeLayout>
+    
+   <ProgressBar 
+       android:id="@+id/main_progress_bar"
+       android:layout_width="25dp"
+       android:layout_height="25dp"
+       android:layout_gravity="center"
+       android:visibility="gone"/>
+    
+          <include layout="@layout/menu_buttons"
+	          android:id="@+id/menu_buttons"
+	          android:visibility="gone" /> 
+   
+     <!-- <LinearLayout 
+          android:id="@+id/main_menu"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:layout_gravity="left" 
+          android:background="@android:color/transparent"/>
+     
+     <LinearLayout
+         android:id="@+id/plus_menu"
+         android:layout_width="wrap_content"
+         android:layout_height="match_parent"
+         android:layout_gravity="right"
+         android:background="@android:color/transparent"/> -->
+     
+
+</FrameLayout>

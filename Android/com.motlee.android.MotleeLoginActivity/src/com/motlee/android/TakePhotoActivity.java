@@ -306,7 +306,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			TakePhotoFragment takePhotoFragment = new TakePhotoFragment();
 			takePhotoFragment.setHeaderView(findViewById(R.id.header));
 			//takePhotoFragment.setScrollWheelAdapter(mAdapter);
-			takePhotoFragment.setPhotoURI(photoURI);
+			takePhotoFragment.setPhotoURI(Uri.fromFile(new File(photoURI.getPath())));
 			takePhotoFragment.setCameFromEventDetail(cameFromEventDetail);
 			
 			ft.replace(R.id.fragment_content, takePhotoFragment, TAKE_PHOTO_FRAGMENT)
@@ -344,7 +344,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			TakePhotoFragment takePhotoFragment = new TakePhotoFragment();
 			takePhotoFragment.setHeaderView(findViewById(R.id.header));
 			//takePhotoFragment.setScrollWheelAdapter(mAdapter);
-			takePhotoFragment.setPhotoURI(photoURI);
+			takePhotoFragment.setPhotoURI(Uri.fromFile(new File(photoURI.getPath())));
 			takePhotoFragment.setDefaultEvent(mEventId);
 			takePhotoFragment.setCameFromEventDetail(cameFromEventDetail);
 			

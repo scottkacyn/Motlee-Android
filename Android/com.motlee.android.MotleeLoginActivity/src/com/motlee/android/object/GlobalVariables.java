@@ -119,8 +119,8 @@ public class GlobalVariables {
 	private static final int LOCATION_CHANGE_THRESHOLD = 20; //meters
 
 	private static final Location HOME_TAVERN_LOCATION = new Location("") {{
-        setLatitude(41.933096);
-        setLongitude(-87.659931);
+        setLatitude(0);
+        setLongitude(0);
 	}};
 	
 	/*

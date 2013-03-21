@@ -58,7 +58,7 @@ public class ImageAdapter extends BaseAdapter {
     private boolean isAttending;
     private int eventId;
     
-    private FrameLayout mPullOutDrawer;
+    //private FrameLayout mPullOutDrawer;
     
     private DatabaseWrapper dbWrapper;
     
@@ -76,7 +76,7 @@ public class ImageAdapter extends BaseAdapter {
     	
     	maxPhotoSize = SharePref.getIntPref(context, SharePref.MAX_EVENT_LIST_PHOTO_SIZE);
     	
-    	setUpPullOutDrawer();
+    	//setUpPullOutDrawer();
 
     	dbWrapper = new DatabaseWrapper(context.getApplicationContext());
     	
@@ -86,7 +86,7 @@ public class ImageAdapter extends BaseAdapter {
     	}
     }
     
-    private void setUpPullOutDrawer() {
+    /*private void setUpPullOutDrawer() {
 		
 		int imageHeight = maxPhotoSize;
 		
@@ -110,7 +110,7 @@ public class ImageAdapter extends BaseAdapter {
     	
     	//gradient.setSize(headerWidth, imageHeight);
 		
-	}
+	}*/
 
 	public void setEventId(int eventId)
     {
@@ -142,7 +142,7 @@ public class ImageAdapter extends BaseAdapter {
 	    	
 	    	this.mPhotoList.clear();
 	    	
-	    	mPhotoList.add(HEADER);
+	    	//mPhotoList.add(HEADER);
 	    	
 	    	// Set last position in list we load into ImageAdapter
 	    	// Equals MAX_SIZE or total photos size whichever is smaller
@@ -193,7 +193,7 @@ public class ImageAdapter extends BaseAdapter {
     	}
     
     	
-    	if (position == 0)
+    	/*if (position == 0)
     	{
     		contentView = mPullOutDrawer;
     		if (isAttending)
@@ -216,9 +216,9 @@ public class ImageAdapter extends BaseAdapter {
     		}
     	}
     	else
-    	{
+    	{*/
 	    	
-	    	if (mPhotoList.get(position) == NO_PHOTO && position == 1)
+	    	if (mPhotoList.get(position) == NO_PHOTO && position == 0)
 	    	{
 	    		holder.imageView.setVisibility(View.GONE);
 	    		holder.imagePlaceHolder.setVisibility(View.VISIBLE);
@@ -235,7 +235,7 @@ public class ImageAdapter extends BaseAdapter {
 	    		holder.imagePlaceHolder.setLayoutParams(params);
 	    		//holder.imagePlaceHolder.setTag(eventId);
 	    	}
-	    	else if (mPhotoList.get(position) == NO_PHOTO && position > 1)
+	    	else if (mPhotoList.get(position) == NO_PHOTO && position > 0)
 	    	{
 	    		holder.imageView.setVisibility(View.GONE);
 	    		holder.imagePlaceHolder.setVisibility(View.GONE);
@@ -264,7 +264,7 @@ public class ImageAdapter extends BaseAdapter {
 	    		holder.imageView.setVisibility(View.VISIBLE);
 	        	holder.imageView.setTag(mPhotoList.get(position));
 	    	}
-    	}
+    	//}
         
         return contentView;
     }

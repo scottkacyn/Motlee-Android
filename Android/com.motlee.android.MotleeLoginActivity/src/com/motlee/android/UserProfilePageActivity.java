@@ -11,6 +11,8 @@ import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
 import com.motlee.android.fragment.UserProfilePageFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalActivityFunctions;
+import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.TempAttendee;
 import com.motlee.android.object.UserInfo;
@@ -56,6 +58,8 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
         }
         
         setContentView(R.layout.main);
+        
+        //menu = GlobalActivityFunctions.setUpSlidingMenu(this);
         
         dbWrapper = new DatabaseWrapper(this.getApplicationContext());
         
@@ -272,4 +276,11 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
 		finish();
 		
 	}
+	
+    public void takePhoto(View view)
+    {
+    	Integer eventId = (Integer) view.getTag();
+    	
+    	MenuFunctions.takePictureOnPhone(eventId, this);
+    }
 }

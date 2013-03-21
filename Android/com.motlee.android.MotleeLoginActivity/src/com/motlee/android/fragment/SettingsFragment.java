@@ -49,7 +49,7 @@ public class SettingsFragment extends BaseMotleeFragment {
 		
 		setHeaderIcon(SETTINGS);
 		
-		showLeftHeaderButton();
+		//showLeftHeaderButton();
 		
 		return view;
 	}

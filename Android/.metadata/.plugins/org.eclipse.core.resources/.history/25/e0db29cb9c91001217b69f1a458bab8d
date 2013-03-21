@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <FrameLayout
+        android:id="@+id/camera_preview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1" />
+
+    <RelativeLayout 
+        android:id="@+id/camera_controls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/app_background_file">
+    
+	    <ImageButton
+	        android:id="@+id/button_capture"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center"
+	        android:src="@drawable/rotated_camera"
+	        android:scaleType="fitCenter"
+	        android:adjustViewBounds="true"
+	        android:layout_centerInParent="true"
+	        android:background="@android:color/transparent"/>
+	    
+	    <ImageButton
+	        android:id="@+id/upload_button"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+   	        android:layout_gravity="center"
+	        android:src="@drawable/rotated_camera"
+	        android:scaleType="fitCenter"
+	        android:adjustViewBounds="true"
+	        android:layout_above="@id/button_capture"
+	        android:paddingBottom="20dp"
+	        android:background="@android:color/transparent"/>
+	    
+	</RelativeLayout>
+</FrameLayout>

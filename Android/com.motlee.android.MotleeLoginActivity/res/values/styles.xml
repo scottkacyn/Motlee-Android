@@ -7,6 +7,12 @@
         <item name="android:windowAnimationStyle">@null</item>
     </style>
     
+    <style name="app_theme_login_page" parent="android:Theme.NoTitleBar">
+        <item name="android:listViewStyle">@style/TransparentListView</item>
+        <item name="android:expandableListViewStyle">@style/TransparentExpandableListView</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+    
     <style name="app_theme_detail" parent="android:Theme.NoTitleBar">
         <item name="android:windowBackground">@drawable/event_detail_background</item>
         <item name="android:listViewStyle">@style/TransparentListView</item>

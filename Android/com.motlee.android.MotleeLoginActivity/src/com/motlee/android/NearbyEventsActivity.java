@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.SupportMapFragment;
 import com.motlee.android.database.DatabaseWrapper;
+import com.motlee.android.fragment.BaseMotleeFragment;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
 import com.motlee.android.fragment.LocationFragment;
@@ -35,6 +36,17 @@ public class NearbyEventsActivity extends BaseMotleeActivity implements UpdatedE
 	
 	private DatabaseWrapper dbWrapper;
 	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		if (menu == null)
+		{
+	        menu = GlobalActivityFunctions.setUpSlidingMenu(this);
+		}
+	}
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +57,7 @@ public class NearbyEventsActivity extends BaseMotleeActivity implements UpdatedE
         
         dbWrapper = new DatabaseWrapper(getApplicationContext());
         
-        showMenuButtons(BaseMotleeActivity.CREATE_EVENT);
+        showMenuButtons();
         
         showHeader();
         
@@ -69,10 +81,10 @@ public class NearbyEventsActivity extends BaseMotleeActivity implements UpdatedE
 		icon.setImageResource(R.drawable.icon_button_map);
 		
 		TextView tv = (TextView) findViewById(R.id.header_textView);
-		tv.setText("Nearby Events");
+		tv.setText(BaseMotleeFragment.NEARBY_EVENTS);
 		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 		
-		findViewById(R.id.header_left_button).setVisibility(View.VISIBLE);
+		//findViewById(R.id.header_left_button).setVisibility(View.VISIBLE);
     }
 	
 	private OnClickListener plusMenuClick = new OnClickListener(){

@@ -16,10 +16,10 @@ import android.widget.TextView;
 
 public class BaseMotleeFragment extends Fragment {
 	
-	public static final String MY_EVENTS = "Threads";
-	public static final String ALL_EVENTS = "Threads";
+	public static final String MY_EVENTS = "My Streams";
+	public static final String ALL_EVENTS = "All Streams";
 	public static final String NEARBY_EVENTS = "Nearby";
-	public static final String EDIT_EVENTS = "Edit Thread";
+	public static final String EDIT_EVENTS = "Edit Event";
 	public static final String SETTINGS = EDIT_EVENTS;
 	public static final String SEARCH = "Search";
 	public static final String NOTIFICATIONS = "Notifications";

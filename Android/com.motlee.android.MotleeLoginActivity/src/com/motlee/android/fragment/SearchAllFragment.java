@@ -104,8 +104,8 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
 		tv.setText(pageTitle);
 		tv.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		
-		View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
-		headerLeftButton.setVisibility(View.VISIBLE);
+		//View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
+		//headerLeftButton.setVisibility(View.VISIBLE);
 		
 		setEditText();
 		

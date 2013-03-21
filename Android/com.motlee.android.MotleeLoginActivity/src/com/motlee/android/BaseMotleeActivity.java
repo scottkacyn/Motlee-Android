@@ -144,9 +144,25 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
     	
     	View target = findViewById(R.id.invisible_for_badge_view);
     	
-    	target.setLayoutParams(new FrameLayout.LayoutParams((int) (SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH) * 0.15), (int) (SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH) * 0.12), Gravity.BOTTOM|Gravity.LEFT));
+    	target.setLayoutParams(new FrameLayout.LayoutParams((int) (SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH) * 0.15), (int) (SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH) * 0.15), Gravity.BOTTOM|Gravity.LEFT));
     	
     	menuBadge = new BadgeView(this, target);
+    	
+    	menuBadge.setVisibility(View.GONE);
+    	
+		View createEventButton = findViewById(R.id.header_create_event_button);
+		
+		if (createEventButton != null)
+		{
+			createEventButton.setVisibility(View.GONE);
+		}
+		
+		View mainMenuButton = findViewById(R.id.top_menu_layout_button);
+		
+		if (mainMenuButton != null)
+		{
+			mainMenuButton.setVisibility(View.GONE);
+		}
     	
     	Log.d(tag, "finishSetContentView");
     }
@@ -154,6 +170,8 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	Log.d(tag, "onCreate");
+    	
+    	DrawableCache.getInstance(getResources());
     	
     	getWindow().setFormat(PixelFormat.RGBA_8888);
     	getWindow().addFlags(WindowManager.LayoutParams.FLAG_DITHER);
@@ -256,10 +274,27 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
 		MenuFunctions.showNotificationsPage(view, this);
 	}
 	
-	final public void showMenuButtons(int iconToShow)
+	final public void showMenuButtons()
 	{
-		View menuButtons = findViewById(R.id.menu_buttons);
-		if (menuButtons != null)
+		if (menuBadge != null)
+		{
+			menuBadge.setVisibility(View.VISIBLE);
+		}
+		
+		View createEventButton = findViewById(R.id.header_create_event_button);
+		
+		if (createEventButton != null)
+		{
+			createEventButton.setVisibility(View.VISIBLE);
+		}
+		
+		View mainMenuButton = findViewById(R.id.top_menu_layout_button);
+		
+		if (mainMenuButton != null)
+		{
+			mainMenuButton.setVisibility(View.VISIBLE);
+		}
+		/*if (menuButtons != null)
 		{
 			
 			
@@ -279,14 +314,14 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
 				menuButtons.setVisibility(View.VISIBLE);
 				((ImageView) findViewById(R.id.plus_menu_button)).setImageResource(R.drawable.right_menu_button);
 				((ImageView) findViewById(R.id.plus_menu_button)).setClickable(true);
-				((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_photo_icon);
+				//((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_photo_icon);
 				((ImageView) findViewById(R.id.menu_button)).setImageResource(R.drawable.main_menu_button);
 				menuBadge.setVisibility(View.VISIBLE);
 			}
 			else if (iconToShow == JOIN_EVENT)
 			{
 				menuButtons.setVisibility(View.VISIBLE);
-				((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_join_icon);
+				//((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_join_icon);
 				menuBadge.setVisibility(View.VISIBLE);
 			}
 			else if (iconToShow == NOT_APART_OF)
@@ -294,11 +329,11 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
 				//menuButtons.setVisibility(View.GONE);	
 				((ImageView) findViewById(R.id.plus_menu_button)).setImageResource(android.R.color.transparent);
 				((ImageView) findViewById(R.id.plus_menu_button)).setClickable(false);
-				((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(android.R.color.transparent);
+				//((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(android.R.color.transparent);
 				((ImageView) findViewById(R.id.menu_button)).setImageResource(android.R.color.transparent);
 				menuBadge.setVisibility(View.GONE);
 			}
-		}
+		}*/
 	}
 	
 	final public void setActionForRightMenu(OnClickListener listener)

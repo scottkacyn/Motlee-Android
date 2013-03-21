@@ -87,8 +87,6 @@ public class PhotoMapFragment extends SupportMapFragment {
 	
 	private CameraUpdate cameraUpdate;
 	
-	private Marker lastClickedMarker;
-	
 	@Override
 	public void onResume()
 	{
@@ -437,8 +435,6 @@ public class PhotoMapFragment extends SupportMapFragment {
 				
 				getMap().animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 			}*/
-			
-			lastClickedMarker = marker;
 			
 			return true;
 		}

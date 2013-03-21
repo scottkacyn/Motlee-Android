@@ -1,0 +1,465 @@
+/***
+  Copyright (c) 2008-2012 CommonsWare, LLC
+  Licensed under the Apache License, Version 2.0 (the "License"); you may not
+  use this file except in compliance with the License. You may obtain a copy
+  of the License at http://www.apache.org/licenses/LICENSE-2.0. Unless required
+  by applicable law or agreed to in writing, software distributed under the
+  License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
+  OF ANY KIND, either express or implied. See the License for the specific
+  language governing permissions and limitations under the License.
+  
+  From _The Busy Coder's Guide to Advanced Android Development_
+    http://commonsware.com/AdvAndroid
+ */
+
+package com.motlee.android;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import com.motlee.android.object.SharePref;
+import com.motlee.android.view.CameraPreview;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapRegionDecoder;
+import android.graphics.Canvas;
+import android.graphics.ImageFormat;
+import android.graphics.Matrix;
+import android.graphics.PointF;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.hardware.Camera;
+import android.hardware.Camera.PictureCallback;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
+import android.util.FloatMath;
+import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
+import android.widget.RelativeLayout.LayoutParams;
+
+public class CameraActivity extends Activity {
+	
+    static final int NONE = 0;
+    static final int DRAG = 1;
+    static final int ZOOM = 2;
+    int mode = NONE;
+    
+    int mEventId;
+    
+    boolean isZoomSupported = true;
+    
+    // these PointF objects are used to record the point(s) the user is touching
+    PointF start = new PointF();
+    PointF mid = new PointF();
+    float oldDist = 1f;
+    
+    int mZoomMax = 0;
+    int mCurZoom = 0;
+	
+    private Camera mCamera;
+    private CameraPreview mCameraPreview;
+
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.camera_preview);
+        mCamera = getCameraInstance();
+        mCameraPreview = new CameraPreview(this, mCamera);
+        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+        preview.addView(mCameraPreview);
+        
+        mCameraPreview.setOnTouchListener(pinchZoom);
+        //mCameraPreview.set
+
+        mEventId = getIntent().getExtras().getInt("EventId");
+        
+        Camera.Parameters parameters = mCamera.getParameters();
+        
+        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+        
+        parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
+        
+        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+        
+        List<Camera.Size> sizes = parameters.getSupportedPictureSizes();
+        
+        isZoomSupported = parameters.isZoomSupported();
+        
+        if (isZoomSupported)
+        {
+        	mZoomMax = parameters.getMaxZoom();
+        	mCurZoom = parameters.getZoom();
+        }
+        
+        mCamera.setParameters(parameters);
+        
+        RelativeLayout cameraControls = (RelativeLayout) findViewById(R.id.camera_controls);
+        
+        Integer controlsHeight = SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH);
+        Integer controlsWidth = SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_HEIGHT) - controlsHeight;
+        
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(controlsWidth, controlsHeight, Gravity.RIGHT);
+        
+        cameraControls.setLayoutParams(params);
+        
+        ImageButton captureButton = (ImageButton) findViewById(R.id.button_capture);
+        captureButton.setOnClickListener(new View.OnClickListener() {
+            
+            public void onClick(View v) {
+                mCamera.takePicture(null, null, mPicture);
+            }
+        });
+    }
+
+    private View.OnTouchListener pinchZoom = new View.OnTouchListener() {
+		
+		public boolean onTouch(View v, MotionEvent event) {
+
+	        switch (event.getAction() & MotionEvent.ACTION_MASK) 
+	        {
+	            case MotionEvent.ACTION_DOWN:   // first finger down only
+	                                                start.set(event.getX(), event.getY());
+	                                                mode = DRAG;
+	                                                break;
+
+	            case MotionEvent.ACTION_UP: // first finger lifted
+
+	            case MotionEvent.ACTION_POINTER_UP: // second finger lifted
+
+	                                                mode = NONE;
+	                                                break;
+
+	            case MotionEvent.ACTION_POINTER_DOWN: // first and second finger down
+
+	                                                oldDist = spacing(event);
+	                                                if (oldDist > 5f) {
+	                                                    midPoint(mid, event);
+	                                                    mode = ZOOM;
+	                                                }
+	                                                break;
+
+	            case MotionEvent.ACTION_MOVE:
+	            									if (mode == ZOOM) 
+	                                                { 
+	                                                    // pinch zooming
+	                                                    float newDist = spacing(event);
+	                                                    
+	                                                    float zoomDist = newDist - oldDist;
+	                                                    
+	                                                    if (zoomDist > 0)
+	                                                    {
+	                                                    	cameraZoomIn();
+	                                                    }
+	                                                    else
+	                                                    {
+	                                                    	cameraZoomOut();
+	                                                    }
+	                                                }
+	                                                break;
+	        }
+	        
+	        return true; // indicate event was handled
+		}
+	};
+	
+	private void cameraZoomIn()
+	{
+		if (isZoomSupported)
+		{
+			if (mCurZoom < mZoomMax)
+			{
+				mCurZoom++;
+				if (mCamera.getParameters().isSmoothZoomSupported())
+				{
+					mCamera.startSmoothZoom(mCurZoom);
+				}
+				else
+				{
+					Camera.Parameters p = mCamera.getParameters();
+					
+					p.setZoom(mCurZoom);
+					
+					mCamera.setParameters(p);
+					
+					//mCamera.stopPreview();
+
+			        mCamera.startPreview();
+				}
+			}
+		}
+	}
+	
+	private void cameraZoomOut()
+	{
+		if (isZoomSupported)
+		{
+			if (mCurZoom > 0)
+			{
+				mCurZoom--;
+				if (mCamera.getParameters().isSmoothZoomSupported())
+				{
+					mCamera.startSmoothZoom(mCurZoom);
+				}
+				else
+				{
+					Camera.Parameters p = mCamera.getParameters();
+					
+					p.setZoom(mCurZoom);
+					
+					mCamera.setParameters(p);
+					
+					//mCamera.stopPreview();
+
+			        mCamera.startPreview();
+				}
+			}
+		}
+	}
+    
+    /*
+     * --------------------------------------------------------------------------
+     * Method: spacing Parameters: MotionEvent Returns: float Description:
+     * checks the spacing between the two fingers on touch
+     * ----------------------------------------------------
+     */
+
+    private float spacing(MotionEvent event) 
+    {
+        float x = event.getX(0) - event.getX(1);
+        float y = event.getY(0) - event.getY(1);
+        return FloatMath.sqrt(x * x + y * y);
+    }
+
+    /*
+     * --------------------------------------------------------------------------
+     * Method: midPoint Parameters: PointF object, MotionEvent Returns: void
+     * Description: calculates the midpoint between the two fingers
+     * ------------------------------------------------------------
+     */
+
+    private void midPoint(PointF point, MotionEvent event) 
+    {
+        float x = event.getX(0) + event.getX(1);
+        float y = event.getY(0) + event.getY(1);
+        point.set(x / 2, y / 2);
+    }
+	
+    /**
+     * Helper method to access the camera returns null if it cannot get the
+     * camera or does not exist
+     * 
+     * @return
+     */
+    private Camera getCameraInstance() {
+        Camera camera = null;
+        try {
+            camera = Camera.open();
+        } catch (Exception e) {
+            // cannot get camera or does not exist
+        }
+        return camera;
+    }
+    
+	private void saveOutput(Bitmap croppedImage, File file) {
+		
+		Uri mSaveUri = Uri.fromFile(file);
+		
+		if (mSaveUri != null) {
+			OutputStream outputStream = null;
+			try {
+				outputStream = getContentResolver().openOutputStream(mSaveUri);
+				if (outputStream != null) {
+					croppedImage.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+				}
+			} catch (IOException ex) {
+
+			} finally {
+		        if (outputStream == null) return;
+		        try {
+		        	outputStream.close();
+		        } catch (Throwable t) {
+		            // do nothing
+		        }
+			}
+		} else {
+
+		}
+		croppedImage.recycle();
+		
+		Intent intent = new Intent(this, PreviewImageActivity.class);
+		
+		intent.putExtra("EventId", mEventId);
+		intent.putExtra("PhotoPath", file.getPath());
+		
+		finish();
+	}
+
+    PictureCallback mPicture = new PictureCallback() {
+        
+        public void onPictureTaken(byte[] data, Camera camera) {
+            File pictureFile = getOutputMediaFile();
+            if (pictureFile == null) {
+                return;
+            }
+            try {
+                FileOutputStream fos = new FileOutputStream(pictureFile);
+                
+                fos.write(data, 0, data.length);
+                fos.close();
+                
+                Bitmap mBitmap = getBitmap(pictureFile);
+                
+                Rect r = null;
+                
+                if (mBitmap.getWidth() > mBitmap.getHeight())
+                {
+                	r = new Rect(0, 0, mBitmap.getHeight(), mBitmap.getHeight());
+                }
+                else
+                {
+                	r = new Rect(0, 0, mBitmap.getWidth(), mBitmap.getWidth());
+                }
+
+        		int width = r.width();
+        		int height = r.height();
+
+        		// If we are circle cropping, we want alpha channel, which is the
+        		// third param here.
+        		Bitmap croppedImage = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+        		{
+        			Canvas canvas = new Canvas(croppedImage);
+        			Rect dstRect = new Rect(0, 0, width, height);
+        			canvas.drawBitmap(mBitmap, r, dstRect, null);
+        		}
+
+        		saveOutput(croppedImage, pictureFile);
+        		
+                return;
+                
+            } catch (FileNotFoundException e) {
+
+            } catch (IOException e) {
+            }
+        }
+    };
+
+    private Bitmap getBitmap(File file) {
+		Uri uri = Uri.fromFile(file);
+		InputStream in = null;
+		try {
+			int IMAGE_MAX_SIZE = 2048;
+			Display display = getWindowManager().getDefaultDisplay();
+			if (display != null && display.getWidth() > 0)
+			{
+				IMAGE_MAX_SIZE = SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_HEIGHT);
+			}
+			
+			in = getContentResolver().openInputStream(uri);
+			
+			//Decode image size
+	        BitmapFactory.Options o = new BitmapFactory.Options();
+	        o.inJustDecodeBounds = true;
+
+	        BitmapFactory.decodeStream(in, null, o);
+	        in.close();
+
+	        int scale = 1;
+	        if (o.outHeight > IMAGE_MAX_SIZE || o.outWidth > IMAGE_MAX_SIZE) {
+	            scale = (int)Math.pow(2, (int) Math.round(Math.log(IMAGE_MAX_SIZE / (double) Math.max(o.outHeight, o.outWidth)) / Math.log(0.5)));
+	        }
+
+	        BitmapFactory.Options o2 = new BitmapFactory.Options();
+	        o2.inSampleSize = scale;
+	        o2.inPurgeable = true;
+	        o2.inInputShareable = true;
+	        in = getContentResolver().openInputStream(uri);
+	        Bitmap b = BitmapFactory.decodeStream(in, null, o2);
+	        in.close();
+	        
+	        if (b.getWidth() > b.getHeight())
+	        {
+	        	Matrix matrix = new Matrix();
+	            matrix.postScale(1, 1);
+	            matrix.postRotate(90);
+	        	
+	        	b = Bitmap.createBitmap(b, 0, 0, b.getWidth(), b.getHeight(), matrix, false);
+	        }
+			
+			return b;
+		} catch (FileNotFoundException e) {
+
+		} catch (IOException e) {
+			
+		}
+		return null;
+	}
+
+	public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+		
+	    // Raw height and width of image
+	    final int height = options.outHeight;
+	    final int width = options.outWidth;
+	    int inSampleSize = 1;
+	
+	    if (height > reqHeight || width > reqWidth) {
+	        if (width > height) {
+	            inSampleSize = Math.round((float)height / (float)reqHeight);
+	        } else {
+	            inSampleSize = Math.round((float)width / (float)reqWidth);
+	        }
+	    }
+	    return inSampleSize;
+	}
+    
+    private static File getOutputMediaFile() {
+        File mediaStorageDir = new File(
+                Environment
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                "MyCameraApp");
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                Log.d("MyCameraApp", "failed to create directory");
+                return null;
+            }
+        }
+        // Create a media file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
+                .format(new Date());
+        File mediaFile;
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator
+                + "IMG_" + timeStamp + ".jpg");
+
+        return mediaFile;
+    }
+}

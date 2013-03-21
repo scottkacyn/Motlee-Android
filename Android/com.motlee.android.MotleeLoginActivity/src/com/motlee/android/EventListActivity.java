@@ -282,9 +282,9 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
         instance.setHelveticaNeueRegularFont(Typeface.createFromAsset(getAssets(), "fonts/helvetica_neue_regular.ttf"));
         SharePref.setIntPref(getApplicationContext(), SharePref.MAX_EVENT_LIST_PHOTO_SIZE, calculateEventListImageSize());
         
-        GlobalVariables.getInstance().setUpLocationListener(this);
+        GlobalVariables.getInstance().setUpLocationListener(this.getApplicationContext());
         
-        GlobalVariables.getInstance().initializeImageLoader(this);
+        GlobalVariables.getInstance().initializeImageLoader(this.getApplicationContext());
 	}
 	
 	public int calculateEventListImageSize()
@@ -596,7 +596,7 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
 						        	mEventListFragment.hideNoEventHeader();
 						        }
 						        
-						        showMenuButtons(BaseMotleeActivity.CREATE_EVENT);
+						        showMenuButtons();
 						        
 						        setActionForRightMenu(plusMenuClick);
 						        
@@ -652,14 +652,14 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
 									eventListAdapter.notifyDataSetChanged();
 								}
 								
-								if (currentEventListParams.dataContent.equals(EventServiceBuffer.MY_EVENTS))
+								/*if (currentEventListParams.dataContent.equals(EventServiceBuffer.MY_EVENTS))
 								{
 									mEventListFragment.showUpcomingHeader(upcomingIntegers);
 								}
 								else
 								{
 									mEventListFragment.hideUpcomingHeader();
-								}
+								}*/
 								
 								mEventListFragment.setDoneLoading();
 								

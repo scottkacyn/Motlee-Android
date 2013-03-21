@@ -14,8 +14,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
-import com.motlee.android.view.HorizontalListView;
 import com.motlee.android.R;
+import com.devsmart.android.ui.HorizontalListView;
 import com.motlee.android.adapter.ImageAdapter;
 import com.motlee.android.object.FixedViewInfo;
 import com.motlee.android.object.GlobalActivityFunctions;
@@ -123,7 +123,7 @@ public class HorizontalListViewDisallowIntercept extends HorizontalListView impl
 	{
 		mIsAttending = isAttending;
 	}
-
+	
 	public void setEventId(int eventId)
 	{
 		mEventId = eventId;

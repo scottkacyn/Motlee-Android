@@ -223,7 +223,7 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
 		hideNoEventText = true;
 	}
 	
-	public void showUpcomingHeader(ArrayList<Integer> upcomingEvents)
+	/*public void showUpcomingHeader(ArrayList<Integer> upcomingEvents)
 	{
 		if (upcomingEvents.size() > 0)
 		{
@@ -243,7 +243,7 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
 		{
 			upcomingHeader.findViewById(R.id.label_button_content).setVisibility(View.GONE);
 		}
-	}
+	}*/
 	
 	public void showBackButton()
 	{

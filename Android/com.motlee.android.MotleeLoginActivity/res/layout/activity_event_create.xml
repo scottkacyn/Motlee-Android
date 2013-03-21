@@ -25,7 +25,7 @@
                 android:layout_height="match_parent"
                 android:paddingLeft="35dp"
                 android:paddingRight="7dp"
-                android:hint="Thread Name"
+                android:hint="Stream Name"
                 android:capitalize="words"
                 android:background="@android:color/transparent" />
             
@@ -68,7 +68,7 @@
                 android:layout_weight="0.54"
                 android:gravity="center_vertical"
                 style="@style/CodeFont.VeryLarge"
-                android:text="Thread Privacy" />
+                android:text="Event Privacy" />
             
             <ImageButton 
                 android:id="@+id/create_event_info_button"

@@ -16,6 +16,7 @@ import com.flurry.android.FlurryAgent;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.SettingsFragment;
 import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.Settings;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
@@ -65,6 +66,11 @@ public class SettingsActivity extends BaseMotleeActivity implements SettingsList
 		super.onResume();
 		
 		uiHelper.onResume();
+		
+		if (menu == null)
+		{
+	        menu = GlobalActivityFunctions.setUpSlidingMenu(this);
+		}
 	
 		((TextView) findViewById(R.id.header_textView)).setText("Settings");
 		
@@ -76,6 +82,8 @@ public class SettingsActivity extends BaseMotleeActivity implements SettingsList
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.main);
+        
+        showMenuButtons();
         
         FlurryAgent.logEvent("Settings");
         

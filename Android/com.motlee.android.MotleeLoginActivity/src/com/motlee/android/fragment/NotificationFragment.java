@@ -43,7 +43,7 @@ public class NotificationFragment extends BaseMotleeFragment {
 		
 		this.setHeaderIcon(BaseMotleeFragment.NOTIFICATIONS);
 		
-		this.showLeftHeaderButton();
+		//this.showLeftHeaderButton();
 		
 		return view;
 	}

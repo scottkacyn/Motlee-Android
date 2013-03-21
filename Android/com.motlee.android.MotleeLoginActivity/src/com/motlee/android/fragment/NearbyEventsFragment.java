@@ -16,23 +16,33 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.RectF;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.Button;
+import android.widget.FrameLayout;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -58,6 +68,10 @@ private DatabaseWrapper dbWrapper;
 	
 	private HashMap<String, Integer> mIdEventList = new HashMap<String, Integer>();
 	
+	private Button zoomButton;
+	
+	private CameraUpdate cameraUpdate;
+	
 	@Override
 	public void onResume()
 	{
@@ -75,6 +89,17 @@ private DatabaseWrapper dbWrapper;
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		final View view = super.onCreateView(inflater, container, savedInstanceState);
+		
+		zoomButton = new Button(getActivity());
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(DrawableCache.convertDpToPixel(100), DrawableCache.convertDpToPixel(40), Gravity.TOP|Gravity.RIGHT);
+		params.setMargins(0, DrawableCache.convertDpToPixel(10), DrawableCache.convertDpToPixel(10), 0);
+		zoomButton.setLayoutParams(params);
+		zoomButton.setText("Zoom Out");
+		zoomButton.setOnClickListener(zoomOutListener);
+		
+		zoomButton.setVisibility(View.GONE);
+		
+		((ViewGroup) view).addView(zoomButton);
 		
 		setMapTransparent((ViewGroup) view);
 		
@@ -104,6 +129,22 @@ private DatabaseWrapper dbWrapper;
 		
 		return view;
 	}
+	
+	private OnClickListener zoomOutListener = new OnClickListener()
+	{
+
+		public void onClick(View arg0) {
+			
+			if (cameraUpdate != null)
+			{
+				zoomButton.setVisibility(View.GONE);
+				
+				getMap().animateCamera(cameraUpdate);
+			}
+			
+		}
+		
+	};
 	
 	 private void setMapTransparent(ViewGroup group) 
 	 {
@@ -214,9 +255,69 @@ private DatabaseWrapper dbWrapper;
 		}
 	}
 	
+	private OnMarkerClickListener markerClickListener = new OnMarkerClickListener() {
+
+		public boolean onMarkerClick(Marker marker) {
+			
+			/*if (getMap().getCameraPosition().target == marker.getPosition())
+			{
+				getMap().animateCamera(CameraUpdateFactory.zoomBy(2));
+			}
+			else if (getMap().getCameraPosition().zoom > 14)
+			{
+				getMap().animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+			}
+			else
+			{*/
+			
+			zoomButton.setVisibility(View.VISIBLE);
+			
+			marker.showInfoWindow();
+			
+			CameraPosition cameraPosition = CameraPosition.builder().target(marker.getPosition()).zoom(17).build();
+			
+			getMap().animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+			
+			/*if (lastClickedMarker != null)
+			{
+				if (lastClickedMarker.getId().equals(marker.getId()))
+				{
+					if (getMap().getCameraPosition().zoom > 17)
+					{
+						getMap().animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+					}
+					else
+					{
+						CameraPosition cameraPosition = CameraPosition.builder().target(marker.getPosition()).zoom(17).build();
+						
+						getMap().animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+					}
+				}
+				else
+				{					
+					getMap().animateCamera(CameraUpdateFactory.zoomIn());
+					/*CameraPosition cameraPosition = CameraPosition.builder().target(marker.getPosition()).zoom(17).build();
+					
+					getMap().animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+				}
+			}
+			else
+			{
+				CameraPosition cameraPosition = CameraPosition.builder().target(marker.getPosition()).zoom(17).build();
+				
+				getMap().animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+			}*/
+			
+			return true;
+		}
+		
+	};
+	
 	private void initMap() {
 		
 		setUpGoogleMapOnClick();
+		
+		getMap().setOnMarkerClickListener(markerClickListener);
 		
 		photoDistance = new PhotoDistance();
 		
@@ -255,12 +356,14 @@ private DatabaseWrapper dbWrapper;
 			
 			Log.d("PhotoMap", "count: " + count);
 			
-			getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(position, 12));
+			cameraUpdate = CameraUpdateFactory.newLatLngZoom(position, 12);
+			getMap().moveCamera(cameraUpdate);
 		}
 		else
 		{
 			Log.d("PhotoMap", "Center Lat: " + position.latitude + ", Lon: " + position.longitude);
-			getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(position, 12));
+			cameraUpdate = CameraUpdateFactory.newLatLngZoom(position, 12);
+			getMap().moveCamera(cameraUpdate);
 		}
 		
 	}
@@ -380,7 +483,7 @@ private DatabaseWrapper dbWrapper;
 	            	.title(event.getEventName())
 	            	.snippet(dbWrapper.getAttendees(event.getEventID()).size() + " attendees")
 	            	.draggable(false)
-	            	.icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
+	            	.icon(BitmapDescriptorFactory.fromBitmap(drawRectangleAroundBitmap(bitmap))));
 	            	
 	            	mIdEventList.put(marker.getId(), event.getEventID());
             	}
@@ -400,6 +503,20 @@ private DatabaseWrapper dbWrapper;
             	}
             }
         }
+    }
+    
+    private Bitmap drawRectangleAroundBitmap(Bitmap bitmap)
+    {
+    	float twoDp = DrawableCache.convertDpToPixel(3);
+    	
+    	RectF targetRect = new RectF(twoDp, twoDp, bitmap.getWidth() + twoDp, bitmap.getHeight() + twoDp);
+    	Bitmap dest = Bitmap.createBitmap((int) (bitmap.getWidth() + 2 * twoDp), (int) (bitmap.getHeight() + 3 * twoDp), bitmap.getConfig());
+    	Log.d("PhotoMapFragment", "Created bitmap.getWidth(): " + dest.getWidth() + ", bitmap.getHeight(): " + dest.getHeight());
+    	Canvas canvas = new Canvas(dest);
+    	canvas.drawColor(Color.WHITE);
+    	canvas.drawBitmap(bitmap, null, targetRect, null);
+    	
+    	return dest;
     }
 
 	public void addEventDetail(EventDetail eDetail) {

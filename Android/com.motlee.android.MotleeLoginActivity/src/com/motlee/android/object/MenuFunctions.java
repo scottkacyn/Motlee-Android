@@ -1,5 +1,6 @@
 package com.motlee.android.object;
 
+import com.motlee.android.CameraActivity;
 import com.motlee.android.CreateEventActivity;
 import com.motlee.android.EventDetailActivity;
 import com.motlee.android.EventListActivity;
@@ -224,7 +225,16 @@ public class MenuFunctions {
 	
 	public static void takePictureOnPhone(final int eventId, final FragmentActivity activity)
 	{
-		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+		
+		Intent takePhoto = new Intent(activity, CameraActivity.class);
+		
+		takePhoto.putExtra("EventId", eventId);
+		
+		activity.startActivity(takePhoto);
+		
+		activity.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+		
+		/*AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
 				activity);
 		
 		alertDialogBuilder
@@ -235,7 +245,13 @@ public class MenuFunctions {
 				// if this button is clicked, close
 				// current activity
 				
-				Intent takePictureIntent = new Intent(activity, TakePhotoActivity.class);
+				Intent takePhoto = new Intent(activity, CameraActivity.class);
+				
+				takePhoto.putExtra("EventId", eventId);
+				
+				activity.startActivity(takePhoto);
+				
+				/*Intent takePictureIntent = new Intent(activity, TakePhotoActivity.class);
 				takePictureIntent.putExtra("Action", TakePhotoActivity.TAKE_PHOTO);
 				takePictureIntent.putExtra("EventID", eventId);
 				//removePlusMenu(activity);
@@ -287,7 +303,7 @@ public class MenuFunctions {
 		AlertDialog alertDialog = alertDialogBuilder.create();
  
 				// show it
-		alertDialog.show();
+		alertDialog.show(); */
 	}
 	
 	public static void takePictureOnPhone(View view, final FragmentActivity activity)
@@ -317,10 +333,10 @@ public class MenuFunctions {
 		
 		activity.startActivity(intent);
 		
-		if (!((activity instanceof EventListActivity) || (activity instanceof EventDetailActivity)))
+		/*if (!((activity instanceof EventListActivity) || (activity instanceof EventDetailActivity)))
 		{
 			activity.finish();
-		}
+		}*/
 	}
 	
 	public static void showSearchPage(FragmentActivity activity)

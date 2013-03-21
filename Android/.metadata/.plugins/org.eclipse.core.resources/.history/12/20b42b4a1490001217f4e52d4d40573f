@@ -1,0 +1,77 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    android:orientation="vertical"
+    android:background="@android:color/transparent" >
+
+    <TextView 
+        android:id="@+id/first_use_header"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        style="@style/CodeFont.VeryLarge"
+        android:padding="15dp"
+        android:background="@android:color/transparent" />
+    
+    <ImageView 
+        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true" 
+        android:src="@drawable/login_page_middle"/>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="15dp" >
+        
+	    <com.motlee.android.layouts.StretchedBackgroundLinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:background="@drawable/label_button_background" 
+	        android:orientation="vertical" >
+	        
+	   	    <com.facebook.widget.LoginButton
+		        android:id="@+id/auth_button"
+		        android:layout_gravity="center_vertical|center_horizontal"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:gravity="center_vertical|center_horizontal"
+		        android:layout_marginTop="40dp"
+		        android:width="140dp"
+		        android:height="24dp"
+		        android:contentDescription="FacebookLogin" />
+	   	    
+	   	    <ProgressBar 
+		        android:indeterminate="true"
+		        android:id="@+id/progress"
+		        style="?android:attr/progressBarStyle"
+		        android:layout_gravity="center_vertical|center_horizontal"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:gravity="center_vertical|center_horizontal"
+		        android:layout_marginTop="40dp"
+		        android:width="140dp"
+		        android:height="24dp"
+		        android:visibility="gone"/>
+	        
+	   	    <View
+	   	        android:layout_width="match_parent"
+	   	        android:layout_height="5dp"
+	   	        android:background="@android:color/transparent" />
+	   	    
+	   	    <TextView 
+	   	        android:id="@+id/login_text"
+	   	        android:layout_width="match_parent"
+	   	        android:layout_height="wrap_content"
+	   	        android:gravity="center_horizontal"
+	   	        android:lineSpacingMultiplier="1.5"
+	   	        android:text="Don't worry, we aren't going to post anything you don't want to Facebook." />
+	        
+	    </com.motlee.android.layouts.StretchedBackgroundLinearLayout>
+	    
+    </LinearLayout>    
+    
+</LinearLayout>

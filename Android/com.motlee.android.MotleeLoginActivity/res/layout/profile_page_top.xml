@@ -51,7 +51,7 @@
              android:id="@+id/profile_events_text"
         	 android:gravity="top|center_horizontal"
         	 android:paddingBottom="5dp"
-        	 android:text="shared threads"
+        	 android:text="shared events"
         	 style="@style/CodeFont.Small" />
          
      </LinearLayout>    

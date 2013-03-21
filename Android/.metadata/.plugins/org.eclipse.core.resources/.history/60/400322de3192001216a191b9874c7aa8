@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <FrameLayout
+        android:id="@+id/camera_preview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1" />
+
+    <RelativeLayout
+        android:id="@+id/camera_background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/see_through_gray" >
+        
+	    <LinearLayout 
+	        android:id="@+id/camera_controls"
+	        android:layout_width="wrap_content"
+	        android:layout_height="match_parent"
+	        android:layout_centerHorizontal="true"
+	        android:background="@drawable/camera_bottom_bg"
+	        android:weightSum="1"
+	        android:orientation="vertical">
+	    
+	   	    <ImageButton
+		        android:id="@+id/upload_button"
+		        android:layout_width="wrap_content"
+		        android:layout_weight=".3"
+		        android:layout_height="0dp"
+	   	        android:layout_gravity="left"
+		        android:src="@drawable/camera_upload"
+		        android:scaleType="fitCenter"
+		        android:adjustViewBounds="true"
+		        android:layout_alignParentLeft="true"
+		        android:layout_alignParentTop="true"
+		        android:paddingTop="10dp"
+		        android:layout_marginLeft="30dp"
+		        android:paddingLeft="15dp"
+		        android:background="@android:color/transparent"/>
+	        
+		    <ImageButton
+		        android:id="@+id/button_capture"
+		        android:layout_width="wrap_content"
+		        android:layout_weight=".4"
+		        android:layout_height="0dp"
+		        android:layout_gravity="right"
+		        android:src="@drawable/camera_lens"
+		        android:scaleType="fitCenter"
+		        android:adjustViewBounds="true"
+		        android:layout_centerVertical="true"
+		        android:layout_alignParentRight="true"
+		        android:background="@android:color/transparent"/>
+	
+	  	    <ImageButton
+		        android:id="@+id/cancel_button"
+		        android:layout_width="wrap_content"
+		        android:layout_weight=".3"
+		        android:layout_height="0dp"
+	   	        android:layout_gravity="left"
+		        android:src="@drawable/camera_cancel"
+		        android:scaleType="fitCenter"
+		        android:adjustViewBounds="true"
+		        android:paddingBottom="10dp"
+		        android:layout_marginLeft="30dp"
+		        android:paddingLeft="15dp"
+		        android:background="@android:color/transparent"/>
+	   	        
+		    
+		</LinearLayout>
+	</RelativeLayout>
+</FrameLayout>

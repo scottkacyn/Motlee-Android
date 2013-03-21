@@ -1,6 +1,9 @@
 package com.motlee.android;
 
 import com.flurry.android.FlurryAgent;
+import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
+import com.motlee.android.fragment.FirstUseFragment;
+import com.motlee.android.fragment.LoginPageFragment;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.SharePref;
 
@@ -8,13 +11,15 @@ import android.app.Activity;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
-public class FirstUseActivity extends Activity {
+public class FirstUseActivity extends BaseMotleeActivity {
 
 	private static final double leftMargin = .065625;
 	private static final double rightMargin = 1 - leftMargin;
@@ -29,6 +34,8 @@ public class FirstUseActivity extends Activity {
 	
 	private int currentPage = 1;
 	private ImageView image;
+	
+	private FirstUseFragment firstUseFragment;
 	
 	@Override
 	public void onStart()
@@ -50,20 +57,30 @@ public class FirstUseActivity extends Activity {
 	public void onCreate(Bundle savedInstance)
 	{
 		super.onCreate(savedInstance);
-		setContentView(R.layout.first_use_item);
+		setContentView(R.layout.main);
 		
-		DrawableCache.getInstance(getResources());
+		findViewById(R.id.bottom_header).setVisibility(View.GONE);
+		
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        
+        firstUseFragment = new FirstUseFragment();
+        
+        ft.add(R.id.fragment_content, firstUseFragment)
+        .commit();
+		
+		/*DrawableCache.getInstance(getResources());
 		
 		image = (ImageView) findViewById(R.id.first_use_image);
 		image.setImageDrawable(DrawableCache.getDrawable(R.drawable.first_use_1, SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH)).getDrawable());
 		
 		gestureDetector = new GestureDetector(new MyGestureDetector());
 		
-		image.setOnTouchListener(onTouchListener);
+		image.setOnTouchListener(onTouchListener);*/
 		
 	}
 	
-	private View.OnTouchListener onTouchListener = new View.OnTouchListener(){
+	/*private View.OnTouchListener onTouchListener = new View.OnTouchListener(){
 
 		
 		
@@ -190,6 +207,6 @@ public class FirstUseActivity extends Activity {
             return false;
         }
 
-    }
+    }*/
 	
 }

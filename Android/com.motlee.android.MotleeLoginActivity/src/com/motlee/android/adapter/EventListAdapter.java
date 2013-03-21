@@ -167,9 +167,10 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				holder.event_footer_location = (TextView) convertView.findViewById(R.id.event_footer_location);
 				holder.imageAdapter = new ImageAdapter(mContext, R.layout.thumbnail);
 				holder.blank_space = (LinearLayout) convertView.findViewById(R.id.blank_space);
-				holder.event_header_icon = (ImageView) convertView.findViewById(R.id.event_header_icon);
+				//holder.event_header_icon = (ImageView) convertView.findViewById(R.id.event_header_icon);
 				holder.event_footer_people = (TextView) convertView.findViewById(R.id.event_footer_people);
-				holder.drawerHandle = (ImageView) convertView.findViewById(R.id.pull_out_sliver);
+				holder.take_photo = (ImageView) convertView.findViewById(R.id.take_photo);
+				//holder.drawerHandle = (ImageView) convertView.findViewById(R.id.pull_out_sliver);
 				//holder.drawer = (Panel) convertView.findViewById(R.id.drawer);
 				convertView.setTag(holder);
                 
@@ -214,6 +215,8 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 
                 String dateString = DateStringFormatter.getEventDateString(item.getStartTime(), item.getEndTime());
 		        
+                holder.take_photo.setTag(item.getEventID());
+                
 				 holder.blank_space.setVisibility(View.GONE);
 				
 				 holder.event_background.setVisibility(View.VISIBLE);
@@ -247,9 +250,9 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				CharSequence charSequence = Integer.toString(item.getEventID());
 				holder.event_header_button.setContentDescription(charSequence);
 				
-				boolean isAttending = dbWrapper.isAttending(item.getEventID());
+				//boolean isAttending = dbWrapper.isAttending(item.getEventID());
 				
-				if (item.getOwnerID() == SharePref.getIntPref(getContext().getApplicationContext(), SharePref.USER_ID))
+				/*if (item.getOwnerID() == SharePref.getIntPref(getContext().getApplicationContext(), SharePref.USER_ID))
 				{
 					holder.event_header_icon.setVisibility(View.VISIBLE);
 					holder.event_header_icon.setImageDrawable(this.mContext.getResources().getDrawable(R.drawable.icon_button_gear));
@@ -263,7 +266,7 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				{
 					holder.event_header_icon.setVisibility(View.VISIBLE);
 					holder.event_header_icon.setImageDrawable(this.mContext.getResources().getDrawable(R.drawable.icon_button_friends));
-				}
+				}*/
 				
 				// set the value
 				holder.event_header_name.setText(item.getEventName());
@@ -347,14 +350,14 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				
 				holder.imageAdapter.setEventId(item.getEventID());
 				
-				if (isAttending)
+				/*if (isAttending)
 				{
 					holder.imageAdapter.setIsAttending(true);
 				}
 				else
 				{
 					holder.imageAdapter.setIsAttending(false);
-				}
+				}*/
 				
 				ArrayList<String> imageURLs = new ArrayList<String>();
 
@@ -367,10 +370,10 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 
 				holder.imageAdapter.setURLs(photos);
 				
-				holder.list_view.setEventId(item.getEventID());
+				/*holder.list_view.setEventId(item.getEventID());
 				holder.list_view.setIsAttending(isAttending);
 				holder.drawerHandle.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, SharePref.getIntPref(getContext(), SharePref.MAX_EVENT_LIST_PHOTO_SIZE)));
-				holder.list_view.setHandleImage(holder.drawerHandle);
+				holder.list_view.setHandleImage(holder.drawerHandle);*/
 				holder.list_view.reset();
 				
 				if (holder.list_view.getAdapter() == null)
@@ -397,9 +400,10 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
             public RelativeLayout event_background;
             public LinearLayout event_footer_background;
             public LinearLayout blank_space;
-            public ImageView event_header_icon;
+            public ImageView take_photo;
+            //public ImageView event_header_icon;
             public TextView event_footer_people;
-            public ImageView drawerHandle;
+            //public ImageView drawerHandle;
         }
 }
 

@@ -132,7 +132,7 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 		reset();
 	}
 	
-	private synchronized void reset(){
+	public synchronized void reset(){
 		initView();
 		removeAllViewsInLayout();
         requestLayout();

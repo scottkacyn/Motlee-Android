@@ -17,6 +17,7 @@ import com.motlee.android.enums.NotificationObjectType;
 import com.motlee.android.fragment.NotificationFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.Notification;
 import com.motlee.android.object.NotificationList;
 import com.motlee.android.object.PhotoItem;
@@ -29,12 +30,25 @@ public class NotificationActivity extends BaseMotleeActivity {
 	
 	private ArrayList<Integer> users;
 	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		if (menu == null)
+		{
+	        menu = GlobalActivityFunctions.setUpSlidingMenu(this);
+		}
+	}
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
         FlurryAgent.logEvent("Notifications");
+        
+        showMenuButtons();
         
         dbWrapper = new DatabaseWrapper(this.getApplicationContext());
         

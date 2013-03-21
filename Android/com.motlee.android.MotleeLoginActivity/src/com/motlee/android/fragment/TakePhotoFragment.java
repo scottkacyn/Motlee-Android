@@ -63,7 +63,7 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	
 	private EditText photoDescriptionEdit;
 	
-	private URI photoURI;
+	private Uri photoURI;
 	
 	private boolean cameFromEventDetail;
 	
@@ -153,7 +153,7 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 
 			FlurryAgent.logEvent("TakePhoto");
 			
-			File photoFile = new File(photoURI);
+			File photoFile = new File(photoURI.getPath());
 			
 			mLocation = GlobalVariables.getInstance().getLocationInfo();
 			
@@ -315,7 +315,7 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 	private void setUpPicture()
 	{
 		ImageView imageView = (ImageView) view.findViewById(R.id.taken_picture);
-		imageView.setImageURI(Uri.fromFile(new File(photoURI)));
+		imageView.setImageURI(photoURI);
 	}
 	
 	@Override
@@ -337,7 +337,7 @@ public class TakePhotoFragment extends BaseMotleeFragment {
 		
 	}
 
-	public void setPhotoURI(URI photoURI) {
+	public void setPhotoURI(Uri photoURI) {
 		
 		this.photoURI = photoURI;
 		

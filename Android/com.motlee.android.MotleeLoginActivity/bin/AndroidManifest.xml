@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.motlee.android"
-    android:versionCode="8"
-    android:versionName="1.5.1" >    
+    android:versionCode="9"
+    android:versionName="1.5.2" >    
     
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -21,6 +21,7 @@
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
+   	<uses-permission android:name="android.permission.CAMERA" />
     
     <!-- App receives GCM messages. -->
 	<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
@@ -45,11 +46,17 @@
         
         <uses-library android:name="com.google.android.maps"/>
         <uses-feature android:name="android.hardware.camera" />
-        
+        <uses-feature android:name="android.hardware.camera.front"
+                android:required="false" />
+  		<uses-feature android:name="android.hardware.camera.autofocus"
+  		    android:required="false" />
+        <uses-feature android:name="android.hardware.camera.flash"
+            android:required="false" />
+  		
         <activity
             android:name=".MotleeLoginActivity"
             android:label="@string/title_login_page" 
-            android:theme="@style/app_theme"
+            android:theme="@style/app_theme_login_page"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" >
         </activity>
@@ -57,7 +64,7 @@
         <activity
             android:name=".FirstUseActivity"
             android:label="@string/title_first_use_activity" 
-            android:theme="@style/no_anim"
+            android:theme="@style/app_theme"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" >
         </activity>
@@ -74,6 +81,22 @@
             android:name=".TempTakePhotoActivity"
             android:label="@string/title_temp_photo_activity" 
             android:theme="@style/no_anim"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".CameraActivity"
+            android:label="CameraActivity" 
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:launchMode="singleTop"
+            android:screenOrientation="landscape">
+        </activity>
+        
+        <activity
+            android:name=".PreviewImageActivity"
+            android:label="PreviewImageActivity" 
+            android:theme="@style/app_theme"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" >
         </activity>
