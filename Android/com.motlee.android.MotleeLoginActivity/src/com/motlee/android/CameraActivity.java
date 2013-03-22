@@ -30,6 +30,7 @@ import com.motlee.android.object.SharePref;
 import com.motlee.android.view.CameraPreview;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -79,6 +80,8 @@ public class CameraActivity extends Activity {
     int mode = NONE;
     
     int mEventId;
+    
+    ProgressDialog progressDialog;
     
     boolean isZoomSupported = true;
     
@@ -230,6 +233,8 @@ public class CameraActivity extends Activity {
         captureButton.setOnClickListener(new View.OnClickListener() {
             
             public void onClick(View v) {
+            	progressDialog = ProgressDialog.show(CameraActivity.this, "", "");
+            	
                 mCamera.takePicture(null, null, mPicture);
             }
         });
@@ -415,6 +420,8 @@ public class CameraActivity extends Activity {
 		intent.putExtra("EventId", mEventId);
 		intent.putExtra("PhotoPath", file.getPath());
 		
+		progressDialog.dismiss();
+		
 		startActivity(intent);
 		
 		finish();
@@ -423,6 +430,7 @@ public class CameraActivity extends Activity {
     PictureCallback mPicture = new PictureCallback() {
         
         public void onPictureTaken(byte[] data, Camera camera) {
+        	
             File pictureFile = null;
 			try {
 				pictureFile = GlobalVariables.createImageFile(getApplicationContext());
@@ -430,6 +438,7 @@ public class CameraActivity extends Activity {
 			} catch (IOException e1) {
 				Log.e("CameraActivity", "Error loading image file");
 				Toast.makeText(CameraActivity.this, "Cannot access your files can't capture photos.", 2000).show();
+				progressDialog.dismiss();
 				finish();
 			}
             if (pictureFile == null) {
@@ -473,11 +482,13 @@ public class CameraActivity extends Activity {
             } catch (FileNotFoundException e) {
 				Log.e("CameraActivity", "File Not Found", e);
 				Toast.makeText(CameraActivity.this, "Cannot access your files can't capture photos.", 2000).show();
+				progressDialog.dismiss();
 				finish();
 
             } catch (IOException e) {
 				Log.e("CameraActivity", "IOException", e);
 				Toast.makeText(CameraActivity.this, "Error saving photo to phone. Sorry :(", 2000).show();
+				progressDialog.dismiss();
 				finish();
             }
         }
