@@ -25,6 +25,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -39,6 +40,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -68,7 +70,15 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 	
 	private DatabaseWrapper dbWrapper;
 	
+	private boolean forceApartOf = false;
+	
 	private View headerView;
+	
+	private ProgressBar progressBar;
+	
+	private boolean showProgress = false;
+	
+	private Handler handler = new Handler();
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -85,7 +95,10 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		
 		listViewLayout = (ListView) view.findViewById(R.id.event_detail_list_view);
 		//listAdapter = new EventDetailListAdapter(getActivity(), R.layout.event_item_detail_photo, new ArrayList<EventItem>());
-		gridAdapter = new EventDetailGridAdapter(getActivity(), R.layout.event_detail_page_grid, new ArrayList<GridPictures>());
+		if (gridAdapter == null)
+		{
+			gridAdapter = new EventDetailGridAdapter(getActivity(), R.layout.event_detail_page_grid, new ArrayList<GridPictures>());
+		}
 		
 		 myGestureListener = new MyGestureListener(getActivity());
 	        // or if you have already created a Gesture Detector.
@@ -116,34 +129,6 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		//View eventTop = inflater.inflate(R.layout.event_detail_top, null);
 		//listViewLayout.addHeaderView(eventTop);
 		setGridAdapter();
-		
-		if (listViewLayout.getFooterViewsCount() == 0)
-		{
-			setUpFooter();
-		}
-		
-		if (gridAdapter.getCount() == 0 && listViewLayout.getHeaderViewsCount() == 0)
-		{
-			headerView = inflater.inflate(R.layout.event_detail_no_photo_header, null);
-			
-			TextView text = (TextView) headerView.findViewById(R.id.event_detail_no_photo_text);
-			text.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-			if (!dbWrapper.isAttending(mEventDetail.getEventID()))
-			{
-				text.setText(R.string.no_photo_friend_text);
-				headerView.findViewById(R.id.event_detail_no_photo_button).setVisibility(View.GONE);
-			}
-			else
-			{
-				text.setText(R.string.no_photo_text);
-				headerView.findViewById(R.id.event_detail_no_photo_button).setVisibility(View.VISIBLE);
-			}
-			
-			headerView.findViewById(R.id.event_detail_no_photo_button).setOnClickListener(takePhotoListener);
-			listViewLayout.addHeaderView(headerView);
-		}
-		
-		listViewLayout.setAdapter(gridAdapter);
 
 	}
 	
@@ -159,6 +144,18 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		
 		dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
 		
+		progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+		
+		if (savedInstanceState != null)
+		{
+			Integer eventId = savedInstanceState.getInt("EventID");
+			if (eventId != null)
+			{
+				mEventDetail = dbWrapper.getEvent(eventId);
+			}
+		}
+		
+		showProgress = true;
 		//listViewLayout.setOnTouchListener(touchListener);
 		
 		//eventInfoLayout = (TableLayout) eventTop.findViewById(R.id.event_detail_info);
@@ -213,15 +210,18 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 	
 	private void setUpFooter() {
 		
-		LinearLayout blank = new LinearLayout(getActivity());
-		
-		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.event_list_load_more, GlobalVariables.DISPLAY_WIDTH);
-		
-		blank.setLayoutParams(new ListView.LayoutParams(drawable.getWidth(), drawable.getHeight()));
-		
-		blank.setBackgroundColor(android.R.color.transparent);
-				
-		listViewLayout.addFooterView(blank);
+		if (getActivity() != null)
+		{
+			LinearLayout blank = new LinearLayout(getActivity());
+			
+			DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.camera_bottom_flat_bg, GlobalVariables.DISPLAY_WIDTH);
+			
+			blank.setLayoutParams(new ListView.LayoutParams(drawable.getWidth(), drawable.getHeight()));
+			
+			blank.setBackgroundColor(android.R.color.transparent);
+					
+			listViewLayout.addFooterView(blank);
+		}
 		
 	}
 
@@ -294,6 +294,7 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		
 		if (view != null)
 		{
+			showProgress = false;
 			setGridAdapter();
 			
 			if (gridAdapter.getCount() > 0)
@@ -485,50 +486,118 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 	
 	public void setGridAdapter()
 	{
-		GridPictures gridPictures = new GridPictures();
-		
-		ArrayList<GridPictures> gridList = new ArrayList<GridPictures>();
-		
-		ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>(dbWrapper.getPhotos(mEventDetail.getEventID()));
-		
-		int imageCount = photos.size();
-		
-		List<EventItem> storyPhotoList = new ArrayList<EventItem>();
-		
-		storyPhotoList.addAll(photos);
-		
-		Collections.sort(storyPhotoList);
-		
-		PhotoItem[] imageArray = (PhotoItem[])storyPhotoList.toArray(new PhotoItem[imageCount]);
-		
-		for (int i = 0; i < imageCount; i++)
+		if (showProgress && progressBar != null)
 		{
-			if (i%3 == 0)
-			{
-				gridPictures = new GridPictures();
-				gridPictures.image1 = imageArray[i];
-			}
-			
-			if (i%3 == 1)
-			{
-				gridPictures.image2 = imageArray[i];
-			}
-			
-			if (i%3 == 2)
-			{
-				gridPictures.image3 = imageArray[i];
-			}
-			
-			if (i%3 == 2 || imageCount - 1 == i)
-			{
-				gridList.add(gridPictures);
-			}
+			progressBar.setVisibility(View.VISIBLE);
 		}
 		
-		if (gridAdapter != null)
-		{
-			gridAdapter.replaceData(gridList);
-		}
+		Thread thread = new Thread(new Runnable(){
+
+			public void run() {
+				
+				GridPictures gridPictures = new GridPictures();
+				
+				ArrayList<GridPictures> gridList = new ArrayList<GridPictures>();
+				
+				ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>(dbWrapper.getPhotos(mEventDetail.getEventID()));
+				
+				int imageCount = photos.size();
+				
+				List<EventItem> storyPhotoList = new ArrayList<EventItem>();
+				
+				storyPhotoList.addAll(photos);
+				
+				Collections.sort(storyPhotoList);
+				
+				PhotoItem[] imageArray = (PhotoItem[])storyPhotoList.toArray(new PhotoItem[imageCount]);
+				
+				for (int i = 0; i < imageCount; i++)
+				{
+					if (i%3 == 0)
+					{
+						gridPictures = new GridPictures();
+						gridPictures.image1 = imageArray[i];
+					}
+					
+					if (i%3 == 1)
+					{
+						gridPictures.image2 = imageArray[i];
+					}
+					
+					if (i%3 == 2)
+					{
+						gridPictures.image3 = imageArray[i];
+					}
+					
+					if (i%3 == 2 || imageCount - 1 == i)
+					{
+						gridList.add(gridPictures);
+					}
+				}
+				
+				final ArrayList<GridPictures> finalGridList = new ArrayList<GridPictures>(gridList);
+				
+				handler.post(new Runnable() {
+
+					public void run() 
+					{
+						if (gridAdapter != null)
+						{
+							if (listViewLayout != null)
+							{
+								if (listViewLayout.getAdapter() == null)
+								{
+									gridAdapter.replaceData(finalGridList);
+									
+									if (listViewLayout.getFooterViewsCount() == 0)
+									{
+										setUpFooter();
+									}
+									
+									//setHeaderIcon(mEventDetail, getActivity());
+									
+									if (gridAdapter.getCount() == 0 && listViewLayout.getHeaderViewsCount() == 0)
+									{
+										headerView = inflater.inflate(R.layout.event_detail_no_photo_header, null);
+										
+										TextView text = (TextView) headerView.findViewById(R.id.event_detail_no_photo_text);
+										text.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+										if (!dbWrapper.isAttending(mEventDetail.getEventID()))
+										{
+											text.setText(R.string.no_photo_friend_text);
+											headerView.findViewById(R.id.event_detail_no_photo_button).setVisibility(View.GONE);
+										}
+										else
+										{
+											text.setText(R.string.no_photo_text);
+											headerView.findViewById(R.id.event_detail_no_photo_button).setVisibility(View.VISIBLE);
+										}
+										
+										headerView.findViewById(R.id.event_detail_no_photo_button).setOnClickListener(takePhotoListener);
+										listViewLayout.addHeaderView(headerView);
+									}
+									
+									listViewLayout.setAdapter(gridAdapter);
+								}
+								else
+								{
+									gridAdapter.replaceData(finalGridList);
+								}
+							}
+						}
+						
+						if (progressBar != null)
+						{
+							progressBar.setVisibility(View.GONE);
+						}
+					}
+					
+				});
+			}
+			
+		});
+		
+		thread.start();
 	}
 	
 	public void addGridToTableLayout()
@@ -555,6 +624,13 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 		gridAdapter.notifyDataSetChanged();
 	}
 	
+    @Override
+	public void onSaveInstanceState(Bundle outState) {
+    	
+    	outState.putInt("EventID", mEventDetail.getEventID());
+    	
+        super.onSaveInstanceState(outState);
+    }
 	
     public boolean onTouchEvent(MotionEvent event) {
         // or implement in activity or component. When your not assigning to a child component.
@@ -605,9 +681,6 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 
             return super.onSingleTapConfirmed(e);
         }
-
-
-
 
 
         public boolean onTouch(View v, MotionEvent event) {

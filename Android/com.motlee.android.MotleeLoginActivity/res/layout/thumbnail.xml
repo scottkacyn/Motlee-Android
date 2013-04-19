@@ -17,20 +17,52 @@
 	        android:layout_width="wrap_content"
 	        android:adjustViewBounds="true"
 	        android:scaleType="fitXY" />
-	        <!--  android:onClick="showPictureDetail"
-	        android:clickable="false"
-	        android:longClickable="true" -->
+	    
+	    <ProgressBar 
+	        android:layout_width="80dp"
+	        android:layout_height="20dp"
+	        android:padding="5dp"
+	        android:layout_gravity="center"
+	        android:progress="0"
+	        android:id="@+id/image_spinner"
+	        android:indeterminate="false"
+	        style="@android:style/Widget.ProgressBar.Horizontal"
+	        android:visibility="gone"/>
+	    
+	    <FrameLayout
+	        android:id="@+id/image_final"
+	        android:layout_width="50dp"
+	        android:layout_height="50dp"
+	        android:layout_gravity="center"
+	        android:visibility="gone">
 	        
-	    <!-- <ImageView
-	        android:id="@+id/imageProfilePic"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:background="#000000"
-	        android:paddingTop="2dp"
-	        android:paddingLeft="2dp"
-	        android:layout_gravity="bottom|right"
-	       	android:adjustViewBounds="true"
-	        android:scaleType="fitXY" /> -->
+	        <ImageView
+	            android:layout_width="35dp"
+	            android:layout_height="35dp"
+	            android:scaleType="fitCenter"
+	            android:adjustViewBounds="true"
+	            android:src="@drawable/ic_menu_upload"
+	            android:layout_gravity="center"
+	            android:background="@android:color/transparent" />
+	        
+	        <ProgressBar 
+		        android:layout_width="50dp"
+		        android:layout_height="50dp"
+		        android:layout_gravity="center"/>
+
+	    </FrameLayout>
+	    
+	    <ImageButton 
+	        android:layout_width="35dp"
+	        android:layout_height="35dp"
+	        android:layout_gravity="center"
+	        android:id="@+id/image_retry"
+	        android:visibility="gone"
+	        android:scaleType="fitCenter"
+	        android:adjustViewBounds="true"
+	        android:src="@drawable/ic_menu_refresh"
+	        android:onClick="retryPhotoUpload"
+			android:background="@android:color/transparent"/>
         
     </FrameLayout>
     

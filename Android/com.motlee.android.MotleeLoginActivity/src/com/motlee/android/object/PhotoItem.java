@@ -19,6 +19,9 @@ public class PhotoItem extends EventItem {
 	@DatabaseField(columnName = "image_file_name", dataType = DataType.STRING)
 	public String image_file_name;
 	
+	@DatabaseField(columnName = "local_store", dataType = DataType.STRING)
+	public String local_store = "";
+	
 	@DatabaseField(columnName = "lat", dataType = DataType.DOUBLE)
 	public double lat;
 	
@@ -29,6 +32,15 @@ public class PhotoItem extends EventItem {
 	@DatabaseField(foreign = true, canBeNull = false, columnName = "event_detail")
 	public EventDetail event_detail;
 	
+	@DatabaseField(columnName = "failed_upload", dataType = DataType.BOOLEAN_OBJ)
+	public Boolean failed_upload = false;
+	
+	@DatabaseField(columnName = "upload_progress", dataType = DataType.INTEGER_OBJ)
+	public Integer upload_progress = -1;
+	
+	@DatabaseField(columnName = "is_uploading", dataType = DataType.BOOLEAN_OBJ)
+	public Boolean is_uploading = false;
+	
 	public PhotoItem()
 	{
 		super();
@@ -38,6 +50,9 @@ public class PhotoItem extends EventItem {
 	public PhotoItem(Integer eventID, EventItemType type,
 			Integer userID, Date timeCreated, String caption, String imageFileName) {
 		super(eventID, type, userID, timeCreated);
+		
+		this.caption = caption;
+		
 		
 		this.image_file_name = imageFileName;
 		this.location = new LocationInfo();

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -57,18 +58,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapController;
-import com.google.android.maps.MapView;
-import com.google.android.maps.Overlay;
 import com.motlee.android.R;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
-import com.motlee.android.object.NonClickableItemizedOverlay;
-import com.motlee.android.object.OverlayItemWithEventID;
 import com.motlee.android.object.PhotoItem;
 
 public class PhotoMapFragment extends SupportMapFragment {
@@ -86,6 +81,8 @@ public class PhotoMapFragment extends SupportMapFragment {
 	private Button zoomButton;
 	
 	private CameraUpdate cameraUpdate;
+	
+	private View view;
 	
 	@Override
 	public void onResume()
@@ -133,7 +130,7 @@ public class PhotoMapFragment extends SupportMapFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		final View view = super.onCreateView(inflater, container, savedInstanceState);
+		view = super.onCreateView(inflater, container, savedInstanceState);
 		
 		zoomButton = new Button(getActivity());
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(DrawableCache.convertDpToPixel(100), DrawableCache.convertDpToPixel(40), Gravity.TOP|Gravity.RIGHT);
@@ -458,7 +455,9 @@ public class PhotoMapFragment extends SupportMapFragment {
 			
 			if (mEventDetail != null)
 			{
-				Collection<PhotoItem> photos = dbWrapper.getPhotos(mEventDetail.getEventID());
+				ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>(dbWrapper.getPhotos(mEventDetail.getEventID()));
+				
+				Collections.sort(photos);
 				
 				photoDistance = new PhotoDistance();
 			
@@ -484,6 +483,11 @@ public class PhotoMapFragment extends SupportMapFragment {
 							photoDistance.calculateDistance(photo);
 							BitmapDownloaderTask task = new BitmapDownloaderTask(photo);
 							task.execute(GlobalVariables.getInstance().getAWSUrlThumbnail(photo));
+						}
+						
+						if (count > 25)
+						{
+							break;
 						}
 					}
 					
@@ -527,6 +531,15 @@ public class PhotoMapFragment extends SupportMapFragment {
 	}
 	
     Bitmap downloadBitmap(String url) {
+    	
+    	
+    	Bitmap bitmap = GlobalVariables.getInstance().getThumbnailBitmap(url);
+    	
+    	if (bitmap != null)
+    	{
+    		return Bitmap.createScaledBitmap(bitmap, DrawableCache.convertDpToPixel(50), DrawableCache.convertDpToPixel(50), false);
+    	}
+    	
         final int IO_BUFFER_SIZE = 4 * 1024;
 
         // AndroidHttpClient is not allowed to be used from the main thread
@@ -549,7 +562,7 @@ public class PhotoMapFragment extends SupportMapFragment {
                     inputStream = entity.getContent();
                     // return BitmapFactory.decodeStream(inputStream);
                     // Bug on slow connections, fixed in future release.
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    bitmap = BitmapFactory.decodeStream(inputStream);
                     return Bitmap.createScaledBitmap(bitmap, DrawableCache.convertDpToPixel(50), DrawableCache.convertDpToPixel(50), false);
                 } finally {
                     if (inputStream != null) {
@@ -610,12 +623,15 @@ public class PhotoMapFragment extends SupportMapFragment {
             {
             	if (getMap() != null)
             	{
-	            	getMap().addMarker(new MarkerOptions()
-	            	.position(new LatLng(photo.lat, photo.lon))
-	            	.title(dbWrapper.getUser(photo.user_id).name)
-	            	.snippet(photo.caption)
-	            	.draggable(false)
-	            	.icon(BitmapDescriptorFactory.fromBitmap(drawRectangleAroundBitmap(bitmap))));
+            		if (dbWrapper.getUser(photo.user_id) != null)
+            		{
+		            	getMap().addMarker(new MarkerOptions()
+		            	.position(new LatLng(photo.lat, photo.lon))
+		            	.title(dbWrapper.getUser(photo.user_id).name)
+		            	.snippet(photo.caption)
+		            	.draggable(false)
+		            	.icon(BitmapDescriptorFactory.fromBitmap(drawRectangleAroundBitmap(bitmap))));
+            		}
             	}
             }
         }
@@ -644,5 +660,13 @@ public class PhotoMapFragment extends SupportMapFragment {
 			hasInitializedMap = false;
 			initMap();
 		}
+	}
+	
+	@Override
+	public void onDestroy()
+	{
+		((ViewGroup) view).removeView(zoomButton);
+		
+		super.onDestroy();
 	}
 }

@@ -3,9 +3,8 @@
 	android:layout_width="wrap_content"
 	android:layout_height="match_parent"
 	android:orientation="vertical"
-	android:paddingTop="10dp"
+	android:paddingTop="18dp"
 	android:paddingRight="10dp"
-	android:paddingBottom="6dp"
 	android:background="@drawable/main_menu_background">
 
 	 <com.motlee.android.layouts.SetWidthRatioLinearLayout
@@ -30,8 +29,9 @@
  	        android:layout_height="0dp"
  	        android:layout_weight="0.4"
  	        android:text="All Streams"
+ 	        style="@style/CodeFont"
  	        android:layout_marginBottom="8dp"
- 	        android:gravity="bottom|center_horizontal" />
+ 	        android:gravity="center" />
  	</com.motlee.android.layouts.SetWidthRatioLinearLayout>
  		 	    	 	    <ImageView
 	 	        android:layout_width="match_parent"
@@ -60,7 +60,8 @@
 	 	        android:layout_weight="0.4"
 	 	        android:text="My Streams"
 	 	        android:paddingBottom="8dp"
-	 	        android:gravity="bottom|center_horizontal" />
+	 	        style="@style/CodeFont"
+	 	        android:gravity="center" />
 
  	</com.motlee.android.layouts.SetWidthRatioLinearLayout>
  		 	    	 	    <ImageView
@@ -89,8 +90,9 @@
 	 	        android:layout_height="0dp"
 	 	        android:layout_weight="0.4"
 	 	        android:text="Nearby"
+	 	        style="@style/CodeFont"
 	 	        android:paddingBottom="8dp"
-	 	        android:gravity="bottom|center_horizontal" />
+	 	        android:gravity="center" />
  	</com.motlee.android.layouts.SetWidthRatioLinearLayout>
  		 	    	 	    <ImageView
 	 	        android:layout_width="match_parent"
@@ -131,8 +133,9 @@
 	 	        android:layout_height="0dp"
 	 	        android:layout_weight="0.4"
 	 	        android:text="Notifications"
+	 	        style="@style/CodeFont"
 	 	        android:paddingBottom="8dp"
-	 	        android:gravity="bottom|center_horizontal" />
+	 	        android:gravity="center" />
  	</com.motlee.android.layouts.SetWidthRatioLinearLayout>
  		 	    	 	    <ImageView
 	 	        android:layout_width="match_parent"
@@ -152,7 +155,7 @@
 	 	        android:layout_height="0dp"
 	 	        android:layout_weight="0.6"
 	 	        android:paddingTop="15dp"
-	 	        android:src="@drawable/icon_button_search"
+	 	        android:src="@drawable/icon_button_friends"
 	 	        android:layout_gravity="center" />
 	 	    
 	 	    <TextView
@@ -160,9 +163,10 @@
 	 	        android:layout_width="match_parent"
 	 	        android:layout_height="0dp"
 	 	        android:layout_weight="0.4"
-	 	        android:text="Search"
+	 	        android:text="Friends"
+	 	        style="@style/CodeFont"
 	 	        android:layout_marginBottom="8dp"
-	 	        android:gravity="bottom|center_horizontal" />
+	 	        android:gravity="center" />
  	</com.motlee.android.layouts.SetWidthRatioLinearLayout>
  		 	    	 	    <ImageView
 	 	        android:layout_width="match_parent"
@@ -181,6 +185,8 @@
 	 	        android:layout_height="0dp"
 	 	        android:layout_weight="0.6"
 	 	        android:paddingTop="15dp"
+	 	        android:scaleType="fitCenter"
+	 	        android:adjustViewBounds="true"
 	 	        android:src="@drawable/icon_button_gear"
 	 	        android:layout_gravity="bottom" />
 	 	    
@@ -190,7 +196,8 @@
 	 	        android:layout_height="0dp"
 	 	        android:layout_weight="0.4"
 	 	        android:text="Settings"
+	 	        style="@style/CodeFont"
 	 	        android:layout_marginBottom="8dp"
-	 	        android:gravity="bottom|center_horizontal" />
+	 	        android:gravity="center" />
  	</com.motlee.android.layouts.SetWidthRatioLinearLayout>
 </com.motlee.android.layouts.VerticalRatioLinearLayout>

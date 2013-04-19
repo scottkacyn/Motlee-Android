@@ -11,6 +11,7 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,6 +24,7 @@ public class BaseMotleeFragment extends Fragment {
 	public static final String SETTINGS = EDIT_EVENTS;
 	public static final String SEARCH = "Search";
 	public static final String NOTIFICATIONS = "Notifications";
+	public static final String UPLOAD = "Upload";
 	
 	protected View mHeaderView;
 	
@@ -67,34 +69,43 @@ public class BaseMotleeFragment extends Fragment {
 				icon.setPadding(0, 0, 0, 0);
 				icon.setImageResource(R.drawable.icon_button_search);
 			}
+			else if (headerIcon.equals(UPLOAD))
+			{
+				icon.setVisibility(View.VISIBLE);
+				icon.setPadding(0, 0, 0, 0);
+				icon.setImageResource(R.drawable.icon_button_take_picture);
+			}
 		}
 	}
 	
 	protected void setHeaderIcon(EventDetail eDetail, Context context)
 	{
-		ImageView icon = (ImageView) mHeaderView.findViewById(R.id.header_icon);
-		
-		if (eDetail.getOwnerID() == SharePref.getIntPref(context, SharePref.USER_ID))
+		if (mHeaderView != null)
 		{
-			icon.setVisibility(View.VISIBLE);
-			icon.setPadding(2, 2, 0, 2);
-			icon.setImageResource(R.drawable.icon_button_gear);
-		}
-		else
-		{			
-			DatabaseWrapper dbWrapper = new DatabaseWrapper(context.getApplicationContext());
+			ImageView icon = (ImageView) mHeaderView.findViewById(R.id.header_icon);
 			
-			if (dbWrapper.isAttending(eDetail.getEventID()))
+			if (eDetail.getOwnerID() == SharePref.getIntPref(context, SharePref.USER_ID))
 			{
 				icon.setVisibility(View.VISIBLE);
-				icon.setPadding(2, 2, 0, 0);
-				icon.setImageResource(R.drawable.icon_button_star);
+				icon.setPadding(2, 2, 0, 2);
+				icon.setImageResource(R.drawable.icon_button_gear);
 			}
 			else
-			{
-				icon.setVisibility(View.VISIBLE);
-				icon.setPadding(4, 2, 0, 4);
-				icon.setImageResource(R.drawable.icon_button_friends);
+			{			
+				DatabaseWrapper dbWrapper = new DatabaseWrapper(context.getApplicationContext());
+				
+				if (dbWrapper.isAttending(eDetail.getEventID()))
+				{
+					icon.setVisibility(View.VISIBLE);
+					icon.setPadding(2, 2, 0, 0);
+					icon.setImageResource(R.drawable.icon_button_star);
+				}
+				else
+				{
+					icon.setVisibility(View.VISIBLE);
+					icon.setPadding(4, 2, 0, 4);
+					icon.setImageResource(R.drawable.icon_button_friends);
+				}
 			}
 		}
 	}
@@ -116,9 +127,12 @@ public class BaseMotleeFragment extends Fragment {
 	
 	protected void showLeftHeaderButton()
 	{
-		mHeaderView.findViewById(R.id.header_left_button).setVisibility(View.VISIBLE);
+		if (mHeaderView != null)
+		{
+			mHeaderView.findViewById(R.id.header_left_button).setVisibility(View.VISIBLE);
 		
-		mHeaderView.findViewById(R.id.header_menu_button).setVisibility(View.GONE);
+			mHeaderView.findViewById(R.id.header_menu_button).setVisibility(View.GONE);
+		}
 	}
 	
 	protected void showMenuHeaderButton()
@@ -163,6 +177,37 @@ public class BaseMotleeFragment extends Fragment {
 		TextView headerRightButtonText = (TextView) mHeaderView.findViewById(R.id.header_left_text);
 		headerRightButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 		headerRightButtonText.setText(buttonText);
+	}
+	
+	protected void showLeftOrangeButton(String buttonText, OnClickListener listener)
+	{
+		View headerRightButtonlayout = mHeaderView.findViewById(R.id.header_left_layout_button);
+		headerRightButtonlayout.setVisibility(View.VISIBLE);
+		
+		mHeaderView.findViewById(R.id.header_create_event_button).setVisibility(View.GONE);
+		
+		ImageButton headerRightButton = (ImageButton) mHeaderView.findViewById(R.id.header_left_square_button);
+		headerRightButton.setImageResource(R.drawable.button_orange);
+		headerRightButton.setOnClickListener(listener);
+		headerRightButton.setTag(buttonText);
+		
+		TextView headerRightButtonText = (TextView) mHeaderView.findViewById(R.id.header_left_text);
+		headerRightButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		headerRightButtonText.setText(buttonText);
+	}
+	
+	protected void showRightOrangeButton(String buttonText, OnClickListener listener)
+	{
+		showRightHeaderButton(buttonText);
+		ImageButton rightButton = (ImageButton) mHeaderView.findViewById(R.id.header_right_button);
+		rightButton.setImageResource(R.drawable.button_orange);
+		rightButton.setOnClickListener(listener);
+	}
+	
+	protected void showLeftHeaderButton(String buttonText, OnClickListener onClickListener)
+	{
+		showLeftHeaderButton(buttonText);
+		mHeaderView.findViewById(R.id.header_left_square_button).setOnClickListener(onClickListener);
 	}
 	
 	protected void showRightHeaderButton(String buttonText, OnClickListener onClickListener)

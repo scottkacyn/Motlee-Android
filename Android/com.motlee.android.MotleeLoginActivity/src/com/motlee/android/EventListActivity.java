@@ -1,10 +1,15 @@
 package com.motlee.android;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,11 +22,13 @@ import com.facebook.Session;
 import com.facebook.SessionState;
 import com.flurry.android.FlurryAgent;
 import com.google.android.gcm.GCMRegistrar;
+import com.motlee.android.EventDetailActivity.MyTimerTask;
 import com.motlee.android.adapter.EventListAdapter;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.BaseMotleeFragment;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
+import com.motlee.android.fragment.EventDetailFragment;
 import com.motlee.android.fragment.EventListFragment;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
@@ -31,17 +38,27 @@ import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.MenuFunctions;
+import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.StopWatch;
+import com.motlee.android.object.StreamListHandler;
 import com.motlee.android.object.TempAttendee;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
+import com.motlee.android.object.event.UpdatedPhotoEvent;
+import com.motlee.android.object.event.UpdatedPhotoListener;
+import com.motlee.android.service.RubyService;
+import com.motlee.android.service.StreamListService;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -51,7 +68,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
-public class EventListActivity extends BaseMotleeActivity implements OnFragmentAttachedListener {
+public class EventListActivity extends BaseMotleeActivity implements OnFragmentAttachedListener, UpdatedPhotoListener {
 
 	private static String tag = "EventListActivity";
 	
@@ -61,9 +78,11 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
 	public static int SPLASH_PAGE = 1;
 	
 	private EventListAdapter eventListAdapter;
-	private EventListParams currentEventListParams = new EventListParams("Threads", EventServiceBuffer.NO_EVENT_FILTER);
+	public EventListParams currentEventListParams = new EventListParams("Threads", EventServiceBuffer.NO_EVENT_FILTER);
 	
 	private EventListFragment mEventListFragment;
+	
+	private final String EVENT_LIST = "eventlist";
 	
 	private DatabaseWrapper dbWrapper;
 	
@@ -84,8 +103,14 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
 	{		
 		super.onResume();
 		
+        IntentFilter streamListNotifyChange = new IntentFilter();
+        streamListNotifyChange.addAction(StreamListService.NOTIFY_LIST_CHANGE);
+        registerReceiver(notifyStreamListChange, streamListNotifyChange);
+		
         FlurryAgent.logEvent("EventList");
 		
+        EventServiceBuffer.setPhotoListener(this);
+        
         /*
          * If this is first time and eAdapter is null, we simply
          * wait for the eAdapter to be initialized once the events
@@ -94,33 +119,90 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
         
 		if (!isFirstTime)
 		{
-			if (eventListAdapter != null && !needToGetAuthTokens())
+			if (!needToGetAuthTokens())
 			{
 				refreshListData();
 			}
 		}
 	}	
 	
+	@Override
+	public void photoUploadFailed(PhotoItem photo)
+	{
+		if (dbWrapper != null && eventListAdapter != null)
+		{			
+			updateEventAdapter(currentEventListParams.dataContent, false);
+		}
+	}
+	
+	public BroadcastReceiver notifyStreamListChange = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			
+			String streamFilter = intent.getStringExtra(StreamListService.STREAM_FILTER);
+			
+			if (intent.getBooleanExtra(StreamListService.FORCE_RESET, false))
+			{
+				updateEventAdapter(streamFilter, true);
+			}
+			else
+			{
+				updateEventAdapter(streamFilter, false);
+			}
+		}
+		
+	};
+	
 	private void refreshListData()
 	{
-		if (eventListAdapter != null && !needToGetAuthTokens())
+		if (!needToGetAuthTokens())
 		{
-			if (eventListAdapter.getData().size() > 1)
+			requestNewDataForList(currentEventListParams.dataContent, currentEventListParams.headerText, false);
+			/*else if (dbWrapper.getAllEvents().size() > 0)
 			{
-				mEventListFragment.setDoneLoading();
-				mEventListFragment.hideProgressBar();
-				requestNewDataForList(currentEventListParams.dataContent, currentEventListParams.headerText, false);
-			}
-			else if (dbWrapper.getAllEvents().size() > 0)
-			{
-				requestNewDataForList(currentEventListParams.dataContent, currentEventListParams.headerText, false);
-			}
+				if (GlobalVariables.JUST_TOOK_PHOTO)
+				{
+					requestNewDataForList(currentEventListParams.dataContent, currentEventListParams.headerText, false);
+					GlobalVariables.JUST_TOOK_PHOTO = false;
+				}
+				else
+				{
+					requestNewDataForList(currentEventListParams.dataContent, currentEventListParams.headerText, false);
+				}
+			}*/
 		}
 		else
 		{
-	        EventServiceBuffer.setEventDetailListener(eventListener);
+	        /*EventServiceBuffer.setEventDetailListener(eventListener);
 			
-			EventServiceBuffer.getEventsFromService();
+			EventServiceBuffer.getEventsFromService();*/
+		}
+	}
+	
+	@Override
+	public void photoUploadProgress(int progressPercent, Integer photoId, Integer eventId)
+	{
+		if (dbWrapper != null)
+		{
+			PhotoItem photo = dbWrapper.getPhoto(photoId);
+			
+			photo.upload_progress = progressPercent;
+			
+			dbWrapper.updatePhoto(photo);
+			
+			Collection<PhotoItem> photos = dbWrapper.getPhotos(eventId);
+
+			if (mEventListFragment != null)
+			{
+				EventListAdapter adapter = mEventListFragment.getEventListAdapter();
+				if (adapter != null)
+				{
+					adapter.updatePhotos(dbWrapper.getEvent(eventId), photos);
+					
+					adapter.notifyDataSetChanged();
+				}
+			}
 		}
 	}
 	
@@ -192,7 +274,7 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
     	{
     		Log.d(tag, "starting splash page");
     		
-    		EventServiceBuffer.setEventDetailListener(initialEventListener);
+    		//EventServiceBuffer.setEventDetailListener(initialEventListener);
     		
     		Intent intent = new Intent(EventListActivity.this, MotleeLoginActivity.class);
     		startActivityForResult(intent, 0);
@@ -214,8 +296,10 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
 						  {
 							  Log.d("EventListActivity", "Reseting my facebook access token");
 							  SharePref.setStringPref(getApplicationContext(), SharePref.ACCESS_TOKEN, access_token);
-							  
-							  refreshListData();
+					        	
+					    		Intent refreshStream = new Intent(EventListActivity.this, StreamListService.class);
+					    		refreshStream.putExtra(StreamListService.INITIAL_PULL, true);
+					    		startService(refreshStream);
 						  }
 					}
 					
@@ -239,18 +323,21 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
     		
     		ft.remove(fragment);
     	}
-    	
-        ft.add(new EmptyFragmentWithCallbackOnResume(), "EmptyFragment")
-        .commit();
+    	Log.d("EventListActivity", "updateEventAdatper: about to commit EmptyFragment");
+    	if (fm.findFragmentByTag("EmptyFragment") == null)
+    	{
+    		ft.add(new EmptyFragmentWithCallbackOnResume(), "EmptyFragment");
+    	}
+        ft.commit();
         
         mEventListFragment = new EventListFragment();
         
-        ArrayList<EventDetail> events = new ArrayList<EventDetail>(dbWrapper.getAllEvents());
+        updateEventAdapter(EventServiceBuffer.NO_EVENT_FILTER, true);
         
-        Collections.sort(events);
-        
-        updateEventAdapter(events, false);
+        checkForBrokenPhotos();
     }
+    
+    
 
 	private void registerDevice() {
 		
@@ -355,25 +442,18 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
     	
     	mEventListFragment.setEventListParams(currentEventListParams);
     	
-        EventServiceBuffer.setEventDetailListener(eventListener);
+        //EventServiceBuffer.setEventDetailListener(eventListener);
+			
+		updateEventAdapter(currentEventListParams.dataContent, resetList);
         
-		if (currentEventListParams.dataContent.equals(EventServiceBuffer.NO_EVENT_FILTER))
-		{
-			updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getAllEvents()), resetList);
-		}
-		else if (currentEventListParams.dataContent.equals(EventServiceBuffer.MY_EVENTS))
-		{				
-			updateEventAdapter(dbWrapper.getMyEvents(), resetList);
-		}
-        
-        if (!refreshingData)
+        /*if (!refreshingData)
         {
         	refreshingData = true;
         	EventServiceBuffer.getEventsFromService(dataContent);
-        }
+        }*/
     }
     
-    public UpdatedEventDetailListener initialEventListener = new UpdatedEventDetailListener()
+    /*public UpdatedEventDetailListener initialEventListener = new UpdatedEventDetailListener()
     {
 
 		public void myEventOccurred(UpdatedEventDetailEvent evt) {
@@ -384,7 +464,7 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
 			
 			EventServiceBuffer.removeEventDetailListener(initialEventListener);
 			
-			updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getAllEvents()), false);
+			updateEventAdapter(EventServiceBuffer.NO_EVENT_FILTER, false);
 			
 			//mEventListFragment.setDoneLoading();
 			
@@ -397,9 +477,9 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
 			
 		}
     	
-    };
+    };*/
     
-    public UpdatedEventDetailListener eventListener = new UpdatedEventDetailListener(){
+    /*public UpdatedEventDetailListener eventListener = new UpdatedEventDetailListener(){
     	
 		public void myEventOccurred(UpdatedEventDetailEvent evt) {
 			
@@ -407,27 +487,20 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
 			
 			EventServiceBuffer.removeEventDetailListener(eventListener);
 			
-			if (currentEventListParams.dataContent.equals(EventServiceBuffer.NO_EVENT_FILTER))
-			{
-				updateEventAdapter(new ArrayList<EventDetail>(dbWrapper.getAllEvents()), false);
-			}
-			else if (currentEventListParams.dataContent.equals(EventServiceBuffer.MY_EVENTS))
-			{				
-				updateEventAdapter(dbWrapper.getMyEvents(), false);
-			}
+			updateEventAdapter(currentEventListParams.dataContent, false);
 			
 			/*if (progressDialog != null && progressDialog.isShowing())
 			{
 				mEventListFragment.getPullToRefreshListView().setSelection(1);
 				mEventListFragment.getPullToRefreshListView().onRefreshComplete();
-			}*/
+			}
 		}
 
 		public void updatedEventOccurred(Integer eventId) {
 			// TODO Auto-generated method stub
 			
 		}
-    };
+    };*/
     
     public void seeMoreDetail(View view)
     {
@@ -461,13 +534,13 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
 	    	upcomingFragment.setHeaderView(findViewById(R.id.header));
 	    	upcomingFragment.setEventListParams(params);
 	    	upcomingFragment.addEventListAdapter(upcomingListAdapter);
-	    	upcomingFragment.updateListAdapter(upcomingListAdapter);
+	    	upcomingFragment.replaceListAdapter(upcomingListAdapter);
 	    	upcomingFragment.showBackButton();
 	    	upcomingFragment.hideProgressBar();
 	    	
-	    	ft.add(R.id.fragment_content, upcomingFragment, "Upcoming");
+	    	/*ft.add(R.id.fragment_content, upcomingFragment, "Upcoming");
 	    	ft.hide(mEventListFragment);
-	    	ft.commit();
+	    	ft.commit(); */
     	}
     	else
     	{
@@ -499,17 +572,144 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
     	MenuFunctions.takePictureOnPhone(eventId, this);
     }
     
-    private ArrayList<EventDetail> eventsToDisplay;
-    private ArrayList<EventDetail> upcomingEvents;
-    private ArrayList<Integer> upcomingIntegers;
-    
-    private boolean updatingEventAdapter = false;
-    
-	public void updateEventAdapter(final ArrayList<EventDetail> eventsToShow, final boolean resetList) {
+	public void updateEventAdapter(String streamFilter, boolean resetList) {
 		
-		Log.d(tag, "updateEventAdapter");
+		/*
+		 * Used in onResume methoid to prevent us from
+		 */
+		ArrayList<EventDetail> eventsToDisplay = new ArrayList<EventDetail>();
+		
+		if (StreamListHandler.RESET_LIST)
+		{
+			resetList = true;
+			StreamListHandler.RESET_LIST = false;
+		}
+		
+		boolean refreshList = false;
+		
+		if (streamFilter.equals(EventServiceBuffer.MY_EVENTS))
+		{
+			refreshList = StreamListHandler.getMyStreamList(eventsToDisplay);
+		}
+		else
+		{
+			refreshList = StreamListHandler.getAllStreamList(eventsToDisplay);
+		}
+		
+		Log.d("UpdateEventAdapter", "refreshList: " + refreshList + ", eventsToDisplay.size: " + eventsToDisplay.size());
+		
+		if (isFirstTime)
+		{
+			isFirstTime = false;
+		}
+		
+		if (eventListAdapter == null)
+		{
+			eventListAdapter = new EventListAdapter(EventListActivity.this, R.layout.event_list_item, new ArrayList<EventDetail>());
+			mEventListFragment.addEventListAdapter(eventListAdapter);
+			
+	        mEventListFragment.setHeaderView(findViewById(R.id.header));
+	        
+	        if (eventsToDisplay.size() > 0)
+	        {
+	        	mEventListFragment.hideProgressBar();
+	        	mEventListFragment.hideNoEventHeader();
+	        }
+	        else
+	        {
+	        	mEventListFragment.setProgressBar(findViewById(R.id.marker_progress_streams));
+	        }
+	        
+	        showMenuButtons();
+	        
+	        setActionForRightMenu(plusMenuClick);
+	        
+	        Intent intent = getIntent();
+	        
+	        Object listType = null;
+	        if (intent.getExtras() != null)
+	        {
+	        	listType = intent.getExtras().get("ListType");
+	        }
+	        
+	        if (listType != null)
+	        {
+	        	currentEventListParams.headerText = listType.toString();
+	        }
+	        else
+	        {
+	        	currentEventListParams.headerText = BaseMotleeFragment.ALL_EVENTS;
+	        	currentEventListParams.dataContent = EventServiceBuffer.NO_EVENT_FILTER;
+	        }
+	        
+	        mEventListFragment.setEventListParams(currentEventListParams);
+	        
+	        isReadyToCommitFragment = true;
+	        
+	        //requestNewDataForList(eventListParams.dataContent, eventListParams.headerText);
+	        
+	        if (fragmentHasAttached)
+	        {
+		        FragmentManager fm = getSupportFragmentManager();
+		        FragmentTransaction ft = fm.beginTransaction();
+		        
+		        if (fm.findFragmentById(R.id.fragment_content) == null)
+		        {
+		        	Log.d("EventListActivity", "updateEventAdatper: about to commit event list fragment");
+			        ft.add(R.id.fragment_content, mEventListFragment)
+			        .commit();
+		        }
+	        }
+		}
+		else
+		{
+			if (resetList)
+			{
+				//eventListAdapter = new EventListAdapter(EventListActivity.this, R.layout.event_list_item, eventsToDisplay);
+				mEventListFragment.updateListAdapter(eventsToDisplay);
+				mEventListFragment.getPullToRefreshListView().onRefreshComplete();
+				mEventListFragment.getPullToRefreshListView().smoothScrollToPosition(mEventListFragment.getPullToRefreshListView().getHeaderViewsCount());
+			}
+			else
+			{
+				if (refreshList)
+				{
+					Log.d("UpdateEventAdapter", "updating the eventAdapter. eventsToDisplay: " + eventsToDisplay.size());
+					mEventListFragment.updateListAdapter(eventsToDisplay);
+				}
+				else if (eventListAdapter.getOriginalSizeCount() != eventsToDisplay.size())
+				{
+					mEventListFragment.updateListAdapter(eventsToDisplay);
+				}
+			}
+			
+			/*if (currentEventListParams.dataContent.equals(EventServiceBuffer.MY_EVENTS))
+			{
+				mEventListFragment.showUpcomingHeader(upcomingIntegers);
+			}
+			else
+			{
+				mEventListFragment.hideUpcomingHeader();
+			}*/
+			
+			if (refreshList)
+			{
+				Log.d("UpdateEventAdapter", "setDoneLoading the eventAdapter. eventsToDisplay: " + eventsToDisplay.size());
+				mEventListFragment.setDoneLoading();
+				mEventListFragment.setDoneGettingMoreEvents();
+			}
+			
+	        if (progressDialog != null && progressDialog.isShowing())
+	        {
+	        	progressDialog.dismiss();
+	        }
+		}
+		
+        refreshingData = false;
+        
+        Log.d("EventListActivity", "Done notifying data set change");
 				
-		if (!updatingEventAdapter)
+		/*if (!updatingEventAdapter)
 		{
 			updatingEventAdapter = true;
 			
@@ -517,24 +717,50 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
 	
 				public void run() {
 					
+					sw = new StopWatch();
+					sw.start();
+					
 					eventsToDisplay = new ArrayList<EventDetail>();
 					
 					upcomingEvents = new ArrayList<EventDetail>();
+					
+					boolean notifyChange = false;
+					
+					ArrayList<EventDetail> currentEvents = new ArrayList<EventDetail>();
+					
+					if (eventListAdapter != null)
+					{
+						currentEvents = new ArrayList<EventDetail>(eventListAdapter.getData());
+					}
 					
 					for (EventDetail eDetail : eventsToShow)
 					{
 						UserInfo owner = dbWrapper.getUser(eDetail.getOwnerID());
 						if (owner != null)
 						{
-							
-							/*
-							 * Initializes some event variables to improve scrolling
-							 * Takes away db calls from EventListAdapter
-							 */
+
+							if (!notifyChange)
+							{
+								if (currentEvents.contains(eDetail))
+								{
+									EventDetail currentEDetail = currentEvents.get(currentEvents.indexOf(eDetail));
+									if (currentEDetail.getPhotos().size() != dbWrapper.getPhotos(eDetail.getEventID()).size()
+											|| currentEDetail.getAttendeeCount() != dbWrapper.getAttendeeCount(eDetail.getEventID()) + TempAttendee.getTempAttendees(eDetail.getEventID()).size()
+											|| currentEDetail.getLocationID() != eDetail.getLocationID() || !currentEDetail.updated_at.equals(eDetail.updated_at) || !currentEDetail.getIsPrivate() != eDetail.getIsPrivate())
+									{
+										notifyChange = true;
+									}
+								}
+								else
+								{
+									notifyChange = true;
+								}
+							}
+
 							
 							eDetail.setPhotos(dbWrapper.getPhotos(eDetail.getEventID()));
 							eDetail.setOwnerInfo(dbWrapper.getUser(eDetail.getOwnerID()));
-							eDetail.setAttendeeCount(eDetail.getAttendeeCount() + TempAttendee.getTempAttendees(eDetail.getEventID()).size());
+							eDetail.setAttendeeCount(dbWrapper.getAttendeeCount(eDetail.getEventID()) + TempAttendee.getTempAttendees(eDetail.getEventID()).size());
 							
 							if (eDetail.getLocationID() != null)
 							{
@@ -565,126 +791,120 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
 					{
 						upcomingIntegers.add(eDetail.getEventID());
 					}
+
 					
-					/*
-					 * Bring back on UI thread
-					 */
+					Log.d("Timer", "took: " + sw.getElapsedTime() + "ms");
 					
-					handler.post(new Runnable(){
-	
-						public void run() {
-							
-							/*
-							 * Used in onResume methoid to prevent us from
-							 */
-							
-							if (isFirstTime)
-							{
-								isFirstTime = false;
-							}
-							
-							if (eventListAdapter == null)
-							{
-								eventListAdapter = new EventListAdapter(EventListActivity.this, R.layout.event_list_item, eventsToDisplay);
-								mEventListFragment.addEventListAdapter(eventListAdapter);
+					Log.d("RefreshStreamList", "notifyChange: " + notifyChange + ", resetList: " + resetList);
+					if (notifyChange || resetList)
+					{
+					
+						handler.post(new Runnable(){
+		
+							public void run() {
 								
-						        mEventListFragment.setHeaderView(findViewById(R.id.header));
-						        
-						        if (eventsToDisplay.size() > 0)
-						        {
-						        	mEventListFragment.hideProgressBar();
-						        	mEventListFragment.hideNoEventHeader();
-						        }
-						        
-						        showMenuButtons();
-						        
-						        setActionForRightMenu(plusMenuClick);
-						        
-						        Intent intent = getIntent();
-						        
-						        Object listType = null;
-						        if (intent.getExtras() != null)
-						        {
-						        	listType = intent.getExtras().get("ListType");
-						        }
-						        
-						        if (listType != null)
-						        {
-						        	currentEventListParams.headerText = listType.toString();
-						        }
-						        else
-						        {
-						        	currentEventListParams.headerText = BaseMotleeFragment.ALL_EVENTS;
-						        	currentEventListParams.dataContent = EventServiceBuffer.NO_EVENT_FILTER;
-						        }
-						        
-						        mEventListFragment.setEventListParams(currentEventListParams);
-						        
-						        isReadyToCommitFragment = true;
-						        
-						        //requestNewDataForList(eventListParams.dataContent, eventListParams.headerText);
-						        
-						        if (fragmentHasAttached)
-						        {
-							        FragmentManager fm = getSupportFragmentManager();
-							        FragmentTransaction ft = fm.beginTransaction();
-							        
-							        if (fm.findFragmentById(R.id.fragment_content) == null)
-							        {
-								        ft.add(R.id.fragment_content, mEventListFragment)
-								        .commit();
-							        }
-						        }
-							}
-							else
-							{
-								if (resetList)
+								
+								if (isFirstTime)
+								{
+									isFirstTime = false;
+								}
+								
+								if (eventListAdapter == null)
 								{
 									eventListAdapter = new EventListAdapter(EventListActivity.this, R.layout.event_list_item, eventsToDisplay);
-									mEventListFragment.updateListAdapter(eventListAdapter);
-								}
-								else
-								{
-									eventListAdapter.clear();
-									eventListAdapter.addAll(eventsToDisplay);
+									mEventListFragment.addEventListAdapter(eventListAdapter);
 									
-									Log.d("EventListActivity", "About to notifyDataSetChanged");
-									eventListAdapter.notifyDataSetChanged();
-								}
-								
-								/*if (currentEventListParams.dataContent.equals(EventServiceBuffer.MY_EVENTS))
-								{
-									mEventListFragment.showUpcomingHeader(upcomingIntegers);
+							        mEventListFragment.setHeaderView(findViewById(R.id.header));
+							        
+							        if (eventsToDisplay.size() > 0)
+							        {
+							        	mEventListFragment.hideProgressBar();
+							        	mEventListFragment.hideNoEventHeader();
+							        }
+							        else
+							        {
+							        	mEventListFragment.setProgressBar(findViewById(R.id.marker_progress_streams));
+							        }
+							        
+							        showMenuButtons();
+							        
+							        setActionForRightMenu(plusMenuClick);
+							        
+							        Intent intent = getIntent();
+							        
+							        Object listType = null;
+							        if (intent.getExtras() != null)
+							        {
+							        	listType = intent.getExtras().get("ListType");
+							        }
+							        
+							        if (listType != null)
+							        {
+							        	currentEventListParams.headerText = listType.toString();
+							        }
+							        else
+							        {
+							        	currentEventListParams.headerText = BaseMotleeFragment.ALL_EVENTS;
+							        	currentEventListParams.dataContent = EventServiceBuffer.NO_EVENT_FILTER;
+							        }
+							        
+							        mEventListFragment.setEventListParams(currentEventListParams);
+							        
+							        isReadyToCommitFragment = true;
+							        
+							        //requestNewDataForList(eventListParams.dataContent, eventListParams.headerText);
+							        
+							        if (fragmentHasAttached)
+							        {
+								        FragmentManager fm = getSupportFragmentManager();
+								        FragmentTransaction ft = fm.beginTransaction();
+								        
+								        if (fm.findFragmentById(R.id.fragment_content) == null)
+								        {
+									        ft.add(R.id.fragment_content, mEventListFragment)
+									        .commit();
+								        }
+							        }
 								}
 								else
 								{
-									mEventListFragment.hideUpcomingHeader();
-								}*/
+									if (resetList)
+									{
+										eventListAdapter = new EventListAdapter(EventListActivity.this, R.layout.event_list_item, eventsToDisplay);
+										mEventListFragment.replaceListAdapter(eventListAdapter);
+									}
+									else
+									{
+										mEventListFragment.updateListAdapter(eventsToDisplay);
+									}
+									
+									mEventListFragment.setDoneLoading();
+									
+							        if (progressDialog != null && progressDialog.isShowing())
+							        {
+							        	progressDialog.dismiss();
+							        }
+								}
 								
-								mEventListFragment.setDoneLoading();
-								
-						        if (progressDialog != null && progressDialog.isShowing())
-						        {
-						        	progressDialog.dismiss();
-									mEventListFragment.getPullToRefreshListView().setSelection(1);
-									mEventListFragment.getPullToRefreshListView().onRefreshComplete();
-						        }
+						        refreshingData = false;
+						        updatingEventAdapter = false;
+						        
+						        Log.d("EventListActivity", "Done notifying data set change");
 							}
 							
-					        refreshingData = false;
-					        updatingEventAdapter = false;
-					        
-					        Log.d("EventListActivity", "Done notifying data set change");
-						}
-						
-					});					
+						});			
+					}
+					else
+					{
+						updatingEventAdapter = false;
+					}
 				}
 			
 			});
 			
 			thread.start();
 		
-		}
+		}*/
 	}
     
     public void onClickGetEventDetail(View view)
@@ -707,6 +927,10 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
     {
     	super.onPause();
     	
+    	EventServiceBuffer.removePhotoListener(this);
+    	
+    	unregisterReceiver(notifyStreamListChange);
+    	
     	fragmentHasAttached = false;
     	isReadyToCommitFragment = false;
     }
@@ -718,13 +942,13 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
     	FragmentTransaction ft = fm.beginTransaction();
     	if (fm.findFragmentByTag("Upcoming") != null)
     	{
-    		Fragment fragment = fm.findFragmentByTag("Upcoming");
+    		/*Fragment fragment = fm.findFragmentByTag("Upcoming");
     		ft.remove(fragment);
     		ft.show(mEventListFragment);
     		mEventListFragment.hideBackButton();
     		TextView text = (TextView) findViewById(R.id.header_textView);
     		text.setText(BaseMotleeFragment.MY_EVENTS);
-    		ft.commit();
+    		ft.commit();*/
     	}
     	else
     	{
@@ -737,53 +961,47 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
 		MenuFunctions.takePictureOnPhone(view, this);
 	}
 	
+	protected void checkForBrokenPhotos()
+	{
+		Thread checkPhotosThread = new Thread(new Runnable(){
+
+			public void run() {
+				
+				Collection<PhotoItem> photos = dbWrapper.getAllUploadingPhotos();
+				
+				for (PhotoItem photo : photos)
+				{
+					photo.failed_upload = true;
+					dbWrapper.updatePhoto(photo);
+						
+			    	Intent broadcast = new Intent();
+			        broadcast.setAction(RubyService.PHOTO_UPLOAD_ERROR);
+			        broadcast.putExtra("Photo", photo);
+			        sendBroadcast(broadcast);
+				}
+			}
+			
+		});
+		
+		checkPhotosThread.start();
+	}
+	
 	protected void getFriendsFromFacebook() {
 		
 		Thread friendThread = new Thread(new Runnable(){
 
 			public void run() 
 			{
-				Session facebookSession = Session.getActiveSession();
-				
-				if (facebookSession != null && facebookSession.isOpened())
-				{			
-					String query = "select name, uid, pic_square from user where uid in (select uid2 from friend where uid1=me()) order by name";
-					Bundle bundleParams = new Bundle();
-					bundleParams.putString("q", query);
-					
-					final Request request = new Request(facebookSession, "/fql", bundleParams, HttpMethod.GET);   
-					
-					Response response = request.executeAndWait();
-					
-					try
-					{
-						JSONArray users = (JSONArray) response.getGraphObject().getProperty("data");
-						
-						ArrayList<Long> uids = new ArrayList<Long>();
-						
-						for (int i = 0; i < users.length(); i++)
-						{
-							JSONObject user = users.getJSONObject(i);
-							uids.add(Long.valueOf(user.getLong("uid")));
-						}
-						
-						dbWrapper.updateFriendsList(uids);
-					}
-					catch (JSONException e)
-					{
-						Log.e(this.toString(), "Failed to get friends");
-					}
-					catch (Exception e)
-					{
-						Log.e(this.toString(), "Failed to get friends");
-					}
-				}
+		        GlobalVariables.FINISHED_RETRIEVING_FRIENDS = false;
+				EventServiceBuffer.requestMotleeFriends(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
 			}
 		});
 		
 		friendThread.start();
 	}
 
+	
+	
 	public void OnFragmentAttached() {
 
 		this.fragmentHasAttached = true;
@@ -794,13 +1012,80 @@ public class EventListActivity extends BaseMotleeActivity implements OnFragmentA
 			if (fm.findFragmentById(R.id.fragment_content) == null)
 			{
 				FragmentTransaction ft = fm.beginTransaction();
-				
+				Log.d("EventListActivity", "onFragmentAttached: about to commit event list fragment");
 				ft.add(R.id.fragment_content, mEventListFragment);
 				
 				ft.commit();
 			}
+			//isReadyToCommitFragment = false;
 		}
 		
 	}
+
+	public void photoEvent(UpdatedPhotoEvent e) {
+		
+		Timer timer = new Timer();
+		
+		timer.schedule(new MyTimerTask(e.getPhoto()), 200, 200);
+		
+	}
+	
+	public class MyTimerTask extends TimerTask
+	{
+		PhotoItem photo;
+		String url;
+		
+		Integer count = 0;
+
+		public MyTimerTask(PhotoItem photo) 
+		{
+			this.photo = photo;
+			this.url = GlobalVariables.getInstance().getAWSUrlThumbnail(photo);
+		}
+	     
+		@Override
+		public void run() 
+		{
+			if (count > 100)
+			{
+				this.cancel();
+			}
+			
+			count++;
+			
+			if (urlExists(url))
+			{
+				handler.post(new Runnable(){
+
+					public void run() {
+		
+						updateEventAdapter(currentEventListParams.dataContent, true);
+					}
+					
+				});
+
+				cancel();
+			}
+		}
+	}
+	
+	public static boolean urlExists(String URLName)
+	{
+		try 
+		{
+			HttpURLConnection.setFollowRedirects(false);
+			// note : you may also need
+			//        HttpURLConnection.setInstanceFollowRedirects(false)
+			HttpURLConnection con = (HttpURLConnection) new URL(URLName).openConnection();
+			
+			con.setRequestMethod("HEAD");
+			return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+	    }
+	    catch (Exception e) 
+	    {
+	    	e.printStackTrace();
+	    	return false;
+	    }
+    }  
 }
 

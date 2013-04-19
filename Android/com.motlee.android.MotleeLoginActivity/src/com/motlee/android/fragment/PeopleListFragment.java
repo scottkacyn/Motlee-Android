@@ -18,6 +18,7 @@ import com.motlee.android.object.TempAttendee;
 import com.motlee.android.object.UserInfo;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -27,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -42,15 +44,15 @@ public class PeopleListFragment extends BaseDetailFragment {
 	
 	private PeopleListAdapter mAdapter;
 	
-	private ArrayList<UserInfo> mUsers = new ArrayList<UserInfo>();
-
-    private LinearLayout eventHeader;
-    
-	private String pageLabel;
-	
 	private View inviteFriendsHeader;
 	
 	private DatabaseWrapper dbWrapper;
+	
+	private boolean showProgress = false;
+	
+	private ProgressBar progressBar;
+	
+	private Handler handler = new Handler();
 	
 	@Override
 	public void onResume()
@@ -73,6 +75,8 @@ public class PeopleListFragment extends BaseDetailFragment {
 			setUpFooter();
 		}
 		
+		showProgress = true;
+		
 		setUpPeopleList();
 
 	}
@@ -88,6 +92,8 @@ public class PeopleListFragment extends BaseDetailFragment {
 		view = (View) this.inflater.inflate(R.layout.event_detail_people_list, null);
 
 		dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
+		
+		progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
 		
 		//setUpPageHeader();
 		
@@ -173,45 +179,73 @@ public class PeopleListFragment extends BaseDetailFragment {
 	
 	public void setUpPeopleList() 
 	{
-		mUsers = new ArrayList<UserInfo>(); 
+		if (showProgress && progressBar != null)
+		{
+			progressBar.setVisibility(View.VISIBLE);
+		}
 				
-		for (Attendee user : dbWrapper.getAttendees(mEventDetail.getEventID()))
-		{		
-			UserInfo userInfo = dbWrapper.getUser(user.user_id);
-			if (userInfo != null)
-			{
-				mUsers.add(userInfo);
-			}
-		}
-		
-		mUsers.addAll(TempAttendee.getTempAttendees(mEventDetail.getEventID()));
-		
-		if (mUsers.size() > 0)
-		{
-			Collections.sort(mUsers);
-		}
-		
-		if (getActivity() != null)
-		{
-			if (mAdapter == null)
-			{
-				mAdapter = new PeopleListAdapter(getActivity(), R.layout.people_list_item, mUsers);
-				eventDetailPeopleList.setAdapter(mAdapter);
-			}
-			else
-			{
-				mAdapter.clear();
-				mAdapter.addAll(mUsers);
-				if (eventDetailPeopleList.getAdapter() == null)
-				{
-					eventDetailPeopleList.setAdapter(mAdapter);
+		Thread thread = new Thread(new Runnable(){
+
+			public void run() {
+			
+				ArrayList<UserInfo> users = new ArrayList<UserInfo>(); 
+				
+				for (Attendee user : dbWrapper.getAttendees(mEventDetail.getEventID()))
+				{		
+					UserInfo userInfo = dbWrapper.getUser(user.user_id);
+					if (userInfo != null)
+					{
+						users.add(userInfo);
+					}
 				}
-				else
+				
+				users.addAll(TempAttendee.getTempAttendees(mEventDetail.getEventID()));
+				
+				if (users.size() > 0)
 				{
-					mAdapter.notifyDataSetChanged();
+					Collections.sort(users);
 				}
+				
+				final ArrayList<UserInfo> finalUsers = new ArrayList<UserInfo>(users);
+				
+				handler.post(new Runnable(){
+
+					public void run() {
+						
+						if (getActivity() != null)
+						{
+							if (mAdapter == null)
+							{
+								mAdapter = new PeopleListAdapter(getActivity(), R.layout.people_list_item, finalUsers);
+								eventDetailPeopleList.setAdapter(mAdapter);
+							}
+							else
+							{
+								mAdapter.clear();
+								mAdapter.addAll(finalUsers);
+								if (eventDetailPeopleList.getAdapter() == null)
+								{
+									eventDetailPeopleList.setAdapter(mAdapter);
+								}
+								else
+								{
+									mAdapter.notifyDataSetChanged();
+								}
+							}
+						}
+						
+						if (progressBar != null)
+						{
+							progressBar.setVisibility(View.GONE);
+						}
+					}
+					
+				});	
 			}
-		}
+		
+		});
+		
+		thread.start();
 	}
 
 	public void setEventDetail(EventDetail eventDetail)
@@ -221,6 +255,8 @@ public class PeopleListFragment extends BaseDetailFragment {
 		
 		if (eventDetailPeopleList != null && mAdapter != null)
 		{
+			showProgress = false;
+			
 			setUpPeopleList();
 		}
 	}

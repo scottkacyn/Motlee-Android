@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.google.gson.JsonArray;
@@ -13,6 +14,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.NotificationObjectType;
+import com.motlee.android.service.RubyService;
 
 public class NotificationList 
 {
@@ -102,9 +104,13 @@ public class NotificationList
 		{
 			array = parser.parse(notificationJson).getAsJsonArray();
 		}
-		catch (JsonSyntaxException e)
+		catch (Exception e)
 		{
 			Log.e("NotificationList", "Failed to parse json.", e);
+			
+	    	Intent broadcast = new Intent();
+	        broadcast.setAction(RubyService.CONNECTION_ERROR);
+	        context.sendBroadcast(broadcast);
 		}
 		
 		for (JsonElement element : array)

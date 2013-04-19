@@ -1,5 +1,10 @@
 package com.motlee.android;
 
+import greendroid.widget.PagedAdapter;
+
+import java.io.File;
+import java.util.ArrayList;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -7,13 +12,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,7 +34,7 @@ import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.BaseMotleeFragment;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
-import com.motlee.android.fragment.LocationFragment;
+import com.motlee.android.fragment.EventDetailFragment;
 import com.motlee.android.fragment.NearbyEventsFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
@@ -138,11 +150,47 @@ public class NearbyEventsActivity extends BaseMotleeActivity implements UpdatedE
 	public void OnFragmentAttached() {
 		
 		Log.d(this.toString(), "OnFragmentAttached");
-		
-		EventServiceBuffer.setEventDetailListener(this);
         
-        EventServiceBuffer.getEventsFromService(EventServiceBuffer.NO_EVENT_FILTER, GlobalVariables.getInstance().getUserLocation().getLatitude(), GlobalVariables.getInstance().getUserLocation().getLongitude());
+		Location location = GlobalVariables.getInstance().getUserLocation();
 		
+		if (location.getLatitude() == 0 && location.getLongitude() == 0)
+		{
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+			
+			alertDialogBuilder
+			.setTitle("Location Services")
+			.setMessage("You need to enable location services in order to view this map.\n\nIf your location services are enabled, try opening google maps and coming back to the app.")
+			.setCancelable(true)
+			.setPositiveButton("Settings",new DialogInterface.OnClickListener() 
+			{
+				public void onClick(DialogInterface dialog,int id) {
+					
+					Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+		            startActivity(myIntent);
+					
+				}
+			  })
+			.setNegativeButton("No Thanks",new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog,int id) 
+				{
+					finish();
+				}
+			});
+			
+			// create alert dialog
+			AlertDialog alertDialog = alertDialogBuilder.create();
+	 
+					// show it
+			alertDialog.show();
+		}
+		else
+		{
+
+			EventServiceBuffer.setEventDetailListener(this);
+		
+			EventServiceBuffer.getEventsFromService(EventServiceBuffer.NO_EVENT_FILTER, location.getLatitude(), location.getLongitude());
+		
+		}
 	}
 	
 	private void checkIfGooglePlayIsInstalled() {

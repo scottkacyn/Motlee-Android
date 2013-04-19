@@ -43,8 +43,8 @@
     <string name="user_profile_no_photo_text">No photos yet...</string>
     <string name="fb_on_create_settings_message">Automatically post a thread you created on timeline.</string>
     <string name="fb_on_join_settings_message">Automatically post a thread you joined on timeline.</string>
-    <string name="not_event_invitations">Thread invitations</string>
-    <string name="not_event_messages">Thread messages</string>
+    <string name="not_event_invitations">Stream invitations</string>
+    <string name="not_event_messages">Stream messages</string>
     <string name="not_photo_comments">Photo comments</string>
     <string name="not_photo_likes">Photo likes</string>
     <string name="not_friends_joining">Friends joining Motlee</string>

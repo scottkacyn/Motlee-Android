@@ -43,8 +43,8 @@ public class ListFragmentWithHeader extends ListFragment {
 		else if (headerIcon == SEARCH)
 		{
 			icon.setVisibility(View.VISIBLE);
-			icon.setPadding(0, 0, 0, 0);
-			icon.setImageResource(R.drawable.icon_button_search);
+			icon.setPadding(4, 2, 0, 4);
+			icon.setImageResource(R.drawable.icon_button_friends);
 		}
 	}
 	

@@ -6,7 +6,7 @@
     android:background="@android:color/transparent">
     
     <LinearLayout 
-        android:id="@+id/create_event_bg"
+        android:id="@+id/create_event_bg_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="25dp"
@@ -59,7 +59,7 @@
             android:id="@+id/create_event_privacy"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.25" >
+            android:layout_weight="0.30" >
             
             <TextView
                 android:id="@+id/event_create_public_event_header"
@@ -68,7 +68,7 @@
                 android:layout_weight="0.54"
                 android:gravity="center_vertical"
                 style="@style/CodeFont.VeryLarge"
-                android:text="Event Privacy" />
+                android:text="Stream Privacy" />
             
             <ImageButton 
                 android:id="@+id/create_event_info_button"
@@ -97,6 +97,44 @@
 		        android:scaleType="fitCenter"
 		        android:src="@drawable/switcher_button_off"
 		        android:background="@android:color/transparent" />
+            
+        </LinearLayout>
+        
+        <LinearLayout
+	            android:id="@+id/create_event_share"
+	            android:layout_width="match_parent"
+	            android:layout_height="0dp"
+	            android:layout_weight="0.18" >
+            
+                  <ImageView 
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".18"
+                    android:layout_width="0dp"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/upload_fb_icon" />
+                
+                <TextView 
+                    android:id="@+id/create_event_share_text"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".52"
+                    android:layout_width="0dp"
+                    android:paddingLeft="13dp"
+                    android:layout_gravity="top|left"
+                    android:gravity="top"
+                    style="@style/CodeFont.VeryLarge"
+                	android:text="Share to Facebook?" />
+                  
+                <com.motlee.android.view.HorizontalAspectImageButton
+			        android:id="@+id/event_create_sharing_switcher"
+			        android:layout_width="0dp"
+			        android:layout_weight="0.3"
+			        android:layout_height="match_parent"
+			        android:layout_gravity="center"
+			        android:scaleType="fitCenter"
+			        android:src="@drawable/switcher_button_on"
+			        android:background="@android:color/transparent" />
             
         </LinearLayout>
         

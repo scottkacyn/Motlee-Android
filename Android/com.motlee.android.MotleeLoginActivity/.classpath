@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry kind="lib" path="libs/android-support-v4-r10-googlemaps.jar"/>
 	<classpathentry kind="lib" path="libs/gson-2.2.2-javadoc.jar"/>
 	<classpathentry kind="lib" path="libs/gson-2.2.2-sources.jar"/>
 	<classpathentry kind="lib" path="libs/gson-2.2.2.jar"/>
@@ -18,5 +17,7 @@
 	<classpathentry kind="lib" path="libs/universalimageloader.jar"/>
 	<classpathentry kind="lib" path="libs/robotium-solo-3.6.jar"/>
 	<classpathentry kind="lib" path="libs/gcm.jar"/>
+	<classpathentry kind="lib" path="libs/android-support-v4.jar"/>
+	<classpathentry kind="lib" path="libs/commons-io-2.4.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

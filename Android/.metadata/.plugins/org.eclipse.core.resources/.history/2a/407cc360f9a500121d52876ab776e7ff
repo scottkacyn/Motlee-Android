@@ -1,0 +1,299 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.motlee.android"
+    android:versionCode="11"
+    android:versionName="1.7" >    
+    
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true"/>
+    
+    <permission
+        android:name="com.motlee.android.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature"/>
+	<uses-permission android:name="com.motlee.android.permission.MAPS_RECEIVE"/>
+    
+    <permission android:name="com.motlee.android.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+	
+	<uses-permission android:name="com.motlee.android.permission.C2D_MESSAGE" /> 
+	<uses-permission android:name="android.permission.INTERNET" /> 
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
+   	<uses-permission android:name="android.permission.CAMERA" />
+    
+    <!-- App receives GCM messages. -->
+	<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+	<!-- GCM requires a Google account. -->
+	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
+	<!-- Keeps the processor from sleeping when a message is received. -->
+	<uses-permission android:name="android.permission.WAKE_LOCK" />
+    
+    <uses-sdk
+        android:minSdkVersion="10"
+        android:targetSdkVersion="15" />
+
+    <application
+        android:icon="@drawable/motlee_launcher_icon"
+        android:label="@string/app_name"
+        android:name="MotleeApplication"
+        android:debuggable="true"  >
+        
+        <meta-data
+		    android:name="com.google.android.maps.v2.API_KEY"
+		    android:value="AIzaSyC6tysDm4-nRWDxe0O8tveoKRFCRXvhhLw"/>
+        
+        <uses-library android:name="com.google.android.maps"/>
+        <uses-feature android:name="android.hardware.camera" />
+        <uses-feature android:name="android.hardware.camera.front"
+                android:required="false" />
+  		<uses-feature android:name="android.hardware.camera.autofocus"
+  		    android:required="false" />
+        <uses-feature android:name="android.hardware.camera.flash"
+            android:required="false" />
+  		
+        <activity
+            android:name=".MotleeLoginActivity"
+            android:label="@string/title_login_page" 
+            android:theme="@style/app_theme_login_page"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".FirstUseActivity"
+            android:label="@string/title_first_use_activity" 
+            android:theme="@style/app_theme"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".ZoomActivity"
+            android:label="@string/title_zoom_activity" 
+            android:theme="@style/no_anim"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".TempTakePhotoActivity"
+            android:label="@string/title_temp_photo_activity" 
+            android:theme="@style/no_anim"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".CameraActivity"
+            android:label="CameraActivity" 
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity
+            android:name=".PreviewImageActivity"
+            android:label="PreviewImageActivity" 
+            android:theme="@style/app_theme"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".LikeListActivity"
+            android:label="@string/title_like_list_activity" 
+            android:theme="@style/app_theme"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".AddCommentActivity"
+            android:label="@string/title_like_list_activity" 
+            android:theme="@style/app_theme"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustResize"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <receiver android:name="com.google.android.gcm.GCMBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND" >
+		  <intent-filter>
+		    <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+		    <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+		    <category android:name="com.motlee.android" />
+		  </intent-filter>
+		</receiver>
+        
+        <service android:name=".GCMIntentService" />
+        
+        <service android:name=".service.RubyService"/>
+        
+        <service android:name=".service.UploadPhotoService"/>
+        
+        <service android:name=".service.DownloadImage"/>
+        
+        <activity android:name="com.facebook.LoginActivity" />
+        
+        <activity
+            android:name=".EventListActivity"
+            android:label="@string/title_activity_event_list"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <!-- <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="com.motlee.android.service.RubyService.CONNECTION_ERROR" /> -->
+            </intent-filter>
+            <intent-filter> 
+			      <action android:name="android.intent.action.VIEW"/>
+			      <category android:name="android.intent.category.DEFAULT"/>
+			      <category android:name="android.intent.category.BROWSABLE" />
+			      <data android:host="www.motleeapp.com" android:pathPrefix="/android/" android:scheme="http" />
+			 </intent-filter>
+        </activity>
+        
+        <activity
+            android:name=".EventDetailActivity"
+            android:label="@string/title_event_detail_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:configChanges="keyboardHidden"
+            android:screenOrientation="portrait"
+   	 		android:parentActivityName=".EventListActivity">
+		    <meta-data
+		        android:name="android.support.PARENT_ACTIVITY"
+		        android:value=".EventListActivity"/>
+        </activity>
+        
+        <activity
+            android:name=".MoreEventDetailActivity"
+            android:label="@string/title_more_event_detail_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".CreateEventActivity"
+            android:label="@string/title_create_event_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".UserProfilePageActivity"
+            android:label="@string/title_user_profile_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".TakePhotoActivity"
+            android:label="@string/title_take_photo_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".EventItemDetailActivity"
+            android:label="@string/title_photo_detail_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_settings_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".SettingsDetailActivity"
+            android:label="@string/title_settings_detail_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".PostStoryActivity"
+            android:label="@string/title_post_story_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".CommentActivity"
+            android:label="@string/title_comment_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".NearbyEventsActivity"
+            android:label="@string/title_nearby_events_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".SearchActivity"
+            android:label="@string/title_search_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".AddPeopleActivity"
+            android:label="@string/title_add_people_activity"
+            android:theme="@style/app_theme"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".NotificationActivity"
+            android:label="@string/title_notification_activity"
+            android:theme="@style/app_theme"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".BaseMotleeActivity"
+            android:label="@string/title_base_motlee_activity"
+            android:theme="@style/app_theme"
+            android:screenOrientation="portrait" >
+            
+            <intent-filter>
+            	<action android:name="com.motlee.android.service.RubyService.CONNECTION_ERROR"></action>
+            	<action android:name="com.motlee.android.service.RubyService.PHOTO_UPLOAD_ERROR"></action>
+            	<action android:name="com.motlee.android.service.RubyService.PHOTO_UPLOAD_PROGRESS"></action>
+        	</intent-filter>
+        </activity>
+        
+        <activity
+            android:name="com.droid4you.util.cropimage.CropImage"
+            android:label="@string/title_crop_image_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/app_id"/>
+    </application>
+    
+</manifest>

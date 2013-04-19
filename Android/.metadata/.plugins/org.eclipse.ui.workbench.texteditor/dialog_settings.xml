@@ -2,29 +2,30 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="530" key="DIALOG_WIDTH"/>
-		<item value="578" key="DIALOG_Y_ORIGIN"/>
+		<item value="551" key="DIALOG_Y_ORIGIN"/>
+		<item value="1070" key="DIALOG_X_ORIGIN"/>
 		<item value="227" key="DIALOG_HEIGHT"/>
-		<item value="914" key="DIALOG_X_ORIGIN"/>
 		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
-		<item value="false" key="isRegEx"/>
 		<item value="false" key="casesensitive"/>
+		<item value="false" key="isRegEx"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="progressDialog" key="selection"/>
+		<item value="isReadyToCommitFragment" key="selection"/>
 		<list key="findhistory">
-			<item value="progressDialog"/>
-			<item value="setUpPhotoFile"/>
-			<item value="takePicture"/>
-			<item value="picture"/>
-			<item value="overridePending"/>
-			<item value="animation"/>
-			<item value="reset"/>
-			<item value="createEVent"/>
+			<item value="isReadyToCommitFragment"/>
+			<item value="commit"/>
+			<item value="commite"/>
+			<item value="commit()"/>
+			<item value="retry"/>
+			<item value="getPhotoFromJ"/>
+			<item value="getPhotoFrom"/>
+			<item value="updateEVent"/>
 		</list>
 		<list key="replacehistory">
+			<item value="photoDescriptionEdit"/>
 			<item value=".EventListActivity"/>
 			<item value="EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);"/>
 		</list>

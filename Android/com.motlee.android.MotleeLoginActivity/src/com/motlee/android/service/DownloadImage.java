@@ -19,6 +19,8 @@ import com.motlee.android.object.GlobalVariables;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
@@ -90,10 +92,12 @@ public class DownloadImage extends IntentService {
 			handler.post(new Runnable(){
 
 				public void run() {
-					Toast toast = Toast.makeText(getApplicationContext(), "Finished downloading. The photo may not show up in your gallery until you restart your phone.", Toast.LENGTH_LONG);
+					Toast toast = Toast.makeText(getApplicationContext(), "Finished downloading!", Toast.LENGTH_SHORT);
 					TextView v = (TextView)toast.getView().findViewById(android.R.id.message);
 			    	if( v != null) v.setGravity(Gravity.CENTER);
 			    	toast.show();
+			    	
+			    	sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
 				}
 			
 			});

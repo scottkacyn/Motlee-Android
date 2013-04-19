@@ -16,6 +16,7 @@
 
 package com.motlee.android.adapter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -26,18 +27,27 @@ import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
+import com.motlee.android.object.WatermarkCache;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
+import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.RelativeLayout.LayoutParams;
 
 public class ImageAdapter extends BaseAdapter {
 
@@ -45,7 +55,7 @@ public class ImageAdapter extends BaseAdapter {
 	private final int resource;
 	private final LayoutInflater inflater;
 	
-	private static final int MAX_SIZE = 10;
+	private static final int MAX_SIZE = 1000;
 	private static final int MIN_SIZE = 3;
 	
 	private static final double PROFILE_SCALE = .28;
@@ -134,7 +144,7 @@ public class ImageAdapter extends BaseAdapter {
         return mPhotoList.get(position).hashCode();
     }
 
-    public void setURLs(ArrayList<PhotoItem> photos)
+    public boolean setURLs(ArrayList<PhotoItem> photos)
     {
     	if (!photos.equals(mOriginalPhotoList))
     	{
@@ -170,8 +180,13 @@ public class ImageAdapter extends BaseAdapter {
 	    		this.mPhotoList.add(NO_PHOTO);
 	    	}
 	
-	    	this.mOriginalPhotoList = photos;
+	    	this.mOriginalPhotoList = new ArrayList<PhotoItem>(photos);
 	    	this.notifyDataSetChanged();
+	    	return true;
+    	}
+    	else
+    	{
+    		return false;
     	}
     }
     
@@ -185,6 +200,10 @@ public class ImageAdapter extends BaseAdapter {
             holder.imageView = (ImageView) contentView.findViewById(R.id.imageThumbnail);
             holder.imagePlaceHolder = (LinearLayout) contentView.findViewById(R.id.no_photos);
             holder.blank_space = contentView.findViewById(R.id.blank_space);
+            holder.image_spinner = (ProgressBar) contentView.findViewById(R.id.image_spinner);
+            holder.image_final = (FrameLayout) contentView.findViewById(R.id.image_final);
+            holder.image_retry = (ImageButton) contentView.findViewById(R.id.image_retry);
+            holder.image_layout = (FrameLayout) contentView.findViewById(R.id.thumbnailWithProfile);
             contentView.setTag(holder);
         }
     	else
@@ -223,6 +242,8 @@ public class ImageAdapter extends BaseAdapter {
 	    		holder.imageView.setVisibility(View.GONE);
 	    		holder.imagePlaceHolder.setVisibility(View.VISIBLE);
 	    		holder.blank_space.setVisibility(View.GONE);
+	    		holder.image_final.setVisibility(View.GONE);
+	    		holder.image_spinner.setVisibility(View.GONE);
 	    		
 	    		int imageHeight = maxPhotoSize;
 	    		
@@ -239,6 +260,8 @@ public class ImageAdapter extends BaseAdapter {
 	    	{
 	    		holder.imageView.setVisibility(View.GONE);
 	    		holder.imagePlaceHolder.setVisibility(View.GONE);
+	    		holder.image_final.setVisibility(View.GONE);
+	    		holder.image_spinner.setVisibility(View.GONE);
 	    		holder.blank_space.setVisibility(View.VISIBLE);
 	    		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(maxPhotoSize, maxPhotoSize);
 	    		
@@ -246,6 +269,12 @@ public class ImageAdapter extends BaseAdapter {
 	    	}
 	    	else
 	    	{
+	    		PhotoItem photo = mPhotoList.get(position);
+	    		
+	    		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(maxPhotoSize, maxPhotoSize);
+	    		
+	    		holder.image_layout.setLayoutParams(params);
+	    		
 	    		holder.imagePlaceHolder.setVisibility(View.GONE);
 	    		holder.blank_space.setVisibility(View.GONE);
 	    		
@@ -256,13 +285,45 @@ public class ImageAdapter extends BaseAdapter {
 	    				new FrameLayout.LayoutParams(
 	    						maxPhotoSize, 
 	    						maxPhotoSize));
+	    		if (photo.id < 0)
+	    		{
+		    		if (photo.local_store != null && !photo.local_store.equals(""))
+		    		{
+		    			holder.imageView.setImageURI(Uri.fromFile(new File(photo.image_file_name)));
+		    		}
+		    		else
+		    		{
+		    			holder.imageView.setImageDrawable(WatermarkCache.getWatermark(maxPhotoSize));
+		    		}
+		    		if (photo.failed_upload)
+		    		{	    			
+		    			holder.image_spinner.setVisibility(View.GONE);
+						holder.image_retry.setVisibility(View.VISIBLE);
+						holder.image_retry.setTag(photo.id);
+						//holder.imageView.setClickable(false);
+		    		}
+		    		else
+		    		{
+	    				holder.image_spinner.setVisibility(View.GONE);
+	    				holder.image_final.setVisibility(View.VISIBLE);
+						holder.image_retry.setVisibility(View.GONE);
+						//holder.imageView.setClickable(false);
+		    		}
+	    		}
+	    		else
+	    		{
+	    			GlobalVariables.getInstance().downloadImage(holder.imageView, GlobalVariables.getInstance().getAWSUrlThumbnail(photo), maxPhotoSize, false, photo.local_store);
 	    		
-	    		UserInfo user = dbWrapper.getUser(mPhotoList.get(position).user_id);
-	    		
-	    		GlobalVariables.getInstance().downloadImage(holder.imageView, GlobalVariables.getInstance().getAWSUrlThumbnail(mPhotoList.get(position)), maxPhotoSize);
-	    		
-	    		holder.imageView.setVisibility(View.VISIBLE);
-	        	holder.imageView.setTag(mPhotoList.get(position));
+	    			Log.d("ImageAdapter", photo.local_store);
+	    			
+	    			holder.imageView.setVisibility(View.VISIBLE);
+	        		holder.imageView.setTag(photo);
+	        		//holder.imageView.setClickable(true);
+	        		
+					holder.image_spinner.setVisibility(View.GONE);
+					holder.image_final.setVisibility(View.GONE);
+					holder.image_retry.setVisibility(View.GONE);
+	    		}
 	    	}
     	//}
         
@@ -271,9 +332,13 @@ public class ImageAdapter extends BaseAdapter {
     
     private class ViewHolder
     {
+    	public FrameLayout image_layout;
     	public ImageView imageView;
     	public LinearLayout imagePlaceHolder;
     	public View blank_space;
+    	public ProgressBar image_spinner;
+    	public FrameLayout image_final;
+    	public ImageButton image_retry;
     }
 }
 

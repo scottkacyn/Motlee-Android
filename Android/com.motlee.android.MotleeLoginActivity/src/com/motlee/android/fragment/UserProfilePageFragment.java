@@ -10,11 +10,16 @@ import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.GridPictures;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
+import com.motlee.android.object.event.UserInfoEvent;
+import com.motlee.android.object.event.UserInfoListener;
+import com.motlee.android.object.event.UserWithEventsPhotosEvent;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,10 +28,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class UserProfilePageFragment extends BaseMotleeFragment {
+public class UserProfilePageFragment extends BaseMotleeFragment implements UserInfoListener {
 	
 	private View view;
 	private LayoutInflater inflater;
@@ -69,6 +75,8 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
     
     private boolean isMotlee = true;
     
+    private ProgressBar progressBar;
+    
     private View noPhotoHeader;
     
 	@Override
@@ -85,44 +93,15 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 
 		dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
 		
-		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.user_profile_header_background, GlobalVariables.DISPLAY_WIDTH);
+		progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
 		
-		maxHeightPic = drawable.getHeight();
+		progressBar.setVisibility(View.VISIBLE);
 		
-		headerView.setBackgroundDrawable(drawable.getDrawable());
-		headerView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, drawable.getHeight()));
+		EventServiceBuffer.setUserInfoListener(this);
 		
-		photoGridAdapter = new EventDetailGridAdapter(getActivity(), R.layout.event_detail_page_grid, new ArrayList<GridPictures>());
-		eventAdapter = new EventListAdapter(getActivity(), R.layout.event_list_item, events);
-		friendsAdapter = new PeopleListAdapter(getActivity(), R.layout.people_list_item, friends);
-		
-		profilePictures = (LinearLayout) headerView.findViewById(R.id.profile_photos);
-		profileEvents = (LinearLayout) headerView.findViewById(R.id.profile_events);
-		profileFriends = (LinearLayout) headerView.findViewById(R.id.profile_friends);
-		
-		profilePictures.setOnClickListener(showPictureGrid);
-		profileEvents.setOnClickListener(showEvents);
-		profileFriends.setOnClickListener(showFriendsList);
+		EventServiceBuffer.getUserInfoFromService(mUserID, false);
 		
 		user = dbWrapper.getUser(mUserID);
-		
-		if (!dbWrapper.isFriend(facebookID) && mUserID != SharePref.getIntPref(getActivity(), SharePref.USER_ID))
-		{
-			isFriend = false;
-		}
-		else
-		{
-			isFriend = true;
-		}
-		
-		if (user == null || (user.sign_in_count != null && user.sign_in_count > 0))
-		{
-			isMotlee = true;
-		}
-		else
-		{
-			isMotlee = false;
-		}
 		
 		if (user != null)
 		{
@@ -133,8 +112,6 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 			setPageHeader(mUserName);
 		}
 		showLeftHeaderButton();
-
-		this.setPageLayout();
 		
 		return view;
 	}
@@ -238,7 +215,7 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 			{
 				noPhotoHeader = inflater.inflate(R.layout.user_profile_no_photo_text, null);
 				((TextView) noPhotoHeader.findViewById(R.id.event_detail_no_photo_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-				((TextView) noPhotoHeader.findViewById(R.id.event_detail_no_photo_text)).setText("No events yet...");
+				((TextView) noPhotoHeader.findViewById(R.id.event_detail_no_photo_text)).setText("No streams yet...");
 				userInfoList.addHeaderView(noPhotoHeader);
 			}
 		}
@@ -431,5 +408,70 @@ public class UserProfilePageFragment extends BaseMotleeFragment {
 		
 		this.friends = friends;
 		
+	}
+
+
+	public void raised(UserInfoEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public void userWithEventsPhotos(UserWithEventsPhotosEvent e) {
+		
+		EventServiceBuffer.removeUserInfoListener(this);
+		
+		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.user_profile_header_background, GlobalVariables.DISPLAY_WIDTH);
+		
+		maxHeightPic = drawable.getHeight();
+		
+		headerView.setVisibility(View.VISIBLE);
+		
+		headerView.setBackgroundDrawable(drawable.getDrawable());
+		headerView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, drawable.getHeight()));
+		
+		photoGridAdapter = new EventDetailGridAdapter(getActivity(), R.layout.event_detail_page_grid, new ArrayList<GridPictures>());
+		eventAdapter = new EventListAdapter(getActivity(), R.layout.event_list_item, events);
+		friendsAdapter = new PeopleListAdapter(getActivity(), R.layout.people_list_item, friends);
+		
+		profilePictures = (LinearLayout) headerView.findViewById(R.id.profile_photos);
+		profileEvents = (LinearLayout) headerView.findViewById(R.id.profile_events);
+		profileFriends = (LinearLayout) headerView.findViewById(R.id.profile_friends);
+		
+		profilePictures.setOnClickListener(showPictureGrid);
+		profileEvents.setOnClickListener(showEvents);
+		profileFriends.setOnClickListener(showFriendsList);
+		
+		user = dbWrapper.getUser(mUserID);
+		
+		if (!dbWrapper.isFriend(facebookID) && mUserID != SharePref.getIntPref(getActivity(), SharePref.USER_ID))
+		{
+			isFriend = false;
+		}
+		else
+		{
+			isFriend = true;
+		}
+		
+		if (user == null || (user.sign_in_count != null && user.sign_in_count > 0))
+		{
+			isMotlee = true;
+		}
+		else
+		{
+			isMotlee = false;
+		}
+		
+		this.setPageLayout();
+		
+		progressBar.setVisibility(View.GONE);
+		
+	}
+	
+	@Override
+	public void onDestroy()
+	{
+		EventServiceBuffer.removeUserInfoListener(this);
+		super.onDestroy();
 	}
 }

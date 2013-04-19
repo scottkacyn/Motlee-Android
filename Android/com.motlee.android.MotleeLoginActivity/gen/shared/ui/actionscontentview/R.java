@@ -8,8 +8,8 @@ package shared.ui.actionscontentview;
 
 public final class R {
 	public static final class id {
-		public static final int right_offset = 0x7f060024;
-		public static final int actions_width = 0x7f060025;
+		public static final int right_offset = 0x7f060022;
+		public static final int actions_width = 0x7f060023;
 	}
 	public static final class styleable {
 		public static final int[] ActionsContentView = { 0x7f010087, 0x7f010088, 0x7f010089, 0x7f01008a, 0x7f01008b, 0x7f01008c, 0x7f01008d };

@@ -5,13 +5,33 @@ import com.motlee.android.R;
 import com.motlee.android.UserProfilePageActivity;
 import com.slidingmenu.lib.SlidingMenu;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
+import android.graphics.Rect;
+import android.os.Build;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
+import android.widget.FrameLayout.LayoutParams;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 public class GlobalActivityFunctions {
 
+	static Animator mCurrentAnimator;
+	
 	public static void goBack(Activity activity)
 	{
 		activity.finish();
@@ -36,11 +56,199 @@ public class GlobalActivityFunctions {
         return menu;
 	}
 	
-	public static void showPictureDetail(View view, Activity activity, boolean getPhotoInfo)
+	public static void showPictureDetail(final View view, final Activity activity, final boolean getPhotoInfo)
 	{
-		PhotoItem photo = (PhotoItem) view.getTag();
+		final PhotoItem photo = (PhotoItem) view.getTag();
 		
-		showPictureDetail(photo, activity, getPhotoInfo);
+	    // If there's an animation in progress, cancel it
+	    // immediately and proceed with this one.
+	    if (mCurrentAnimator != null) {
+	        mCurrentAnimator.cancel();
+	    }
+
+	    // Load the high-resolution "zoomed-in" image.
+	    final ImageView expandedImageView = (ImageView) activity.findViewById(
+	            R.id.expanded_image);
+	    
+	    activity.findViewById(R.id.black_background).setVisibility(View.VISIBLE);
+	    
+        GlobalVariables.getInstance().downloadImageWithThumbnail(expandedImageView, 
+        		photo, 
+        		SharePref.getIntPref(activity.getApplicationContext(), SharePref.DISPLAY_WIDTH));
+
+	    // Calculate the starting and ending bounds for the zoomed-in image.
+	    // This step involves lots of math. Yay, math.
+	    final Rect startBounds = new Rect();
+	    final Rect finalBounds = new Rect();
+	    final Point globalOffset = new Point();
+
+	    // The start bounds are the global visible rectangle of the thumbnail,
+	    // and the final bounds are the global visible rectangle of the container
+	    // view. Also set the container view's offset as the origin for the
+	    // bounds, since that's the origin for the positioning animation
+	    // properties (X, Y).
+	    view.getGlobalVisibleRect(startBounds);
+	    activity.findViewById(R.id.main_frame_layout).getGlobalVisibleRect(finalBounds, globalOffset);
+	    startBounds.offset(-globalOffset.x, -globalOffset.y);
+	    finalBounds.offset(-globalOffset.x, -globalOffset.y);
+
+	    
+	    finalBounds.top = (int) (SharePref.getIntPref(activity, SharePref.DISPLAY_HEIGHT) * .095);
+	    // Adjust the start bounds to be the same aspect ratio as the final
+	    // bounds using the "center crop" technique. This prevents undesirable
+	    // stretching during the animation. Also calculate the start scaling
+	    // factor (the end scaling factor is always 1.0).
+	    float startScale;
+	    if ((float) finalBounds.width() / finalBounds.height()
+	            > (float) startBounds.width() / startBounds.height()) {
+	        // Extend start bounds horizontally
+	        startScale = (float) startBounds.height() / finalBounds.height();
+	        float startWidth = startScale * finalBounds.width();
+	        float deltaWidth = (startWidth - startBounds.width()) / 2;
+	        startBounds.left -= deltaWidth;
+	        startBounds.right += deltaWidth;
+	    } else {
+	        // Extend start bounds vertically
+	        startScale = (float) startBounds.width() / finalBounds.width();
+	        float startHeight = startScale * finalBounds.height();
+	        float deltaHeight = (startHeight - startBounds.height()) / 2;
+	        startBounds.top -= deltaHeight;
+	        startBounds.bottom += deltaHeight;
+	    }
+
+	    // Hide the thumbnail and show the zoomed-in view. When the animation
+	    // begins, it will position the zoomed-in view in the place of the
+	    // thumbnail.
+	    if (Build.VERSION.SDK_INT >= 11)
+	    {
+	    	view.setAlpha(0f);
+	    }
+	    else
+	    {
+	    	view.setVisibility(View.GONE);
+	    }
+
+	    expandedImageView.setVisibility(View.VISIBLE);
+	    
+	    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(SharePref.getIntPref(activity, SharePref.DISPLAY_WIDTH), SharePref.getIntPref(activity, SharePref.DISPLAY_WIDTH));
+	    
+	    if (Build.VERSION.SDK_INT < 11)
+	    {
+	    	params = new FrameLayout.LayoutParams(SharePref.getIntPref(activity, SharePref.DISPLAY_WIDTH), SharePref.getIntPref(activity, SharePref.DISPLAY_WIDTH) + finalBounds.top);
+	    	//params.topMargin = finalBounds.top;
+	    	expandedImageView.setPadding(0, finalBounds.top, 0, 0);
+	    }
+	    
+	    expandedImageView.setLayoutParams(params);
+	    
+	    // Set the pivot point for SCALE_X and SCALE_Y transformations
+	    // to the top-left corner of the zoomed-in view (the default
+	    // is the center of the view).
+	    if (Build.VERSION.SDK_INT >= 11)
+	    {
+	    	expandedImageView.setPivotX(0f);
+	    	expandedImageView.setPivotY(0f);
+	    
+	
+		    // Construct and run the parallel animation of the four translation and
+		    // scale properties (X, Y, SCALE_X, and SCALE_Y).
+		    AnimatorSet set = new AnimatorSet();
+		    set
+		            .play(ObjectAnimator.ofFloat(expandedImageView, View.X,
+		                    startBounds.left, finalBounds.left))
+		            .with(ObjectAnimator.ofFloat(expandedImageView, View.Y,
+		                    startBounds.top, finalBounds.top))
+		            .with(ObjectAnimator.ofFloat(expandedImageView, 
+		            		View.SCALE_X, startScale, 1f))
+		            .with(ObjectAnimator.ofFloat(expandedImageView,
+		                    View.SCALE_Y, startScale, 1f));
+		    set.setDuration(400);
+		    set.setInterpolator(new DecelerateInterpolator());
+		    set.addListener(new AnimatorListenerAdapter() {
+		        @Override
+		        public void onAnimationEnd(Animator animation) {
+		            mCurrentAnimator = null;
+		    		
+		    	    if (Build.VERSION.SDK_INT >= 11)
+		    	    {
+		    	    	view.setAlpha(1f);
+		    	    }
+		    	    else
+		    	    {
+		    	    	view.setVisibility(View.VISIBLE);
+		    	    }
+		            
+		    		showPictureDetail(photo, activity, getPhotoInfo);
+		        }
+	
+		        @Override
+		        public void onAnimationCancel(Animator animation) {
+		            mCurrentAnimator = null;
+		        }
+		    });
+		    set.start();
+		    mCurrentAnimator = set;
+	    }
+	    else
+	    {
+	    	Animation animation = new AlphaAnimation(0f, 1f);
+	    	animation.setInterpolator(new DecelerateInterpolator());
+	    	animation.scaleCurrentDuration(.5f);
+	    	animation.setAnimationListener(new AnimationListener() {
+
+				public void onAnimationEnd(Animation animation) {
+		            mCurrentAnimator = null;
+		    		
+		    	    if (Build.VERSION.SDK_INT >= 11)
+		    	    {
+		    	    	view.setAlpha(1f);
+		    	    }
+		    	    else
+		    	    {
+		    	    	view.setVisibility(View.VISIBLE);
+		    	    }
+		            
+		    		showPictureDetail(photo, activity, getPhotoInfo);
+					
+				}
+
+				public void onAnimationRepeat(Animation animation) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				public void onAnimationStart(Animation animation) {
+					// TODO Auto-generated method stub
+					
+				}
+		    });
+	    	animation.setDuration(600);
+	    	
+	    	expandedImageView.startAnimation(animation);
+	    	
+	    }
+		
+		/*Animation pushOut = AnimationUtils.loadAnimation(activity, R.anim.image_click_anim);
+		pushOut.setAnimationListener(new AnimationListener(){
+
+			public void onAnimationEnd(Animation arg0) {
+				
+				showPictureDetail(photo, activity, getPhotoInfo);
+				
+			}
+
+			public void onAnimationRepeat(Animation arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void onAnimationStart(Animation arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+		view.startAnimation(pushOut);*/
 	}
 	
 	public static void showPictureDetail(PhotoItem photo, Activity activity, boolean getPhotoInfo)

@@ -3,6 +3,7 @@ package com.motlee.android.database;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -52,6 +53,48 @@ public class DatabaseWrapper {
 		}
 	}
 	
+	public void createIfNotExistsUser(UserInfo user)
+	{
+		try
+		{
+			helper.getUserDao().createIfNotExists(user);
+		}
+		catch (SQLException e) 
+		{
+			Log.e("DatabaseWrapper", "Failed to createOrUpdateUser for user", e);
+		}
+	}
+	
+	public Cursor getPhotoCursor(Integer eventId)
+	{
+		CloseableIterator<PhotoItem> iterator = null;
+		try 
+		{
+			QueryBuilder<PhotoItem, Integer> qb = helper.getPhotoDao().queryBuilder();
+			qb.where().eq("event_id", eventId);
+			// when you are done, prepare your query and build an iterator
+
+			iterator = helper.getPhotoDao().iterator(qb.prepare());
+
+		   AndroidDatabaseResults results =
+		       (AndroidDatabaseResults)iterator.getRawResults();
+		   Cursor cursor = results.getRawCursor();
+		   return cursor;
+		} 
+		catch (SQLException e) 
+		{
+			Log.e("DatabaseWrapper", "Failed to get cursor from db");
+			return null;
+		}
+		finally 
+		{
+			if (iterator != null)
+			{
+				iterator.closeQuietly();
+			}
+		}
+	}
+	
 	public void deleteEvent(EventDetail eDetail)
 	{
 		try
@@ -61,6 +104,109 @@ public class DatabaseWrapper {
 		catch (SQLException e) 
 		{
 			Log.e("DatabaseWrapper", "Failed to deleteEvent eventDetail", e);
+		}
+	}
+	
+	public Collection<PhotoItem> getAllUploadingPhotos()
+	{
+		try
+		{
+			QueryBuilder<PhotoItem, Integer> qb = helper.getPhotoDao().queryBuilder();
+			qb.where().lt("id", 0);
+			return helper.getPhotoDao().query(qb.prepare());
+		}
+		catch (Exception ex)
+		{
+			Log.e("DatabaseWrapper", "Failed to getAllUploadingPhotos", ex);
+			return new ArrayList<PhotoItem>();
+		}
+	}
+	
+	public ArrayList<Integer> getFriends()
+	{
+		try
+		{
+			Collection<Friend> friends = helper.getFriendsDao().queryForAll();
+
+			ArrayList<Integer> user_ids = new ArrayList<Integer>();
+			for (Friend friend : friends)
+			{
+				if (friend.user_id != null)
+				{
+					user_ids.add(friend.user_id);
+				}
+			}
+			return user_ids;
+		}
+		catch (Exception ex)
+		{
+			Log.e("DatabaseWrapper", "Failed to getAllUploadingPhotos", ex);
+			return new ArrayList<Integer>();
+		}
+	}
+	
+	public Collection<PhotoItem> getPhotosDescending(Integer eventId)
+	{
+		try 
+		{
+			QueryBuilder <PhotoItem, Integer> queryBuilder = helper.getPhotoDao().queryBuilder();
+			queryBuilder.where().eq("event_detail", eventId); // Here is the problem
+			queryBuilder.orderBy("id", false);
+			return helper.getPhotoDao().query(queryBuilder.prepare());
+		} 
+		catch (SQLException e) {
+			Log.e("DatabaseWrapper", "Failed to getPhotos for event", e);
+			return new ArrayList<PhotoItem>();
+		}
+	}
+	
+	public void updatePhoto(PhotoItem photo)
+	{
+		try
+		{
+			helper.getPhotoDao().createOrUpdate(photo);
+		}
+		catch (Exception ex)
+		{
+			Log.e("DatabaseWrapper", "Failed to updatePhoto", ex);
+		}
+	}
+	
+	public long getStreamCount()
+	{
+		try
+		{
+			return helper.getEventDao().countOf();
+		}
+		catch (Exception ex)
+		{
+			Log.e("DatabaseWrapper", "Failed to getStreamCount", ex);
+			return -1;
+		}
+	}
+	
+	public Date getOldestUpdatedTime()
+	{
+		try
+		{
+			QueryBuilder<EventDetail, Integer> qb = helper.getEventDao().queryBuilder();
+			qb.orderBy("updated", true);
+			
+			ArrayList<EventDetail> events = new ArrayList<EventDetail>(helper.getEventDao().query(qb.prepare()));
+			
+			if (events.size() > 0)
+			{
+				return events.get(0).updated_at;
+			}
+			else
+			{
+				return null;
+			}
+		}
+		catch (Exception ex)
+		{
+			Log.e("DatabaseWrapper", "Failed to getOldestUpdatedTime", ex);
+			return null;
 		}
 	}
 	
@@ -245,12 +391,40 @@ public class DatabaseWrapper {
 		}
 	}
 	
+	public int getAttendeeCount(Integer eventId)
+	{
+		try
+		{
+			QueryBuilder<Attendee, Integer> queryBuilder = helper.getAttendeeDao().queryBuilder();
+			queryBuilder.where().eq("event_detail", eventId);
+			queryBuilder.setCountOf(true);
+			long count = helper.getAttendeeDao().countOf(queryBuilder.prepare());
+			
+			EventDetail eDetail = helper.getEventDao().queryForId(eventId);
+			if (eDetail.getAttendeeCount() > (int) count)
+			{
+				return eDetail.getAttendeeCount();
+			}
+			else
+			{
+				return (int) count;
+			}
+		}
+		catch (Exception e) {
+			Log.e("DatabaseWrapper", "Failed to getAttendeeCount", e);
+			return -1;
+		}
+	}
+	
 	public void updatePhotos(Integer eventId, Collection<PhotoItem> newPhotos)
 	{
 		try 
 		{
 			QueryBuilder<PhotoItem, Integer> queryBuilder = helper.getPhotoDao().queryBuilder();
-			queryBuilder.where().eq("event_detail", eventId);
+			Where<PhotoItem, Integer> where = queryBuilder.where();
+			where.eq("event_detail", eventId);
+			where.and();
+			where.gt("id", 0);
 			Collection<PhotoItem> photos = helper.getPhotoDao().query(queryBuilder.prepare());
 			Iterator<PhotoItem> iterator = photos.iterator();
 			while (iterator.hasNext())
@@ -266,7 +440,7 @@ public class DatabaseWrapper {
 			if (photos.size() > 0)
 			{
 				DeleteBuilder<PhotoItem, Integer> deleteBuilder = helper.getPhotoDao().deleteBuilder();
-				Where<PhotoItem, Integer> where = deleteBuilder.where();
+				where = deleteBuilder.where();
 				for (PhotoItem photo : photos)
 				{
 					where.eq("id", photo.id);
@@ -327,7 +501,7 @@ public class DatabaseWrapper {
 		}
 	}
 	
-	public void updateFriendsList(ArrayList<Long> uids)
+	/*public void updateFriendsList(ArrayList<Long> uids)
 	{
 		try {
 			ArrayList<Friend> friends = new ArrayList<Friend>(helper.getFriendsDao().queryForAll());
@@ -349,7 +523,7 @@ public class DatabaseWrapper {
 		} catch (SQLException e) {
 			Log.e("DatabaseWrapper", "Failed to updateFriendsList for user", e);
 		}
-	}
+	}*/
 	
 	public boolean isFriend(Integer userId)
 	{
@@ -593,6 +767,17 @@ public class DatabaseWrapper {
 		
 	}
 	
+	public void clearFriends()
+	{
+		try {
+			DeleteBuilder<Friend, Integer> deleteBuilder = helper.getFriendsDao().deleteBuilder();
+			deleteBuilder.delete();
+		} catch (SQLException e) {
+			Log.e("DatabaseWrapper", "Failed to clearAttendees for event", e);
+		}
+		
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void createAttendee(Attendee attendee)
 	{
@@ -628,7 +813,10 @@ public class DatabaseWrapper {
 	{
 		try {
 			DeleteBuilder<PhotoItem, Integer> deleteBuilder = helper.getPhotoDao().deleteBuilder();
-			deleteBuilder.where().eq("event_detail", eventId);
+			Where<PhotoItem, Integer> where = deleteBuilder.where();
+			where.eq("event_detail", eventId);
+			where.and();
+			where.gt("id", 0);
 			deleteBuilder.delete();
 		} catch (SQLException e) {
 			Log.e("DatabaseWrapper", "Failed to clearPhotos for event", e);
@@ -636,12 +824,40 @@ public class DatabaseWrapper {
 		
 	}
 	
+	public Collection<PhotoItem> getUploadingPhotos(Integer eventId)
+	{
+		try 
+		{
+			QueryBuilder <PhotoItem, Integer> queryBuilder = helper.getPhotoDao().queryBuilder();
+			Where<PhotoItem, Integer> where = queryBuilder.where();
+			where.eq("event_detail", eventId); // Here is the problem
+			where.and();
+			where.lt("id", 0);
+			return helper.getPhotoDao().query(queryBuilder.prepare());
+		} 
+		catch (SQLException e) {
+			Log.e("DatabaseWrapper", "Failed to getStories for event", e);
+			return null;
+		}
+	}
+	
 	public void createPhoto(PhotoItem photo)
 	{
 		try {
+			
+			if (photo.id < 0)
+			{
+				int i = -1;
+				while (getPhoto(i) != null)
+				{
+					i--;
+				}
+				
+				photo.id = i;
+			}
 			helper.getPhotoDao().createOrUpdate(photo);
 		} catch (SQLException e) {
-			Log.e("DatabaseWrapper", "Failed to createAttendee for event", e);
+			Log.e("DatabaseWrapper", "Failed to createPhoto for event", e);
 		}
 	}
 	

@@ -7,13 +7,18 @@
 	
     <ImageButton 
         android:layout_width="0dp"
-        android:layout_weight=".33"
+        android:layout_weight=".17"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:layout_gravity="center_vertical|right"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp"
+        android:paddingBottom="5dp"
+        android:paddingTop="10dp"
         android:id="@+id/event_detail_photos"
-        android:src="@drawable/event_detail_photos" 
+        android:src="@drawable/event_detail_grid" 
         android:background="@android:color/transparent"
-        android:padding="5dp"
         android:onClick="showPhotos"/>
     
    <!-- <ImageButton 
@@ -29,25 +34,63 @@
     
     <ImageButton 
         android:layout_width="0dp"
-        android:layout_weight=".34"
+        android:layout_weight=".17"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
-        android:id="@+id/event_detail_friends"
-        android:src="@drawable/event_detail_friends"
-        android:background="@android:color/transparent" 
-        android:padding="5dp"
-        android:onClick="showFriends"/>
+        android:adjustViewBounds="true"
+		android:layout_gravity="center_vertical|right"
+        android:id="@+id/event_detail_map"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp"
+        android:paddingBottom="5dp"
+        android:paddingTop="10dp"
+        android:src="@drawable/event_detail_map" 
+        android:background="@android:color/transparent"
+        android:onClick="showMap"/>
+    
+    <ImageButton
+        android:id="@+id/button_capture"
+        android:layout_width="0dp"
+        android:layout_weight=".32"
+        android:layout_height="match_parent"
+        android:src="@drawable/event_detail_camera"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:onClick="onClickTakePhoto"
+        android:background="@android:color/transparent"/>
     
     <ImageButton 
         android:layout_width="0dp"
-        android:layout_weight=".33"
+        android:layout_weight=".17"
         android:layout_height="match_parent"
+        android:adjustViewBounds="true"
         android:scaleType="fitCenter"
-        android:id="@+id/event_detail_map"
-        android:src="@drawable/event_detail_map" 
-        android:background="@android:color/transparent"
-        android:padding="5dp"
-        android:onClick="showMap"/>
+		android:layout_gravity="center_vertical|right"
+        android:id="@+id/event_detail_friends"
+        android:src="@drawable/event_detail_friends"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp"
+        android:paddingBottom="5dp"
+        android:paddingTop="10dp"
+        android:background="@android:color/transparent" 
+        android:onClick="showFriends"/>
+
+    
+    <ImageButton 
+        android:layout_width="0dp"
+        android:layout_weight=".17"
+        android:layout_height="match_parent"
+		android:layout_gravity="center_vertical|right"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:id="@+id/event_detail_share"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp"
+        android:paddingBottom="5dp"
+        android:paddingTop="10dp"
+        android:onClick="shareStream"
+        android:src="@drawable/event_detail_share" 
+        android:background="@android:color/transparent"/>
     
     <!-- <ImageButton 
         android:layout_width="0dp"

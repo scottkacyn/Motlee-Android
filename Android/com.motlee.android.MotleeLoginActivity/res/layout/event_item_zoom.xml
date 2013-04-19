@@ -4,10 +4,11 @@
     android:layout_height="match_parent" >
     
     <it.sephiroth.android.library.imagezoom.ImageViewTouch
-        android:id="@+id/photo_detail_picture"
+        android:id="@+id/photo_detail_picture" 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="top"
         android:scaleType="fitCenter"
-        android:layout_gravity="center" />
+        android:adjustViewBounds="true" />
     
 </FrameLayout>

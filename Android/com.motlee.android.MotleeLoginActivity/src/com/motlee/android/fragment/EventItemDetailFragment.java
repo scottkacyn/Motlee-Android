@@ -26,6 +26,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.TextView;
@@ -75,6 +76,8 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 	private boolean hasChangedPage = false;
 	
 	private Timer changePageTimer;
+	
+	//private ProgressBar progressBar;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
@@ -154,6 +157,23 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
 		return view;
 	}
 	
+	@Override
+	public void onDestroy()
+	{
+		if (changePageTimer != null)
+		{
+			changePageTimer.cancel();
+			changePageTimer = null;
+		}
+		
+		super.onDestroy();
+	}
+	
+	public void setProgressBar(ProgressBar progressBar)
+	{
+		//this.progressBar = progressBar;
+	}
+	
 	private void requestPhotoDetail(int index)
 	{
 		Log.d("requestPhotoDetail", "index: " + index + ", adapter.getCount()" + adapter.getCount());
@@ -196,6 +216,11 @@ public class EventItemDetailFragment extends BaseMotleeFragment {
             			
             				Log.d("getPhotoDetail", "getPhotoDetail for index: " + index);
             				EventServiceBuffer.getPhotoDetail(photoDetail.photo);
+            				
+                    		/*if (progressBar != null)
+                    		{
+                    			progressBar.setVisibility(View.VISIBLE);
+                    		}*/
             				
             				photoDetail.hasSentDetailRequest = true;
             			

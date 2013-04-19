@@ -3,13 +3,14 @@
 	<section name="org.eclipse.jdt.internal.debug.ui.ExpressionInformationControlCreator$ExpressionInformationControl">
 		<item value="129" key="SashWeightDetails"/>
 		<item value="870" key="SashWeightTree"/>
-		<item value="116" key="HEIGHT"/>
-		<item value="610" key="WIDTH"/>
+		<item value="129" key="HEIGHT"/>
+		<item value="549" key="WIDTH"/>
 	</section>
 	<section name="conditionHistory">
-		<item value="3" key="conditionHistoryEntryCount"/>
-		<item value="this.uid == that.uid" key="conditionHistoryEntry_0"/>
-		<item value="eventOwner.first_name == null || eventOwner.last_name == null" key="conditionHistoryEntry_1"/>
-		<item value="mContext == null" key="conditionHistoryEntry_2"/>
+		<item value="4" key="conditionHistoryEntryCount"/>
+		<item value="dbWrapper.getUser(photo.user_id) == null" key="conditionHistoryEntry_0"/>
+		<item value="this.uid == that.uid" key="conditionHistoryEntry_1"/>
+		<item value="eventOwner.first_name == null || eventOwner.last_name == null" key="conditionHistoryEntry_2"/>
+		<item value="mContext == null" key="conditionHistoryEntry_3"/>
 	</section>
 </section>

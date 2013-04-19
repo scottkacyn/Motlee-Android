@@ -1,5 +1,11 @@
 package com.motlee.android.object;
 
+import greendroid.widget.PagedAdapter;
+
+import java.io.File;
+import java.util.ArrayList;
+
+import com.motlee.android.BaseMotleeActivity;
 import com.motlee.android.CameraActivity;
 import com.motlee.android.CreateEventActivity;
 import com.motlee.android.EventDetailActivity;
@@ -13,12 +19,16 @@ import com.motlee.android.TakePhotoActivity;
 import com.motlee.android.UserProfilePageActivity;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.BaseMotleeFragment;
+import com.motlee.android.fragment.EventDetailFragment;
+import com.motlee.android.service.StreamListService;
 import com.slidingmenu.lib.SlidingMenu;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -26,6 +36,14 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class MenuFunctions {
@@ -39,27 +57,27 @@ public class MenuFunctions {
 	{
 		TextView tv = (TextView) view.findViewById(R.id.main_menu_button_alert);
 		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
+		//tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
 		
 		tv = (TextView) view.findViewById(R.id.main_menu_button_all_events);
 		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
+		//tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
 		
 		tv = (TextView) view.findViewById(R.id.main_menu_button_map);
 		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
+		//tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
 		
 		tv = (TextView) view.findViewById(R.id.main_menu_button_search);
 		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
+		//tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
 		
 		tv = (TextView) view.findViewById(R.id.main_menu_button_star);
 		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
+		//tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
 		
 		tv = (TextView) view.findViewById(R.id.main_menu_button_gear);
 		tv.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
+		//tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, menuTextSize);
 	}
 	
 	public static void setUpPlusMenuButtons(View view)
@@ -230,9 +248,11 @@ public class MenuFunctions {
 		
 		takePhoto.putExtra("EventId", eventId);
 		
+		takePhoto.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+		
 		activity.startActivity(takePhoto);
 		
-		activity.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+		//activity.overridePendingTransition(R.anim.slide_down_in, R.anim.slide_down_out);
 		
 		/*AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
 				activity);
@@ -304,6 +324,161 @@ public class MenuFunctions {
  
 				// show it
 		alertDialog.show(); */
+	}
+	
+	private static AdapterView getAdapterView(View view)
+	{
+		View parent = (View) view.getParent();
+		
+		if (parent instanceof AdapterView)
+		{
+			return (AdapterView) parent;
+		}
+		else
+		{
+			return getAdapterView(parent);
+		}
+	}
+	
+	public static void retryPhotoUpload(View view, final FragmentActivity activity)
+	{		
+		Integer photoId = (Integer) view.getTag();
+		
+		final DatabaseWrapper dbWrapper = new DatabaseWrapper(activity.getApplicationContext());
+		
+		final PhotoItem photo = dbWrapper.getPhoto(photoId);
+		
+		final View parentView = getAdapterView(view);
+		
+		final View thumbnailView = activity.getLayoutInflater().inflate(R.layout.retry_upload_view, null);
+		
+		ImageView image = (ImageView) thumbnailView.findViewById(R.id.retry_upload_thumbnail);
+		image.setImageURI(Uri.fromFile(new File(photo.image_file_name)));
+		
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+				activity);
+		
+		alertDialogBuilder
+		.setMessage("Retry photo upload?")
+		.setCancelable(true)
+		.setView(thumbnailView)
+		.setPositiveButton("Retry",new DialogInterface.OnClickListener() 
+		{
+			public void onClick(DialogInterface dialog,int id) {
+				
+				File file = new File(photo.local_store);
+				
+				photo.failed_upload = false;
+				
+				//DatabaseWrapper dbWrapper = new DatabaseWrapper(activity.getApplicationContext());
+				
+				dbWrapper.updatePhoto(photo);
+				
+				Intent streamListService = new Intent(activity, StreamListService.class);
+				streamListService.putExtra(StreamListService.PHOTO_STATUS_CHANGE, photo);
+				activity.startService(streamListService);
+				
+				EventServiceBuffer.addPhotoToCache(photo.event_id, file.getAbsolutePath(), GlobalVariables.getInstance().getLocationInfo(), photo.caption, photo);
+				
+				EventServiceBuffer.sendPhotoCacheToDatabase();
+				
+				if (parentView instanceof AdapterView)
+				{
+					Adapter adapter = ((AdapterView) parentView).getAdapter();
+					if (adapter instanceof PagedAdapter)
+					{
+						((PagedAdapter) adapter).notifyDataSetChanged();
+					}
+					else if (adapter instanceof ArrayAdapter)
+					{
+						((ArrayAdapter) adapter).notifyDataSetChanged();
+					}
+					else if (adapter instanceof BaseAdapter)
+					{
+						((BaseAdapter) adapter).notifyDataSetChanged();
+					}
+				}
+				
+				if (activity instanceof EventDetailActivity)
+				{
+					FragmentManager     fm = activity.getSupportFragmentManager();
+					
+			        Fragment fragment = fm.findFragmentById(R.id.fragment_content);
+			        
+			        if (fragment != null)
+			        {
+				        if (fragment instanceof EventDetailFragment)
+				        {
+				        	((EventDetailFragment) fragment).photoEvent();
+				        }
+			        }
+				}
+				
+				if (activity instanceof EventListActivity)
+				{			
+					((EventListActivity) activity).updateEventAdapter(((EventListActivity) activity).currentEventListParams.dataContent, false);
+				}
+				
+				
+				dialog.cancel();
+			}
+		  })
+		.setNegativeButton("Cancel Upload",new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) 
+			{
+				dbWrapper.deletePhoto(photo);
+				
+				View view = activity.findViewById(android.R.id.content);
+				
+				view.requestLayout();
+				
+				if (parentView instanceof AdapterView)
+				{
+					Adapter adapter = ((AdapterView) parentView).getAdapter();
+					if (adapter instanceof PagedAdapter)
+					{
+						((PagedAdapter) adapter).notifyDataSetChanged();
+					}
+					else if (adapter instanceof ArrayAdapter)
+					{
+						((ArrayAdapter) adapter).notifyDataSetChanged();
+					}
+					else if (adapter instanceof BaseAdapter)
+					{
+						((BaseAdapter) adapter).notifyDataSetChanged();
+					}
+				}
+				
+				if (activity instanceof EventDetailActivity)
+				{
+					FragmentManager     fm = activity.getSupportFragmentManager();
+					
+			        Fragment fragment = fm.findFragmentById(R.id.fragment_content);
+			        
+			        if (fragment != null)
+			        {
+				        if (fragment instanceof EventDetailFragment)
+				        {
+				        	((EventDetailFragment) fragment).photoEvent();
+				        }
+			        }
+				}
+				
+				if (activity instanceof EventListActivity)
+				{			
+					((EventListActivity) activity).updateEventAdapter(((EventListActivity) activity).currentEventListParams.dataContent, false);
+				}
+				
+				
+				dialog.cancel();
+			}
+		});
+		
+		// create alert dialog
+		AlertDialog alertDialog = alertDialogBuilder.create();
+ 
+				// show it
+		alertDialog.show();
 	}
 	
 	public static void takePictureOnPhone(View view, final FragmentActivity activity)
@@ -397,6 +572,13 @@ public class MenuFunctions {
 		if (activity instanceof EventListActivity)
 		{
 			EventListActivity eventListActivity = (EventListActivity) activity;
+			
+			InputMethodManager imm = (InputMethodManager)activity.getSystemService(
+				      Context.INPUT_METHOD_SERVICE);
+			if (activity.getCurrentFocus() != null)
+			{
+				imm.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+			}
 			
 			eventListActivity.requestNewDataForList(params.dataContent, params.headerText, true);
 		}

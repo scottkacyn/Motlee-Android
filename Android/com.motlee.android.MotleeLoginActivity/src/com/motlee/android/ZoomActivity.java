@@ -11,7 +11,10 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 
 import com.flurry.android.FlurryAgent;
 import com.motlee.android.object.GlobalVariables;
@@ -68,8 +71,15 @@ public class ZoomActivity extends Activity implements OnTouchListener
         
         PhotoItem photo = (PhotoItem) getIntent().getParcelableExtra("Photo");
         
+        int topBound = (int) (SharePref.getIntPref(this, SharePref.DISPLAY_HEIGHT) * .08);
+        
+        //int topBound = 0;
         image = (ImageViewTouch) findViewById(R.id.photo_detail_picture);
         
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(SharePref.getIntPref(this, SharePref.DISPLAY_WIDTH), SharePref.getIntPref(this, SharePref.DISPLAY_WIDTH) + topBound);
+        
+        image.setLayoutParams(params);
+        image.setPadding(0, topBound, 0, 0);
         
         image.setDoubleTapListener(new OnImageViewTouchDoubleTapListener(){
 

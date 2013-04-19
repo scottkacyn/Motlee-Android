@@ -339,15 +339,23 @@ public class EventDetail implements Comparable<EventDetail> {
 		Date dateNow = new Date();
 		//boolean thisIsHappeningNow = (this.getStartTime().compareTo(dateNow) < 0 && this.getEndTime().compareTo(dateNow) > 0);
 		Calendar updatedDate = Calendar.getInstance();
+		if (this.updated_at == null)
+		{
+			this.updated_at = new Date();
+		}
 		updatedDate.setTime(this.updated_at);
-		updatedDate.add(Calendar.HOUR_OF_DAY, 6);
+		/*updatedDate.add(Calendar.HOUR_OF_DAY, 6);
 		
 		Calendar currentDate = Calendar.getInstance();
-		currentDate.setTime(new Date());
+		currentDate.setTime(new Date());*/
 		
 		Calendar otherUpdatedDate = Calendar.getInstance();
+		if (another.updated_at == null)
+		{
+			another.updated_at = new Date();
+		}
 		otherUpdatedDate.setTime(another.updated_at);
-		otherUpdatedDate.add(Calendar.HOUR_OF_DAY, 6);
+		/*otherUpdatedDate.add(Calendar.HOUR_OF_DAY, 6);
 		
 		boolean thisIsHappeningNow = (updatedDate.getTime().compareTo(currentDate.getTime()) > 0);
 		boolean anotherIsHappeningNow = (otherUpdatedDate.getTime().compareTo(currentDate.getTime()) > 0);
@@ -386,8 +394,8 @@ public class EventDetail implements Comparable<EventDetail> {
 		}
 		
 		//Log.d("EventDetailCompare", "thisUpdatedAt: " + this.updated_at + ", otherUpdatedAt: " + another.updated_at + ", thisCreatedAt: " + this.created_at + ", otherCreatedAt: " + another.created_at + ", result: " + result);
-		
-		return result;
+		*/
+		return otherUpdatedDate.getTime().compareTo(updatedDate.getTime());
 		
 	}
 	

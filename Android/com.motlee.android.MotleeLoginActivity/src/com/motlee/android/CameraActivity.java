@@ -1,17 +1,3 @@
-/***
-  Copyright (c) 2008-2012 CommonsWare, LLC
-  Licensed under the Apache License, Version 2.0 (the "License"); you may not
-  use this file except in compliance with the License. You may obtain a copy
-  of the License at http://www.apache.org/licenses/LICENSE-2.0. Unless required
-  by applicable law or agreed to in writing, software distributed under the
-  License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
-  OF ANY KIND, either express or implied. See the License for the specific
-  language governing permissions and limitations under the License.
-  
-  From _The Busy Coder's Guide to Advanced Android Development_
-    http://commonsware.com/AdvAndroid
- */
-
 package com.motlee.android;
 
 import java.io.File;
@@ -24,64 +10,57 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import com.droid4you.util.cropimage.Util;
 import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.view.CameraPreview;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
-import android.graphics.BitmapRegionDecoder;
 import android.graphics.Canvas;
-import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
+import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.PictureCallback;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.FloatMath;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-import android.widget.RelativeLayout.LayoutParams;
+import android.widget.ImageView.ScaleType;
 
 public class CameraActivity extends Activity {
-	
-    static final int NONE = 0;
+	static final int NONE = 0;
     static final int DRAG = 1;
     static final int ZOOM = 2;
     int mode = NONE;
     
-    int mEventId;
+    private static final String FACING_FRONT = "facingfront";
     
-    ProgressDialog progressDialog;
+    Handler handler = new Handler();
+    
+    int mEventId;
     
     boolean isZoomSupported = true;
     
@@ -94,29 +73,104 @@ public class CameraActivity extends Activity {
     
     int mZoomMax = 0;
     int mCurZoom = 0;
+    
+    private boolean mIsCameraFacingFront = false;
 	
     private Camera mCamera;
     private CameraPreview mCameraPreview;
+    
+    //private ImageButton cancelButton;
+    private ImageButton libraryButton;
+    private ImageButton cameraButton;
+    private ImageButton flashToggleButton;
+    private ImageButton switchCameraButton;
 
+    @Override
+    public void onPause()
+    {
+    	super.onPause();
+    	
+    	releaseCamera();
+    }
+    
+    @Override
+    public void onResume()
+    {
+    	Log.d("CameraActivity", "onResume");
+    	
+    	super.onResume();
+    	
+    	if (mCamera == null)
+    	{
+    		Log.d("CameraActivity", "mCamera is null");
+    		mCamera = getCameraInstance(mIsCameraFacingFront);
+    	}
+    }
+
+    private void releaseCamera()
+    {
+        if (mCamera != null){
+        	mCamera.stopPreview();
+            mCamera.release();        // release the camera for other applications
+            mCamera = null;
+        }
+    }
+    
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.camera_preview);
-        mCamera = getCameraInstance();
+        setContentView(R.layout.camera_preview_portrait);
+        
+        mIsCameraFacingFront = getIntent().getBooleanExtra(FACING_FRONT, false);
+        
+        mCamera = getCameraInstance(mIsCameraFacingFront);
         mCameraPreview = new CameraPreview(this, mCamera);
+        //mCameraPreview.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.TOP|Gravity.LEFT));
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(mCameraPreview);
-        
 
-        
         mCameraPreview.setOnTouchListener(pinchZoom);
-        //mCameraPreview.set
+        
+        ImageView cameraLens = new ImageView(this);
+        
+        Integer controlsHeight = SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH);
+
+        DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.camera_bottom_flat_bg, controlsHeight);
+        
+        Integer cameraMargin = (int) ((double) (SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_HEIGHT) - drawable.getHeight()) / 2 - ((double) controlsHeight / 2));
+        
+        FrameLayout.LayoutParams cameraParams = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        
+        if (mIsCameraFacingFront)
+        {
+        	cameraParams = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        }
+        
+        if (Build.VERSION.SDK_INT > 10)
+        {
+        	cameraParams.topMargin = cameraMargin;
+        }
+        else
+        {
+        	preview.setPadding(0, cameraMargin, 0, 0);
+        }
+        
+        Log.d("CameraActivity", "cameraMargin: " + cameraMargin);
+        
+        preview.setLayoutParams(cameraParams);
+        
+        cameraLens.setLayoutParams(new FrameLayout.LayoutParams(controlsHeight, controlsHeight));
+        cameraLens.setImageDrawable(DrawableCache.getDrawable(R.drawable.camera_view_border, controlsHeight, 2).getDrawable());
+        cameraLens.setScaleType(ScaleType.FIT_CENTER);
+        cameraLens.setAdjustViewBounds(true);
+        
+        preview.addView(cameraLens);
 
         mEventId = getIntent().getExtras().getInt("EventId");
         
-        ImageButton upload = (ImageButton) findViewById(R.id.upload_button);
-        upload.setOnClickListener(new OnClickListener(){
+        libraryButton = (ImageButton) findViewById(R.id.upload_button);
+        libraryButton.setOnClickListener(new OnClickListener(){
 
 			public void onClick(View arg0) {
 				
@@ -126,14 +180,102 @@ public class CameraActivity extends Activity {
 				
 				startActivity(takePictureIntent);
 				
+				System.gc();
+				
 				finish();
 			}
         	
         });
         
-        Camera.Parameters parameters = mCamera.getParameters();
+        setCameraParams();
         
-        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+        flashToggleButton = (ImageButton) findViewById(R.id.camera_flash_toggle);
+        
+        flashToggleButton.setTag(Camera.Parameters.FLASH_MODE_AUTO);
+        
+        switchCameraButton = (ImageButton) findViewById(R.id.camera_switch_facing);
+        
+        checkIfFrontCameraExists();
+        
+        RelativeLayout cameraBackground = (RelativeLayout) findViewById(R.id.camera_background);
+
+        Integer controlsWidth = SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_HEIGHT) - controlsHeight - cameraMargin;
+        
+        LinearLayout cameraControls = (LinearLayout) findViewById(R.id.camera_controls);
+        
+        cameraControls.setBackgroundDrawable(drawable.getDrawable());
+        
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(controlsHeight, controlsWidth, Gravity.BOTTOM);
+        
+        cameraBackground.setLayoutParams(params);
+        
+        cameraButton = (ImageButton) findViewById(R.id.button_capture);
+        cameraButton.setOnClickListener(new View.OnClickListener() {
+            
+            public void onClick(View v) {
+            	
+            	findViewById(R.id.progress_dialog).setVisibility(View.VISIBLE);
+            	
+            	cameraButton.setEnabled(false);
+            	libraryButton.setEnabled(false);
+            	//cancelButton.setEnabled(false);
+            	
+            	FrameLayout parent = (FrameLayout) findViewById(R.id.parent);
+            	
+            	parent.setBackgroundColor(R.color.see_through_black);
+            	
+                mCamera.takePicture(null, null, mPicture);
+            }
+        });
+    }
+
+	private void checkIfFrontCameraExists() {
+		
+		boolean hasFront = false;
+		
+		int numOfCameras = Camera.getNumberOfCameras();
+		
+		if (numOfCameras > 1)
+		{
+			for (int i = 0; i < numOfCameras; i++)
+			{
+				CameraInfo cameraInfo = new CameraInfo();
+				Camera.getCameraInfo(i, cameraInfo);
+				
+				if (cameraInfo.facing == CameraInfo.CAMERA_FACING_FRONT)
+				{
+					hasFront = true;
+				}
+			}
+		}
+		
+		if (hasFront)
+		{
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT);
+			params.weight = .15f;
+			params.leftMargin = DrawableCache.convertDpToPixel(7);
+			params.topMargin = DrawableCache.convertDpToPixel(7);
+			flashToggleButton.setLayoutParams(params);
+			
+			switchCameraButton.setLayoutParams(params);
+		}
+		else
+		{
+			switchCameraButton.setVisibility(View.GONE);
+			
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT);
+			params.weight = .30f;
+			params.leftMargin = DrawableCache.convertDpToPixel(7);
+			params.topMargin = DrawableCache.convertDpToPixel(7);
+			flashToggleButton.setLayoutParams(params);
+		}
+		
+	}
+
+	private void setCameraParams() {
+		Camera.Parameters parameters = mCamera.getParameters();
+        
+        /*parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
         
         parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
         
@@ -145,7 +287,7 @@ public class CameraActivity extends Activity {
         
         Log.d("CameraActivity", "Display: width: " + SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_HEIGHT) + ", height: " + SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH));
         
-        for (Camera.Size size : previewSizes)
+        /*for (Camera.Size size : previewSizes)
         {
         	Log.d("CameraActivity", "Preview: width: " + size.width + ", height: " + size.height);
         	
@@ -160,11 +302,11 @@ public class CameraActivity extends Activity {
         		break;
         	}
         	
-        }
+        }*/
         
-        double previewRatio = (double) previewSize.width / (double) previewSize.height;
+        //double previewRatio = (double) previewSize.width / (double) previewSize.height;
         
-        for (Camera.Size size : pictureSizes)
+        /*for (Camera.Size size : pictureSizes)
         {
         	Log.d("CameraActivity", "Picture: width: " + size.width + ", height: " + size.height);
         	
@@ -180,7 +322,7 @@ public class CameraActivity extends Activity {
         			break;
         		}
         	}
-        }
+        }*/
         
         isZoomSupported = parameters.isZoomSupported();
         
@@ -190,55 +332,15 @@ public class CameraActivity extends Activity {
         	mCurZoom = parameters.getZoom();
         }
         
-        mCamera.stopPreview();
+        /*mCamera.stopPreview();
         
         mCamera.setParameters(parameters);
         
-        mCamera.startPreview();
+    	mCamera.setDisplayOrientation(90);
         
-        ImageButton cancelButton = (ImageButton) findViewById(R.id.cancel_button);
-        cancelButton.setOnClickListener(new OnClickListener(){
-
-			public void onClick(View arg0) {
-				
-				finish();
-				
-			}
         
-        });
-        
-        RelativeLayout cameraBackground = (RelativeLayout) findViewById(R.id.camera_background);
-        
-        Integer controlsHeight = SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH);
-        Integer controlsWidth = SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_HEIGHT) - controlsHeight;
-        
-        LinearLayout cameraControls = (LinearLayout) findViewById(R.id.camera_controls);
-        
-        cameraControls.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.camera_bottom_bg, controlsHeight, true).getDrawable());
-        
-        ImageView cameraLens = new ImageView(this);
-        
-        cameraLens.setLayoutParams(new FrameLayout.LayoutParams(controlsHeight, controlsHeight));
-        cameraLens.setImageResource(R.drawable.camera_view_border);
-        cameraLens.setScaleType(ScaleType.FIT_CENTER);
-        cameraLens.setAdjustViewBounds(true);
-        
-        preview.addView(cameraLens);
-        
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(controlsWidth, controlsHeight, Gravity.RIGHT);
-        
-        cameraBackground.setLayoutParams(params);
-        
-        ImageButton captureButton = (ImageButton) findViewById(R.id.button_capture);
-        captureButton.setOnClickListener(new View.OnClickListener() {
-            
-            public void onClick(View v) {
-            	progressDialog = ProgressDialog.show(CameraActivity.this, "", "");
-            	
-                mCamera.takePicture(null, null, mPicture);
-            }
-        });
-    }
+        mCamera.startPreview();*/
+	}
 
     private View.OnTouchListener pinchZoom = new View.OnTouchListener() {
 		
@@ -344,6 +446,57 @@ public class CameraActivity extends Activity {
 			}
 		}
 	}
+	
+	public void toggleFlash(View view)
+	{
+		String flashMode = (String) view.getTag();
+		
+		if (flashMode.equals(Camera.Parameters.FLASH_MODE_AUTO))
+		{
+			flashToggleButton.setTag(Camera.Parameters.FLASH_MODE_OFF);
+			flashToggleButton.setImageResource(R.drawable.flash_off);
+			Camera.Parameters params = mCamera.getParameters();
+			params.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+			mCamera.setParameters(params);
+		}
+		else if (flashMode.equals(Camera.Parameters.FLASH_MODE_OFF))
+		{
+			flashToggleButton.setTag(Camera.Parameters.FLASH_MODE_ON);
+			flashToggleButton.setImageResource(R.drawable.flash_on);
+			Camera.Parameters params = mCamera.getParameters();
+			params.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+			mCamera.setParameters(params);
+		}
+		else
+		{
+			flashToggleButton.setTag(Camera.Parameters.FLASH_MODE_AUTO);
+			flashToggleButton.setImageResource(R.drawable.flash_auto);
+			Camera.Parameters params = mCamera.getParameters();
+			params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+			mCamera.setParameters(params);
+		}
+	}
+	
+	public void toggleFacing(View view)
+	{
+		((ImageButton) view).setEnabled(false);
+		
+		if (mIsCameraFacingFront)
+		{
+			Intent newCamera = new Intent(this, CameraActivity.class);
+			newCamera.putExtra("EventId", mEventId);
+			finish();
+			startActivity(newCamera);
+		}
+		else
+		{
+			Intent newCamera = new Intent(this, CameraActivity.class);
+			newCamera.putExtra("EventId", mEventId);
+			newCamera.putExtra(FACING_FRONT, true);
+			finish();
+			startActivity(newCamera);
+		}
+	}
     
     /*
      * --------------------------------------------------------------------------
@@ -379,17 +532,42 @@ public class CameraActivity extends Activity {
      * 
      * @return
      */
-    private Camera getCameraInstance() {
+    private Camera getCameraInstance(boolean facingFront) {
         Camera camera = null;
-        try {
-            camera = Camera.open();
-        } catch (Exception e) {
-            // cannot get camera or does not exist
-        }
-        return camera;
+    	
+    	if (!facingFront)
+    	{
+
+	        try {
+	            camera = Camera.open();
+	        } catch (Exception e) {
+	            // cannot get camera or does not exist
+	        }
+	        return camera;
+    	}
+    	else
+    	{
+    		for (int i = 0; i < Camera.getNumberOfCameras(); i++)
+    		{
+    			CameraInfo cameraInfo = new CameraInfo();
+    			Camera.getCameraInfo(i, cameraInfo);
+    			
+    			if (cameraInfo.facing == CameraInfo.CAMERA_FACING_FRONT)
+    			{
+    		        try {
+    		            camera = Camera.open(i);
+    		        } catch (Exception e) {
+    		            // cannot get camera or does not exist
+    		        }
+    		        return camera;
+    			}
+    		}
+    	}
+    	
+    	return camera;
     }
     
-	private void saveOutput(Bitmap croppedImage, File file) {
+	private void saveOutput(Bitmap croppedImage, final File file) {
 		
 		Uri mSaveUri = Uri.fromFile(file);
 		
@@ -415,82 +593,243 @@ public class CameraActivity extends Activity {
 		}
 		croppedImage.recycle();
 		
-		Intent intent = new Intent(this, PreviewImageActivity.class);
+		System.gc();
 		
-		intent.putExtra("EventId", mEventId);
-		intent.putExtra("PhotoPath", file.getPath());
-		
-		progressDialog.dismiss();
-		
-		startActivity(intent);
-		
-		finish();
+		handler.post(new Runnable(){
+
+			public void run() {
+				
+				sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
+				
+				Intent intent = new Intent(CameraActivity.this, PreviewImageActivity.class);
+				
+				intent.putExtra("EventId", mEventId);
+				intent.putExtra("PhotoPath", file.getPath());
+				
+				//progressDialog.dismiss();
+				
+				
+				finish();
+				
+				startActivity(intent);
+
+			}
+			
+		});
+
 	}
 
     PictureCallback mPicture = new PictureCallback() {
         
-        public void onPictureTaken(byte[] data, Camera camera) {
+        public void onPictureTaken(final byte[] data, Camera camera) {
         	
-            File pictureFile = null;
-			try {
-				pictureFile = GlobalVariables.createImageFile(getApplicationContext());
-				Log.d("CameraActivity", "File Name: " + pictureFile.getAbsolutePath());
-			} catch (IOException e1) {
-				Log.e("CameraActivity", "Error loading image file");
-				Toast.makeText(CameraActivity.this, "Cannot access your files can't capture photos.", 2000).show();
-				progressDialog.dismiss();
-				finish();
-			}
-            if (pictureFile == null) {
-                return;
-            }
-            try {
-                FileOutputStream fos = new FileOutputStream(pictureFile);
-                
-                fos.write(data, 0, data.length);
-                fos.close();
-                
-                Bitmap mBitmap = getBitmap(pictureFile);
-                
-                Rect r = null;
-                
-                if (mBitmap.getWidth() > mBitmap.getHeight())
-                {
-                	r = new Rect(0, 0, mBitmap.getHeight(), mBitmap.getHeight());
-                }
-                else
-                {
-                	r = new Rect(0, 0, mBitmap.getWidth(), mBitmap.getWidth());
-                }
+        	/*Intent intent = new Intent(CameraActivity.this, TempTakePhotoActivity.class);
+        	
+        	intent.putExtra("EventId", mEventId);
+        	intent.putExtra("Photo", data);
+        	
+        	finish();
+        	
+        	startActivity(intent);*/
+        	
+        	FrameLayout parent = (FrameLayout) findViewById(R.id.parent);
+        	
+        	unbindDrawables(parent);
+        	
+        	RelativeLayout progressDialog = (RelativeLayout) CameraActivity.this.getLayoutInflater().inflate(R.layout.progress_dialog, null);
+        	
+        	parent.addView(progressDialog);
+        	
+        	System.gc();
+        	
+        	Thread thread = new Thread(new Runnable(){
 
-        		int width = r.width();
-        		int height = r.height();
+				public void run() {
+					
+					File pictureFile = null;
+					try {
+						pictureFile = GlobalVariables.createImageFile(getApplicationContext());
+						Log.d("CameraActivity", "File Name: " + pictureFile.getAbsolutePath());
+					} catch (IOException e1) {
+						Log.e("CameraActivity", "Error loading image file");
+						Toast.makeText(CameraActivity.this, "Cannot access your files can't capture photos.", 2000).show();
+						//progressDialog.dismiss();
+						finish();
+					}
+		            if (pictureFile == null) {
+		                return;
+		            }
+		            try {
+		            	if (data != null)
+		            	{
+			                FileOutputStream fos = new FileOutputStream(pictureFile);
+			                
+			                fos.write(data, 0, data.length);
+			                fos.close();
+			               
+			                System.gc();
+			                
+			                Bitmap mBitmap = getBitmap(pictureFile);
+			                
+			                Rect r = null;
+			                Rect dstRect = null;
+			                
+			                //r = new Rect(0, 0, SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH), SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH));
+			                boolean rotate = false;
+			                
+			                
+			                
+			                if (mBitmap.getWidth() > mBitmap.getHeight())
+			                {
+			                	rotate = true;
+			                	dstRect = new Rect(0, 0, mBitmap.getHeight(), mBitmap.getHeight());
+			                	if (mIsCameraFacingFront)
+			                	{
+			                		if (android.os.Build.VERSION.SDK_INT > 13)
+			                		{
+			                			r = new Rect(mBitmap.getWidth() - mBitmap.getHeight(), 0, mBitmap.getWidth(), dstRect.height());
+			                		}
+			                		else
+			                		{
+			                			r = new Rect(0, 0, dstRect.width(), dstRect.height());
+			                		}
+			                	}
+			                	else
+			                	{
+				        			r = new Rect(0, 0, dstRect.width(), dstRect.height());
+			                	}
+			                }
+			                else
+			                {
+			            		dstRect = new Rect(0, 0, mBitmap.getWidth(), mBitmap.getWidth());
+			                	if (mIsCameraFacingFront)
+			                	{
+			                		r = new Rect(mBitmap.getHeight() - mBitmap.getWidth(), 0, mBitmap.getHeight(), dstRect.height());
+			                	}
+			                	else
+			                	{
+				        			r = new Rect(0, 0, dstRect.width(), dstRect.height());
+			                	}
+			                }
+			
+			        		int width = r.width();
+			        		int height = r.height();
+			
+			        		// If we are circle cropping, we want alpha channel, which is the
+			        		// third param here.
+			        		
+			        		Bitmap croppedImage = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+			        		{
+			        			Canvas canvas = new Canvas(croppedImage);
 
-        		// If we are circle cropping, we want alpha channel, which is the
-        		// third param here.
-        		Bitmap croppedImage = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-        		{
-        			Canvas canvas = new Canvas(croppedImage);
-        			Rect dstRect = new Rect(0, 0, width, height);
-        			canvas.drawBitmap(mBitmap, r, dstRect, null);
-        		}
+			        			canvas.drawBitmap(mBitmap, r, dstRect, null);
+			        			
+			        			mBitmap.recycle();
+			        			mBitmap = null;
+			        			System.gc();
+			        		}
+			        		
+			    	        if (rotate)
+			    	        {
+			    	        	if (!mIsCameraFacingFront)
+			    	        	{
+				    	        	Matrix matrix = new Matrix();
+				    	            matrix.postScale(1, 1);
+				    	            matrix.postRotate(90);
+				    	        	
+				    	        	croppedImage = Bitmap.createBitmap(croppedImage, 0, 0, croppedImage.getWidth(), croppedImage.getHeight(), matrix, false);
+			    	        	}
+			    	        	else
+			    	        	{
+			    	        		Matrix matrix = new Matrix();
+				    	            matrix.postScale(1, 1);
+				    	            matrix.postRotate(90);
+				    	            
+				    	            if (android.os.Build.VERSION.SDK_INT > 13)
+				    	            {
+				    	            	float[] mirrorY = { -1, 0, 0, 0, 1, 0, 0, 0, 1};
+				    	            	matrix = new Matrix();
+				    	                Matrix matrixMirrorY = new Matrix();
+				    	                matrixMirrorY.setValues(mirrorY);
 
-        		saveOutput(croppedImage, pictureFile);
+				    	                matrix.postConcat(matrixMirrorY);
+				    	                matrix.postRotate(90);
+				    	            }
+				    	        	
+				    	        	croppedImage = Bitmap.createBitmap(croppedImage, 0, 0, croppedImage.getWidth(), croppedImage.getHeight(), matrix, false);
+			    	        	}
+			    	        }
+    
+			    	        System.gc();
+			        		
+			        		int output = SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH);
+			        		
+							Bitmap old = croppedImage;
+							croppedImage = Util.transform(new Matrix(),
+									croppedImage, output, output, true);
+							if (old != croppedImage) {
+								old.recycle();
+							}
+							System.gc();
+			
+			        		saveOutput(croppedImage, pictureFile);
+			        		
+			                return;
+		            	}
+		            	else
+		            	{
+		            		
+		            		handler.post(new Runnable(){
+
+								public void run() {
+									
+				            		Toast.makeText(CameraActivity.this, "Sorry. Something went wrong. Try again please :(", 1000).show();
+				            		
+				            		
+				                	findViewById(R.id.progress_dialog).setVisibility(View.GONE);
+				                	
+				                	cameraButton.setEnabled(true);
+				                	libraryButton.setEnabled(true);
+				                	//cancelButton.setEnabled(true);
+				                	
+				                	findViewById(R.id.parent).setBackgroundColor(android.R.color.transparent);
+									
+								}
+		            			
+		            		});
+		            	}
+		                
+		            } catch (FileNotFoundException e) {
+						Log.e("CameraActivity", "File Not Found", e);
+						//progressDialog.dismiss();
+						handler.post(new Runnable(){
+
+							public void run() {
+								Toast.makeText(CameraActivity.this, "Cannot access your files can't capture photos.", 2000).show();
+								finish();
+							}
+							
+						});
+						
+
+		            } catch (IOException e) {
+						Log.e("CameraActivity", "IOException", e);
+						handler.post(new Runnable(){
+
+							public void run() {
+								Toast.makeText(CameraActivity.this, "Error saving photo to phone. Sorry :(", 2000).show();
+								//progressDialog.dismiss();
+								finish();
+							}
+							
+						});
+		            }
+					
+				}
         		
-                return;
-                
-            } catch (FileNotFoundException e) {
-				Log.e("CameraActivity", "File Not Found", e);
-				Toast.makeText(CameraActivity.this, "Cannot access your files can't capture photos.", 2000).show();
-				progressDialog.dismiss();
-				finish();
-
-            } catch (IOException e) {
-				Log.e("CameraActivity", "IOException", e);
-				Toast.makeText(CameraActivity.this, "Error saving photo to phone. Sorry :(", 2000).show();
-				progressDialog.dismiss();
-				finish();
-            }
+        	});
+        	
+        	thread.start();
         }
     };
 
@@ -499,11 +838,8 @@ public class CameraActivity extends Activity {
 		InputStream in = null;
 		try {
 			int IMAGE_MAX_SIZE = 2048;
-			Display display = getWindowManager().getDefaultDisplay();
-			if (display != null && display.getWidth() > 0)
-			{
-				IMAGE_MAX_SIZE = SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_HEIGHT);
-			}
+			
+			IMAGE_MAX_SIZE = SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_HEIGHT);
 			
 			in = getContentResolver().openInputStream(uri);
 			
@@ -524,18 +860,16 @@ public class CameraActivity extends Activity {
 	        o2.inPurgeable = true;
 	        o2.inInputShareable = true;
 	        in = getContentResolver().openInputStream(uri);
+	        
+	        Log.d("CameraActivity", "scale factor: " + scale);
+	        
 	        Bitmap b = BitmapFactory.decodeStream(in, null, o2);
 	        in.close();
 	        
-	        if (b.getWidth() > b.getHeight())
-	        {
-	        	Matrix matrix = new Matrix();
-	            matrix.postScale(1, 1);
-	            matrix.postRotate(90);
-	        	
-	        	b = Bitmap.createBitmap(b, 0, 0, b.getWidth(), b.getHeight(), matrix, false);
-	        }
+	        Log.d("CameraAcitivity", "bitmapWidth: " + b.getWidth() + ", bitmapHeight: " + b.getHeight());
 			
+	        
+	        System.gc();
 			return b;
 		} catch (FileNotFoundException e) {
 
@@ -582,4 +916,126 @@ public class CameraActivity extends Activity {
 
         return mediaFile;
     }
+    
+	@Override
+	public void onDestroy()
+	{
+		Log.d("CameraActivity", "onDestroy");
+		unbindDrawables(this.findViewById(android.R.id.content));
+		System.gc();
+		
+		/*if (progressDialog != null && progressDialog.isShowing())
+		{
+			progressDialog.dismiss();
+		}*/
+		super.onDestroy();
+	}
+	
+	private void unbindDrawables(View view) {
+	    if (view.getBackground() != null) {
+	        view.getBackground().setCallback(null);
+	        if (view instanceof ImageView)
+	        {
+	        	if (((ImageView) view).getDrawable() != null)
+	        	{
+	        		((ImageView) view).getDrawable().setCallback(null);
+	        	}
+	        }
+	    }
+	    if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
+	        for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+	            if (view.getId() != R.id.header)
+	            {
+	            	unbindDrawables(((ViewGroup) view).getChildAt(i));
+	            }
+	        }
+	        if (view.getId() != R.id.header)
+	        {
+	        	((ViewGroup) view).removeAllViews();
+	        }
+	    }
+	}
+	
+    public static Bitmap transform(Matrix scaler,
+            Bitmap source,
+            int targetWidth,
+            int targetHeight,
+            boolean scaleUp) {
+int deltaX = source.getWidth() - targetWidth;
+int deltaY = source.getHeight() - targetHeight;
+if (!scaleUp && (deltaX < 0 || deltaY < 0)) {
+/*
+* In this case the bitmap is smaller, at least in one dimension,
+* than the target.  Transform it by placing as much of the image
+* as possible into the target and leaving the top/bottom or
+* left/right (or both) black.
+*/
+Bitmap b2 = Bitmap.createBitmap(targetWidth, targetHeight,
+Bitmap.Config.ARGB_8888);
+Canvas c = new Canvas(b2);
+
+int deltaXHalf = Math.max(0, deltaX / 2);
+int deltaYHalf = Math.max(0, deltaY / 2);
+Rect src = new Rect(
+deltaXHalf,
+deltaYHalf,
+deltaXHalf + Math.min(targetWidth, source.getWidth()),
+deltaYHalf + Math.min(targetHeight, source.getHeight()));
+int dstX = (targetWidth  - src.width())  / 2;
+int dstY = (targetHeight - src.height()) / 2;
+Rect dst = new Rect(
+dstX,
+dstY,
+targetWidth - dstX,
+targetHeight - dstY);
+c.drawBitmap(source, src, dst, null);
+return b2;
+}
+float bitmapWidthF = source.getWidth();
+float bitmapHeightF = source.getHeight();
+
+float bitmapAspect = bitmapWidthF / bitmapHeightF;
+float viewAspect   = (float) targetWidth / targetHeight;
+
+if (bitmapAspect > viewAspect) {
+float scale = targetHeight / bitmapHeightF;
+if (scale < .9F || scale > 1F) {
+scaler.setScale(scale, scale);
+} else {
+scaler = null;
+}
+} else {
+float scale = targetWidth / bitmapWidthF;
+if (scale < .9F || scale > 1F) {
+scaler.setScale(scale, scale);
+} else {
+scaler = null;
+}
+}
+
+Bitmap b1;
+if (scaler != null) {
+// this is used for minithumb and crop, so we want to filter here.
+b1 = Bitmap.createBitmap(source, 0, 0,
+source.getWidth(), source.getHeight(), scaler, true);
+} else {
+b1 = source;
+}
+
+int dx1 = Math.max(0, b1.getWidth() - targetWidth);
+int dy1 = Math.max(0, b1.getHeight() - targetHeight);
+
+Bitmap b2 = Bitmap.createBitmap(
+b1,
+dx1 / 2,
+dy1 / 2,
+targetWidth,
+targetHeight);
+
+if (b1 != source) {
+b1.recycle();
+}
+
+return b2;
+}
 }

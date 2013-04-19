@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 
 import com.flurry.android.FlurryAgent;
@@ -18,13 +19,17 @@ import com.motlee.android.fragment.NotificationFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalActivityFunctions;
+import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.Notification;
 import com.motlee.android.object.NotificationList;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.UserInfo;
+import com.motlee.android.object.event.UpdatedPhotoEvent;
+import com.motlee.android.object.event.UpdatedPhotoListener;
 import com.motlee.android.object.event.UserWithEventsPhotosEvent;
+import com.motlee.android.view.ProgressDialogWithTimeout;
 
-public class NotificationActivity extends BaseMotleeActivity {
+public class NotificationActivity extends BaseMotleeActivity implements UpdatedPhotoListener {
 
 	private DatabaseWrapper dbWrapper;
 	
@@ -52,7 +57,7 @@ public class NotificationActivity extends BaseMotleeActivity {
         
         dbWrapper = new DatabaseWrapper(this.getApplicationContext());
         
-        progressDialog = ProgressDialog.show(this, "", "Loading Notifications");
+        progressDialog = ProgressDialogWithTimeout.show(this, "", "Loading Notifications");
         
         EventServiceBuffer.getAllNotifications();
         
@@ -182,18 +187,44 @@ public class NotificationActivity extends BaseMotleeActivity {
     		}
     		else
     		{
-    			AlertDialog.Builder builder = new AlertDialog.Builder(NotificationActivity.this);
-    			builder.setMessage("This photo may have been deleted.")
-    			.setCancelable(true)
-    			.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+    			photo = GlobalVariables.getInstance().getUserPhotos().get(notification.objectId);
+    			if (photo != null)
+    			{
+    				Log.d("EventServiceBuffer", "Had to get photo from memory");
+    	    		Intent intent = new Intent(this, EventItemDetailActivity.class);
+    	    		intent.putExtra("EventItem", photo);
+    	    		intent.putExtra("IsSinglePhoto", true);
+    	    		
+    	    		startActivity(intent);
+    			}
+    			else
+    			{
     				
-    				public void onClick(DialogInterface dialog, int which) {
-    					dialog.cancel();
-    				}
-    			});
-    			
-    			builder.create().show();
+	    			AlertDialog.Builder builder = new AlertDialog.Builder(NotificationActivity.this);
+	    			builder.setMessage("This photo may have been deleted.")
+	    			.setCancelable(true)
+	    			.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+	    				
+	    				public void onClick(DialogInterface dialog, int which) {
+	    					dialog.cancel();
+	    				}
+	    			});
+	    			
+	    			builder.create().show();
+    			}
     		}
     	}
+    }
+    
+    public void photoEvent(UpdatedPhotoEvent e)
+    {
+
+    }
+    
+    @Override
+    public void onDestroy()
+    {
+    	EventServiceBuffer.removePhotoListener(this);
+    	super.onDestroy();
     }
 }

@@ -1,5 +1,6 @@
 package com.motlee.android.adapter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -13,15 +14,19 @@ import com.motlee.android.object.SharePref;
 import com.motlee.android.object.WatermarkCache;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.LinearLayout.LayoutParams;
 
 public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
 
@@ -41,7 +46,7 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
     private Context mContext;
     
     // store (a reference to) the data
-    private Vector<GridPictures> data = new Vector<GridPictures>();
+    private ArrayList<GridPictures> data = new ArrayList<GridPictures>();
     
     /**
      * Default constructor. Creates the new Adaptor object to
@@ -135,9 +140,12 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
                         holder.grid_spinner_1 = (ProgressBar) convertView.findViewById(R.id.grid_spinner_1);
                         holder.grid_spinner_2 = (ProgressBar) convertView.findViewById(R.id.grid_spinner_2);
                         holder.grid_spinner_3 = (ProgressBar) convertView.findViewById(R.id.grid_spinner_3);
-                        holder.grid_upload_text_1 = (TextView) convertView.findViewById(R.id.grid_upload_text_1);
-                        holder.grid_upload_text_2 = (TextView) convertView.findViewById(R.id.grid_upload_text_2);
-                        holder.grid_upload_text_3 = (TextView) convertView.findViewById(R.id.grid_upload_text_3);
+                        holder.grid_final_1 = (FrameLayout) convertView.findViewById(R.id.grid_final_1);
+                        holder.grid_final_2 = (FrameLayout) convertView.findViewById(R.id.grid_final_2);
+                        holder.grid_final_3 = (FrameLayout) convertView.findViewById(R.id.grid_final_3);
+                        holder.grid_retry_1 = (ImageButton) convertView.findViewById(R.id.grid_retry_1);
+                        holder.grid_retry_2 = (ImageButton) convertView.findViewById(R.id.grid_retry_2);
+                        holder.grid_retry_3 = (ImageButton) convertView.findViewById(R.id.grid_retry_3);
                         convertView.setTag(holder);
             			
             } else {
@@ -166,27 +174,47 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
     		holder.image1.setMaxHeight(imageWidth);
     		holder.image1.setMaxWidth(imageWidth);
     		
-	    	if (item.image1.id == -1)
+	    	if (item.image1.id < 0)
 	    	{
-				holder.image1.setImageDrawable(WatermarkCache.getWatermark(imageWidth));
-				holder.grid_spinner_1.setVisibility(View.VISIBLE);
-				holder.grid_upload_text_1.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-				holder.grid_upload_text_1.setVisibility(View.VISIBLE);
-				holder.image1.setClickable(false);
+	    		if (item.image1.local_store != null && !item.image1.local_store.equals(""))
+	    		{
+	    			holder.image1.setImageURI(Uri.fromFile(new File(item.image1.local_store)));
+	    		}
+	    		else
+	    		{
+	    			holder.image1.setImageDrawable(WatermarkCache.getWatermark(imageWidth));
+	    		}
+	    		if (item.image1.failed_upload)
+	    		{	    			
+	    			holder.grid_spinner_1.setVisibility(View.GONE);
+	    			holder.grid_final_1.setVisibility(View.GONE);
+					holder.grid_retry_1.setVisibility(View.VISIBLE);
+					holder.grid_retry_1.setTag(item.image1.id);
+					holder.image1.setClickable(false);
+	    		}
+	    		else
+	    		{
+		    			holder.grid_spinner_1.setVisibility(View.GONE);
+	    				Log.d("GridAdapter", "moving on to spinner functionality");
+	    				holder.grid_final_1.setVisibility(View.VISIBLE);
+					holder.grid_retry_1.setVisibility(View.GONE);
+					holder.image1.setClickable(false);
+	    		}
 	    	}
 	    	else
 	    	{
 	    		GlobalVariables.getInstance().downloadImage(holder.image1, 
 	    				GlobalVariables.getInstance().getAWSUrlThumbnail(item.image1), 
-	    				imageWidth);
+	    				imageWidth, false, item.image1.local_store);
 		    	
 		    	holder.image1.getLayoutParams().height = imageWidth;
 		    	
 		    	holder.image1.setTag(item.image1);
 		    	holder.image1.setClickable(true);
 		    	
-				holder.grid_spinner_1.setVisibility(View.GONE);
-				holder.grid_upload_text_1.setVisibility(View.GONE);
+				//holder.grid_spinner_1.setVisibility(View.GONE);
+				holder.grid_final_1.setVisibility(View.GONE);
+				holder.grid_retry_1.setVisibility(View.GONE);
 	    	}
 	    	holder.imageBg1.setVisibility(View.VISIBLE);
     	}
@@ -205,18 +233,40 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
     	{
     		holder.image2.setMaxHeight(imageWidth);
     		holder.image2.setMaxWidth(imageWidth);
-    		
-	    	if (item.image2.id == -1)
+    	    
+	    	if (item.image2.id < 0)
 	    	{
-				holder.image2.setImageDrawable(WatermarkCache.getWatermark(imageWidth));
-				holder.grid_spinner_2.setVisibility(View.VISIBLE);
-				holder.grid_upload_text_2.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-				holder.grid_upload_text_2.setVisibility(View.VISIBLE);
-				holder.image2.setClickable(false);
+	    		if (item.image2.local_store != null && !item.image2.local_store.equals(""))
+	    		{
+	    			holder.image2.setImageURI(Uri.fromFile(new File(item.image2.local_store)));
+	    		}
+	    		else
+	    		{
+	    			holder.image2.setImageDrawable(WatermarkCache.getWatermark(imageWidth));
+	    		}
+	    		if (item.image2.failed_upload)
+	    		{	    			
+	    			holder.grid_spinner_2.setVisibility(View.GONE);
+	    			holder.grid_final_2.setVisibility(View.GONE);
+					holder.grid_retry_2.setVisibility(View.VISIBLE);
+					holder.grid_retry_2.setTag(item.image2.id);
+					holder.image2.setClickable(false);
+	    		}
+	    		else
+	    		{
+		    			holder.grid_spinner_2.setVisibility(View.GONE);
+		    			holder.grid_final_2.setVisibility(View.VISIBLE);
+	    				//holder.grid_spinner_2 = new ProgressBar(mContext, null, android.R.style.Widget_ProgressBar);
+	    				//holder.grid_spinner_2.setLayoutParams(new FrameLayout.LayoutParams(DrawableCache.convertDpToPixel(30), DrawableCache.convertDpToPixel(30)));
+	    			
+					holder.grid_retry_2.setVisibility(View.GONE);
+					holder.image2.setClickable(false);
+	    		}
 	    	}
 	    	else
 	    	{
-	    		GlobalVariables.getInstance().downloadImage(holder.image2, GlobalVariables.getInstance().getAWSUrlThumbnail(item.image2), imageWidth);
+	    		GlobalVariables.getInstance().downloadImage(holder.image2, GlobalVariables.getInstance().getAWSUrlThumbnail(item.image2), 
+	    				imageWidth, false, item.image2.local_store);
 		    	
 		    	holder.image2.getLayoutParams().height = imageWidth;
 		    	
@@ -224,7 +274,8 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
 		    	holder.image2.setClickable(true);
 		    	
 				holder.grid_spinner_2.setVisibility(View.GONE);
-				holder.grid_upload_text_2.setVisibility(View.GONE);
+				holder.grid_final_2.setVisibility(View.GONE);
+				holder.grid_retry_2.setVisibility(View.GONE);
 	    	}
 	    	holder.imageBg2.setVisibility(View.VISIBLE);
     	}
@@ -244,17 +295,38 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
     		holder.image3.setMaxHeight(imageWidth);
     		holder.image3.setMaxWidth(imageWidth);
     		
-	    	if (item.image3.id == -1)
+	    	if (item.image3.id < 0)
 	    	{
-				holder.image3.setImageDrawable(WatermarkCache.getWatermark(imageWidth));
-				holder.grid_spinner_3.setVisibility(View.VISIBLE);
-				holder.grid_upload_text_3.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-				holder.grid_upload_text_3.setVisibility(View.VISIBLE);
-				holder.image3.setClickable(false);
+	    		if (item.image3.local_store != null && !item.image3.local_store.equals(""))
+	    		{
+	    			holder.image3.setImageURI(Uri.fromFile(new File(item.image3.local_store)));
+	    		}
+	    		else
+	    		{
+	    			holder.image3.setImageDrawable(WatermarkCache.getWatermark(imageWidth));
+	    		}
+	    		if (item.image3.failed_upload)
+	    		{	    			
+	    			holder.grid_spinner_3.setVisibility(View.GONE);
+	    			holder.grid_final_3.setVisibility(View.GONE);
+					holder.grid_retry_3.setVisibility(View.VISIBLE);
+					holder.grid_retry_3.setTag(item.image3.id);
+					holder.image3.setClickable(false);
+	    		}
+	    		else
+	    		{
+
+	    				holder.grid_spinner_3.setVisibility(View.GONE);
+	    				holder.grid_final_3.setVisibility(View.VISIBLE);
+
+					holder.grid_retry_3.setVisibility(View.GONE);
+					holder.image3.setClickable(false);
+	    		}
 	    	}
 	    	else
 	    	{
-	    		GlobalVariables.getInstance().downloadImage(holder.image3, GlobalVariables.getInstance().getAWSUrlThumbnail(item.image3), imageWidth);
+	    		GlobalVariables.getInstance().downloadImage(holder.image3, GlobalVariables.getInstance().getAWSUrlThumbnail(item.image3), 
+	    				imageWidth, false, item.image3.local_store);
 		    	
 		    	holder.image3.getLayoutParams().height = imageWidth;
 		    	
@@ -262,7 +334,8 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
 		    	holder.image3.setClickable(true);
 		    	
 				holder.grid_spinner_3.setVisibility(View.GONE);
-				holder.grid_upload_text_3.setVisibility(View.GONE);
+				holder.grid_final_3.setVisibility(View.GONE);
+				holder.grid_retry_3.setVisibility(View.GONE);
 	    	}
 	    	holder.imageBg3.setVisibility(View.VISIBLE);
     	}
@@ -288,9 +361,12 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
         public ProgressBar grid_spinner_1;
         public ProgressBar grid_spinner_2;
         public ProgressBar grid_spinner_3;
-        public TextView grid_upload_text_1;
-        public TextView grid_upload_text_2;
-        public TextView grid_upload_text_3;
+        public FrameLayout grid_final_1;
+        public FrameLayout grid_final_2;
+        public FrameLayout grid_final_3;
+        public ImageButton grid_retry_1;
+        public ImageButton grid_retry_2;
+        public ImageButton grid_retry_3;
     }
 
 }

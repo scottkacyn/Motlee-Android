@@ -81,6 +81,13 @@ public class CommentActivity extends Activity implements UpdatedCommentListener 
         
         super.onResume();
     }
+    
+    @Override
+    public void onDestroy()
+    {
+    	EventServiceBuffer.removeCommentListener(this);
+    	super.onDestroy();
+    }
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -131,7 +138,9 @@ public class CommentActivity extends Activity implements UpdatedCommentListener 
 								
 								mAdapter.notifyDataSetChanged();
 								
-								EventServiceBuffer.deleteComment(comment);
+								EventServiceBuffer.setCommentListener(CommentActivity.this);
+								
+								EventServiceBuffer.deleteComment(comment, mPhoto.photo.event_id);
 							}
 							
 							dialog.cancel();
@@ -287,7 +296,10 @@ public class CommentActivity extends Activity implements UpdatedCommentListener 
 		
 		refreshCommentList();
 		
-		progressDialog.dismiss();
+		if (progressDialog != null && progressDialog.isShowing())
+		{
+			progressDialog.dismiss();
+		}
 	}
 }
 

@@ -390,7 +390,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 			
 			String[] splitFile = mCurrentPhotoPath.split("/");	
 			String fileName = splitFile[splitFile.length - 1];
-			mCurrentCroppedPhotoPath = getCroppedPhotoPath(fileName);
+			mCurrentCroppedPhotoPath = setUpPhotoFile().getAbsolutePath();
 			intent.putExtra("image-save", mCurrentCroppedPhotoPath);
 			intent.putExtra("aspectX", 1);
 			intent.putExtra("aspectY", 1);
@@ -407,7 +407,12 @@ public class TakePhotoActivity extends BaseMotleeActivity {
     		String errorMessage = "Whoops - your device doesn't support the crop action!";
     		Toast toast = Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT);
     		toast.show();
-    	}
+    	} catch (IOException e) {
+			Log.d("CropPhoto", "Failed to open file on sdcard");
+    		String errorMessage = "Failed to open file on sdcard";
+    		Toast toast = Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT);
+    		toast.show();
+		}
     }
     
     public String getPath(Uri uri) {

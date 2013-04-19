@@ -32,101 +32,37 @@ public class HorizontalListViewDisallowIntercept extends HorizontalListView impl
 	private int endX = 0;
 	private int endY = 0;
 	
-	private boolean mHasLayout = false;
-	
-	private boolean mIsAttending;
-	private int mEventId;
-	
-	private ArrayList<FixedViewInfo> mHeaderViewInfos = new ArrayList<FixedViewInfo>();
-	
-	private FrameLayout mPullOutDrawer;
-	private ImageView mPullOutIcon;
-	private LayoutInflater mInflater;
-	
-	private int mOffset;
-	
-	private Panel mSlidingDrawer;
+	private AttributeSet attrs;
 	
 	public HorizontalListViewDisallowIntercept(Context context,
 			AttributeSet attrs) {
 		super(context, attrs);
 		
+		this.attrs = attrs;
 		setOnItemClickListener(this);
-		
-		init(context);
 	}
 	
-	public void setSlidingDrawer(Panel drawer)
+	
+	public AttributeSet getAttributeSet()
 	{
-		mSlidingDrawer = drawer;
+		return this.attrs;
 	}
 	
-	@Override
-	protected synchronized void onLayout(boolean changed, int left, int top, int right, int bottom) {
-		super.onLayout(changed, left, top, right, bottom);
-		
-		/*if (mCurrentX == 0)
+	public void setDisplayOffset(Integer offset)
+	{
+		mDisplayOffset = offset;
+	}
+	
+	public Integer getDisplayOffset()
+	{
+		if (mScroller.isFinished())
 		{
-			if (mSlidingDrawer != null && mSlidingDrawer.hasBeenLaidOut())
-			{
-				mSlidingDrawer.setOpen(true, false);
-			}
+			return 0;
 		}
 		else
 		{
-			if (mSlidingDrawer != null && mSlidingDrawer.hasBeenLaidOut())
-			{
-				mSlidingDrawer.setOpen(ftlse, false);
-			}
-		}*/
-		
-		mHasLayout = true;
-	}
-	
-	
-	
-	private void init(Context context) {
-		
-		mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		
-		mPullOutDrawer = (FrameLayout) mInflater.inflate(R.layout.event_list_pull_out_drawer, null);
-		
-		//mPullOutDrawer.setBackgroundResource(R.drawable.event_list_slide_out_full);
-		
-		//addHeaderView(mPullOutDrawer);
-		
-		int imageHeight = SharePref.getIntPref(getContext(), SharePref.MAX_EVENT_LIST_PHOTO_SIZE);
-		
-		double scale = 123.0 / ((double) imageHeight);
-		
-		int imageWidth = (int) (scale * 186.0);
-		
-		//mOffset = (-1) * imageWidth;
-		
-		//mDisplayOffset = (-1) * imageWidth;
-		
-		Log.d("ListView", "offset: " + mDisplayOffset);
-	}
-
-	private void addHeaderView(View view) {
-		
-		FixedViewInfo info = new FixedViewInfo();  
-		info.view = view;
-		info.data = null;
-		info.isSelectable = false;
-		
-		mHeaderViewInfos.add(info);
-		
-	}
-
-	public void setIsAttending(boolean isAttending)
-	{
-		mIsAttending = isAttending;
-	}
-	
-	public void setEventId(int eventId)
-	{
-		mEventId = eventId;
+			return mDisplayOffset;
+		}
 	}
 	
 	@Override
@@ -181,6 +117,8 @@ public class HorizontalListViewDisallowIntercept extends HorizontalListView impl
 		
 		PhotoItem photo = (PhotoItem) getItemAtPosition(position);
 		
+		//this.getAdapter();
+		
 		if (photo == ImageAdapter.HEADER)
 		{
 			return;
@@ -198,11 +136,20 @@ public class HorizontalListViewDisallowIntercept extends HorizontalListView impl
 		}
 		else
 		{
-			if (getContext() instanceof Activity)
+			if (getContext() instanceof Activity && photo.id > 0)
 			{
-				GlobalActivityFunctions.showPictureDetail(photo, (Activity) getContext(), true);
+				View thumbnail = view.findViewById(R.id.imageThumbnail);
+				View imageFinal = view.findViewById(R.id.image_final);
+				View imageRetry = view.findViewById(R.id.image_retry);
+				if (thumbnail != null)
+				{
+					if (thumbnail.getVisibility() == View.VISIBLE && imageFinal.getVisibility() != View.VISIBLE && imageRetry.getVisibility() != View.VISIBLE)
+					{
+						GlobalActivityFunctions.showPictureDetail(thumbnail, (Activity) getContext());
+					}
+				}
 			}
 		}
-	}		
+	}
 	
 }

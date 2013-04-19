@@ -397,6 +397,13 @@ private DatabaseWrapper dbWrapper;
 
 	Bitmap downloadBitmap(String url) {
       
+    	Bitmap bitmap = GlobalVariables.getInstance().getThumbnailBitmap(url);
+    	
+    	if (bitmap != null)
+    	{
+    		return Bitmap.createScaledBitmap(bitmap, DrawableCache.convertDpToPixel(50), DrawableCache.convertDpToPixel(50), false);
+    	}
+		
         // AndroidHttpClient is not allowed to be used from the main thread
         final HttpClient client = AndroidHttpClient.newInstance("Android");
         final HttpGet getRequest = new HttpGet(url);
@@ -417,7 +424,7 @@ private DatabaseWrapper dbWrapper;
                     inputStream = entity.getContent();
                     // return BitmapFactory.decodeStream(inputStream);
                     // Bug on slow connections, fixed in future release.
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    bitmap = BitmapFactory.decodeStream(inputStream);
                     return Bitmap.createScaledBitmap(bitmap, DrawableCache.convertDpToPixel(50), DrawableCache.convertDpToPixel(50), false);
                 } finally {
                     if (inputStream != null) {

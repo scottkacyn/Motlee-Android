@@ -6,6 +6,8 @@ import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,12 +29,10 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
-public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
+public class SearchAllAdapter extends BaseAdapter {
 
 	private ArrayList<Integer> mListItemsOriginal;
 	private ArrayList<Integer> mListItems;
-	private Integer mSplitSectionOriginal;
-	private Integer mSplitSection;
 	private LayoutInflater inflater;
 	
     private ImageLoader imageDownloader;
@@ -46,13 +46,11 @@ public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
     
     private Integer mEventPictureHeight;
 	
-	public SearchAllAdapter(Context context, LayoutInflater inflater, ArrayList<Integer> listItems, int splitSection) {
-		super(context);
+	public SearchAllAdapter(Context context, LayoutInflater inflater, ArrayList<Integer> listItems) {
+		super();
 		
 		mListItemsOriginal = new ArrayList<Integer>(listItems);
-		mListItems = new ArrayList<Integer>();
-		mSplitSectionOriginal = splitSection;
-		mSplitSection = splitSection;
+		mListItems = new ArrayList<Integer>(listItems);
 		
 		helper = DatabaseHelper.getInstance(context.getApplicationContext());
 		dbWrapper = new DatabaseWrapper(context.getApplicationContext());
@@ -91,54 +89,8 @@ public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
 		return position;
 	}
 
-	@Override
-	public View getHeaderView(int position, View convertView) {
-		
-		HeaderViewHolder holder = new HeaderViewHolder();
-    	
-    	if (convertView == null) {
-    		convertView = (View) this.inflater.inflate(R.layout.search_category_bar, null);
-            holder.category_title = (TextView) convertView.findViewById(R.id.category_text);
-            convertView.setTag(holder);
-        }
-    	else
-    	{
-    		holder = (HeaderViewHolder) convertView.getTag();
-    	}
-    	
-    	holder.category_title.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-    	if (position < mSplitSection)
-    	{
-    		holder.category_title.setText("People");
-    	}
-    	else
-    	{
-    		holder.category_title.setText("Threads");
-    	}
-    	
-    	return convertView;
-	}
-
-	private class HeaderViewHolder
-	{
-		TextView category_title;
-	}
 	
-	@Override
-	public long getHeaderId(int position) {
-
-		if (position < mSplitSection)
-		{
-			return 0;
-		}
-		else
-		{
-			return 1;
-		}
-	}
-
-	@Override
-	protected View getView(int position, View convertView) {
+	public View getView(int position, View convertView, ViewGroup viewGroup) { 
 
 			EventViewHolder holder = new EventViewHolder();
 			
@@ -157,55 +109,24 @@ public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
             {
             	convertView.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH).getDrawable());
             }
-            
-            if (position < this.mSplitSection)
-            {
-            	UserInfo userInfo = null;
-				try {
-					userInfo = helper.getUserDao().queryForId(this.mListItems.get(position));
-				} catch (SQLException e) {
-					Log.e("DatabaseHelper", "Failed to queryForId for user", e);
-				}
-            			               
-                convertView.setContentDescription(Long.toString(userInfo.uid));
-                
-                holder.search_event_name.setText(userInfo.name);
-                holder.search_event_name.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-                holder.search_attendee_count.setText("");
-                holder.search_button.setContentDescription(Long.toString(userInfo.uid));
-                holder.search_button.setTag(userInfo);
-                holder.search_event_picture.setMaxHeight(DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH).getHeight());
-                
-                imageDownloader.displayImage(GlobalVariables.getInstance().getFacebookPictureUrl(userInfo.uid), holder.search_event_picture, mOptions);
-	            
-            }
-            else
-            {
-
-                EventDetail event = dbWrapper.getEvent(this.mListItems.get(position));
-            	
-	            convertView.setContentDescription(event.getEventID().toString());
-	            
-	            holder.search_button.setContentDescription(event.getEventID().toString());
-	            holder.search_button.setTag(event);
-	            
-	            ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>(dbWrapper.getPhotos(event.getEventID()));
-	            
-	            if (photos.size() > 0)
-	            {
-	            	GlobalVariables.getInstance().downloadImage(holder.search_event_picture, GlobalVariables.getInstance().getAWSUrlThumbnail(photos.get(0)), mEventPictureHeight);
-	            }
-	            else
-	            {
-	            	holder.search_event_picture.setImageDrawable(WatermarkCache.getWatermark(mEventPictureHeight));
-	            }
-	            
-	            holder.search_event_name.setText(event.getEventName());
-	            holder.search_event_name.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-	            
-	            holder.search_attendee_count.setText(event.getAttendeeCount() + " People");
-	            holder.search_attendee_count.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
-            }
+    	UserInfo userInfo = null;
+		try {
+			userInfo = helper.getUserDao().queryForId(this.mListItems.get(position));
+		} catch (SQLException e) {
+			Log.e("DatabaseHelper", "Failed to queryForId for user", e);
+		}
+    			               
+        convertView.setContentDescription(Long.toString(userInfo.uid));
+        
+        holder.search_event_name.setText(userInfo.name);
+        holder.search_event_name.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+        holder.search_attendee_count.setText("");
+        holder.search_attendee_count.setVisibility(View.GONE);
+        holder.search_button.setContentDescription(Long.toString(userInfo.uid));
+        holder.search_button.setTag(userInfo);
+        holder.search_event_picture.setMaxHeight(DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH).getHeight());
+        
+        imageDownloader.displayImage(GlobalVariables.getInstance().getFacebookPictureUrl(userInfo.uid), holder.search_event_picture, mOptions);
 
 		return convertView;
 	}
@@ -271,34 +192,23 @@ public class SearchAllAdapter extends StickyListHeadersBaseAdapter {
                     final Integer value = values.get(i);
                     
                     String valueText = null;
-					if (i < mSplitSectionOriginal)
-					{
-						UserInfo user = null;
-						try {
-							user = helper.getUserDao().queryForId(value);
-						} catch (SQLException e) {
-							Log.e("DatabaseHelper", "Failed to queryForId for user", e);
-						}
-						
-						valueText = user.name;
+					UserInfo user = null;
+					try {
+						user = helper.getUserDao().queryForId(value);
+					} catch (SQLException e) {
+						Log.e("DatabaseHelper", "Failed to queryForId for user", e);
 					}
-					else
-					{
-						valueText = dbWrapper.getEvent(value).getEventName();
-					}
+					
+					valueText = user.name;
+
                     
                     // First match against the whole, non-splitted value
                     if (valueText.matches("(?i).*" + searchString + ".*")) {
                         newValues.add(value);
-                        if (i < mSplitSectionOriginal)
-                        {
-                        	newSplitSection = newValues.size();
-                        }
                     } 
                 }
                 results.values = newValues;
                 results.count = newValues.size();
-                mSplitSection = newSplitSection;
             }
             return results;
         }

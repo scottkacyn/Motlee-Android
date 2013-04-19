@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/app_background_file" >
+    
+    <FrameLayout
+        android:id="@+id/camera_preview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1" />
+
+    <RelativeLayout
+        android:id="@+id/camera_background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/app_background_file" >
+        
+	    <LinearLayout 
+	        android:id="@+id/camera_controls"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentBottom="true"
+	        android:background="@drawable/camera_bottom_flat_bg"
+	        android:weightSum="1" >
+	
+	        <!-- <ImageButton
+		        android:id="@+id/cancel_button"
+		        android:layout_width="0dp"
+		        android:layout_weight=".3"
+		        android:layout_height="wrap_content"
+	   	        android:layout_gravity="top"
+		        android:src="@drawable/camera_cancel_flat"
+		        android:scaleType="fitCenter"
+		        android:adjustViewBounds="true"
+		        android:paddingLeft="7dp"
+		        android:paddingBottom="5dp"
+		        android:paddingTop="9dp"
+		        android:background="@android:color/transparent"/> -->
+		        
+            <ImageButton
+		        android:id="@+id/camera_flash_toggle"
+		        android:layout_width="0dp"
+		        android:layout_height="match_parent"
+		        android:layout_weight=".15"
+		        android:scaleType="fitCenter"
+		        android:adjustViewBounds="true"
+		        android:layout_marginTop="7dp"
+		        android:layout_marginLeft="7dp"
+		        android:layout_gravity="top|left"
+		        android:src="@drawable/flash_auto"
+		        android:background="@android:color/transparent"
+		        android:onClick="toggleFlash" />
+            
+            <ImageButton
+		        android:id="@+id/camera_switch_facing"
+		        android:layout_width="0dp"
+		        android:layout_height="match_parent"
+		        android:layout_weight=".15"
+		        android:scaleType="fitCenter"
+		        android:adjustViewBounds="true"
+		        android:layout_marginTop="7dp"
+		        android:layout_marginLeft="7dp"
+		        android:layout_gravity="top|left"
+		        android:src="@drawable/camera_switch"
+		        android:background="@android:color/transparent"
+		        android:onClick="toggleFacing" />
+	        
+		    <ImageButton
+		        android:id="@+id/button_capture"
+		        android:layout_width="0dp"
+		        android:layout_weight=".4"
+		        android:layout_height="match_parent"
+		        android:layout_gravity="bottom"
+		        android:src="@drawable/camera_lens_flat"
+		        android:scaleType="fitCenter"
+		        android:adjustViewBounds="true"
+		        android:background="@android:color/transparent"/>
+	
+		    
+		   <ImageButton
+		        android:id="@+id/upload_button"
+		        android:layout_width="0dp"
+		        android:layout_weight=".3"
+		        android:layout_height="wrap_content"
+	   	        android:layout_gravity="top"
+		        android:src="@drawable/camera_upload_flat"
+		        android:scaleType="fitCenter"
+		        android:adjustViewBounds="true"
+		        android:paddingTop="9dp"
+		        android:paddingRight="7dp"
+		        android:paddingBottom="5dp"
+		        android:background="@android:color/transparent"/>
+	   	        
+		    
+		</LinearLayout>
+	</RelativeLayout>
+	
+    <include layout="@layout/progress_dialog"
+        android:id="@+id/progress_dialog"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+</FrameLayout>

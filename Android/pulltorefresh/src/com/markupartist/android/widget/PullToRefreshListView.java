@@ -117,7 +117,12 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        setSelection(1);
+        setSelection(getHeaderViewsCount());
+    }
+    
+    public void addToHeaderPadding(int extraPadding)
+    {
+    	mRefreshOriginalTopPadding = mRefreshOriginalTopPadding;
     }
 
     @Override
@@ -177,12 +182,13 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                         // Initiate the refresh
                         mRefreshState = REFRESHING;
                         prepareForRefresh();
+                        
                         onRefresh();
                     } else if (mRefreshView.getBottom() < mRefreshViewHeight
                             || mRefreshView.getTop() <= 0) {
                         // Abort refresh and scroll down below the refresh view
                         resetHeader();
-                        setSelection(1);
+                        setSelection(getHeaderViewsCount());
                     }
                 }
                 break;
@@ -279,6 +285,12 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             int visibleItemCount, int totalItemCount) {
         // When the refresh view is completely visible, change the text to say
         // "Release to refresh..." and flip the arrow drawable.
+    	
+    	/*Log.d("PullToRefresh", "CurrentScrollState: " + mCurrentScrollState + 
+    			", mRefreshState: " + mRefreshState + ", firstVisibleItem: " + 
+    			firstVisibleItem + ", headerCount: " + getHeaderViewsCount() + 
+    			", mBounceHack: " + mBounceHack);*/
+    	
         if (mCurrentScrollState == SCROLL_STATE_TOUCH_SCROLL
                 && mRefreshState != REFRESHING) {
             if (firstVisibleItem == 0) {
@@ -301,15 +313,16 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                 }
             } else {
                 mRefreshViewImage.setVisibility(View.GONE);
+                //setSelection(1);
                 resetHeader();
             }
         } else if (mCurrentScrollState == SCROLL_STATE_FLING
                 && firstVisibleItem == 0
                 && mRefreshState != REFRESHING) {
-            setSelection(1);
+        	setSelection(1);
             mBounceHack = true;
         } else if (mBounceHack && mCurrentScrollState == SCROLL_STATE_FLING) {
-            setSelection(1);
+        	setSelection(1);
         }
 
         if (mOnScrollListener != null) {

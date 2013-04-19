@@ -3,11 +3,13 @@ package com.motlee.android;
 import java.io.File;
 
 import com.flurry.android.FlurryAgent;
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.NotificationList;
+import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
@@ -16,15 +18,19 @@ import com.motlee.android.object.event.UserInfoEvent;
 import com.motlee.android.object.event.UserInfoListener;
 import com.motlee.android.object.event.UserWithEventsPhotosEvent;
 import com.motlee.android.service.RubyService;
+import com.motlee.android.service.StreamListService;
 import com.readystatesoftware.viewbadger.BadgeView;
 import com.slidingmenu.lib.SlidingMenu;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.PixelFormat;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -41,7 +47,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class BaseMotleeActivity extends FragmentActivity implements UserInfoListener, UpdatedEventDetailListener, UpdatedNotificationListener {
+public class BaseMotleeActivity extends BaseFacebookActivity implements UserInfoListener, UpdatedEventDetailListener, UpdatedNotificationListener {
 
 	public static String tag = "BaseMotleeActivity";
 	
@@ -56,6 +62,68 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
 	
 	protected BadgeView menuBadge;
 	protected BadgeView notificationIconBadge;
+	
+	private BroadcastReceiver photoFailedReceiver = new BroadcastReceiver(){
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			
+			Log.d("BaseMotleeActivity", "ReceivedPhotoFailed");
+			
+			//requestRetryDialog((PhotoItem) intent.getExtras().getParcelable("Photo"));
+			PhotoItem photo = (PhotoItem) intent.getExtras().getParcelable("Photo");
+			
+			DatabaseWrapper dbWrapper = new DatabaseWrapper(getApplicationContext());
+			
+			PhotoItem updatedPhoto = dbWrapper.getPhoto(photo.id);
+			
+			updatedPhoto.failed_upload = true;
+			
+			dbWrapper.updatePhoto(updatedPhoto);
+			
+			Intent streamListService = new Intent(BaseMotleeActivity.this, StreamListService.class);
+			streamListService.putExtra(StreamListService.PHOTO_STATUS_CHANGE, updatedPhoto);
+			startService(streamListService);
+			
+			photoUploadFailed((PhotoItem) intent.getExtras().getParcelable("Photo"));
+			
+		}
+		
+	};
+	
+	protected void photoUploadFailed(PhotoItem photo)
+	{
+		return;
+	}
+	
+	private BroadcastReceiver photoProgressReceiver = new BroadcastReceiver(){
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			
+			Log.d("BaseMotleeActivity", "ReceivedPhotoProgress");
+			
+			Integer photoId = intent.getIntExtra("photoId", -1);
+			Integer eventId = intent.getIntExtra("eventId", -1);
+			int progressPercent = intent.getIntExtra("progress", -1);
+			
+			DatabaseWrapper dbWrapper = new DatabaseWrapper(getApplicationContext());
+			
+			PhotoItem photo = dbWrapper.getPhoto(photoId);
+			photo.upload_progress = progressPercent;
+			dbWrapper.updatePhoto(photo);
+			
+			photoUploadProgress(progressPercent, photoId, eventId);
+			
+		}
+		
+	};
+	
+	protected void photoUploadProgress(int progressPercent, Integer photoId, Integer eventId)
+	{
+		return;
+	}
+
 	
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
 
@@ -87,9 +155,29 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
         filter.addAction(RubyService.CONNECTION_ERROR);
         registerReceiver(receiver, filter);
         
+        IntentFilter photoFilter = new IntentFilter();
+        photoFilter.addAction(RubyService.PHOTO_UPLOAD_ERROR);
+        registerReceiver(photoFailedReceiver, photoFilter);
+        
+        IntentFilter photoUplaodFilter = new IntentFilter();
+        photoUplaodFilter.addAction(RubyService.PHOTO_UPLOAD_PROGRESS);
+        registerReceiver(photoProgressReceiver, photoUplaodFilter);
+        
         showMenuButtonBadge();
         
+	    View bigImage = findViewById(R.id.expanded_image);
+	    View blackBg = findViewById(R.id.black_background);
     	
+	    if (bigImage != null)
+	    {
+	    	bigImage.setVisibility(View.GONE);
+	    }
+	    
+	    if (blackBg != null)
+	    {
+	    	blackBg.setVisibility(View.GONE);
+	    }
+	    
         EventServiceBuffer.setNotificationListener(this);
         
         View target = findViewById(R.id.notification_icon);
@@ -185,6 +273,8 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
     protected void onPause() {
     	Log.d(tag, "onPause");
         unregisterReceiver(receiver);
+        unregisterReceiver(photoFailedReceiver);
+        unregisterReceiver(photoProgressReceiver);
         EventServiceBuffer.removeNotificationListener(this);
         super.onPause();
     }
@@ -219,6 +309,11 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
     	MenuFunctions.showCreateEventPage(view, this);
     }
     
+	final public void retryPhotoUpload(View view)
+	{
+		MenuFunctions.retryPhotoUpload(view, this);
+	}
+	
 	// plus menu deprecated
 	/*final public void onClickOpenPlusMenu(View view)
     {
@@ -357,6 +452,9 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
 			
 			EventServiceBuffer.removeEventDetailListener(this);
 			
+			Intent streamListIntent = new Intent(BaseMotleeActivity.this, StreamListService.class);
+			startService(streamListIntent);
+			
 			finish();
 			
 			progressDialog.dismiss();
@@ -402,18 +500,6 @@ public class BaseMotleeActivity extends FragmentActivity implements UserInfoList
 		super.onDestroy();
 	}
 	
-	private void showExternalCacheDir() {
-		
-		File externalCache = getExternalCacheDir();
-		File[] files = externalCache.listFiles();
-		
-		for (int i = 0; i < files.length; i++)
-		{
-			File file = files[i];
-			file.delete();
-		}
-	}
-
 	private void unbindDrawables(View view) {
 	    if (view.getBackground() != null) {
 	        view.getBackground().setCallback(null);

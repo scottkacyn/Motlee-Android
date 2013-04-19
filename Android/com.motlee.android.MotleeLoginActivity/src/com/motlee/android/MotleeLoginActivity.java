@@ -15,6 +15,7 @@ import com.motlee.android.object.event.UserInfoEvent;
 import com.motlee.android.object.event.UserInfoListener;
 import com.motlee.android.object.event.UserWithEventsPhotosEvent;
 import com.motlee.android.service.RubyService;
+import com.motlee.android.service.StreamListService;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -288,7 +289,9 @@ public class MotleeLoginActivity extends FragmentActivity implements UserInfoLis
     	
     	if (SharePref.getBoolPref(getApplicationContext(), SharePref.FIRST_EXPERIENCE))
     	{
-    		EventServiceBuffer.getEventsFromService();
+    		Intent refreshStream = new Intent(this, StreamListService.class);
+    		refreshStream.putExtra(StreamListService.INITIAL_PULL, true);
+    		startService(refreshStream);
     		
 	    	Intent firstUsePage = new Intent(this, FirstUseActivity.class);
 	    	startActivityForResult(firstUsePage, 1);

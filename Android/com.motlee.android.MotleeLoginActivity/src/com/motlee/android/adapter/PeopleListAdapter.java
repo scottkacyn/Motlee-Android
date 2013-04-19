@@ -121,7 +121,7 @@ public class PeopleListAdapter extends ArrayAdapter<UserInfo> {
         				background.getHeight() - DrawableCache.convertDpToPixel(5), 
         				.15f));
         
-        if (person.sign_in_count != null)
+        /*if (person.sign_in_count != null)
         {        
 	        if (person.sign_in_count > 0)
 	        {
@@ -137,7 +137,9 @@ public class PeopleListAdapter extends ArrayAdapter<UserInfo> {
 	        		holder.search_motlee_text.setImageResource(R.drawable.facebook_icon_small);
 	        	}
 	        }
-        }
+        }*/
+        
+        holder.search_motlee_text.setVisibility(View.GONE);
         
         GlobalVariables.getInstance().downloadImage(holder.search_people_profile_pic, 
         		GlobalVariables.getInstance().getFacebookPictureUrlLarge(person.uid), 

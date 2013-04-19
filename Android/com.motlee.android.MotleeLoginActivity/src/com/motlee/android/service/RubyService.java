@@ -1,12 +1,16 @@
 package com.motlee.android.service;
 
 import java.io.File;
+import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -26,7 +30,9 @@ import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.PhotoItem;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -39,6 +45,8 @@ public class RubyService extends IntentService {
     private static final String TAG = RubyService.class.getName();
     
     public static final String CONNECTION_ERROR = "com.motlee.android.service.RubyService.CONNECTION_ERROR";
+    public static final String PHOTO_UPLOAD_ERROR = "com.motlee.android.service.RubyService.PHOTO_UPLOAD_ERROR";
+    public static final String PHOTO_UPLOAD_PROGRESS = "com.motlee.android.service.RubyService.PHOTO_UPLOAD_PROGRESS";
     
     public static final int GET    = 0x1;
     public static final int POST   = 0x2;
@@ -139,13 +147,32 @@ public class RubyService extends IntentService {
                     if (params != null) {
                     	if (dataContent == PHOTO)
                     	{
-                    		MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+                    		String filePath = params.getString("photo[image]");
+                    		
+                    		final Integer photoId = params.getInt("photo[id]");
+                    		
+                    		final Integer eventId = params.getInt("photo[event_id]");
+                    		
+                    		params.remove("photo[id]");
+                    		
+            				byte[] byteArray = FileUtils.readFileToByteArray(new File(filePath));
+                    		
+            				final int byteArrayLength = byteArray.length;
+            				
+            				byteArray = null;
+            				
+                    		MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE){
+
+                    		    @Override
+                    		    public void writeTo(final OutputStream outstream) throws IOException {
+                    		        super.writeTo(new CoutingOutputStream(outstream, byteArrayLength, photoId, eventId));
+                    		    }
+
+                		    };
                     		for (String key : params.keySet())
                     		{
                     			if (key.equals("photo[image]"))
-                    			{
-                    				String filePath = params.getString(key);
-                    				
+                    			{                   				                    				
                     				String[] fileParts = filePath.split("/");
                     				
                     				String fileName = fileParts[fileParts.length - 1];
@@ -234,12 +261,26 @@ public class RubyService extends IntentService {
                         catch (ClientProtocolException e) {
                             Log.e(TAG, "There was a problem when sending the request.", e);
                             receiver.send(0, null);
-                            sendBroadcast();
+                            if (dataContent == PHOTO && verb == POST)
+                            {
+                            	sendPhotoBroadcast((PhotoItem) extras.getParcelable(EXTRA_PHOTO_ITEM));
+                            }
+                            else
+                            {
+                                sendBroadcast();
+                            }
                         }
                         catch (IOException e) {
                             Log.e(TAG, "There was a problem when sending the request.", e);
                             receiver.send(0, null);
-                            sendBroadcast();
+                            if (dataContent == PHOTO && verb == POST)
+                            {
+                            	sendPhotoBroadcast((PhotoItem) extras.getParcelable(EXTRA_PHOTO_ITEM));
+                            }
+                            else
+                            {
+                                sendBroadcast();
+                            }
                         }
                 	}
                 });
@@ -248,13 +289,38 @@ public class RubyService extends IntentService {
         catch (URISyntaxException e) {
             Log.e(TAG, "URI syntax was incorrect. "+ verbToString(verb) +": "+ action.toString(), e);
             receiver.send(0, null);
-            sendBroadcast();
+            if (dataContent == PHOTO && verb == POST)
+            {
+            	sendPhotoBroadcast((PhotoItem) extras.getParcelable(EXTRA_PHOTO_ITEM));
+            }
+            else
+            {
+                sendBroadcast();
+            }
         }
         catch (UnsupportedEncodingException e) {
             Log.e(TAG, "A UrlEncodedFormEntity was created with an unsupported encoding.", e);
             receiver.send(0, null);
-            sendBroadcast();
-        }
+            if (dataContent == PHOTO && verb == POST)
+            {
+            	sendPhotoBroadcast((PhotoItem) extras.getParcelable(EXTRA_PHOTO_ITEM));
+            }
+            else
+            {
+                sendBroadcast();
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "URI syntax was incorrect. "+ verbToString(verb) +": "+ action.toString(), e);
+            receiver.send(0, null);
+            if (dataContent == PHOTO && verb == POST)
+            {
+            	sendPhotoBroadcast((PhotoItem) extras.getParcelable(EXTRA_PHOTO_ITEM));
+            }
+            else
+            {
+                sendBroadcast();
+            }
+		}
     }
 
     private void sendBroadcast()
@@ -264,7 +330,101 @@ public class RubyService extends IntentService {
         sendBroadcast(broadcast);
     }
     
-	private static void attachUriWithQuery(HttpRequestBase request, Uri uri, Bundle params) {
+    private void sendPhotoBroadcast(PhotoItem photo)
+    {    	
+    	Intent broadcast = new Intent();
+        broadcast.setAction(RubyService.PHOTO_UPLOAD_ERROR);
+        broadcast.putExtra("Photo", photo);
+        sendBroadcast(broadcast);
+    }
+    
+    private void sendPhotoUploadProgress(int progress, Integer photoId, Integer eventId)
+    {
+    	Intent broadcast = new Intent();
+        broadcast.setAction(RubyService.PHOTO_UPLOAD_PROGRESS);
+        broadcast.putExtra("progress", progress);
+        broadcast.putExtra("photoId", photoId);
+        broadcast.putExtra("eventId", eventId);
+        sendBroadcast(broadcast);
+    }
+    
+    public class CoutingOutputStream extends FilterOutputStream {
+
+    	int totalBytes = 0;
+    	int uploadedBytes = 0;
+    	Integer photoId = -1;
+    	Integer eventId = -1;
+    	
+    	Integer progressPercent = 0;
+    	
+        CoutingOutputStream(final OutputStream out, int totalbytes, Integer photoId, Integer eventId) {
+            super(out);
+            totalBytes = totalbytes;
+            this.photoId = photoId;
+            this.eventId = eventId;
+            
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            out.write(b);
+            
+            uploadedBytes++;
+            if (shouldSendBroadcast())
+            {
+            	sendPhotoUploadProgress(progressPercent, photoId, eventId);
+            	Log.d("RubyService", "upload is " + progressPercent + "% done.");
+            }
+        }
+
+        @Override
+        public void write(byte[] b) throws IOException {
+            out.write(b);
+            
+            uploadedBytes = uploadedBytes + b.length;
+            if (shouldSendBroadcast())
+            {
+            	sendPhotoUploadProgress(progressPercent, photoId, eventId);
+            	Log.d("RubyService", "upload is " + progressPercent + "% done.");
+            }
+        }
+
+        @Override
+        public void write(byte[] b, int off, int len) throws IOException {
+            out.write(b, off, len);
+            
+            uploadedBytes = uploadedBytes + len;
+            
+            if (shouldSendBroadcast())
+            {
+            	sendPhotoUploadProgress(progressPercent, photoId, eventId);
+            	Log.d("RubyService", "upload is " + progressPercent + "% done.");
+            }
+        }
+        
+        private boolean shouldSendBroadcast()
+        {
+        	int percent = (int) ((double) uploadedBytes / (double) totalBytes * 100.0);
+        	
+        	if (percent > progressPercent + 20)
+        	{
+        		progressPercent = Math.round(20 * (int) ((double) percent / 20.0));
+        		
+        		if (progressPercent > 100)
+        		{
+        			progressPercent = 100;
+        		}
+        		
+        		return true;
+        	}
+        	else
+        	{
+        		return false;
+        	}
+        }
+    }
+    
+	public static void attachUriWithQuery(HttpRequestBase request, Uri uri, Bundle params) {
         try {
             if (params == null) {
                 // No params were given or they have already been

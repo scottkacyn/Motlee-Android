@@ -8,11 +8,11 @@ package com.markupartist.android.widget.pulltorefresh;
 
 public final class R {
 	public static final class id {
-		public static final int pull_to_refresh_progress = 0x7f06018e;
-		public static final int pull_to_refresh_updated_at = 0x7f060191;
-		public static final int pull_to_refresh_text = 0x7f060190;
-		public static final int pull_to_refresh_image = 0x7f06018f;
-		public static final int pull_to_refresh_header = 0x7f06018d;
+		public static final int pull_to_refresh_progress = 0x7f060198;
+		public static final int pull_to_refresh_updated_at = 0x7f06019b;
+		public static final int pull_to_refresh_text = 0x7f06019a;
+		public static final int pull_to_refresh_image = 0x7f060199;
+		public static final int pull_to_refresh_header = 0x7f060197;
 	}
 	public static final class string {
 		public static final int pull_to_refresh_refreshing_label = 0x7f07000f;
@@ -22,11 +22,11 @@ public final class R {
 		public static final int app_name = 0x7f07000c;
 	}
 	public static final class layout {
-		public static final int pull_to_refresh_header = 0x7f030085;
+		public static final int pull_to_refresh_header = 0x7f030087;
 	}
 	public static final class drawable {
-		public static final int pull_to_refresh_header_background = 0x7f020137;
-		public static final int icon = 0x7f0200de;
-		public static final int ic_pulltorefresh_arrow = 0x7f0200dd;
+		public static final int pull_to_refresh_header_background = 0x7f020153;
+		public static final int icon = 0x7f0200f9;
+		public static final int ic_pulltorefresh_arrow = 0x7f0200f6;
 	}
 }

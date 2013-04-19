@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.motlee.android"
-    android:versionCode="9"
-    android:versionName="1.5.2" >    
+    android:versionCode="11"
+    android:versionName="1.7" >    
     
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -90,7 +90,7 @@
             android:label="CameraActivity" 
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:launchMode="singleTop"
-            android:screenOrientation="landscape">
+            android:screenOrientation="portrait">
         </activity>
         
         <activity
@@ -130,6 +130,8 @@
         
         <service android:name=".service.RubyService"/>
         
+        <service android:name=".service.StreamListService"/>
+        
         <service android:name=".service.DownloadImage"/>
         
         <activity android:name="com.facebook.LoginActivity" />
@@ -146,6 +148,9 @@
                 <!-- <category android:name="android.intent.category.DEFAULT" />
                 <action android:name="com.motlee.android.service.RubyService.CONNECTION_ERROR" /> -->
             </intent-filter>
+             <intent-filter>
+            	<action android:name="com.motlee.android.service.StreamListHandler.NOTIFY_LIST_CHANGE"></action>
+             </intent-filter>
         </activity>
         
         <activity
@@ -165,7 +170,7 @@
             android:name=".MoreEventDetailActivity"
             android:label="@string/title_more_event_detail_activity"
             android:theme="@style/app_theme"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" >
         </activity>
         
@@ -181,7 +186,7 @@
             android:name=".UserProfilePageActivity"
             android:label="@string/title_user_profile_activity"
             android:theme="@style/app_theme"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" >
         </activity>
         
@@ -200,6 +205,9 @@
             android:launchMode="singleTask"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait" >
+   		    <meta-data
+		        android:name="android.support.PARENT_ACTIVITY"
+		        android:value=".EventListActivity"/>
         </activity>
         
         <activity
@@ -246,7 +254,7 @@
             android:name=".SearchActivity"
             android:label="@string/title_search_activity"
             android:theme="@style/app_theme"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" >
         </activity>
         
@@ -272,6 +280,8 @@
             
             <intent-filter>
             	<action android:name="com.motlee.android.service.RubyService.CONNECTION_ERROR"></action>
+            	<action android:name="com.motlee.android.service.RubyService.PHOTO_UPLOAD_ERROR"></action>
+            	<action android:name="com.motlee.android.service.RubyService.PHOTO_UPLOAD_PROGRESS"></action>
         	</intent-filter>
         </activity>
         

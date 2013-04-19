@@ -34,6 +34,7 @@ import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
@@ -60,10 +61,19 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 	private OnItemLongClickListener mOnItemLongClicked;
 	private boolean mDataChanged = false;
 	
-
+	private AttributeSet attrs;
+	
 	public HorizontalListView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		
+		this.attrs = attrs;
+		
 		initView();
+	}
+	
+	public AttributeSet getAttributeSet()
+	{
+		return this.attrs;
 	}
 	
 	private synchronized void initView() {
@@ -71,6 +81,7 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 		mRightViewIndex = 0;
 		mCurrentX = 0;
 		mNextX = 0;
+		mDisplayOffset = 0;
 		mMaxX = Integer.MAX_VALUE;
 		mScroller = new Scroller(getContext());
 		mGesture = new GestureDetector(getContext(), mOnGesture);
@@ -124,12 +135,24 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 
 	@Override
 	public void setAdapter(ListAdapter adapter) {
-		if(mAdapter != null) {
-			mAdapter.unregisterDataSetObserver(mDataObserver);
+		if (mScroller == null)
+		{
+			if(mAdapter != null) {
+				mAdapter.unregisterDataSetObserver(mDataObserver);
+			}
+			mAdapter = adapter;
+			mAdapter.registerDataSetObserver(mDataObserver);
+			reset();
 		}
-		mAdapter = adapter;
-		mAdapter.registerDataSetObserver(mDataObserver);
-		reset();
+		else if (mScroller.isFinished())
+		{
+			if(mAdapter != null) {
+				mAdapter.unregisterDataSetObserver(mDataObserver);
+			}
+			mAdapter = adapter;
+			mAdapter.registerDataSetObserver(mDataObserver);
+			reset();
+		}
 	}
 	
 	public synchronized void reset(){

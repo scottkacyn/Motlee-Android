@@ -8,7 +8,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 public class DrawableCache {
 
@@ -36,7 +38,8 @@ public class DrawableCache {
 		drawables.remove(resource);
 	}
 
-	public static DrawableWithHeight getDrawable(int resource, int height, boolean isHeight)
+	
+	public static DrawableWithHeight getDrawable(int resource, int width, int overrideInSampleSize)
 	{
 		WeakReference<DrawableWithHeight> wr = drawables.get(resource);
 		
@@ -50,15 +53,8 @@ public class DrawableCache {
 		}
 		
 		WeakReference<DrawableWithHeight> drawable;
-		
-		if (!isHeight)
-		{
-			drawable = new WeakReference<DrawableWithHeight>(scaleBackgroundImage(resource, height));
-		}
-		else
-		{
-			drawable = new WeakReference<DrawableWithHeight>(scaleBackgroundImageHeight(resource, height));
-		}
+
+		drawable = new WeakReference<DrawableWithHeight>(scaleBackgroundImage(resource, width, overrideInSampleSize));
 		
 		drawables.put(resource, drawable);
 		
@@ -67,7 +63,7 @@ public class DrawableCache {
 	
 	public static DrawableWithHeight getDrawable(int resource, int width)
 	{
-		return getDrawable(resource, width, false);
+		return getDrawable(resource, width, -1);
 	}
 	
 	/*private static DrawableWithHeight scaleBackgroundImage(Drawable drawable)
@@ -75,11 +71,30 @@ public class DrawableCache {
 		return scaleBackgroundImage(drawable, GlobalVariables.getInstance().getDisplayWidth());
 	}*/
 	
-	private static DrawableWithHeight scaleBackgroundImage(int resource, int width)
+	private static DrawableWithHeight scaleBackgroundImage(int resource, int width, int inSampleSize)
 	{
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 		options.inDither = false;
+		options.inPurgeable = true;
+		options.inJustDecodeBounds = true;
+		/*Drawable drawable = mResources.getDrawable(resource);
+		Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();*/
+		
+		BitmapFactory.decodeResource(mResources, resource, options);
+		
+		options.inSampleSize = calculateInSampleSize(options, (int) (width * .60));
+		//drawable = null;
+		
+		Log.d("DrawableCache", "inSampleSize: " + options.inSampleSize);
+		
+		options.inJustDecodeBounds = false;
+		
+		if (inSampleSize > 0 && inSampleSize > options.inSampleSize)
+		{
+			options.inSampleSize = inSampleSize;
+		}
+		
 		Bitmap bitmap = BitmapFactory.decodeResource(mResources, resource, options);
 	
 		float scaleFactor = ((float) width) / bitmap.getWidth();
@@ -100,6 +115,19 @@ public class DrawableCache {
 		bitmap = null;
 		
 		return new DrawableWithHeight(d, layout_height, width);
+	}
+	
+	public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth) {
+		
+	    // Raw height and width of image
+	    final int height = options.outHeight;
+	    final int width = options.outWidth;
+	    int inSampleSize = 1;
+	
+	    if (width > reqWidth) {
+            inSampleSize = Math.round((float)width / (float)reqWidth);
+	    }
+	    return inSampleSize;
 	}
 	
 	private static DrawableWithHeight scaleBackgroundImageHeight(int resource, int height)

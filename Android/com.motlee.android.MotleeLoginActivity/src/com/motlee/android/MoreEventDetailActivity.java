@@ -2,7 +2,6 @@ package com.motlee.android;
 
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.DateDetailFragment;
-import com.motlee.android.fragment.LocationFragment;
 import com.motlee.android.fragment.PeopleListFragment;
 import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.GlobalVariables;
@@ -42,17 +41,6 @@ public class MoreEventDetailActivity extends BaseMotleeActivity {
             
             
             ft.add(R.id.fragment_content, dateDetailFragment);
-        }
-        
-        if (detailDescription.equals(GlobalVariables.LOCATION))
-        {
-            LocationFragment locationFragment = new LocationFragment();
-            
-            locationFragment.setHeaderView(findViewById(R.id.header));
-
-            locationFragment.addEventDetail(eDetail);
-            
-            ft.add(R.id.fragment_content, locationFragment);
         }
         
         //Fomos deprecated

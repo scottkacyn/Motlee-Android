@@ -1,5 +1,7 @@
 package com.motlee.android.adapter;
 
+import it.sephiroth.android.library.imagezoom.ImageViewTouch;
+
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -111,7 +113,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
         public TextView photo_detail_name_text;
         public TextView photo_detail_time_text;
         public ImageView photo_detail_thumbnail_bg;
-        public ProgressBar photo_detail_spinner;
+        //public ProgressBar photo_detail_spinner;
         public ImageView photo_detail_thumb_image;
         public TextView photo_detail_upload_text;
         public View photo_detail_likes;
@@ -122,7 +124,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
         //public ListView comment_list;
         public TextView photo_detail_caption;
         //public ImageButton photo_detail_like_button;
-        public ProgressBar photo_detail_download_progress;
+        //public ProgressBar photo_detail_download_progress;
         public LinearLayout photo_detail_comment_bar;
         public View photo_detail_comments;
         public ImageView photo_detail_comment_image;
@@ -147,7 +149,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	                     holder.photo_detail_picture = (ImageView) holder.header_view.findViewById(R.id.photo_detail_picture);
 	                     holder.photo_detail_story_text = (TextView) holder.header_view.findViewById(R.id.photo_detail_story_text);
 	                     holder.photo_detail_time_text = (TextView) holder.header_view.findViewById(R.id.photo_detail_time_text);
-	                     holder.photo_detail_spinner = (ProgressBar) holder.header_view.findViewById(R.id.photo_detail_spinner);
+	                     //holder.photo_detail_spinner = (ProgressBar) holder.header_view.findViewById(R.id.photo_detail_spinner);
 	                     holder.photo_detail_upload_text = (TextView) holder.header_view.findViewById(R.id.photo_detail_upload_text);
 	                     holder.photo_detail_thumbnail_bg = (ImageView) holder.header_view.findViewById(R.id.photo_detail_thumbnail_bg);
 	                     holder.photo_detail_likes = holder.header_view.findViewById(R.id.photo_detail_likes);
@@ -158,7 +160,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 	                     holder.photo_detail_comment_button_text = (TextView) holder.header_view.findViewById(R.id.photo_detail_comment_button_text);
 	                     holder.photo_detail_caption = (TextView) holder.header_view.findViewById(R.id.photo_detail_description);
 	                     //holder.photo_detail_like_button = (ImageButton) holder.header_view.findViewById(R.id.photo_detail_like_button);
-	                     holder.photo_detail_download_progress = (ProgressBar) holder.header_view.findViewById(R.id.photo_detail_download_progress);
+	                     //holder.photo_detail_download_progress = (ProgressBar) holder.header_view.findViewById(R.id.photo_detail_download_progress);
 	                     holder.photo_detail_comments = holder.header_view.findViewById(R.id.photo_detail_comments);
 	                     holder.photo_detail_comments_text = (TextView) holder.header_view.findViewById(R.id.photo_detail_comments_text);
 	                     holder.photo_detail_comment_image = (ImageView) holder.header_view.findViewById(R.id.photo_detail_comment_image);
@@ -290,7 +292,7 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 			if (photo.photo.id == -1)
 			{
 				holder.photo_detail_picture.setImageDrawable(DrawableCache.getDrawable(R.drawable.watermark, GlobalVariables.DISPLAY_WIDTH).getDrawable());
-				holder.photo_detail_spinner.setVisibility(View.VISIBLE);
+				//holder.photo_detail_spinner.setVisibility(View.VISIBLE);
 				holder.photo_detail_upload_text.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 				holder.photo_detail_upload_text.setVisibility(View.VISIBLE);
 			}
@@ -325,6 +327,10 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 		        		photo.photo, 
 		        		SharePref.getIntPref(context.getApplicationContext(), SharePref.DISPLAY_WIDTH));
 		        
+	    		/*GlobalVariables.getInstance().downloadImage(holder.photo_detail_picture, 
+	    				GlobalVariables.getInstance().getAWSUrlThumbnail(item.image1), 
+	    				imageWidth, false, item.image1.local_store);*/
+		        
 				holder.photo_detail_caption.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 				holder.photo_detail_caption.setText(photo.photo.caption);
 				
@@ -341,22 +347,24 @@ public class PhotoDetailPagedViewAdapter extends PagedAdapter {
 						
 					}
 				});
+				
+				//holder.photo_detail_picture.setMinZoom(1f);
 		        
 		        
-				holder.photo_detail_spinner.setVisibility(View.GONE);
+				//holder.photo_detail_spinner.setVisibility(View.GONE);
 				holder.photo_detail_upload_text.setVisibility(View.GONE);
 			}
 			
 	        holder.photo_detail_picture.setVisibility(View.VISIBLE);
 	        
-	        if (photo.hasReceivedDetail)
+	        /*if (photo.hasReceivedDetail)
 	        {
 	        	holder.photo_detail_download_progress.setVisibility(View.GONE);
 	        }
 	        else
 	        {
 	        	holder.photo_detail_download_progress.setVisibility(View.VISIBLE);
-	        }
+	        }*/
 	        
 	        DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.photo_detail_rect, SharePref.getIntPref(context, SharePref.DISPLAY_WIDTH));
 	        

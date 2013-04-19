@@ -1,0 +1,37 @@
+package com.motlee.android.object;
+
+import java.util.ArrayList;
+
+public class StreamListHandler {
+	
+	public static ArrayList<EventDetail> mStreamList = new ArrayList<EventDetail>();
+	
+	public static boolean hasBeenUpdated = false;
+	
+	public static boolean getStreamList(ArrayList<EventDetail> streamList)
+	{
+		if (hasBeenUpdated)
+		{
+			streamList = mStreamList;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	public static boolean updateStreamList(ArrayList<EventDetail> streamList)
+	{
+		if (hasBeenUpdated)
+		{
+			streamList = mStreamList;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+}

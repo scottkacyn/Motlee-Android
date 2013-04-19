@@ -6,9 +6,11 @@ import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.SharePref;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
@@ -47,6 +49,10 @@ public class AddCommentActivity extends Activity {
 	public void onSendClick(View view)
 	{
 		Intent intent = new Intent();
+		
+        InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        in.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 		
 		EditText editText = (EditText) findViewById(R.id.edit_event_location_text);
 		

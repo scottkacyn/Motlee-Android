@@ -51,7 +51,7 @@
              android:id="@+id/profile_events_text"
         	 android:gravity="top|center_horizontal"
         	 android:paddingBottom="5dp"
-        	 android:text="shared events"
+        	 android:text="streams"
         	 style="@style/CodeFont.Small" />
          
      </LinearLayout>    
@@ -91,7 +91,7 @@
              android:id="@+id/profile_photos_text"
         	 android:gravity="top|center_horizontal"
         	 android:paddingBottom="5dp"
-        	 android:text="shared photos"
+        	 android:text="photos"
         	 style="@style/CodeFont.Small" />        
      </LinearLayout>
      

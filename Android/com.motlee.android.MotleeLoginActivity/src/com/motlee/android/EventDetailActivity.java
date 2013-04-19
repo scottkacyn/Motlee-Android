@@ -1,5 +1,12 @@
 package com.motlee.android;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -11,9 +18,20 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.facebook.FacebookRequestError;
+import com.facebook.HttpMethod;
+import com.facebook.Request;
+import com.facebook.RequestAsyncTask;
+import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
+import com.facebook.model.GraphObject;
+import com.facebook.widget.WebDialog;
+import com.facebook.widget.WebDialog.FeedDialogBuilder;
 import com.flurry.android.FlurryAgent;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,21 +39,20 @@ import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.maps.MapView;
 import com.motlee.android.adapter.PhotoDetailPagedViewAdapter;
+import com.motlee.android.adapter.ShareIntentListAdapter;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.BaseDetailFragment;
 import com.motlee.android.fragment.DateDetailFragment;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
 import com.motlee.android.fragment.EventDetailFragment;
-import com.motlee.android.fragment.LocationDetailFragment;
-import com.motlee.android.fragment.LocationFragment;
 import com.motlee.android.fragment.MessageDetailFragment;
 import com.motlee.android.fragment.PeopleListFragment;
 import com.motlee.android.fragment.PhotoMapFragment;
 import com.motlee.android.object.Attendee;
 import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventItem;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalActivityFunctions;
@@ -45,7 +62,9 @@ import com.motlee.android.object.MenuFunctions;
 import com.motlee.android.object.PhotoDetail;
 import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.Settings;
+import com.motlee.android.object.ShareHelper;
 import com.motlee.android.object.SharePref;
+import com.motlee.android.object.SharingInteraction;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedAttendeeEvent;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
@@ -55,6 +74,9 @@ import com.motlee.android.object.event.UpdatedFriendsEvent;
 import com.motlee.android.object.event.UpdatedFriendsListener;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
+import com.motlee.android.service.StreamListService;
+
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -63,25 +85,35 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class EventDetailActivity extends BaseDetailActivity implements OnFragmentAttachedListener, UpdatedEventDetailListener, UpdatedPhotoListener {
 
@@ -98,9 +130,14 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	private static final int SHARE = 3;
 	private static final int DELETE = 4;
 	
-	private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
+	private String shareText = "";
+	private Uri shareUri;
+	
+	private static final List<String> PERMISSIONS = Arrays.asList("publish_stream");
 	private static final String PENDING_PUBLISH_KEY = "pendingPublishReauthorization";
 	private boolean pendingPublishReauthorization = false;
+	
+	private static final String EVENT_ID = "eventId";
 	
     private UiLifecycleHelper uiHelper;
 	
@@ -150,6 +187,18 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
 		eDetail = dbWrapper.getEvent(mEventID);
 		
+		if (mNewPhoto != null)
+		{
+			showRightHeaderButton(false);
+
+			Attendee attendee = new Attendee(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID), eDetail);
+			
+			if (!dbWrapper.isAttending(mEventID))
+			{
+				dbWrapper.createAttendee(attendee);
+			}
+		}
+		
 		setUpFragments();
 	}
 
@@ -176,18 +225,23 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 			this.showDeletedEventDialog();
 			
 		}
-		
-		/*if (progressDialog == null || !progressDialog.isShowing())
+		else
 		{
-			if (eDetail == null)
+		
+			showRightHeaderButton();
+			
+			/*if (progressDialog == null || !progressDialog.isShowing())
 			{
-				progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading...");
+				if (eDetail == null)
+				{
+					progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Loading...");
+				}
+			}//setUpFragments();*/
+			
+			if (findViewById(R.id.header) == null)
+			{
+				setContentView(R.layout.main);
 			}
-		}//setUpFragments();*/
-		
-		if (findViewById(R.id.header) == null)
-		{
-			setContentView(R.layout.main);
 		}
 	}
 	
@@ -205,15 +259,9 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		
 		if (isOwner) 
 		{
-			menu.add(0, EDIT, 0, "Edit Event");
-			menu.add(0, SHARE, 1, "Share on FB");
-			menu.add(0, DELETE, 2, "Delete Event");
+			menu.add(0, EDIT, 0, "Edit Stream");
+			menu.add(0, DELETE, 1, "Delete Stream");
 		} 
-		else if (isApartOfEvent)
-		{
-			menu.add(0, LEAVE, 0, "Leave Event");
-			menu.add(0, SHARE, 1, "Share on FB");
-		}
 	
 		return super.onPrepareOptionsMenu(menu);
 	}
@@ -238,9 +286,12 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	            return super.onOptionsItemSelected(item);
 	    }
 	}
-	
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+    	
+    	outState.putInt("EventID", mEventID);
+    	
         super.onSaveInstanceState(outState);
         
         outState.putBoolean(PENDING_PUBLISH_KEY, pendingPublishReauthorization);
@@ -257,7 +308,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 			
 			public void onClick(DialogInterface dialog, int which) {
 				
-				shareEventOnFacebook();
+				//shareEventOnFacebook();
 				
 			}
 		})
@@ -270,35 +321,24 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		builder.create().show();
     }
     
-	private void shareEventOnFacebook()
+    @Override
+	public void shareEventOnFacebook(String body, Uri uri)
 	{
+    	shareText = body;
+    	shareUri = uri;
 		Session session = Session.getActiveSession();
-		if (session != null)
+		if (session != null && session.isOpened())
 		{
 			List<String> permissions = session.getPermissions();
 	        if (!isSubsetOf(PERMISSIONS, permissions)) {
 	            pendingPublishReauthorization = true;
 	            Session.NewPermissionsRequest newPermissionsRequest = new Session
 	                    .NewPermissionsRequest(this, PERMISSIONS);
-	        session.requestNewPublishPermissions(newPermissionsRequest);
+	            session.requestNewPublishPermissions(newPermissionsRequest);
 	            return;
 	        }
-	     
-	        progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Sharing on Facebook");
 	        
-	        EventServiceBuffer.setFriendsListener(new UpdatedFriendsListener(){
-
-				public void friendsEvent(UpdatedFriendsEvent evt) {
-					
-					EventServiceBuffer.removeFriendsListener(this);
-					
-					progressDialog.dismiss();
-					
-				}
-	        	
-	        });
-	        
-	        EventServiceBuffer.shareEventOnFacebook(eDetail.getEventID());
+	        SharingInteraction.postToFacebook(body, uri, this, session);
 	        
 		}
 	}
@@ -348,6 +388,10 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 				{
 					progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Deleting Event");
 					
+					Intent streamListService = new Intent(EventDetailActivity.this, StreamListService.class);
+					streamListService.putExtra(StreamListService.DELETE_STREAM, eDetail.getEventID());
+					startService(streamListService);
+					
 					EventServiceBuffer.setEventDetailListener(eventListener);
 					
 					EventServiceBuffer.deleteEvent(eDetail.getEventID());
@@ -394,9 +438,9 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		}
 	}
 	
-	private void showRightHeaderButton()
+	private void showRightHeaderButton(boolean forceOptions)
 	{
-		if (dbWrapper.isAttending(mEventID))
+		if (forceOptions || dbWrapper.getEvent(mEventID).getOwnerID() == SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID))
 		{
 			View headerRightButtonlayout = findViewById(R.id.header_right_layout_button);
 			headerRightButtonlayout.setVisibility(View.VISIBLE);
@@ -410,6 +454,14 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 			TextView headerRightButtonText = (TextView) findViewById(R.id.header_right_text);
 			headerRightButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 			headerRightButtonText.setText("Options");
+		}
+	}
+	
+	private void showRightHeaderButton()
+	{
+		if (SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID) == eDetail.getOwnerID())
+		{
+			showRightHeaderButton(true);
 		}
 		/*else
 		{
@@ -432,6 +484,49 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		}
 		
 	};
+	
+	@Override
+	public void photoUploadProgress(int progressPercent, Integer photoId, Integer eventId)
+	{
+		if (dbWrapper != null)
+		{
+			PhotoItem photo = dbWrapper.getPhoto(photoId);
+			
+			photo.upload_progress = progressPercent;
+			
+			dbWrapper.updatePhoto(photo);
+			
+			FragmentManager     fm = getSupportFragmentManager();
+			
+	        Fragment fragment = fm.findFragmentById(R.id.fragment_content);
+	        
+	        if (fragment != null)
+	        {
+		        if (fragment instanceof EventDetailFragment)
+		        {
+		        	((EventDetailFragment) fragment).photoEvent();
+		        }
+	        }
+		}
+	}
+	
+	@Override
+	public void photoUploadFailed(PhotoItem photo)
+	{
+		Log.d("EventDetailActivity", "PhotoUploadFailed");
+		
+		FragmentManager     fm = getSupportFragmentManager();
+		
+        Fragment fragment = fm.findFragmentById(R.id.fragment_content);
+        
+        if (fragment != null)
+        {
+	        if (fragment instanceof EventDetailFragment)
+	        {
+	        	((EventDetailFragment) fragment).photoEvent();
+	        }
+        }
+	}
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -458,19 +553,11 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         uiHelper = new UiLifecycleHelper(this, callback);
         uiHelper.onCreate(savedInstanceState);
         
-        Log.d(this.toString(), "onCreate: about to setUpSlidingMenu");
-        
-        Log.d(this.toString(), "onCreate: about to setup databaseWRapper");
-        
         dbWrapper = new DatabaseWrapper(this.getApplicationContext());
-        
-        Log.d(this.toString(), "onCreate: about to get mainLayout");
         
         View mainLayout = findViewById(R.id.main_frame_layout);
         mainLayout.setClickable(true);
         //mainLayout.setOnClickListener(onClick);
-        
-        setUpPageHeader();
         
         //findViewById(R.id.event_detail_header).setVisibility(View.GONE);
         
@@ -478,7 +565,18 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         
         firstScreen = getIntent().getExtras().getString("Page");
         
-        mEventID = getIntent().getExtras().getInt("EventID");
+        mEventID = getIntent().getExtras().getInt("EventID", -1);
+        
+        if (mEventID == -1)
+        {
+            if (savedInstanceState != null) 
+            {
+                mEventID = savedInstanceState.getInt("EventID", -1);
+            }
+        }
+        
+        
+        setUpPageHeader();
         
         eDetail = dbWrapper.getEvent(mEventID);
         
@@ -504,7 +602,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         ft.add(new EmptyFragmentWithCallbackOnResume(), "EmptyFragment")
         .commit();
         
-        findViewById(R.id.main_progress_bar).setVisibility(View.VISIBLE);
+        findViewById(R.id.main_progress_bar).setVisibility(View.GONE);
         
 		mShowProgressBar = true;
 		
@@ -520,7 +618,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 			if (pendingPublishReauthorization && 
 			        state.equals(SessionState.OPENED_TOKEN_UPDATED)) {
 			    pendingPublishReauthorization = false;
-			    shareEventOnFacebook();
+			    shareEventOnFacebook(shareText, shareUri);
 			}
 		}
     }
@@ -529,11 +627,12 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	{
 		eventHeader = (LinearLayout) findViewById(R.id.event_detail_header);
 		eventHeader.setVisibility(View.VISIBLE);
-		eventHeader.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getDrawable());
+		eventHeader.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.camera_bottom_flat_bg, GlobalVariables.DISPLAY_WIDTH).getDrawable());
 		
-		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getHeight());
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, DrawableCache.getDrawable(R.drawable.event_detail_header, GlobalVariables.DISPLAY_WIDTH).getHeight(), Gravity.BOTTOM);
 		
-		params.addRule(RelativeLayout.BELOW, R.id.header);
+		ImageButton button = (ImageButton) findViewById(R.id.button_capture);
+		button.setTag(mEventID);
 		
 		eventHeader.setLayoutParams(params);
 		
@@ -633,6 +732,105 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		}
 	};
 	
+	public void shareStream(View view)
+	{		
+		Uri uri = setUpShareGrid();
+		
+		String bodyToSend = "";
+		
+		if (dbWrapper.isAttending(eDetail.getEventID()))
+		{
+			bodyToSend = "Check out my photostream for \"" + eDetail.getEventName() + "\" on Motlee\nhttp://www.motleeapp.com/events/" + eDetail.getEventID();
+		}
+		else
+		{
+			UserInfo user = dbWrapper.getUser(eDetail.getOwnerID());
+			
+			if (user != null && user.name != null)
+			{
+				bodyToSend = "Check out " + user.name + "'s photostream for \"" + eDetail.getEventName() + "\" on Motlee\nhttp://www.motleeapp.com/events/" + eDetail.getEventID();
+			}
+			else
+			{
+				bodyToSend = "Check out this photostream for \"" + eDetail.getEventName() + "\" on Motlee\nhttp://www.motleeapp.com/events/" + eDetail.getEventID();
+			}
+		}
+		
+		SharingInteraction.share(eDetail.getEventName() + " via Motlee", bodyToSend, uri, this);
+		
+		//ShareHelper helper = new ShareHelper(this, eDetail.getEventName() + " via Motlee", "Check out my photostream for \"" + eDetail.getEventName() + "\" on Motlee\nhttp://www.motleeapp.com/events/" + eDetail.getEventID(), uri);
+		
+		//helper.share();
+		
+		/*Intent shareIntent = new Intent(Intent.ACTION_SEND);
+		if (uri != null)
+		{
+			shareIntent.setType("image/jpeg");
+			shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+		}
+		shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out my photostream for \"" + eDetail.getEventName() + "\" on Motlee\nhttp://www.motleeapp.com/events/" + eDetail.getEventID());
+		shareIntent.putExtra(Intent.EXTRA_SUBJECT, eDetail.getEventName() + " via Motlee");
+		shareIntent.putExtra(Intent.EXTRA_TITLE, "Motlee");
+		startActivity(Intent.createChooser(shareIntent, "Share"));*/
+	}
+	
+	private Uri setUpShareGrid() 
+	{
+		ArrayList<Bitmap> bitmaps = GlobalVariables.getInstance().getLatestFourBitmapsInMemory(getApplicationContext(), eDetail.getEventID());
+		
+		Bitmap finalBitmap = null;
+		
+		if (bitmaps.size() > 3)
+		{
+			Bitmap firstBitmap = bitmaps.get(0);
+			int width = firstBitmap.getWidth();
+			int height = firstBitmap.getHeight();
+			
+			finalBitmap = Bitmap.createBitmap(width * 2, height * 2, Bitmap.Config.ARGB_8888);
+			
+			Canvas canvas = new Canvas(finalBitmap);
+			canvas.drawBitmap(firstBitmap, 0, 0, null);
+			canvas.drawBitmap(bitmaps.get(1), width, 0, null);
+			canvas.drawBitmap(bitmaps.get(2), 0, width, null);
+			canvas.drawBitmap(bitmaps.get(3), width, width, null);
+			
+			System.gc();
+		}
+		else if (bitmaps.size() > 0)
+		{
+			finalBitmap = bitmaps.get(0);
+		}
+		
+		return saveBitmapToDevice(finalBitmap);
+	}
+	
+	private Uri saveBitmapToDevice(Bitmap bitmap)
+	{
+		if (bitmap == null)
+		{
+			return null;
+		}
+		try
+		{
+			File file = GlobalVariables.createImageFile(getApplicationContext());
+			FileOutputStream fos = new FileOutputStream(file);
+	        final BufferedOutputStream bos = new BufferedOutputStream(fos);
+	        bitmap.compress(CompressFormat.JPEG, 100, bos);
+	        bos.flush();
+	        bos.close();
+	        fos.close();
+	        bitmap.recycle();
+	        bitmap = null;
+	        return Uri.fromFile(file);
+		}
+		catch (Exception e)
+		{
+			return null;
+		}
+	}
+	
+	
+	
 	/*private OnClickListener onClick = new OnClickListener(){
 
 		public void onClick(View view) {
@@ -651,6 +849,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
     	
     };*/
     
+
+
 	public void showProfilePage(View view)
 	{
 		UserInfo user = (UserInfo) view.getTag();
@@ -665,7 +865,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 
 	}
 	
-    protected void publishStoryOnFacebookFeed() {
+    protected void publishStoryOnFacebookFeed(String body, Uri uri) 
+    {
     	Session session = Session.getActiveSession();
 
         if (session != null){
@@ -678,6 +879,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
             session.requestNewPublishPermissions(newPermissionsRequest);
                 return;
             }
+            
+            
 
 
         }
@@ -1204,6 +1407,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		EventServiceBuffer.removeEventDetailListener(this);
 		
 		
+		Intent refreshStream = new Intent(this, StreamListService.class);
+		startService(refreshStream);
 		
 		eDetail = dbWrapper.getEvent(mEventID);
 		
@@ -1227,12 +1432,12 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	        FragmentManager fm = getSupportFragmentManager();
 	        Fragment fragment = fm.findFragmentById(R.id.fragment_content);
 			
-	        if (mNewPhoto != null)
+	        /*if (mNewPhoto != null)
 	        {
 	        	mNewPhoto.event_detail = eDetail;
 	        	
 	        	dbWrapper.createPhoto(mNewPhoto);
-	        }
+	        }*/
 	        
 	        if (tempPhotoEventDetailLoad != null)
 	        {
@@ -1277,6 +1482,16 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	
 	private void updateMenuButtons()
 	{
+		/*View cameraButton = findViewById(R.id.camera_button);
+		cameraButton.setVisibility(View.VISIBLE);
+		
+		ImageButton button = (ImageButton) findViewById(R.id.button_capture);
+		button.setTag(mEventID);
+		
+		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.camera_bottom_bg, SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH), true);
+		
+		button.setMaxHeight(drawable.getWidth() + DrawableCache.convertDpToPixel(3));
+		
         /*Attendee attendee = new Attendee(SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID));
         
         if (dbWrapper.getAttendees(mEventID).contains(attendee))
@@ -1323,7 +1538,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	    		
 	    		mNewPhoto.event_detail = eDetail;
 	    		
-	    		dbWrapper.createPhoto(mNewPhoto);
+	    		//dbWrapper.createPhoto(mNewPhoto);
 	    		
 	    		showPhotos(null);
 	    	}
@@ -1527,10 +1742,21 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         
         tempPhotoEventDetailLoad = e.getPhoto();
         
-		Timer timer = new Timer();
+		FragmentManager     fm = getSupportFragmentManager();
 		
-		timer.schedule(new MyTimerTask(e.getPhoto()), 200, 200);
+        Fragment fragment = fm.findFragmentById(R.id.fragment_content);
+        
+        if (fragment != null)
+        {
+	        if (fragment instanceof EventDetailFragment)
+	        {
+	        	((EventDetailFragment) fragment).photoEvent();
+	        }
+        }
+        
+		/*Timer timer = new Timer();
 		
+		timer.schedule(new MyTimerTask(e.getPhoto()), 200, 200);*/
 	}
 	
 	public class MyTimerTask extends TimerTask
@@ -1549,7 +1775,6 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		@Override
 		public void run() 
 		{
-			Log.d("DownloadImageTimer", "Starting to check image");
 			if (count > 100)
 			{
 				this.cancel();

@@ -51,7 +51,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 	private View view;
 	private LayoutInflater inflater;
 	private EventDetail mEventDetail = null;
-	private String pageTitle = "Create Event";
+	private String pageTitle = "Create Stream";
 	
 	private ArrayList<UserInfo> attendeeMap = new ArrayList<UserInfo>();
 	
@@ -76,6 +76,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
     private DatabaseWrapper dbWrapper;
     
     private boolean isPrivate = false;
+    private boolean shouldShare = true;
     
     private boolean isFacebookEvent = true;
     
@@ -98,9 +99,9 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		mHelper = DatabaseHelper.getInstance(this.getActivity().getApplicationContext());
 		dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
 		
-		View createEventBg = view.findViewById(R.id.create_event_bg);
+		View createEventBg = view.findViewById(R.id.create_event_bg_container);
 		
-		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.create_event_bg, GlobalVariables.DISPLAY_WIDTH);
+		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.create_event_bg_container, GlobalVariables.DISPLAY_WIDTH);
 		
 		createEventBg.setBackgroundDrawable(drawable.getDrawable());
 		
@@ -143,6 +144,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		setEventNameEdit();
 		setLocationLabel();
 		setPublicEventToggle();
+		setShareStreamToggle();
 		//setFacebookEventToggle();
 		
 		/*ImageScaleType ist = ImageScaleType.IN_SAMPLE_POWER_OF_2;
@@ -205,6 +207,38 @@ public class CreateEventFragment extends BaseMotleeFragment {
 				toggle.setOnClickListener(publicToggleListener);
 				toggle.setTag(false);
 			}
+		}
+		
+	}
+	
+	private void setShareStreamToggle() {
+		
+		if (mEventDetail ==  null)
+		{
+			ImageButton toggle = (ImageButton) view.findViewById(R.id.event_create_sharing_switcher);
+			toggle.setOnClickListener(shareToggleListener);
+			toggle.setTag(true);
+		}
+		else
+		{
+			view.findViewById(R.id.create_event_share).setVisibility(View.GONE);
+			
+			/*if (mEventDetail.getIsPrivate())
+			{
+				ImageButton toggle = (ImageButton) view.findViewById(R.id.event_create_public_switcher);
+				toggle.setImageResource(R.drawable.switcher_button_on);
+				toggle.setOnClickListener(publicToggleListener);
+				//TextView text = (TextView) view.findViewById(R.id.event_create_public_event_text);
+				//text.setText(R.string.public_event_false);
+				toggle.setTag(true);
+				isPrivate = true;
+			}
+			else
+			{
+				ImageButton toggle = (ImageButton) view.findViewById(R.id.event_create_public_switcher);
+				toggle.setOnClickListener(publicToggleListener);
+				toggle.setTag(false);
+			}*/
 		}
 		
 	}
@@ -287,6 +321,34 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		
 	};
 	
+	private OnClickListener shareToggleListener = new OnClickListener()
+	{
+
+		public void onClick(View v) {
+			
+			boolean switcherState = (Boolean) v.getTag();
+			
+			if (switcherState)
+			{
+				((ImageView) v).setImageResource(R.drawable.switcher_button_off);
+				//TextView text = (TextView) view.findViewById(R.id.event_create_public_event_text);
+				//text.setText(R.string.public_event_false);
+				v.setTag(false);
+				shouldShare = false;
+			}
+			else
+			{
+				((ImageView) v).setImageResource(R.drawable.switcher_button_on);
+				//TextView text = (TextView) view.findViewById(R.id.event_create_public_event_text);
+				//text.setText(R.string.public_event_true);
+				v.setTag(true);
+				shouldShare = true;
+			}
+			
+		}
+		
+	};
+	
 	public LocationInfo getLocationInfo()
 	{
 		LocationInfo newLocation = new LocationInfo(locationTextView.getText().toString(), mLocation.lat, mLocation.lon, Long.getLong("0"));
@@ -297,6 +359,11 @@ public class CreateEventFragment extends BaseMotleeFragment {
 	public boolean getIsPrivate()
 	{
 		return this.isPrivate;
+	}
+	
+	public boolean getShareToFacebook()
+	{
+		return shouldShare;
 	}
 	
 	public boolean getIsFacebookEvent()
@@ -514,7 +581,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		//editText.setTextColor(R.color.label_color);
 		if (mEventDetail == null)
 		{
-			editText.setHint("Event Name");
+			editText.setHint("Stream Name");
 		}
 		else
 		{

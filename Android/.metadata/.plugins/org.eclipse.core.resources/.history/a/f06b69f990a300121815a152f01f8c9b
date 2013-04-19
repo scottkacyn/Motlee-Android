@@ -1,0 +1,116 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:layout_weight="1"
+	android:id="@+id/main_frame_layout" >
+	   
+   <RelativeLayout
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+     	 <include layout="@layout/header"
+	         android:id="@+id/header"
+	         android:layout_gravity="top"/>
+	     <RelativeLayout 
+	          android:id="@+id/fragment_content"
+	          android:layout_width="match_parent"
+	          android:layout_height="match_parent"
+	          android:layout_below="@id/header"
+	          android:background="@android:color/transparent"/>
+	     
+    </RelativeLayout>
+    
+   <ProgressBar 
+       android:id="@+id/main_progress_bar"
+       android:layout_width="25dp"
+       android:layout_height="25dp"
+       android:layout_gravity="center"
+       android:visibility="gone"/>
+    
+       <!-- <include layout="@layout/camera_button"
+          android:id="@+id/camera_button"
+          android:layout_gravity="bottom"
+          android:visibility="gone" /> -->
+   
+       <include layout="@layout/event_detail_header"
+	        android:id="@+id/event_detail_header"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="bottom"
+	        android:visibility="gone" />
+          <!-- <include layout="@layout/menu_buttons"
+	          android:id="@+id/menu_buttons"
+	          android:visibility="gone" /> -->
+   
+   <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:id="@+id/marker_progress_streams"
+        android:visibility="gone" >
+    
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:text="Syncing streams..."
+            android:paddingRight="10dp"
+            style="@style/CodeFont" />
+        
+	    <ProgressBar 
+	        android:indeterminate="true"
+	        android:layout_width="30dp" 
+	        android:layout_height="30dp"
+	        
+	        style="?android:attr/progressBarStyle"
+	        android:layout_centerHorizontal="true"
+	        android:layout_alignParentTop="true"/>
+	    
+    </LinearLayout>
+   
+   <View
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:id="@+id/black_background"
+       android:background="@android:color/black"
+       android:visibility="gone" />
+   
+
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:orientation="vertical"
+       android:weightSum="1">
+	    <View
+	        android:id="@+id/image_blank_space"
+	        android:layout_width="match_parent"
+	        android:layout_height="0dp"
+	        android:layout_weight=".1"
+	        android:background="@android:color/transparent"
+	        android:visibility="gone"/>
+	    <ImageView
+	        android:id="@+id/expanded_image"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:scaleType="fitCenter"
+	        android:adjustViewBounds="true"
+	        android:visibility="invisible" />
+    </LinearLayout>
+     <!-- <LinearLayout 
+          android:id="@+id/main_menu"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:layout_gravity="left" 
+          android:background="@android:color/transparent"/>
+     
+     <LinearLayout
+         android:id="@+id/plus_menu"
+         android:layout_width="wrap_content"
+         android:layout_height="match_parent"
+         android:layout_gravity="right"
+         android:background="@android:color/transparent"/> -->
+     
+
+</FrameLayout>

@@ -28,7 +28,7 @@ public class Friend {
 	public Friend(Long uid, Integer id)
 	{
 		this.uid = uid;
-		this.id = id;
+		this.user_id = id;
 	}
 
 }
