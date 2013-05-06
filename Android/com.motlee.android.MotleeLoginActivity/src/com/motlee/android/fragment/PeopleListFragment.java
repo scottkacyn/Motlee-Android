@@ -173,6 +173,8 @@ public class PeopleListFragment extends BaseDetailFragment {
 			
 			getActivity().startActivity(addFriendIntent);
 			
+			getActivity().overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+			
 		}
 		
 	};

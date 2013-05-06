@@ -47,9 +47,6 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 	private static final String MOTLEE_PATH = "Pictures/Motlee/";
 	
 	private boolean recropping = false;
-	
-	private DatabaseWrapper dbWrapper;
-	
 	private String mCurrentPhotoPath;
 	private String mCurrentCroppedPhotoPath;
 	private Uri picUri;
@@ -72,9 +69,7 @@ public class TakePhotoActivity extends BaseMotleeActivity {
 	public void onCreate(Bundle savedInstanceState)
 	{
         super.onCreate(savedInstanceState);
-        
-        dbWrapper = new DatabaseWrapper(getApplicationContext());
-        
+
         // Check whether we're recreating a previously destroyed instance
         if (savedInstanceState != null) {
             // Restore value of members from saved state

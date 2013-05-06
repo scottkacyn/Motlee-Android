@@ -149,8 +149,6 @@ public class SettingsActivity extends BaseMotleeActivity implements SettingsList
     	
     	if (description.equals(SettingsActivity.PROFILE))
     	{
-    		DatabaseWrapper dbWrapper = new DatabaseWrapper(this.getApplicationContext());
-    		
     		Intent userProfile = new Intent(SettingsActivity.this, UserProfilePageActivity.class);
     		
     		UserInfo user = dbWrapper.getUser(SharePref.getIntPref(this.getApplicationContext(), SharePref.USER_ID));

@@ -26,13 +26,11 @@ import com.motlee.android.object.PhotoItem;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UpdatedPhotoListener;
-import com.motlee.android.object.event.UserWithEventsPhotosEvent;
+import com.motlee.android.object.event.UserEvent;
 import com.motlee.android.view.ProgressDialogWithTimeout;
 
 public class NotificationActivity extends BaseMotleeActivity implements UpdatedPhotoListener {
 
-	private DatabaseWrapper dbWrapper;
-	
 	private ArrayList<Integer> users;
 	
 	@Override
@@ -54,8 +52,6 @@ public class NotificationActivity extends BaseMotleeActivity implements UpdatedP
         FlurryAgent.logEvent("Notifications");
         
         showMenuButtons();
-        
-        dbWrapper = new DatabaseWrapper(this.getApplicationContext());
         
         progressDialog = ProgressDialogWithTimeout.show(this, "", "Loading Notifications");
         
@@ -97,7 +93,7 @@ public class NotificationActivity extends BaseMotleeActivity implements UpdatedP
     	}
     }
     
-    public void userWithEventsPhotos(UserWithEventsPhotosEvent e)
+    public void userWithEventsPhotos(UserEvent e)
     {
     	try
     	{

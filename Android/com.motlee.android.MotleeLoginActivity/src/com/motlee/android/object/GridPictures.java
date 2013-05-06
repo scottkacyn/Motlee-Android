@@ -17,4 +17,34 @@ public class GridPictures {
 		this.image2 = image2;
 		this.image3 = image3;
 	}
+	
+	public int hashCode() {
+        Integer hashCode = 3;
+        if (image1 != null)
+        {
+        	hashCode = hashCode + image1.id;
+        }
+        if (image2 != null)
+        {
+        	hashCode = hashCode + image2.id;
+        }
+        if (image3 != null)
+        {
+        	hashCode = hashCode + image3.id;
+        }
+        return hashCode;
+    }
+
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (obj == this)
+            return true;
+        if (!(obj instanceof GridPictures))
+            return false;
+
+        GridPictures rhs = (GridPictures) obj;
+        
+        return (rhs.image1 == this.image1) && (rhs.image2 == this.image2) && (rhs.image3 == this.image3);
+    }
 }

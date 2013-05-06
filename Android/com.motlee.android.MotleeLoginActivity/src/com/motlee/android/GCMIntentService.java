@@ -40,6 +40,7 @@ import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.Settings;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.UserInfo;
 import com.motlee.android.object.EventServiceBuffer.UserDataHolder;
@@ -47,7 +48,7 @@ import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 import com.motlee.android.object.event.UserInfoEvent;
 import com.motlee.android.object.event.UserInfoListener;
-import com.motlee.android.object.event.UserWithEventsPhotosEvent;
+import com.motlee.android.object.event.UserEvent;
 import com.motlee.android.service.RubyService;
 
 public class GCMIntentService extends GCMBaseIntentService implements UpdatedEventDetailListener {
@@ -77,28 +78,81 @@ public class GCMIntentService extends GCMBaseIntentService implements UpdatedEve
 
 	private void sendNotification(Context context, Intent intent) {
 		
+		Settings settings = SharePref.getSettings(context);
+		
 		String event = intent.getExtras().getString("event_id");
-	    if (event != null)
+	    if (event != null && settings.on_event_invite)
 	    {
-		    Integer inviterId = Integer.parseInt(intent.getExtras().getString("inviter"));
 		    Integer eventId = Integer.parseInt(event);
 		    
-		    String message = intent.getExtras().getString("message_text");
+		    String user = intent.getExtras().getString("inviter");
 		    
-		    sendEventInviteNotification(message, eventId, inviterId);
-
+		    if (user != null)
+		    {
+			    Integer inviterId = Integer.parseInt(user);
+			    
+			    String message = intent.getExtras().getString("message_text");
+			    
+			    sendEventInviteNotification(message, eventId, inviterId);
+		    }
+		    
 	    }
 	    
 	    String photo = intent.getExtras().getString("photo_id");
 	    if (photo != null)
 	    {
 	    	Integer photoId = Integer.parseInt(photo);
-	    	Integer userId = Integer.parseInt(intent.getExtras().getString("user_id"));
-	    	
-	    	String message = intent.getExtras().getString("message_text");
-	    	
-	    	sendPhotoNotification(message, photoId, userId);
+	    	String user = intent.getExtras().getString("user_id");
+	    	if (user != null)
+	    	{
+		    	Integer userId = Integer.parseInt(user);
+		    	
+		    	String message = intent.getExtras().getString("message_text");
+		    	
+		    	if ((message.contains("comment") && settings.on_photo_comment)
+		    			|| (message.contains("like") && settings.on_photo_like))
+		    	{
+		    		sendPhotoNotification(message, photoId, userId);
+		    	}
+	    	}
 	    }
+	    
+	    String massMessage = intent.getExtras().getString("massMessage");
+	    if (massMessage != null)
+	    {
+	    	sendMassMessageNotification(massMessage);
+	    }
+	}
+
+	private void sendMassMessageNotification(String massMessage) {
+		
+		/*Intent resultIntent = new Intent(GCMIntentService.this, EventItemDetailActivity.class);
+		resultIntent.putExtra("EventItem", photo);
+		resultIntent.putExtra("IsSinglePhoto", true);
+	    TaskStackBuilder stackBuilder = TaskStackBuilder.create(GCMIntentService.this);
+	    // Adds the back stack
+	    stackBuilder.addParentStack(EventItemDetailActivity.class);
+	    // Adds the Intent to the top of the stack
+	    stackBuilder.addNextIntent(resultIntent);
+	    // Gets a PendingIntent containing the entire back stack
+	    PendingIntent resultPendingIntent =
+	            stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+	    
+	    // Build notification
+	    // Actions are just fake
+	    NotificationCompat.Builder noti = new NotificationCompat.Builder(GCMIntentService.this)
+	        .setContentTitle("Motlee")
+	        .setContentText(message)
+	        .setSmallIcon(R.drawable.motlee_launcher_icon)
+	        .setContentIntent(resultPendingIntent)
+	        .setLargeIcon(userProfilePic)
+	        .setDefaults(Notification.DEFAULT_ALL)
+	        .setAutoCancel(true);
+	    
+	    NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+	    notificationManager.notify(0, noti.build());*/
+		
 	}
 
 	private void sendPhotoNotification(final String message, final Integer photoId, final Integer userId) 

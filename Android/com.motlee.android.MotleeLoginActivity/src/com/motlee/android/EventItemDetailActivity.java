@@ -20,6 +20,7 @@ import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.flurry.android.FlurryAgent;
+import com.motlee.android.adapter.EventItemAdapter;
 import com.motlee.android.adapter.PhotoDetailPagedViewAdapter;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.EventItemType;
@@ -55,6 +56,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -82,9 +84,7 @@ public class EventItemDetailActivity extends BaseFacebookActivity implements Upd
 	private EditText editText;
 	private boolean isUserPhotoRoll = false;
 	private boolean isSinglePhoto = false;
-	
-	private DatabaseWrapper dbWrapper;
-	
+
 	private PhotoItem sharingPhoto;
 	
 	private ProgressDialog progressDialog;
@@ -108,7 +108,7 @@ public class EventItemDetailActivity extends BaseFacebookActivity implements Upd
 		uiHelper.onResume();
 		if (fragment != null)
 		{
-			PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+			EventItemAdapter adapter = fragment.getAdapter();
 			if (adapter != null)
 			{
 				adapter.notifyDataSetChanged();
@@ -121,7 +121,6 @@ public class EventItemDetailActivity extends BaseFacebookActivity implements Upd
 	{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.photo_detail_main);
-        
         //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
         
         if (savedInstanceState != null) {
@@ -153,8 +152,6 @@ public class EventItemDetailActivity extends BaseFacebookActivity implements Upd
         //progressBar = (ProgressBar) findViewById(R.id.photo_detail_progress);
         
 		EventServiceBuffer.setCommentListener(EventItemDetailActivity.this);
-		
-        dbWrapper = new DatabaseWrapper(getApplicationContext());
         
         if (mEventItem != null)
         {
@@ -180,25 +177,21 @@ public class EventItemDetailActivity extends BaseFacebookActivity implements Upd
 	        
 	        if (isSinglePhoto)
 	        {
-	        	UserInfo user = dbWrapper.getUser(mEventItem.user_id);
-	        	
 	        	ArrayList<PhotoItem> singlePhotoList = new ArrayList<PhotoItem>();
 	        	
 	        	singlePhotoList.add((PhotoItem) mEventItem);
 	        	
 	        	fragment.setPhotoList(singlePhotoList);
 	        	
-	        	((TextView) findViewById(R.id.photo_detail_event_text)).setText(user.name);
+	        	//((TextView) findViewById(R.id.photo_detail_event_text)).setText(user.name);
 	        	
 	        	//fragment.setPageTitle(user.name);
 	        }
 	        else if (isUserPhotoRoll)
 	        {
-	        	UserInfo user = dbWrapper.getUser(mEventItem.user_id);
-	        	
 	            fragment.setPhotoList(photos);
 	        	
-	        	((TextView) findViewById(R.id.photo_detail_event_text)).setText(user.name);
+	        	//((TextView) findViewById(R.id.photo_detail_event_text)).setText(user.name);
 	            
 	            //fragment.setPageTitle(user.name);
 	        }
@@ -218,12 +211,12 @@ public class EventItemDetailActivity extends BaseFacebookActivity implements Upd
 	        	
 		        fragment.setPhotoList(photoList);
 	        	
-	        	((TextView) findViewById(R.id.photo_detail_event_text)).setText(dbWrapper.getEvent(mEventItem.event_id).getEventName());
+	        	//((TextView) findViewById(R.id.photo_detail_event_text)).setText(dbWrapper.getEvent(mEventItem.event_id).getEventName());
 		        
 		        //fragment.setPageTitle(dbWrapper.getEvent(mEventItem.event_id).getEventName());
 	        }
 	        
-	        ((TextView) findViewById(R.id.photo_detail_event_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+	        //((TextView) findViewById(R.id.photo_detail_event_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 	        
 	        ft.add(R.id.fragment_content, fragment)
 	        .commit();
@@ -401,7 +394,7 @@ public class EventItemDetailActivity extends BaseFacebookActivity implements Upd
 		
 		menu.clear();
 		
-    	PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+		EventItemAdapter adapter = fragment.getAdapter();
 		PhotoItem currentPhoto = ((PhotoDetail) adapter.getItem(fragment.getPagedView().getCurrentPage())).photo;
 	
 		boolean isOwner = currentPhoto.user_id == SharePref.getIntPref(getApplicationContext(), SharePref.USER_ID);
@@ -447,7 +440,7 @@ public class EventItemDetailActivity extends BaseFacebookActivity implements Upd
 	
 	public void shareCurrentPhoto()
 	{
-    	PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+		EventItemAdapter adapter = fragment.getAdapter();
 		final PhotoItem currentPhoto = ((PhotoDetail) adapter.getItem(fragment.getPagedView().getCurrentPage())).photo;
 		
 		sharingPhoto = currentPhoto;
@@ -465,6 +458,8 @@ public class EventItemDetailActivity extends BaseFacebookActivity implements Upd
 		
 		bodyToSend = bodyToSend + "Check out my photo from the stream, \"" + eDetail.getEventName() + "\" on Motlee. " + link;
 		
+		FlurryAgent.logEvent("OpenSharingPhotoPage");
+		
 		SharingInteraction.share("My Photo via Motlee", bodyToSend, null, this);
 	}
 
@@ -472,7 +467,7 @@ public class EventItemDetailActivity extends BaseFacebookActivity implements Upd
 	{
 		Toast.makeText(getApplicationContext(), "Starting download...", 2000).show();	
 		
-    	PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+		EventItemAdapter adapter = fragment.getAdapter();
 		final PhotoItem currentPhoto = ((PhotoDetail) adapter.getItem(fragment.getPagedView().getCurrentPage())).photo;
 		
         Intent intent = new Intent(this, DownloadImage.class);
@@ -513,7 +508,7 @@ public class EventItemDetailActivity extends BaseFacebookActivity implements Upd
 	
 	public void deleteCurrentPhoto()
 	{
-    	PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+		EventItemAdapter adapter = fragment.getAdapter();
 		final PhotoItem currentPhoto = ((PhotoDetail) adapter.getItem(fragment.getPagedView().getCurrentPage())).photo;
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(EventItemDetailActivity.this);
@@ -546,7 +541,7 @@ public class EventItemDetailActivity extends BaseFacebookActivity implements Upd
 	
     public void sendComment(View view)
     {
-    	PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+    	EventItemAdapter adapter = fragment.getAdapter();
 		PhotoItem currentPhoto = ((PhotoDetail) adapter.getItem(fragment.getPagedView().getCurrentPage())).photo;
 		
     	/*if (!fragment.getCommentText().equals(""))
@@ -620,23 +615,22 @@ public class EventItemDetailActivity extends BaseFacebookActivity implements Upd
     
 	public void onLikeClick(View view)
 	{
-		PhotoItem photo = ((PhotoDetail) view.getTag()).photo;
+		PhotoDetail photo = ((PhotoDetail) view.getTag());
 		// toggle if we changed user's like status
 		if (likeMap.containsKey(photo))
 		{
-			likeMap.put(photo, !likeMap.get(photo));
+			likeMap.put(photo.photo, !likeMap.get(photo.photo));
 		}
 		else
 		{
-			likeMap.put(photo, true);
+			likeMap.put(photo.photo, true);
 		}
 		
 		FlurryAgent.logEvent("LikePhoto");
 		
-		updateLikeInAdapter(photo);
+		updateLikeInAdapter(photo.photo);
 		
-		PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
-		adapter.notifyDataSetChanged();
+		fragment.setPhotoDetail(photo);
 	}
 
 	private void updateLikeInAdapter(PhotoItem photo) {
@@ -741,14 +735,15 @@ public class EventItemDetailActivity extends BaseFacebookActivity implements Upd
 				}
 			}
 			
-			//Log.e("photoEvent", "currentPosition: " + fragment.getPagedView().getCurrentPage());
+			Log.e("photoEvent", "currentPosition: " + fragment.getPagedView().getCurrentPage());
 			if (fragment.getPagedView().getCurrentPage() >= 0)
 			{
-		    	PhotoDetailPagedViewAdapter adapter = fragment.getAdapter();
+				EventItemAdapter adapter = fragment.getAdapter();
 				PhotoItem currentPhoto = ((PhotoDetail) adapter.getItem(fragment.getPagedView().getCurrentPage())).photo;
-				if (currentPhoto.id == photo.id)
+				if (currentPhoto.id.equals(photo.id))
 				{
 					fragment.getAdapter().notifyDataSetChanged();
+					fragment.setPhotoDetail((PhotoDetail) adapter.getItem(fragment.getPagedView().getCurrentPage()));
 				}
 			}
 		}
@@ -765,6 +760,8 @@ public class EventItemDetailActivity extends BaseFacebookActivity implements Upd
 				
 				dialog.cancel();
 				finish();
+				
+			    overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 			}
 		});
 		
@@ -781,6 +778,8 @@ public class EventItemDetailActivity extends BaseFacebookActivity implements Upd
 		progressDialog.dismiss();
 		
 		finish();
+		
+	    overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 		
 	}
 

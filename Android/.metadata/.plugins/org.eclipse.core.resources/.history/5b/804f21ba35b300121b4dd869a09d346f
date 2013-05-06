@@ -1,0 +1,184 @@
+package com.motlee.android.adapter;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import com.motlee.android.R;
+import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.FacebookFriend;
+import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.SharePref;
+import com.motlee.android.object.UserInfo;
+
+import android.content.Context;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+public class InviteFriendsAdapter extends BaseAdapter {
+
+	private LayoutInflater inflater;
+	private Context context;
+	private ArrayList<Integer> mOriginalData = new ArrayList<Integer>();
+	private ArrayList<Integer> mData = new ArrayList<Integer>();
+	
+	private Integer mEventPictureHeight;
+	
+    private Filter mFilter;
+    private Object mLock = new Object();
+	
+	public InviteFriendsAdapter(Context context, LayoutInflater inflater, ArrayList<Integer> followList)
+	{
+		super();
+		
+		this.context = context;
+		this.inflater = inflater;
+		
+		mData = new ArrayList<Integer>(followList);
+		
+		mEventPictureHeight = DrawableCache.getDrawable(R.drawable.label_button_no_arrow, 
+				SharePref.getIntPref(context.getApplicationContext(), SharePref.DISPLAY_WIDTH)).getHeight();
+	}
+	
+	public int getCount() {
+
+		return mData.size();
+	}
+
+	public Object getItem(int position) {
+
+		return mData.get(position);
+	}
+
+	public long getItemId(int position) {
+
+		return position;
+	}
+
+	public View getView(int position, View convertView, ViewGroup viewGroup) {
+		
+		ViewHolder holder = new ViewHolder();
+		
+        if (convertView == null) 
+        {
+            convertView = setViewHolder(holder);
+        } 
+        else 
+        {
+        	holder = (ViewHolder) convertView.getTag();
+        }
+		
+        if (convertView.getBackground() == null)
+        {
+        	convertView.setBackgroundDrawable(DrawableCache.getDrawable(R.drawable.label_button_no_arrow, GlobalVariables.DISPLAY_WIDTH).getDrawable());
+        }
+        
+        Integer friend = mData.get(position);
+        
+        UserInfo user = dbWrapper.getUser(friend);
+        
+        holder.invite_name.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+        holder.invite_name.setText(friend.name);
+        
+        holder.invite_button.setTag(friend);
+        
+        holder.invite_profile_pic.setMaxHeight(mEventPictureHeight);
+        holder.invite_profile_pic.setMaxWidth(mEventPictureHeight);
+        
+        GlobalVariables.getInstance().downloadImage(holder.invite_profile_pic, 
+        		GlobalVariables.getInstance().getFacebookPictureUrlLarge(friend.uid), 
+        		mEventPictureHeight);
+        
+		return convertView;
+	}
+	
+	private View setViewHolder(ViewHolder holder) {
+		View convertView;
+		
+		convertView = this.inflater.inflate(R.layout.invite_friends_item, null);
+		
+		holder.invite_profile_pic = (ImageView) convertView.findViewById(R.id.invite_profile_pic);
+		holder.invite_name = (TextView) convertView.findViewById(R.id.invite_name);
+		holder.invite_button = (ImageButton) convertView.findViewById(R.id.invite_button);
+		
+		convertView.setTag(holder);
+		return convertView;
+	}
+	
+	private class ViewHolder
+	{
+		public ImageView invite_profile_pic;
+		public TextView invite_name;
+		public ImageButton invite_button;
+	}
+
+    public Filter getFilter() {
+        // TODO Auto-generated method stub
+        if (mFilter == null) {
+            mFilter = new CustomFilter();
+        }
+        return mFilter;
+    }
+
+
+    private class CustomFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence prefix) {
+            FilterResults results = new FilterResults();
+            Log.d("bajji", "its ---> " + prefix);
+
+            if (prefix == null || prefix.toString().trim().length() == 0) {
+            	ArrayList<FacebookFriend> list;
+                synchronized (mLock) {
+                    list = new ArrayList<FacebookFriend>(mOriginalData);
+                }
+                results.values = list;
+                results.count = list.size();
+            } else {
+                String searchString = prefix.toString();
+
+                ArrayList<FacebookFriend> values;
+                synchronized (mLock) {
+                    values = new ArrayList<FacebookFriend>(mOriginalData);
+                }
+
+                final int count = values.size();
+                final ArrayList<FacebookFriend> newValues = new ArrayList<FacebookFriend>();
+
+                int newSplitSection = 0;
+                for (int i = 0; i < count; i++) {
+                    final FacebookFriend value = values.get(i);
+                    
+                    String valueText = value.name;
+                    
+                    // First match against the whole, non-splitted value
+                    if (valueText.matches("(?i).*" + searchString + ".*")) {
+                        newValues.add(value);
+                    } 
+                }
+                results.values = newValues;
+                results.count = newValues.size();
+            }
+            return results;
+        }
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            //noinspection unchecked
+        	synchronized (mLock)
+        	{
+	            mData = (ArrayList<FacebookFriend>) results.values;
+	            Log.d(this.toString(), "About to notify mData");
+	            notifyDataSetChanged();
+        	}
+        	
+        }
+    }
+
+}

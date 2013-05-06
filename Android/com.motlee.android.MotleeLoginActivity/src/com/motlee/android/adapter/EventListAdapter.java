@@ -50,6 +50,9 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
         private Filter mFilter;
         private Object mLock = new Object();
         
+        private Integer eventItemHeight = 0;
+        private Integer eventItemWidth = 0;
+        
         // store (a reference to) the data
         private ArrayList<EventDetail> data = new ArrayList<EventDetail>();
         private ArrayList<EventDetail> originalData = new ArrayList<EventDetail>();
@@ -84,6 +87,11 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
                 {
                 	this.originalData.add(SPACE);
                 }
+                
+                DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.event_list_detail_background, GlobalVariables.DISPLAY_WIDTH);
+                
+                eventItemHeight = drawable.getHeight();
+                eventItemWidth = drawable.getWidth();
 
                 //this.data.add(LOAD_MORE_BUTTON);
         }
@@ -150,8 +158,8 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
         
         public void addAll(ArrayList<EventDetail> eventIds)
         {
-         this.originalData.addAll(eventIds);
-         this.data.addAll(eventIds);
+         this.originalData = new ArrayList<EventDetail>(eventIds);
+         this.data = new ArrayList<EventDetail>(eventIds);
          if (this.originalData.size() < 3)
          {
         	 this.originalData.add(SPACE);
@@ -198,7 +206,7 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				holder.event_footer_people = (TextView) convertView.findViewById(R.id.event_footer_people);
 				holder.take_photo = (ImageView) convertView.findViewById(R.id.take_photo);
 				holder.private_banner = (ImageView) convertView.findViewById(R.id.private_banner);
-				holder.event_header_space = convertView.findViewById(R.id.event_header_space);
+				//holder.event_header_space = convertView.findViewById(R.id.event_header_space);
 				//holder.drawerHandle = (ImageView) convertView.findViewById(R.id.pull_out_sliver);
 				//holder.drawer = (Panel) convertView.findViewById(R.id.drawer);
 				convertView.setTag(holder);
@@ -241,10 +249,6 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
          {
                 // pull out the object
                 EventDetail item = this.data.get(position);
-
-                DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.event_list_detail_background, GlobalVariables.DISPLAY_WIDTH);
-                
-                Integer eventItemHeight = drawable.getHeight();
                 
                 String dateString = DateStringFormatter.getEventDateString(item.getStartTime(), item.getEndTime());
 		        
@@ -258,7 +262,7 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				{
 					GradientDrawable gradient = (GradientDrawable) getContext().getResources().getDrawable(R.drawable.event_list_background_gradient);
 					
-					gradient.setSize(drawable.getWidth(), drawable.getHeight());
+					gradient.setSize(eventItemWidth, eventItemHeight);
 					
 					holder.event_background.setBackgroundDrawable(gradient);
 					//holder.event_background.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, drawable.getHeight()));
@@ -349,12 +353,9 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				if (item.getIsPrivate() != null && item.getIsPrivate())
 				{
 					holder.private_banner.setVisibility(View.VISIBLE);
-					holder.private_banner.setMaxHeight((int) (eventItemHeight * .3));
-					
-					holder.event_header_space.setVisibility(View.VISIBLE);
-					
+
 					LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT);
-					params.weight = .61f;
+					params.weight = .68f;
 					
 					holder.event_header_name.setLayoutParams(params);
 					
@@ -362,7 +363,6 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				else
 				{
 					holder.private_banner.setVisibility(View.GONE);
-					holder.event_header_space.setVisibility(View.GONE);
 					
 					LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT);
 					params.weight = .78f;
@@ -424,8 +424,6 @@ public class EventListAdapter extends ArrayAdapter<EventDetail> {
 				holder.list_view.setHandleImage(holder.drawerHandle);*/
 				
 				holder.list_view.setHorizontalFadingEdgeEnabled(true);
-				
-				Log.d("EventListAdapter", "fadingEdgeLength: " + holder.list_view.getHorizontalFadingEdgeLength());
 				
 				if (holder.list_view.getAdapter() != null)
 				{

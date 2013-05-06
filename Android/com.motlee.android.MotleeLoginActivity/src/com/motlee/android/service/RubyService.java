@@ -30,6 +30,9 @@ import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.PhotoItem;
@@ -58,7 +61,7 @@ public class RubyService extends IntentService {
     public static final int STORY = 30000;
     public static final int USER_AUTH = 40000;
     public static final int CREATE_EVEVT = 50000;
-    public static final int FOMOS = 60000;
+    public static final int FOLLOW = 60000;
     public static final int ADD_ATTENDEE = 70000;
 	public static final int PHOTO = 80000;
 	public static final int EVENT_SINGLE = 90000;
@@ -73,6 +76,11 @@ public class RubyService extends IntentService {
 	public static final int DELETE_COMMENT = 180000;
 	public static final int FACEBOOK = 190000;
 	public static final int NEARBY_EVENT = 200000;
+	public static final int PRIVATE = 210000;
+	public static final int FOLLOWERS = 220000;
+	public static final int FOLLOWING = 230000;
+	public static final int TAGS = 240000;
+	public static final int TRENDING_TAGS = 250000;
     
     public static final String EXTRA_HTTP_VERB       = "com.motlee.android.EXTRA_HTTP_VERB";
     public static final String EXTRA_PARAMS          = "com.motlee.android.EXTRA_PARAMS";
@@ -80,6 +88,7 @@ public class RubyService extends IntentService {
     public static final String EXTRA_DATA_CONTENT	 = "com.motlee.android.EXTRA_DATA_CONTENT";
     public static final String EXTRA_PHOTO_ITEM 	 = "com.motlee.android.EXTRA_PHOTO_ITEM";
     public static final String EXTRA_MESSAGE_ITEM	 = "com.motlee.android.EXTRA_MESSAGE_ITEM";
+    public static final String EVENT_TYPE			 = "com.motlee.android.EVENT_TYPE";
     
     public static final String REST_RESULT = "com.motlee.android.REST_RESULT";
     
@@ -112,6 +121,7 @@ public class RubyService extends IntentService {
         Bundle         params   = extras.getParcelable(EXTRA_PARAMS);
         final ResultReceiver receiver = extras.getParcelable(EXTRA_RESULT_RECEIVER);
         final int dataContent			= extras.getInt(EXTRA_DATA_CONTENT, EVENT);
+        final String eventType 			= extras.getString(EVENT_TYPE, null);
         
         try {            
             // Here we define our base request object which we will
@@ -147,48 +157,8 @@ public class RubyService extends IntentService {
                     if (params != null) {
                     	if (dataContent == PHOTO)
                     	{
-                    		String filePath = params.getString("photo[image]");
-                    		
-                    		final Integer photoId = params.getInt("photo[id]");
-                    		
-                    		final Integer eventId = params.getInt("photo[event_id]");
-                    		
-                    		params.remove("photo[id]");
-                    		
-            				byte[] byteArray = FileUtils.readFileToByteArray(new File(filePath));
-                    		
-            				final int byteArrayLength = byteArray.length;
-            				
-            				byteArray = null;
-            				
-                    		MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE){
-
-                    		    @Override
-                    		    public void writeTo(final OutputStream outstream) throws IOException {
-                    		        super.writeTo(new CoutingOutputStream(outstream, byteArrayLength, photoId, eventId));
-                    		    }
-
-                		    };
-                    		for (String key : params.keySet())
-                    		{
-                    			if (key.equals("photo[image]"))
-                    			{                   				                    				
-                    				String[] fileParts = filePath.split("/");
-                    				
-                    				String fileName = fileParts[fileParts.length - 1];
-                    				
-                    				File img = new File(filePath);
-                    				ContentBody cb = new FileBody(img, fileName, "image/jpeg", null);
-
-                    				reqEntity.addPart(key, cb);
-                    			}
-                    			else
-                    			{
-                    				reqEntity.addPart(key, new StringBody(params.get(key).toString()));
-                    			}
-                    		}
-                    		postRequest.setEntity(reqEntity);
-
+                    		postPhoto(params, (PhotoItem) extras.getParcelable(EXTRA_PHOTO_ITEM), receiver);
+                    		return;
                     	}
                     	else
                     	{
@@ -225,9 +195,10 @@ public class RubyService extends IntentService {
                 GlobalVariables.getInstance().getExecutorService().execute(new Runnable(){
                 	public void run()
                 	{
-                		Log.d(TAG, "Running on Thread: " + Thread.currentThread().getName());
+                		
                 		try
                 		{
+                			finalRequest.addHeader("Accept", GlobalVariables.ACCEPT_HEADER);
 	                        HttpResponse response;
 							response = client.execute(finalRequest);
 	                        
@@ -251,6 +222,10 @@ public class RubyService extends IntentService {
 	                            else if (dataContent == STORY && verb == POST)
 	                            {
 	                            	resultData.putParcelable(EXTRA_MESSAGE_ITEM, extras.getParcelable(EXTRA_MESSAGE_ITEM));
+	                            }
+	                            else if (eventType != null)
+	                            {
+	                            	resultData.putString(EVENT_TYPE, eventType);
 	                            }
 	                            receiver.send(statusCode, resultData);
 	                        }
@@ -424,6 +399,117 @@ public class RubyService extends IntentService {
         }
     }
     
+    public void postPhoto(final Bundle params, final PhotoItem photo, final ResultReceiver receiver)
+    {    	
+    	GlobalVariables.getInstance().getExecutorService().execute(new Runnable(){
+
+			public void run() {
+				
+				try
+				{
+			    	HttpPost request = new HttpPost();
+			        Uri uri = Uri.parse(GlobalVariables.WEB_SERVICE_URL + "events/" + photo.event_id + "/photos/temp");
+			        Bundle tempParams = new Bundle();
+			        tempParams.putString("auth_token", params.getString("auth_token"));
+			        attachUriWithQuery(request, uri, tempParams);
+			        
+	                HttpResponse response;
+					response = client.execute(request);
+					
+					String json = EntityUtils.toString(response.getEntity());
+					
+					JsonParser parser = new JsonParser();
+					
+					JsonElement element = parser.parse(json);
+
+					Gson gson = new Gson();
+					
+					PhotoItem newPhoto = gson.fromJson(element.getAsJsonObject().get("photo"), PhotoItem.class);
+					
+			    	String filePath = params.getString("photo[image]");
+					
+					final Integer photoId = params.getInt("photo[id]");
+					
+					final Integer eventId = params.getInt("photo[event_id]");
+					
+					params.remove("photo[id]");
+					params.remove("photo[caption]");
+					
+					byte[] byteArray = FileUtils.readFileToByteArray(new File(filePath));
+					
+					final int byteArrayLength = byteArray.length;
+					
+					byteArray = null;
+					
+					MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE){
+			
+					    @Override
+					    public void writeTo(final OutputStream outstream) throws IOException {
+					        super.writeTo(new CoutingOutputStream(outstream, byteArrayLength, photoId, eventId));
+					    }
+			
+				    };
+					for (String key : params.keySet())
+					{
+						if (key.equals("photo[image]"))
+						{                   				                    				
+							String[] fileParts = filePath.split("/");
+							
+							String fileName = fileParts[fileParts.length - 1];
+							
+							File img = new File(filePath);
+							ContentBody cb = new FileBody(img, fileName, "image/jpeg", null);
+			
+							reqEntity.addPart(key, cb);
+						}
+						else
+						{
+							reqEntity.addPart(key, new StringBody(params.get(key).toString()));
+						}
+					}
+					HttpPut putRequest = new HttpPut();
+					putRequest.setEntity(reqEntity);
+					putRequest.addHeader("Accept", GlobalVariables.ACCEPT_HEADER);
+					
+					uri = Uri.parse(GlobalVariables.WEB_SERVICE_URL + "events/" + newPhoto.event_id + "/photos/" + newPhoto.id);
+					
+					putRequest.setURI(new URI(uri.toString()));
+					
+					response = client.execute(putRequest);
+					
+                    HttpEntity responseEntity = response.getEntity();
+                    StatusLine responseStatus = response.getStatusLine();
+                    int        statusCode     = responseStatus != null ? responseStatus.getStatusCode() : 0;
+                    
+                    statusCode = statusCode + PHOTO;
+                    
+                    // Our ResultReceiver allows us to communicate back the results to the caller. This
+                    // class has a method named send() that can send back a code and a Bundle
+                    // of data. ResultReceiver and IntentService abstract away all the IPC code
+                    // we would need to write to normally make this work.
+                    if (responseEntity != null) {
+                        Bundle resultData = new Bundle();
+                        resultData.putString(REST_RESULT, EntityUtils.toString(responseEntity));
+                    	resultData.putParcelable(EXTRA_PHOTO_ITEM, photo);
+                    	
+                    	receiver.send(statusCode, resultData);
+                    }
+                    else
+                    {
+                    	receiver.send(statusCode, null);
+                    }
+				}
+				catch (Exception e)
+				{
+					Log.e(TAG, "Failed to upload photo", e);
+					sendPhotoBroadcast(photo);
+				}
+				
+			}
+    		
+    	});
+    }
+    
 	public static void attachUriWithQuery(HttpRequestBase request, Uri uri, Bundle params) {
         try {
             if (params == null) {
@@ -442,6 +528,8 @@ public class RubyService extends IntentService {
                 uri = uriBuilder.build();
                 request.setURI(new URI(uri.toString()));
             }
+            
+            request.addHeader("Accept", GlobalVariables.ACCEPT_HEADER);
         }
         catch (URISyntaxException e) {
             Log.e(TAG, "URI syntax was incorrect: "+ uri.toString(), e);

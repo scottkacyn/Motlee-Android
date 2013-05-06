@@ -16,11 +16,12 @@ import com.motlee.android.object.event.UpdatedEventDetailListener;
 import com.motlee.android.object.event.UpdatedNotificationListener;
 import com.motlee.android.object.event.UserInfoEvent;
 import com.motlee.android.object.event.UserInfoListener;
-import com.motlee.android.object.event.UserWithEventsPhotosEvent;
+import com.motlee.android.object.event.UserEvent;
 import com.motlee.android.service.RubyService;
 import com.motlee.android.service.StreamListService;
 import com.readystatesoftware.viewbadger.BadgeView;
 import com.slidingmenu.lib.SlidingMenu;
+import com.slidingmenu.lib.SlidingMenu.OnClosedListener;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -72,9 +73,7 @@ public class BaseMotleeActivity extends BaseFacebookActivity implements UserInfo
 			
 			//requestRetryDialog((PhotoItem) intent.getExtras().getParcelable("Photo"));
 			PhotoItem photo = (PhotoItem) intent.getExtras().getParcelable("Photo");
-			
-			DatabaseWrapper dbWrapper = new DatabaseWrapper(getApplicationContext());
-			
+
 			PhotoItem updatedPhoto = dbWrapper.getPhoto(photo.id);
 			
 			updatedPhoto.failed_upload = true;
@@ -106,9 +105,7 @@ public class BaseMotleeActivity extends BaseFacebookActivity implements UserInfo
 			Integer photoId = intent.getIntExtra("photoId", -1);
 			Integer eventId = intent.getIntExtra("eventId", -1);
 			int progressPercent = intent.getIntExtra("progress", -1);
-			
-			DatabaseWrapper dbWrapper = new DatabaseWrapper(getApplicationContext());
-			
+
 			PhotoItem photo = dbWrapper.getPhoto(photoId);
 			photo.upload_progress = progressPercent;
 			dbWrapper.updatePhoto(photo);
@@ -130,12 +127,7 @@ public class BaseMotleeActivity extends BaseFacebookActivity implements UserInfo
         @Override
         public void onReceive(Context context, Intent intent) {
             
-        	if (progressDialog != null && progressDialog.isShowing())
-        	{
-        		progressDialog.dismiss();
-        	}
-        	
-            showToast();
+        	receivedNetworkFailure();
 
         }
     };
@@ -145,6 +137,16 @@ public class BaseMotleeActivity extends BaseFacebookActivity implements UserInfo
     	TextView v = (TextView)toast.getView().findViewById(android.R.id.message);
     	if( v != null) v.setGravity(Gravity.CENTER);
     	toast.show();
+    }
+    
+    protected void receivedNetworkFailure()
+    {
+    	if (progressDialog != null && progressDialog.isShowing())
+    	{
+    		progressDialog.dismiss();
+    	}
+    	
+        showToast();
     }
     
     @Override
@@ -212,15 +214,6 @@ public class BaseMotleeActivity extends BaseFacebookActivity implements UserInfo
     	DrawableCache.getInstance(this.getApplicationContext().getResources());
     	
     	super.onStart();
-    	
-    	FlurryAgent.onStartSession(this, getResources().getString(R.string.flurry_key));
-    }
-    
-    @Override
-    public void onStop() 
-    {
-    	super.onStop();
-    	FlurryAgent.onEndSession(this);
     }
     
     @Override
@@ -289,6 +282,18 @@ public class BaseMotleeActivity extends BaseFacebookActivity implements UserInfo
 		GlobalActivityFunctions.showStoryDetail(view, this);
 	}
 	
+	final public void takePhoto(View view)
+	{
+    	Integer eventId = (Integer) view.getTag();
+    	
+    	MenuFunctions.takePictureOnPhone(eventId, this);
+	}
+	
+    final public void onClickGetEventDetail(View view)
+    {
+    	GlobalActivityFunctions.onClickGetEventDetail(view, this);
+    }
+	
 	public void showPictureDetail(View view)
 	{
 		GlobalActivityFunctions.showPictureDetail(view, this);
@@ -324,49 +329,49 @@ public class BaseMotleeActivity extends BaseFacebookActivity implements UserInfo
     
 	final public void onClickOpenMainMenu(View view)
     {
-		menu.toggle();
+		menu.showMenu(true);
     }
     
-	final public void onClickShowAllEvents(View view)
+	final public void onClickShowAllEvents(final View view)
 	{
 		menu.toggle();
-		MenuFunctions.showAllEvents(view, this);
+		MenuFunctions.showAllEvents(view, BaseMotleeActivity.this);
 	}
 	
-	final public void onClickShowMyProfile(View view)
+	final public void onClickShowMyProfile(final View view)
 	{
 		menu.toggle();
-		MenuFunctions.showMyProfile(view, this);
+		MenuFunctions.showMyProfile(view, BaseMotleeActivity.this);
 	}
 	
-	final public void onClickShowMyEvents(View view)
+	final public void onClickShowMyEvents(final View view)
 	{
 		menu.toggle();
-		MenuFunctions.showMyEvents(view, this);
+		MenuFunctions.showMyEvents(view, BaseMotleeActivity.this);
 	}
 	
-	final public void onClickShowNearbyEvents(View view)
+	final public void onClickShowNearbyEvents(final View view)
 	{
 		menu.toggle();
-		MenuFunctions.showNearbyEvents(view, this);
+		MenuFunctions.showNearbyEvents(view, BaseMotleeActivity.this);
 	}
 	
 	final public void onClickShowSettings(View view)
 	{
 		menu.toggle();
-		MenuFunctions.showSettings(this);
+		MenuFunctions.showSettings(BaseMotleeActivity.this);
 	}
 	
 	final public void onClickShowSearch(View view)
 	{
 		menu.toggle();
-		MenuFunctions.showSearchPage(this);
+		MenuFunctions.showSearchPage(BaseMotleeActivity.this);
 	}
 	
-	final public void onClickShowNotifications(View view)
+	final public void onClickShowNotifications(final View view)
 	{
 		menu.toggle();
-		MenuFunctions.showNotificationsPage(view, this);
+		MenuFunctions.showNotificationsPage(view, BaseMotleeActivity.this);
 	}
 	
 	final public void showMenuButtons()
@@ -606,7 +611,7 @@ public class BaseMotleeActivity extends BaseFacebookActivity implements UserInfo
 		
 	}
 
-	public void userWithEventsPhotos(UserWithEventsPhotosEvent e) {
+	public void userWithEventsPhotos(UserEvent e) {
 		// TODO Auto-generated method stub
 		
 	}

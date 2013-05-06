@@ -1,0 +1,31 @@
+package com.motlee.android.fragment;
+
+import com.motlee.android.R;
+import com.motlee.android.adapter.InviteFriendsAdapter;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+public class FollowListFragment extends BaseMotleeFragment 
+{
+	private View view;
+	
+	private boolean isFollowers = true;
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	{
+		view = inflater.inflate(R.layout.follow_list_main, null);
+		
+		InviteFriendsAdapter adapter = new InviteFriendsAdapter(getActivity(), inflater, null);
+		
+		return view;
+	}
+	
+	public void setIsFollowers(boolean isFollowers)
+	{
+		this.isFollowers = isFollowers;
+	}
+}

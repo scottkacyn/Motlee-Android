@@ -15,6 +15,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.Gravity;
@@ -99,12 +100,14 @@ public class TakePhotoFragment extends BaseMotleeFragment implements UpdatedPhot
 	{
 		this.inflater = inflater;
 		view = (View) this.inflater.inflate(R.layout.activity_take_photo, null);
-		
+
 		dbWrapper = new DatabaseWrapper(getActivity().getApplicationContext());
 		
 		view.findViewById(R.id.retake_picture).setOnClickListener(new OnClickListener(){
 
 			public void onClick(View arg0) {
+				
+				FlurryAgent.logEvent("RetakePhoto");
 				
 				Intent cameraActivity = new Intent(getActivity(), CameraActivity.class);
 				
@@ -198,6 +201,8 @@ public class TakePhotoFragment extends BaseMotleeFragment implements UpdatedPhot
 		StreamListHandler.RESET_LIST = true;
 		
 		//shareToFacebook(photo.caption, photo.event_detail);
+		
+		EventServiceBuffer.setPhotoListener(this);
 		
 		EventServiceBuffer.sendPhotoToServer(mEventID, photoFile.getAbsolutePath(), mLocation, photo);
 		
@@ -362,6 +367,10 @@ public class TakePhotoFragment extends BaseMotleeFragment implements UpdatedPhot
 	private OnClickListener cancelButtonClicked = new OnClickListener(){
 
 		public void onClick(View v) {
+			
+			FlurryAgent.logEvent("CancelPhotoUpload");
+			
+			dbWrapper.deletePhoto(photo);
 			getActivity().onBackPressed();
 		}
 		
@@ -382,6 +391,8 @@ public class TakePhotoFragment extends BaseMotleeFragment implements UpdatedPhot
 	private OnClickListener headerRightButtonClick = new OnClickListener(){
 
 		public void onClick(View v) {
+			
+			EventServiceBuffer.removePhotoListener(TakePhotoFragment.this);
 			
 			/*if (mEventID == CurrentEventWheelAdapter.CREATE_EVENT)
 			{
@@ -407,26 +418,30 @@ public class TakePhotoFragment extends BaseMotleeFragment implements UpdatedPhot
 			else
 			{*/
 
-			FlurryAgent.logEvent("TakePhoto");
+			FlurryAgent.logEvent("UploadPhoto");
 				
-				EventServiceBuffer.updatePhotoCaption(photo, photoDescriptionEdit.getText().toString().trim());
-				//EventServiceBuffer.addPhotoToCache(mEventID, photoFile.getAbsolutePath(), mLocation, photoDescriptionEdit.getText().toString(), photo);
-				
-				if (!cameFromEventDetail)
-				{
-					Intent eventListIntent = new Intent(getActivity(), EventListActivity.class);
-					eventListIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-					getActivity().startActivity(eventListIntent);
-				}
-				
-				Intent eventDetailIntent = new Intent(getActivity(), EventDetailActivity.class);
-				eventDetailIntent.putExtra("EventID", photo.event_id);
-				eventDetailIntent.putExtra("NewPhoto", photo);
-				getActivity().startActivity(eventDetailIntent);
-				
-				GlobalVariables.JUST_TOOK_PHOTO = true;
-				
-				getActivity().finish();
+			String caption = photoDescriptionEdit.getText().toString().trim();
+			
+			shareToFacebook(caption, dbWrapper.getEvent(photo.event_id));
+			
+			EventServiceBuffer.updatePhotoCaption(photo, photoDescriptionEdit.getText().toString().trim());
+			//EventServiceBuffer.addPhotoToCache(mEventID, photoFile.getAbsolutePath(), mLocation, photoDescriptionEdit.getText().toString(), photo);
+			
+			if (!cameFromEventDetail)
+			{
+				Intent eventListIntent = new Intent(getActivity(), EventListActivity.class);
+				eventListIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+				getActivity().startActivity(eventListIntent);
+			}
+			
+			Intent eventDetailIntent = new Intent(getActivity(), EventDetailActivity.class);
+			eventDetailIntent.putExtra("EventID", photo.event_id);
+			eventDetailIntent.putExtra("NewPhoto", photo);
+			getActivity().startActivity(eventDetailIntent);
+			
+			GlobalVariables.JUST_TOOK_PHOTO = true;
+			
+			getActivity().finish();
 				
 			
 			
@@ -440,6 +455,8 @@ public class TakePhotoFragment extends BaseMotleeFragment implements UpdatedPhot
 		
 		if (shouldShare)
 		{
+			FlurryAgent.logEvent("SharePhotoToFacebook");
+			
 			String bodyToSend = "";
 			
 			if (!caption.equals(""))
@@ -519,6 +536,7 @@ public class TakePhotoFragment extends BaseMotleeFragment implements UpdatedPhot
 	@Override
 	public void onDestroy()
 	{
+		EventServiceBuffer.removePhotoListener(this);
 		super.onDestroy();
 	}
 
@@ -542,6 +560,8 @@ public class TakePhotoFragment extends BaseMotleeFragment implements UpdatedPhot
 	}
 
 	public void photoEvent(UpdatedPhotoEvent e) {
+		
+		Log.d("TakePhotoFragment", "photoEvent: " + e.getPhoto().id);
 		
 		photo = e.getPhoto();
 		

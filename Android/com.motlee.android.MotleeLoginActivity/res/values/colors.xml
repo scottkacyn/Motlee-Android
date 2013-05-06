@@ -15,4 +15,5 @@
         <color name="navy_blue">#23238E</color>
         <color name="off_white">#FFFFFB</color>
         <color name="white">#FFFFFF</color>
+        <color name="hashtag_color">#0072ff</color>
     </resources>

@@ -1,0 +1,48 @@
+package com.motlee.android.object.event;
+
+import java.util.EventObject;
+import java.util.Set;
+
+@SuppressWarnings("serial")
+public class UpdatedEventDetailEvent extends EventObject {
+
+	Set<Integer> mEventIds;
+	boolean isNearby = false;
+	boolean isTag = false;
+	
+	public UpdatedEventDetailEvent(Object source, Set<Integer> set) {
+		super(source);
+		
+		mEventIds = set;
+	}
+
+	public UpdatedEventDetailEvent(Object source, Set<Integer> set, boolean isNearby) {
+		super(source);
+		
+		mEventIds = set;
+		this.isNearby = isNearby;
+	}
+	
+	public UpdatedEventDetailEvent(Object source, Set<Integer> set, boolean isNearby, boolean isTag) {
+		super(source);
+		
+		mEventIds = set;
+		this.isNearby = isNearby;
+		this.isTag = isTag;
+	}
+	
+	public Set<Integer> getEventIds()
+	{
+		return mEventIds;
+	}
+	
+	public void setIsNearby()
+	{
+		isNearby = true;
+	}
+	
+	public boolean getIsNearby()
+	{
+		return isNearby;
+	}
+}

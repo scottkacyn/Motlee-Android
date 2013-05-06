@@ -3,6 +3,7 @@ package com.motlee.android;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.flurry.android.FlurryAgent;
 import com.motlee.android.adapter.CommentAdapter;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.EventItemType;
@@ -36,12 +37,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class CommentActivity extends Activity implements UpdatedCommentListener {
+public class CommentActivity extends BaseFacebookActivity implements UpdatedCommentListener {
 	
 	private PhotoDetail mPhoto;
-	
-	private DatabaseWrapper dbWrapper;
-	
+
 	private ListView commentList;
 	
 	private CommentAdapter mAdapter;
@@ -80,6 +79,16 @@ public class CommentActivity extends Activity implements UpdatedCommentListener 
         registerReceiver(receiver, filter);
         
         super.onResume();
+        
+        FlurryAgent.logEvent("ViewCommentPage");
+    }
+    
+    @Override
+    protected void onPause()
+    {
+    	unregisterReceiver(receiver);
+    	
+    	super.onPause();
     }
     
     @Override
@@ -96,8 +105,6 @@ public class CommentActivity extends Activity implements UpdatedCommentListener 
         setContentView(R.layout.comment_main);
         
         mPhoto = getIntent().getExtras().getParcelable("PhotoDetail");
-
-        dbWrapper = new DatabaseWrapper(getApplicationContext());
         
         ArrayList<Comment> comments = new ArrayList<Comment>(dbWrapper.getComments(mPhoto.photo.id));
         

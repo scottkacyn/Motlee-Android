@@ -3,6 +3,8 @@ package com.motlee.android.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.object.EventDetail;
@@ -24,9 +26,9 @@ public class StreamListService extends IntentService implements UpdatedEventDeta
 	
 	public static final String NOTIFY_LIST_CHANGE = "com.motlee.android.service.StreamListHandler.NOTIFY_LIST_CHANGE";
 	
+	public final static String KEY = "key";
 	public final static String PULL_FROM_SERVER = "pullfromserver";
 	public final static String NEW_PHOTO = "newphoto";
-	public final static String STREAM_FILTER = "streamFilter";
 	public final static String INITIAL_PULL = "initialPull";
 	public final static String FORCE_RESET = "forcereset";
 	public final static String DELETE_PHOTO = "deletePhoto";
@@ -34,11 +36,17 @@ public class StreamListService extends IntentService implements UpdatedEventDeta
 	public final static String CREATE_STREAM = "createStream";
 	public final static String CREATE_PHOTO = "createPhoto";
 	public final static String PHOTO_STATUS_CHANGE = "photoStatusChange";
-	
-	private String mStreamFilter = "";
+	public final static String ADD_ATTENDEE = "addAttendee";
+	public final static String PAGING = "paging";
+	public final static String TAGS = "tags";
+	public final static String RESET_HOME_FEED = "resetHomeFeed";
+
 	private boolean forceListReset = false;
+	private boolean paging = false;
 	
-	private DatabaseWrapper dbWrapper;
+	private Timer listTimer;
+	
+	private static DatabaseWrapper dbWrapper;
 	
 	public StreamListService() {
 		super(TAG);
@@ -54,6 +62,8 @@ public class StreamListService extends IntentService implements UpdatedEventDeta
 		
 		forceListReset = intent.getBooleanExtra(FORCE_RESET, false);
 		
+		paging = intent.getBooleanExtra(PAGING, false);
+		
 		if (intent.getBooleanExtra(INITIAL_PULL, false))
 		{
 			/*if (dbWrapper.getStreamCount() > 0)
@@ -62,7 +72,27 @@ public class StreamListService extends IntentService implements UpdatedEventDeta
 				notifyListChangeBroadcast(EventServiceBuffer.NO_EVENT_FILTER);
 			}*/
 			
-			mStreamFilter = EventServiceBuffer.NO_EVENT_FILTER;
+			listTimer = new Timer();
+			
+			listTimer.schedule(new TimerTask(){
+
+				@Override
+				public void run() {
+					
+					listTimer.cancel();
+					
+					listTimer = null;
+					
+					if (dbWrapper.getStreamCount() > 0)
+					{
+						updateStreamList();
+					}
+					
+				}
+				
+			}, 7000);
+			
+			forceListReset = true;
 			
 			EventServiceBuffer.setEventDetailListener(this);
 			EventServiceBuffer.getEventsFromService();
@@ -74,6 +104,7 @@ public class StreamListService extends IntentService implements UpdatedEventDeta
 			Integer createEventId = intent.getIntExtra(CREATE_STREAM, -1);
 			Integer deleteEventId = intent.getIntExtra(DELETE_STREAM, -1);
 			PhotoItem finishedPhoto = intent.getParcelableExtra(PHOTO_STATUS_CHANGE);
+			Integer addAttendeeEventId = intent.getIntExtra(ADD_ATTENDEE, -1);
 			
 			if (deletePhoto != null)
 			{
@@ -95,183 +126,226 @@ public class StreamListService extends IntentService implements UpdatedEventDeta
 			{
 				photoFinished(finishedPhoto);
 			}
+			else if (addAttendeeEventId > 0)
+			{
+				addAttendee(addAttendeeEventId);
+			}
+			else if (intent.getBooleanExtra(RESET_HOME_FEED, false))
+			{
+				EventServiceBuffer.setEventDetailListener(this);
+				EventServiceBuffer.getRefreshedStreamList();
+			}
 			else if (intent.getBooleanExtra(PULL_FROM_SERVER, false))
 			{
-				mStreamFilter = intent.getStringExtra(STREAM_FILTER);
-				if (mStreamFilter == null || mStreamFilter.equals(""))
-				{
-					mStreamFilter = EventServiceBuffer.NO_EVENT_FILTER;
-				}
-				
 				EventServiceBuffer.setEventDetailListener(this);
 				EventServiceBuffer.getEventsFromService();
 			}
+			else if (paging)
+			{
+				EventServiceBuffer.setEventDetailListener(this);
+				EventServiceBuffer.getMoreEventsFromService();
+			}
 			else
 			{
-				if (intent.getBooleanExtra(NEW_PHOTO, false))
+				String tag = intent.getStringExtra(TAGS);
+				
+				if (tag != null)
 				{
-					
+					EventServiceBuffer.setEventDetailListener(this);
+					EventServiceBuffer.getStreamsFromTagFromService(tag);
 				}
 				else
 				{
-					mStreamFilter = intent.getStringExtra(STREAM_FILTER);
-					if (mStreamFilter == null || mStreamFilter.equals(""))
-					{
-						mStreamFilter = EventServiceBuffer.NO_EVENT_FILTER;
-						if (updateStreamList(EventServiceBuffer.MY_EVENTS))
-						{
-							notifyListChangeBroadcast(EventServiceBuffer.MY_EVENTS);
-						}
-					}
-					if (updateStreamList(mStreamFilter))
-					{
-						notifyListChangeBroadcast(mStreamFilter);
-					}
+					updateStreamList();
 				}
 			}
 		}
 	}
 	
-	private void photoFinished(PhotoItem finishedPhoto) {
+	private void addAttendee(final Integer addAttendeeEventId) {
 		
-		ArrayList<EventDetail> allStreams = StreamListHandler.getCurrentAllStreamList();
-		ArrayList<EventDetail> myStreams = StreamListHandler.getCurrentMyStreamList();
-		
-		EventDetail eDetail = dbWrapper.getEvent(finishedPhoto.event_id);
-		
-		if (allStreams.contains(eDetail))
+		for (final String key : StreamListHandler.getCurrentEventKeys())
 		{
-			eDetail = allStreams.get(allStreams.indexOf(eDetail));
-			eDetail.setPhotos(dbWrapper.getPhotos(eDetail.getEventID()));
-			StreamListHandler.updateAllStreamList(allStreams);
+			Thread thread = new Thread(new Runnable(){
+
+				public void run() {
+					
+					ArrayList<EventDetail> streams = StreamListHandler.getCurrentStreamList(key);
+					
+					EventDetail eDetail = dbWrapper.getEvent(addAttendeeEventId);
+					
+					Integer attendeeCount = dbWrapper.getAttendeeCount(eDetail.getEventID()) + TempAttendee.getTempAttendees(eDetail.getEventID()).size();
+					
+					if (streams.contains(eDetail))
+					{
+						eDetail = streams.get(streams.indexOf(eDetail));
+						eDetail.setAttendeeCount(attendeeCount);
+						StreamListHandler.updateStreamList(key, streams);
+					}
+					
+					notifyListChangeBroadcast(key);
+				}
+				
+			});
+			thread.start();
+
 		}
 		
-		if (myStreams.contains(eDetail))
-		{
-			eDetail = myStreams.get(myStreams.indexOf(eDetail));
-			eDetail.setPhotos(dbWrapper.getPhotos(eDetail.getEventID()));
-			StreamListHandler.updateMyStreamList(myStreams);
-		}
-		
-		notifyListChangeBroadcast(EventServiceBuffer.NO_EVENT_FILTER);
 	}
 
-	private void deleteStream(Integer deleteEventId) 
+	private void photoFinished(final PhotoItem finishedPhoto) {
+		
+		for (final String key : StreamListHandler.getCurrentEventKeys())
+		{
+			Thread thread = new Thread(new Runnable(){
+
+				public void run() {
+					
+					ArrayList<EventDetail> streams = StreamListHandler.getCurrentStreamList(key);
+					
+					EventDetail eDetail = dbWrapper.getEvent(finishedPhoto.event_id);
+					
+					if (streams.contains(eDetail))
+					{
+						eDetail = streams.get(streams.indexOf(eDetail));
+						eDetail.setPhotos(dbWrapper.getPhotos(eDetail.getEventID()));
+						StreamListHandler.updateStreamList(key, streams);
+					}
+					
+					notifyListChangeBroadcast(key);
+				}
+				
+			});
+			thread.start();
+
+		}
+	}
+
+	private void deleteStream(final Integer deleteEventId) 
 	{
-		ArrayList<EventDetail> allStreams = StreamListHandler.getCurrentAllStreamList();
-		ArrayList<EventDetail> myStreams = StreamListHandler.getCurrentMyStreamList();
-		
-		EventDetail eDetail = dbWrapper.getEvent(deleteEventId);
+		for (final String key : StreamListHandler.getCurrentEventKeys())
+		{
+			Thread thread = new Thread(new Runnable(){
 
-		if (allStreams.contains(eDetail))
-		{
-			allStreams.remove(eDetail);
-			StreamListHandler.updateAllStreamList(allStreams);
+				public void run() {
+					
+					ArrayList<EventDetail> streams = StreamListHandler.getCurrentStreamList(key);
+					
+					EventDetail eDetail = dbWrapper.getEvent(deleteEventId);
+
+					if (streams.contains(eDetail))
+					{
+						streams.remove(eDetail);
+						StreamListHandler.updateStreamList(key, streams);
+					}
+					
+					notifyListChangeBroadcast(key);
+				}
+			});
+			thread.start();
 		}
-		if (myStreams.contains(eDetail))
-		{
-			myStreams.remove(eDetail);
-			StreamListHandler.updateMyStreamList(myStreams);
-		}
-		
-		notifyListChangeBroadcast(EventServiceBuffer.NO_EVENT_FILTER);
 	}
 
-	private void createPhoto(PhotoItem createPhoto) 
+	private void createPhoto(final PhotoItem createPhoto) 
 	{
-		ArrayList<EventDetail> allStreams = StreamListHandler.getCurrentAllStreamList();
-		ArrayList<EventDetail> myStreams = StreamListHandler.getCurrentMyStreamList();
-		
-		EventDetail eDetail = dbWrapper.getEvent(createPhoto.event_id);
+		for (final String key : StreamListHandler.getCurrentEventKeys())
+		{
+			Thread thread = new Thread(new Runnable(){
 
-		if (allStreams.contains(eDetail))
-		{
-			Log.d(TAG, "Creating photo");
-			eDetail = allStreams.get(allStreams.indexOf(eDetail));
-			eDetail.getPhotos().add(0, createPhoto);
-			allStreams.remove(eDetail);
-			allStreams.add(0, eDetail);
-			StreamListHandler.updateAllStreamList(allStreams);
+				public void run() {
+					
+					ArrayList<EventDetail> streams = StreamListHandler.getCurrentStreamList(key);
+					
+					EventDetail eDetail = dbWrapper.getEvent(createPhoto.event_id);
+
+					if (streams.contains(eDetail))
+					{
+						Log.d(TAG, "Creating photo");
+						eDetail = streams.get(streams.indexOf(eDetail));
+						eDetail.getPhotos().add(0, createPhoto);
+						streams.remove(eDetail);
+						streams.add(0, eDetail);
+						StreamListHandler.updateStreamList(key, streams);
+					}
+					
+					notifyListChangeBroadcast(key);
+				}
+				
+			});
+			
+			thread.start();
 		}
-		if (myStreams.contains(eDetail))
-		{
-			Log.d(TAG, "Creating photo");
-			eDetail = myStreams.get(myStreams.indexOf(eDetail));
-			eDetail.getPhotos().add(0, createPhoto);
-			myStreams.remove(eDetail);
-			myStreams.add(0, eDetail);
-			StreamListHandler.updateMyStreamList(myStreams);
-		}
-		notifyListChangeBroadcast(EventServiceBuffer.NO_EVENT_FILTER);
-		
-		notifyListChangeBroadcast(EventServiceBuffer.NO_EVENT_FILTER);
-		
 	}
 
-	private void createStream(Integer eventId) 
+	private void createStream(final Integer eventId) 
 	{
-		ArrayList<EventDetail> allStreams = StreamListHandler.getCurrentAllStreamList();
-		ArrayList<EventDetail> myStreams = StreamListHandler.getCurrentMyStreamList();
-		
-		EventDetail eDetail = dbWrapper.getEvent(eventId);
+		for (final String key : StreamListHandler.getCurrentEventKeys())
+		{
+			Thread thread = new Thread(new Runnable(){
 
-		allStreams.add(0, eDetail);
-		StreamListHandler.updateAllStreamList(allStreams);
-		
-		myStreams.add(0, eDetail);
-		StreamListHandler.updateMyStreamList(myStreams);
-		
-		notifyListChangeBroadcast(EventServiceBuffer.NO_EVENT_FILTER);
+				public void run() {
+					
+					ArrayList<EventDetail> streams = StreamListHandler.getCurrentStreamList(key);
+					
+					EventDetail eDetail = dbWrapper.getEvent(eventId);
+
+					eDetail.setPhotos(dbWrapper.getPhotos(eventId));
+					eDetail.setOwnerInfo(dbWrapper.getUser(eDetail.getOwnerID()));
+					eDetail.setAttendeeCount(dbWrapper.getAttendeeCount(eventId));
+					
+					if (eDetail.getLocationID() != null)
+					{
+						eDetail.setLocationInfo(dbWrapper.getLocation(eDetail.getLocationID()));
+					}
+					
+					streams.add(0, eDetail);
+					StreamListHandler.updateStreamList(key, streams);
+
+					notifyListChangeBroadcast(key);
+				}
+				
+			});
+			
+			thread.start();
+		}
 	}
 
-	private void deletePhoto(PhotoItem photo) {
+	private void deletePhoto(final PhotoItem photo) {
 		
-		ArrayList<EventDetail> allStreams = StreamListHandler.getCurrentAllStreamList();
-		ArrayList<EventDetail> myStreams = StreamListHandler.getCurrentMyStreamList();
-		
-		EventDetail eDetail = dbWrapper.getEvent(photo.event_id);
-		
-		if (allStreams.contains(eDetail))
+		for (final String key : StreamListHandler.getCurrentEventKeys())
 		{
-			Log.d(TAG, "Removing photo");
-			allStreams.get(allStreams.indexOf(eDetail)).getPhotos().remove(photo);
-			StreamListHandler.updateAllStreamList(allStreams);
+			Thread thread = new Thread(new Runnable(){
+
+				public void run() 
+				{
+					ArrayList<EventDetail> streams = StreamListHandler.getCurrentStreamList(key);
+
+					EventDetail eDetail = dbWrapper.getEvent(photo.event_id);
+					
+					if (streams.contains(eDetail))
+					{
+						Log.d(TAG, "Removing photo");
+						streams.get(streams.indexOf(eDetail)).getPhotos().remove(photo);
+						StreamListHandler.updateStreamList(key, streams);
+					}
+					notifyListChangeBroadcast(key);
+				}
+				
+			});
+			
+			thread.start();
+			
 		}
-		if (myStreams.contains(eDetail))
-		{
-			Log.d(TAG, "Removing photo");
-			myStreams.get(myStreams.indexOf(eDetail)).getPhotos().remove(photo);
-			StreamListHandler.updateMyStreamList(myStreams);
-		}
-		notifyListChangeBroadcast(EventServiceBuffer.NO_EVENT_FILTER);
 	}
 
-	public boolean updateStreamList(String streamFilter)
+	public void updateStreamList()
 	{
-		return updateStreamList(streamFilter, false);
+		updateStreamList(false);
 	}
 	
-	public boolean updateStreamList(String streamFilter, boolean forceNotify)
+	public static boolean amalgamateStreamList(boolean notifyChange, ArrayList<EventDetail> currentStreams, ArrayList<EventDetail> streamsToShow, ArrayList<EventDetail> streamsToDisplay)
 	{
-		ArrayList<EventDetail> eventsToShow = new ArrayList<EventDetail>();
-		ArrayList<EventDetail> currentEvents = new ArrayList<EventDetail>();
-		
-		if (streamFilter.equals(EventServiceBuffer.NO_EVENT_FILTER))
-		{
-			eventsToShow = new ArrayList<EventDetail>(dbWrapper.getAllEvents());
-			currentEvents = StreamListHandler.getCurrentAllStreamList();
-		}
-		else if (streamFilter.equals(EventServiceBuffer.MY_EVENTS))
-		{
-			eventsToShow = dbWrapper.getMyEvents();
-			currentEvents = StreamListHandler.getCurrentMyStreamList();
-		}
-		
-		ArrayList<EventDetail> eventsToDisplay = new ArrayList<EventDetail>();
-		
-		boolean notifyChange = forceNotify;
-		
-		for (EventDetail eDetail : eventsToShow)
+		for (EventDetail eDetail : streamsToShow)
 		{
 			UserInfo owner = dbWrapper.getUser(eDetail.getOwnerID());
 			if (owner != null)
@@ -280,14 +354,19 @@ public class StreamListService extends IntentService implements UpdatedEventDeta
 				ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>(dbWrapper.getPhotos(eDetail.getEventID()));
 				Integer attendeeCount = dbWrapper.getAttendeeCount(eDetail.getEventID()) + TempAttendee.getTempAttendees(eDetail.getEventID()).size();
 				
+				if (currentStreams.size() != streamsToShow.size())
+				{
+					notifyChange = true;
+				}
+				
 				if (!notifyChange)
 				{
-					if (currentEvents.contains(eDetail))
+					if (currentStreams.contains(eDetail))
 					{
-						EventDetail currentEDetail = currentEvents.get(currentEvents.indexOf(eDetail));
+						EventDetail currentEDetail = currentStreams.get(currentStreams.indexOf(eDetail));
 						if (currentEDetail.getPhotos().size() != photos.size()
 								|| currentEDetail.getAttendeeCount() != attendeeCount
-								|| currentEDetail.getLocationID() != eDetail.getLocationID() || !currentEDetail.updated_at.equals(eDetail.updated_at) || currentEDetail.getIsPrivate() != eDetail.getIsPrivate())
+								|| !currentEDetail.getLocationID().equals(eDetail.getLocationID()) || !currentEDetail.updated_at.equals(eDetail.updated_at) || currentEDetail.getIsPrivate() != eDetail.getIsPrivate())
 						{
 							notifyChange = true;
 						}
@@ -312,10 +391,7 @@ public class StreamListService extends IntentService implements UpdatedEventDeta
 					eDetail.setLocationInfo(dbWrapper.getLocation(eDetail.getLocationID()));
 				}
 
-				if (eDetail.getStartTime().compareTo(new Date()) < 0)
-				{
-					eventsToDisplay.add(eDetail);
-				}
+				streamsToDisplay.add(eDetail);
 			}
 			else
 			{
@@ -323,48 +399,71 @@ public class StreamListService extends IntentService implements UpdatedEventDeta
 			}
 		}
 		
-		Collections.sort(eventsToDisplay);
-		
-		
-		
-		if (notifyChange)
-		{
-			if (streamFilter.equals(EventServiceBuffer.NO_EVENT_FILTER))
-			{
-				StreamListHandler.updateAllStreamList(eventsToDisplay);
-			}
-			else if (streamFilter.equals(EventServiceBuffer.MY_EVENTS))
-			{
-				StreamListHandler.updateMyStreamList(eventsToDisplay);
-			}
-			//notifyListChangeBroadcast(streamFilter);
-		}
-		
+		Collections.sort(streamsToDisplay);
 		return notifyChange;
+	}
+	
+	public void updateStreamList(final boolean forceNotify)
+	{
+		Log.d(TAG, "Starting to update streamlist");
+		
+		for (final String key : StreamListHandler.getCurrentEventKeys())
+		{
+			Thread thread = new Thread(new Runnable(){
+
+				public void run() {
+					
+					ArrayList<EventDetail> currentStreams = StreamListHandler.getCurrentStreamList(key);
+					
+					ArrayList<EventDetail> streamsToShow = 
+							new ArrayList<EventDetail>(dbWrapper.getEvents(StreamListHandler.getEventIdsForKey(getApplicationContext(), key)));
+					
+					ArrayList<EventDetail> streamsToDisplay = new ArrayList<EventDetail>();
+					
+					boolean notifyChange = amalgamateStreamList(forceNotify, currentStreams, streamsToShow, streamsToDisplay);
+					
+					if (notifyChange || paging)
+					{
+						Log.d(TAG, "Updating streams for key: " + key + ", with " + streamsToDisplay.size() + " streams");
+						StreamListHandler.updateStreamList(key, streamsToDisplay);
+						notifyListChangeBroadcast(key);
+					}
+					
+					Log.d(TAG, "Finished updating stream list for key: " + key);
+				}
+				
+			});
+			thread.start();
+		}
 	}
 
 	public void myEventOccurred(UpdatedEventDetailEvent evt) 
 	{	
-		EventServiceBuffer.removeEventDetailListener(this);
+		Log.d(TAG, "Received event updates from server for key: " + evt.getEventType());
 		
-		if (mStreamFilter.equals(EventServiceBuffer.NO_EVENT_FILTER))
+		if (listTimer != null)
 		{
-			if (updateStreamList(mStreamFilter, forceListReset))
-			{
-				notifyListChangeBroadcast(mStreamFilter);
-			}
-			
-			updateStreamList(EventServiceBuffer.MY_EVENTS);
+			listTimer.cancel();
+			listTimer = null;
 		}
-		else if (mStreamFilter.equals(EventServiceBuffer.MY_EVENTS))
+		
+		if (evt.getEventType().contains(StreamListHandler.REFRESH))
 		{
-			if (updateStreamList(mStreamFilter, forceListReset))
+			if (evt.getEventType().contains(StreamListHandler.HOME))
 			{
-				notifyListChangeBroadcast(mStreamFilter);
+				StreamListHandler.setAndGetEventIdsForKey(getApplicationContext(), StreamListHandler.HOME, 
+						new ArrayList<Integer>(evt.getEventIds()), false, true);	
 			}
-			
-			updateStreamList(EventServiceBuffer.NO_EVENT_FILTER);
 		}
+		else
+		{
+			StreamListHandler.setAndGetEventIdsForKey(getApplicationContext(), evt.getEventType(), 
+					new ArrayList<Integer>(evt.getEventIds()), paging, false);	
+		}
+		
+		EventServiceBuffer.removeEventDetailListener(this);
+
+		updateStreamList(forceListReset);
 	}
 
 	public void updatedEventOccurred(Integer eventId) 
@@ -372,14 +471,14 @@ public class StreamListService extends IntentService implements UpdatedEventDeta
 		// Nothing to do here!	
 	}
 
-    private void notifyListChangeBroadcast(String streamFilter)
+    private void notifyListChangeBroadcast(String key)
     {
-    	Log.d(TAG, "About to notify change in list broadcast, streamFilter: " + streamFilter);
+    	Log.d(TAG, "About to notify change in list broadcast, key: " + key);
     	
     	Intent broadcast = new Intent();
         broadcast.setAction(NOTIFY_LIST_CHANGE);
-        broadcast.putExtra(STREAM_FILTER, streamFilter);
         broadcast.putExtra(FORCE_RESET, forceListReset);
+        broadcast.putExtra(KEY, key);
         sendBroadcast(broadcast);
     }
 	

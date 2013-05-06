@@ -1,70 +1,133 @@
 package com.motlee.android.object;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
+import android.content.Context;
 
 public class StreamListHandler {
 	
-	private static ArrayList<EventDetail> mAllStreamList = new ArrayList<EventDetail>();
-	private static ArrayList<EventDetail> mMyStreamList = new ArrayList<EventDetail>();
+	public final static String HOME = "home";
+	public final static String REFRESH = "refresh";
+	public final static String TAG = "tag:";
+	public final static String USER = "user:";
+	public final static String NEARBY = "nearby";
 	
-	private static boolean hasAllBeenUpdated = false;
-	private static boolean hasMyBeenUpdated = false;
+	private static HashMap<String, ArrayList<EventDetail>> eventDetailMap = new HashMap<String, ArrayList<EventDetail>>();
+	
+	private static HashMap<String, Boolean> streamUpdatedMap = new HashMap<String, Boolean>();
 	
 	public static boolean RESET_LIST = false;
 	
-	public static boolean getAllStreamList(ArrayList<EventDetail> streamList)
+	
+	public static String getKeyFromTag(String tag)
 	{
-		if (hasAllBeenUpdated)
-		{
-			streamList.clear();
-			streamList.addAll(mAllStreamList);
-			hasAllBeenUpdated = false;
-			return true;
-		}
-		else
-		{
-			streamList.clear();
-			streamList.addAll(mAllStreamList);
-			return false;
-		}
+		return TAG + tag;
 	}
 	
-	public static ArrayList<EventDetail> getCurrentAllStreamList()
+	public static String getKeyFromUser(Integer userId)
 	{
-		return mAllStreamList;
+		return USER + userId;
 	}
 	
-	public static void updateAllStreamList(ArrayList<EventDetail> streamList)
+	public static Set<String> getCurrentEventKeys()
 	{
-		hasAllBeenUpdated = true;
-		mAllStreamList = streamList;
+		return eventDetailMap.keySet();
 	}
+	
+	public static ArrayList<EventDetail> getCurrentStreamList(String key)
+	{
+		if (!eventDetailMap.containsKey(key))
+		{
+			eventDetailMap.put(key, new ArrayList<EventDetail>());
+		}
 
-	public static boolean getMyStreamList(ArrayList<EventDetail> streamList)
+		return eventDetailMap.get(key);
+
+	}
+	
+	public static boolean getStreamList(String key, ArrayList<EventDetail> streamList)
 	{
-		if (hasMyBeenUpdated)
+		streamList.clear();
+		if (eventDetailMap.containsKey(key))
 		{
-			streamList.clear();
-			streamList.addAll(mMyStreamList);
-			hasMyBeenUpdated = false;
+			streamList.addAll(eventDetailMap.get(key));
+		}
+		else
+		{
+			eventDetailMap.put(key, new ArrayList<EventDetail>());
+		}
+		
+		if (!streamUpdatedMap.containsKey(key))
+		{
+			streamUpdatedMap.put(key, false);
+		}
+		
+		if (streamUpdatedMap.get(key))
+		{
+			streamUpdatedMap.put(key, false);
 			return true;
 		}
 		else
 		{
-			streamList.clear();
-			streamList.addAll(mMyStreamList);
 			return false;
 		}
 	}
 	
-	public static ArrayList<EventDetail> getCurrentMyStreamList()
+	public static void updateStreamList(String key, ArrayList<EventDetail> streamList)
 	{
-		return mMyStreamList;
+		streamUpdatedMap.put(key, true);
+		eventDetailMap.put(key, streamList);
 	}
 	
-	public static void updateMyStreamList(ArrayList<EventDetail> streamList)
+	public static Set<Integer> getEventIdsForKey(Context context, String key)
 	{
-		hasMyBeenUpdated = true;
-		mMyStreamList = streamList;
+		return SharePref.getIntArrayPref(context, key);
+	}
+	
+	public static Set<Integer> setAndGetEventIdsForKey(Context context, String key, ArrayList<Integer> eventIds)
+	{
+		return setAndGetEventIdsForKey(context, key, eventIds, false, false);
+	}
+	
+	public static Set<Integer> setAndGetEventIdsForKey(Context context, String key, ArrayList<Integer> eventIds, boolean paging, boolean refresh)
+	{
+		if (paging)
+		{
+			ArrayList<Integer> currentEventIds = new ArrayList<Integer>(SharePref.getIntArrayPref(context, key));
+			for (int i = 0; i < eventIds.size(); i++)
+			{
+				if (!currentEventIds.contains(eventIds.get(i)))
+				{
+					currentEventIds.add(eventIds.get(i));
+				}
+			}
+			
+			SharePref.setIntArrayPref(context, key, new HashSet<Integer>(currentEventIds));
+			
+			return new HashSet<Integer>(currentEventIds);
+		}
+		else if (eventIds.size() >= GlobalVariables.MAX_STREAMS_FROM_SERVER || refresh)
+		{
+			SharePref.setIntArrayPref(context, key, new HashSet<Integer>(eventIds));
+			return new HashSet<Integer>(eventIds);
+		}
+		else
+		{
+			ArrayList<Integer> currentEventIds = new ArrayList<Integer>(SharePref.getIntArrayPref(context, key));
+			for (int i = eventIds.size() - 1; i >= 0; i--)
+			{
+				if (!currentEventIds.contains(eventIds.get(i)))
+				{
+					currentEventIds.add(0, eventIds.get(i));
+				}
+			}
+			
+			SharePref.setIntArrayPref(context, key, new HashSet<Integer>(currentEventIds));
+			
+			return new HashSet<Integer>(currentEventIds);
+		}
 	}
 }

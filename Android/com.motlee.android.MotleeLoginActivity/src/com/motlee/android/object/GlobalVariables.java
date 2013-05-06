@@ -67,6 +67,8 @@ public class GlobalVariables {
     
     public static String SENDER_ID = "342498749637";
     
+    public static int MAX_STREAMS_FROM_SERVER = 15;
+    
     private Typeface helveticaNeueRegularFont;
     
     private Typeface helveticaNeueBoldFont;
@@ -96,7 +98,10 @@ public class GlobalVariables {
     
     private Location userLocation;
     
+    //public static String WEB_SERVICE_URL = "http://97.107.132.141:3000/api/";
     public static String WEB_SERVICE_URL = "http://staging.motleeapp.com/api/";
+    
+    public static String ACCEPT_HEADER = "application/vnd.example.v2";
     
     private String AWS_URL = "http://s3.amazonaws.com/motlee-staging-photos/images/";
     
@@ -349,7 +354,14 @@ public class GlobalVariables {
 	
 	public Location getUserLocation()
 	{
-		return this.userLocation;
+		if (userLocation != null)
+		{
+			return userLocation;
+		}
+		else
+		{
+			return HOME_TAVERN_LOCATION;
+		}
 	}
 	
 	public ExecutorService getExecutorService()
@@ -477,8 +489,8 @@ public class GlobalVariables {
 		File cacheDir = StorageUtils.getOwnCacheDirectory(context, "motlee/Cache");
 		
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context.getApplicationContext())
-		.threadPoolSize(5)
-		.threadPriority(Thread.NORM_PRIORITY - 1)
+		.threadPoolSize(8)
+		.threadPriority(Thread.NORM_PRIORITY)
 		.memoryCache(new WeakMemoryCache())
         .discCache(new UnlimitedDiscCache(cacheDir))
         .discCacheExtraOptions(800, 800, CompressFormat.JPEG, 75)
@@ -667,7 +679,7 @@ public class GlobalVariables {
 			}
 		}
 		
-		imageLoader.displayImage(url, imageView, options, drawable);
+		imageLoader.displayImage(url, imageView, options, drawable, true);
 	}
 	
 	public Bitmap getThumbnailBitmap(String thumbnailUrl)

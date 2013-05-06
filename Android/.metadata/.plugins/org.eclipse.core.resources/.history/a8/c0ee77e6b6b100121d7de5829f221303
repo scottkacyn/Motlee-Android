@@ -1,0 +1,21 @@
+package com.motlee.android.object;
+
+public class Relationship 
+{
+	public Integer followId;
+	public Boolean isActive;
+	public Boolean isPending;
+	
+	public Relationship()
+	{
+		
+	}
+
+	public Relationship(Integer followId, Boolean isActive, Boolean isPending)
+	{
+		this.followId = followId;
+		this.isActive = isActive;
+		this.isPending = isPending;
+		
+	}
+}

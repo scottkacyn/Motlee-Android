@@ -33,7 +33,7 @@ public class LoginPageFragment extends BaseMotleeFragment {
     	facebookButton = (LoginButton) view.findViewById(R.id.auth_button);
     	facebookButton.setApplicationId(getString(R.string.app_id));
     	//facebookButton.setFragment(this);
-       	facebookButton.setReadPermissions(Arrays.asList("read_friendlists"));
+       	facebookButton.setReadPermissions(Arrays.asList("read_friendlists", "email"));
     	//facebookButton.setPublishPermissions(Arrays.asList("publish_actions"));
 
 

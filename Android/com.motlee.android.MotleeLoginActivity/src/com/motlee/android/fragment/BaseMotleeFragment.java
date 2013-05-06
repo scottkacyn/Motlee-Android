@@ -16,9 +16,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class BaseMotleeFragment extends Fragment {
-	
-	public static final String MY_EVENTS = "My Streams";
-	public static final String ALL_EVENTS = "All Streams";
+
+	public static final String ALL_EVENTS = "Home";
+	public static final String EXPLORE = "Explore";
 	public static final String NEARBY_EVENTS = "Nearby";
 	public static final String EDIT_EVENTS = "Edit Event";
 	public static final String SETTINGS = EDIT_EVENTS;
@@ -33,7 +33,7 @@ public class BaseMotleeFragment extends Fragment {
 		if (mHeaderView != null)
 		{
 			ImageView icon = (ImageView) mHeaderView.findViewById(R.id.header_icon);
-			if (headerIcon.equals(MY_EVENTS))
+			if (headerIcon.equals(EXPLORE))
 			{
 				icon.setVisibility(View.VISIBLE);
 				icon.setPadding(0, 2, 0, 0);
@@ -137,82 +137,116 @@ public class BaseMotleeFragment extends Fragment {
 	
 	protected void showMenuHeaderButton()
 	{
-		mHeaderView.findViewById(R.id.header_left_button).setVisibility(View.GONE);
-		
-		mHeaderView.findViewById(R.id.header_menu_button).setVisibility(View.VISIBLE);
+		if (mHeaderView != null)
+		{
+			mHeaderView.findViewById(R.id.header_left_button).setVisibility(View.GONE);
+			
+			mHeaderView.findViewById(R.id.header_menu_button).setVisibility(View.VISIBLE);
+		}
 	}
 	
 	protected void showCreateEventButton()
 	{
-		mHeaderView.findViewById(R.id.header_right_layout_button).setVisibility(View.GONE);
-		
-		mHeaderView.findViewById(R.id.header_create_event_button).setVisibility(View.VISIBLE);
+		if (mHeaderView != null)
+		{
+			mHeaderView.findViewById(R.id.header_right_layout_button).setVisibility(View.GONE);
+			
+			mHeaderView.findViewById(R.id.header_create_event_button).setVisibility(View.VISIBLE);
+		}
 	}
 	
 	protected void showRightHeaderButton(String buttonText)
 	{
-		View headerRightButtonlayout = mHeaderView.findViewById(R.id.header_right_layout_button);
-		headerRightButtonlayout.setVisibility(View.VISIBLE);
-		
-		mHeaderView.findViewById(R.id.header_create_event_button).setVisibility(View.GONE);
-		
-		View headerRightButton = mHeaderView.findViewById(R.id.header_right_button);
-		headerRightButton.setTag(buttonText);
-		
-		TextView headerRightButtonText = (TextView) mHeaderView.findViewById(R.id.header_right_text);
-		headerRightButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		headerRightButtonText.setText(buttonText);
+		if (mHeaderView != null)
+		{
+			View headerRightButtonlayout = mHeaderView.findViewById(R.id.header_right_layout_button);
+			headerRightButtonlayout.setVisibility(View.VISIBLE);
+			
+			mHeaderView.findViewById(R.id.header_create_event_button).setVisibility(View.GONE);
+			
+			View headerRightButton = mHeaderView.findViewById(R.id.header_right_button);
+			headerRightButton.setTag(buttonText);
+			
+			TextView headerRightButtonText = (TextView) mHeaderView.findViewById(R.id.header_right_text);
+			headerRightButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+			headerRightButtonText.setText(buttonText);
+		}
 	}
 	
 	protected void showLeftHeaderButton(String buttonText)
 	{
-		View headerRightButtonlayout = mHeaderView.findViewById(R.id.header_left_layout_button);
-		headerRightButtonlayout.setVisibility(View.VISIBLE);
-		
-		mHeaderView.findViewById(R.id.header_create_event_button).setVisibility(View.GONE);
-		
-		View headerRightButton = mHeaderView.findViewById(R.id.header_left_button);
-		headerRightButton.setTag(buttonText);
-		
-		TextView headerRightButtonText = (TextView) mHeaderView.findViewById(R.id.header_left_text);
-		headerRightButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		headerRightButtonText.setText(buttonText);
+		if (mHeaderView != null)
+		{
+			View headerRightButtonlayout = mHeaderView.findViewById(R.id.header_left_layout_button);
+			headerRightButtonlayout.setVisibility(View.VISIBLE);
+			
+			mHeaderView.findViewById(R.id.header_create_event_button).setVisibility(View.GONE);
+			
+			View headerRightButton = mHeaderView.findViewById(R.id.header_left_button);
+			headerRightButton.setTag(buttonText);
+			
+			TextView headerRightButtonText = (TextView) mHeaderView.findViewById(R.id.header_left_text);
+			headerRightButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+			headerRightButtonText.setText(buttonText);
+		}
 	}
 	
 	protected void showLeftOrangeButton(String buttonText, OnClickListener listener)
 	{
-		View headerRightButtonlayout = mHeaderView.findViewById(R.id.header_left_layout_button);
-		headerRightButtonlayout.setVisibility(View.VISIBLE);
-		
-		mHeaderView.findViewById(R.id.header_create_event_button).setVisibility(View.GONE);
-		
-		ImageButton headerRightButton = (ImageButton) mHeaderView.findViewById(R.id.header_left_square_button);
-		headerRightButton.setImageResource(R.drawable.button_orange);
-		headerRightButton.setOnClickListener(listener);
-		headerRightButton.setTag(buttonText);
-		
-		TextView headerRightButtonText = (TextView) mHeaderView.findViewById(R.id.header_left_text);
-		headerRightButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		headerRightButtonText.setText(buttonText);
+		if (mHeaderView != null)
+		{
+			View headerRightButtonlayout = mHeaderView.findViewById(R.id.header_left_layout_button);
+			headerRightButtonlayout.setVisibility(View.VISIBLE);
+			
+			mHeaderView.findViewById(R.id.header_create_event_button).setVisibility(View.GONE);
+			
+			ImageButton headerRightButton = (ImageButton) mHeaderView.findViewById(R.id.header_left_square_button);
+			headerRightButton.setImageResource(R.drawable.button_orange);
+			headerRightButton.setOnClickListener(listener);
+			headerRightButton.setTag(buttonText);
+			
+			TextView headerRightButtonText = (TextView) mHeaderView.findViewById(R.id.header_left_text);
+			headerRightButtonText.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+			headerRightButtonText.setText(buttonText);
+		}
 	}
 	
 	protected void showRightOrangeButton(String buttonText, OnClickListener listener)
 	{
 		showRightHeaderButton(buttonText);
-		ImageButton rightButton = (ImageButton) mHeaderView.findViewById(R.id.header_right_button);
-		rightButton.setImageResource(R.drawable.button_orange);
-		rightButton.setOnClickListener(listener);
+		if (mHeaderView != null)
+		{
+			ImageButton rightButton = (ImageButton) mHeaderView.findViewById(R.id.header_right_button);
+			rightButton.setImageResource(R.drawable.button_orange);
+			rightButton.setOnClickListener(listener);
+		}
+	}
+	
+	protected void showRightOrangeButton(String buttonText)
+	{
+		showRightHeaderButton(buttonText);
+		if (mHeaderView != null)
+		{
+			ImageButton rightButton = (ImageButton) mHeaderView.findViewById(R.id.header_right_button);
+			rightButton.setImageResource(R.drawable.button_orange);
+		}
 	}
 	
 	protected void showLeftHeaderButton(String buttonText, OnClickListener onClickListener)
 	{
 		showLeftHeaderButton(buttonText);
-		mHeaderView.findViewById(R.id.header_left_square_button).setOnClickListener(onClickListener);
+		if (mHeaderView != null)
+		{
+			mHeaderView.findViewById(R.id.header_left_square_button).setOnClickListener(onClickListener);
+		}
 	}
 	
 	protected void showRightHeaderButton(String buttonText, OnClickListener onClickListener)
 	{
 		showRightHeaderButton(buttonText);
-		mHeaderView.findViewById(R.id.header_right_button).setOnClickListener(onClickListener);
+		if (mHeaderView != null)
+		{
+			mHeaderView.findViewById(R.id.header_right_button).setOnClickListener(onClickListener);
+		}
 	}
 }

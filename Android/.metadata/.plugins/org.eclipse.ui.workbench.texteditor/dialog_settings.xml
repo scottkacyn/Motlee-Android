@@ -1,30 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item value="530" key="DIALOG_WIDTH"/>
-		<item value="551" key="DIALOG_Y_ORIGIN"/>
-		<item value="1070" key="DIALOG_X_ORIGIN"/>
-		<item value="227" key="DIALOG_HEIGHT"/>
+		<item value="484" key="DIALOG_WIDTH"/>
+		<item value="629" key="DIALOG_Y_ORIGIN"/>
+		<item value="196" key="DIALOG_HEIGHT"/>
+		<item value="1087" key="DIALOG_X_ORIGIN"/>
 		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
-		<item value="false" key="casesensitive"/>
 		<item value="false" key="isRegEx"/>
+		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="isReadyToCommitFragment" key="selection"/>
+		<item value="ScrollListener" key="selection"/>
 		<list key="findhistory">
-			<item value="isReadyToCommitFragment"/>
-			<item value="commit"/>
-			<item value="commite"/>
-			<item value="commit()"/>
-			<item value="retry"/>
-			<item value="getPhotoFromJ"/>
-			<item value="getPhotoFrom"/>
-			<item value="updateEVent"/>
+			<item value="gettingMore"/>
+			<item value="scrollListener"/>
+			<item value="onScrollList"/>
+			<item value="myEvent"/>
+			<item value="getMore"/>
+			<item value="updateEventAdapter"/>
+			<item value="fadeOut"/>
+			<item value="fadeIn"/>
 		</list>
 		<list key="replacehistory">
+			<item value="follow_blue"/>
 			<item value="photoDescriptionEdit"/>
 			<item value=".EventListActivity"/>
 			<item value="EqualityIntent intent = new EqualityIntent(mContext, RubyService.class);"/>

@@ -42,6 +42,7 @@
 		        android:layout_height="match_parent"
 		        android:gravity="center|center_vertical"
 		        android:padding="5dp"
+		        style="@style/CodeFont.PhotoDetail"
 		        android:background="@android:color/transparent" />
 	    </FrameLayout>
         
@@ -99,6 +100,7 @@
 		        android:layout_height="match_parent"
 		        android:gravity="center|center_vertical"
 		        android:padding="5dp"
+		        style="@style/CodeFont.PhotoDetail"
 		        android:background="@android:color/transparent" />
 	    </FrameLayout>
         
@@ -134,7 +136,7 @@
             android:layout_height="match_parent"
             android:layout_toRightOf="@id/header_icon"
             android:gravity="center_vertical"
-            style="@style/CodeFont"
+            style="@style/CodeFont.PhotoDetail"
             android:paddingLeft="5dp"
             />
         

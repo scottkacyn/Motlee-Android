@@ -10,6 +10,7 @@ import com.motlee.android.CameraActivity;
 import com.motlee.android.CreateEventActivity;
 import com.motlee.android.EventDetailActivity;
 import com.motlee.android.EventListActivity;
+import com.motlee.android.ExploreActivity;
 import com.motlee.android.NearbyEventsActivity;
 import com.motlee.android.NotificationActivity;
 import com.motlee.android.R;
@@ -229,7 +230,7 @@ public class MenuFunctions {
         
         Fragment fragment = fm.findFragmentById(R.id.main_menu);
         
-        if (fragment != null)
+        /*if (fragment != null)
         {
         	ft.remove(fragment)
         	.commit();
@@ -237,8 +238,8 @@ public class MenuFunctions {
 	        menuOpen = false;
 	        
 	        /*View menuButton = activity.findViewById(R.id.menu_button);
-	        menuButton.setEnabled(true);*/
-        }
+	        menuButton.setEnabled(true);
+        }*/
 	}
 	
 	public static void takePictureOnPhone(final int eventId, final FragmentActivity activity)
@@ -251,6 +252,8 @@ public class MenuFunctions {
 		takePhoto.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 		
 		activity.startActivity(takePhoto);
+		
+		activity.overridePendingTransition(R.anim.slide_down_in, R.anim.fadeout);
 		
 		//activity.overridePendingTransition(R.anim.slide_down_in, R.anim.slide_down_out);
 		
@@ -500,13 +503,22 @@ public class MenuFunctions {
 		}
 	}
 	
-	public static void showCreateEventPage(View view, FragmentActivity activity)
+	public static void showCreateEventPage(View view, final FragmentActivity activity)
 	{
-		Intent intent = new Intent(activity, CreateEventActivity.class);
-		
-		//removePlusMenu(activity);
-		
-		activity.startActivity(intent);
+		activity.runOnUiThread(new Runnable(){
+
+			public void run() {
+				
+				Intent intent = new Intent(activity, CreateEventActivity.class);
+				
+				//removePlusMenu(activity);
+				
+				activity.startActivity(intent);
+				
+				activity.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);				
+			}
+			
+		});
 		
 		/*if (!((activity instanceof EventListActivity) || (activity instanceof EventDetailActivity)))
 		{
@@ -517,7 +529,10 @@ public class MenuFunctions {
 	public static void showSearchPage(FragmentActivity activity)
 	{
 		Intent intent = new Intent(activity, SearchActivity.class);
+		intent.putExtra("CloseMenu", true);
 		activity.startActivity(intent);
+		
+		activity.overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 		
 		removeMainMenu(activity);
 	}
@@ -525,7 +540,10 @@ public class MenuFunctions {
 	public static void showSettings(FragmentActivity activity)
 	{
 		Intent intent = new Intent(activity, SettingsActivity.class);
+		intent.putExtra("CloseMenu", true);
 		activity.startActivity(intent);
+		
+		activity.overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 		
 		removeMainMenu(activity);
 	}
@@ -541,9 +559,15 @@ public class MenuFunctions {
 	
 	public static void showMyEvents(View view, FragmentActivity activity)
 	{
-		EventListParams newParams = new EventListParams(BaseMotleeFragment.MY_EVENTS, EventServiceBuffer.MY_EVENTS);
+		/*EventListParams newParams = new EventListParams(BaseMotleeFragment.MY_EVENTS, EventServiceBuffer.MY_EVENTS);
 		
-		showNewListView(newParams, activity);
+		showNewListView(newParams, activity);*/
+		
+		Intent exploreActivity = new Intent(activity, ExploreActivity.class);
+		
+		exploreActivity.putExtra("CloseMenu", true);
+		
+		activity.startActivity(exploreActivity);
 		
 		removeMainMenu(activity);
 	}
@@ -552,6 +576,8 @@ public class MenuFunctions {
 	{
 		// TODO: add get nearby events call to database: EventServiceBuffer.NEARBY_EVENTS
 		Intent nearbyIntent = new Intent(activity, NearbyEventsActivity.class);
+		
+		nearbyIntent.putExtra("CloseMenu", true);
 		
 		activity.startActivity(nearbyIntent);
 		
@@ -587,8 +613,11 @@ public class MenuFunctions {
 			Intent intent = new Intent(activity, EventListActivity.class);
 			
 			intent.putExtra("ListType", params.headerText);
+			intent.putExtra("CloseMenu", true);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
 			activity.startActivity(intent);
+			
+			activity.overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 			
 			activity.finish();
 		}
@@ -606,9 +635,12 @@ public class MenuFunctions {
     	
     	userProfile.putExtra("UserID", user.id);
     	userProfile.putExtra("UID", user.uid);
+    	userProfile.putExtra("MainMenu", true);
+		userProfile.putExtra("CloseMenu", true);
     	
     	activity.startActivity(userProfile);
 		
+		activity.overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 		
 	}
 }

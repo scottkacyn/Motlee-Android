@@ -28,7 +28,7 @@
  	        android:layout_width="match_parent"
  	        android:layout_height="0dp"
  	        android:layout_weight="0.4"
- 	        android:text="All Streams"
+ 	        android:text="Home"
  	        style="@style/CodeFont"
  	        android:layout_marginBottom="8dp"
  	        android:gravity="center" />
@@ -58,7 +58,7 @@
 	 	        android:layout_width="match_parent"
 	 	        android:layout_height="0dp"
 	 	        android:layout_weight="0.4"
-	 	        android:text="My Streams"
+	 	        android:text="Explore"
 	 	        android:paddingBottom="8dp"
 	 	        style="@style/CodeFont"
 	 	        android:gravity="center" />
@@ -147,7 +147,7 @@
  	    android:layout_height="wrap_content"
  	    android:background="@drawable/main_menu_opened_button"
  	    android:clickable="true"
-        android:onClick="onClickShowSearch"
+        android:onClick="onClickShowMyProfile"
         android:orientation="vertical" >
 
 	 	    <ImageView
@@ -163,7 +163,7 @@
 	 	        android:layout_width="match_parent"
 	 	        android:layout_height="0dp"
 	 	        android:layout_weight="0.4"
-	 	        android:text="Friends"
+	 	        android:text="Profile"
 	 	        style="@style/CodeFont"
 	 	        android:layout_marginBottom="8dp"
 	 	        android:gravity="center" />

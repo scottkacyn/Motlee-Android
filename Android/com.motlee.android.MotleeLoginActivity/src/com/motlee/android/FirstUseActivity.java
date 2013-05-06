@@ -26,7 +26,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class FirstUseActivity extends Activity {
+public class FirstUseActivity extends BaseFacebookActivity {
 
 	private static final double leftMargin = .08595041;
 	private static final double rightMargin = 1 - leftMargin;
@@ -56,9 +56,7 @@ public class FirstUseActivity extends Activity {
 	{
 		super.onCreate(savedInstance);
 		setContentView(R.layout.first_use_page);
-		
-		DatabaseWrapper dbWrapper = new DatabaseWrapper(this.getApplicationContext());
-		
+
     	TextView header = (TextView) findViewById(R.id.first_use_header);
     	header.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
     	

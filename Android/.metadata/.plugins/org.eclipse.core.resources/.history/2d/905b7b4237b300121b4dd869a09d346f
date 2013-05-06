@@ -1,0 +1,9 @@
+package com.motlee.android.object.event;
+
+import com.motlee.android.object.Relationship;
+
+public interface FollowListener {
+	void followCallback(Relationship relationship);
+	
+	void followListCallback(List<UserInfo> users);
+}

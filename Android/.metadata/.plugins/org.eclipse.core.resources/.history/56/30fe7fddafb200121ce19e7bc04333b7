@@ -1,0 +1,20 @@
+package com.motlee.android.fragment;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+public class FollowListFragment extends BaseMotleeFragment 
+{
+	private View view;
+	
+	private LayoutInflater inflater;
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	{
+		view = inflater.inflate(R.layout.follow_list_main, null);
+	}
+	
+}

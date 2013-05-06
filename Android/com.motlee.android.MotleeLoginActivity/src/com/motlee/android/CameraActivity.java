@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.droid4you.util.cropimage.Util;
+import com.flurry.android.FlurryAgent;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.GlobalVariables;
@@ -35,6 +36,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.util.FloatMath;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -50,7 +52,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.ImageView.ScaleType;
 
-public class CameraActivity extends Activity {
+public class CameraActivity extends BaseFacebookActivity {
 	static final int NONE = 0;
     static final int DRAG = 1;
     static final int ZOOM = 2;
@@ -98,19 +100,39 @@ public class CameraActivity extends Activity {
     {
     	Log.d("CameraActivity", "onResume");
     	
+    	FlurryAgent.logEvent("CameraPage");
+    	
     	super.onResume();
     	
-    	if (mCamera == null)
-    	{
-    		Log.d("CameraActivity", "mCamera is null");
-    		mCamera = getCameraInstance(mIsCameraFacingFront);
-    	}
+		if (mCamera == null)
+		{
+			Log.d("CameraActivity", "Resuming camera");
+			mCamera = getCameraInstance(mIsCameraFacingFront);
+			mCameraPreview = new CameraPreview(this, mCamera);
+	        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+	        preview.addView(mCameraPreview);
+	        
+	        ImageView cameraLens = new ImageView(this);
+	        
+	        Integer controlsHeight = SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH);
+	        
+	        cameraLens.setLayoutParams(new FrameLayout.LayoutParams(controlsHeight, controlsHeight));
+	        cameraLens.setImageDrawable(DrawableCache.getDrawable(R.drawable.camera_view_border, controlsHeight, 2).getDrawable());
+	        cameraLens.setScaleType(ScaleType.FIT_CENTER);
+	        cameraLens.setAdjustViewBounds(true);
+	        
+	        preview.addView(cameraLens);
+	        
+		}
     }
 
     private void releaseCamera()
     {
         if (mCamera != null){
+        	Log.d("CameraActivity", "mCamera being set to null");
         	mCamera.stopPreview();
+        	mCamera.setPreviewCallback(null);
+        	mCameraPreview.getHolder().removeCallback(mCameraPreview);
             mCamera.release();        // release the camera for other applications
             mCamera = null;
         }
@@ -123,6 +145,9 @@ public class CameraActivity extends Activity {
         setContentView(R.layout.camera_preview_portrait);
         
         mIsCameraFacingFront = getIntent().getBooleanExtra(FACING_FRONT, false);
+        
+        Display display = getWindowManager().getDefaultDisplay();
+        Integer height = display.getHeight();
         
         mCamera = getCameraInstance(mIsCameraFacingFront);
         mCameraPreview = new CameraPreview(this, mCamera);
@@ -138,7 +163,7 @@ public class CameraActivity extends Activity {
 
         DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.camera_bottom_flat_bg, controlsHeight);
         
-        Integer cameraMargin = (int) ((double) (SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_HEIGHT) - drawable.getHeight()) / 2 - ((double) controlsHeight / 2));
+        Integer cameraMargin = (int) ((double) (height - drawable.getHeight()) / 2 - ((double) controlsHeight / 2));
         
         FrameLayout.LayoutParams cameraParams = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         
@@ -174,6 +199,8 @@ public class CameraActivity extends Activity {
 
 			public void onClick(View arg0) {
 				
+				FlurryAgent.logEvent("UploadPhotoPage");
+				
 				Intent takePictureIntent = new Intent(CameraActivity.this, TakePhotoActivity.class);
 				takePictureIntent.putExtra("Action", TakePhotoActivity.GET_PHOTO_LIBRARY);
 				takePictureIntent.putExtra("EventID", mEventId);
@@ -199,7 +226,7 @@ public class CameraActivity extends Activity {
         
         RelativeLayout cameraBackground = (RelativeLayout) findViewById(R.id.camera_background);
 
-        Integer controlsWidth = SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_HEIGHT) - controlsHeight - cameraMargin;
+        Integer controlsWidth = height - controlsHeight - cameraMargin;
         
         LinearLayout cameraControls = (LinearLayout) findViewById(R.id.camera_controls);
         
@@ -213,6 +240,8 @@ public class CameraActivity extends Activity {
         cameraButton.setOnClickListener(new View.OnClickListener() {
             
             public void onClick(View v) {
+            	
+            	FlurryAgent.logEvent("TakePhoto");
             	
             	findViewById(R.id.progress_dialog).setVisibility(View.VISIBLE);
             	
@@ -921,6 +950,7 @@ public class CameraActivity extends Activity {
 	public void onDestroy()
 	{
 		Log.d("CameraActivity", "onDestroy");
+		releaseCamera();
 		unbindDrawables(this.findViewById(android.R.id.content));
 		System.gc();
 		

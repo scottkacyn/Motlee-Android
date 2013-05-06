@@ -24,6 +24,7 @@ public class SharePref {
 	public static final String FIRST_EXPERIENCE = "firstExperience";
 	public static final String JOIN_FB_POST = "joinFBPost";
 	public static final String MAX_EVENT_LIST_PHOTO_SIZE = "maxEventListPhotoSize";
+	public static final String PHOTO_VERTICAL_OFFSET = "photoVerticalOffset";
 	
 	//Settings key
 	private static final String FB_ON_CREATE = "fb_on_create";

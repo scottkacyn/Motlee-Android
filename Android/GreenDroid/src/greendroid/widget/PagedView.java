@@ -17,9 +17,13 @@ package greendroid.widget;
 
 import greendroid.util.Config;
 
+import it.sephiroth.android.library.imagezoom.ImageViewTouch;
+
 import java.util.LinkedList;
 import java.util.Queue;
 
+import android.R;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.DataSetObserver;
@@ -36,6 +40,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.Scroller;
 
 /**
@@ -125,6 +130,11 @@ public class PagedView extends ViewGroup {
     private SparseArray<View> mActiveViews = new SparseArray<View>();
     private Queue<View> mRecycler = new LinkedList<View>();
 
+    private int startX;
+    private int endX;
+    private int startY;
+    private int endY;
+    
     public PagedView(Context context) {
         this(context, null);
     }
@@ -218,16 +228,32 @@ public class PagedView extends ViewGroup {
         }
     }
 
-    @Override
+    @SuppressLint("NewApi")
+	@Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
 
         /*
          * Shortcut the most recurring case: the user is in the dragging state
          * and he is moving his finger. We want to intercept this motion.
          */
+
         final int action = ev.getAction();
         if (action == MotionEvent.ACTION_MOVE && mIsBeingDragged) {
             return true;
+        }
+        if (ev.getPointerCount() > 1)
+        {
+        	return false;
+        }
+        
+        View view = mActiveViews.get(getCurrentPage());
+        ImageViewTouch imageTouch = null;
+        if (view != null)
+        {
+        	FrameLayout frameLayout = (FrameLayout) view;
+        	imageTouch = (ImageViewTouch) frameLayout.getChildAt(0);
+        	
+        	//imageTouch.canScroll(direction)
         }
 
         final int x = (int) ev.getX();
@@ -254,7 +280,18 @@ public class PagedView extends ViewGroup {
                  * his original down touch.
                  */
 
+            	if (imageTouch != null)
+            	{
+            		if (imageTouch.canScroll(x - mStartMotionX))
+            		{
+            			return false;
+            		}
+            	}
+            	
                 final int xDiff = (int) Math.abs(x - mStartMotionX);
+                
+                Log.d("PagedView", "x: " + x + ", mStartMotionX: " + mStartMotionX);
+                
                 if (xDiff > mPagingTouchSlop) {
                     mIsBeingDragged = true;
                     performStartTracking(x);

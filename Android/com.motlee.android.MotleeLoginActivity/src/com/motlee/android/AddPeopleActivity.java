@@ -28,16 +28,12 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
 	
 	private ArrayList<Long> initialAttendees = new ArrayList<Long>();
 	
-	private DatabaseWrapper dbWrapper;
-	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
  
         //findViewById(R.id.menu_buttons).setVisibility(View.GONE);
-        
-        dbWrapper = new DatabaseWrapper(this.getApplicationContext());
         
         initialAttendees = new ArrayList<Long>();
         
@@ -163,6 +159,14 @@ public class AddPeopleActivity extends BaseMotleeActivity implements UpdatedAtte
 		
 		finish();
 		
+		overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+	}
+	
+	@Override
+	protected void backButtonPressed()
+	{
+		super.backButtonPressed();
+		overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
 	}
     
 }

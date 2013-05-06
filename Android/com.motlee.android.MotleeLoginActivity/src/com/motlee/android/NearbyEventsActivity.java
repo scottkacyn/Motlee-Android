@@ -29,6 +29,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.flurry.android.FlurryAgent;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.fragment.BaseMotleeFragment;
@@ -41,17 +42,18 @@ import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.MenuFunctions;
+import com.motlee.android.object.StreamListHandler;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 
 public class NearbyEventsActivity extends BaseMotleeActivity implements UpdatedEventDetailListener, OnFragmentAttachedListener {
 	
-	private DatabaseWrapper dbWrapper;
-	
 	@Override
 	public void onResume()
 	{
 		super.onResume();
+		
+		FlurryAgent.logEvent("NearbyStreamPage");
 		
 		if (menu == null)
 		{
@@ -66,8 +68,6 @@ public class NearbyEventsActivity extends BaseMotleeActivity implements UpdatedE
         setContentView(R.layout.main);
 	    
         menu = GlobalActivityFunctions.setUpSlidingMenu(this);
-        
-        dbWrapper = new DatabaseWrapper(getApplicationContext());
         
         showMenuButtons();
         
@@ -114,7 +114,7 @@ public class NearbyEventsActivity extends BaseMotleeActivity implements UpdatedE
     {
     	Log.d(this.toString(), "myEventOccurred");
     	
-    	if (evt.getIsNearby())
+    	if (evt.getEventType().contains(StreamListHandler.NEARBY))
     	{
 	    
     		checkIfGooglePlayIsInstalled();

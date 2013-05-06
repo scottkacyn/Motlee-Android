@@ -1,0 +1,27 @@
+package com.motlee.android.fragment;
+
+import android.os.Bundle;
+import android.util.Log;
+
+import com.motlee.android.database.DatabaseWrapper;
+
+public class ExploreFragment extends BaseMotleeFragment 
+{
+
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+	}
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+	    super.onCreate(savedInstanceState);
+	    Log.w(tag, "onCreate");
+	    
+	    dbWrapper = new DatabaseWrapper(this.getActivity().getApplicationContext());
+	    
+	    //gothamLightFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/gotham_light.ttf");
+	}
+	
+}

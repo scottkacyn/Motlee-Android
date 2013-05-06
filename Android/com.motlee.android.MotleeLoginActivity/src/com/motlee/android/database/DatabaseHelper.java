@@ -14,6 +14,7 @@ import com.j256.ormlite.table.TableUtils;
 import com.motlee.android.object.Attendee;
 import com.motlee.android.object.Comment;
 import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.FacebookFriend;
 import com.motlee.android.object.Friend;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.LocationInfo;
@@ -26,7 +27,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application -- change to something appropriate for your app
 	private static final String DATABASE_NAME = "motlee.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 20;
+	private static final int DATABASE_VERSION = 25;
 
 	// the DAO object we use to access the EventDetail table
 	private Dao<EventDetail, Integer> eventDao = null;
@@ -56,6 +57,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	
 	private Dao<LocationInfo, Integer> locationDao = null;
 	private RuntimeExceptionDao<LocationInfo, Integer> locationRuntimeDao = null;
+	
+	private Dao<FacebookFriend, Integer> fbFriendDao = null;
+	private RuntimeExceptionDao<FacebookFriend, Integer> fbFriendRuntimeDao = null;
 	
 	private static DatabaseHelper instance;
 	
@@ -89,6 +93,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Comment.class);
 			TableUtils.createTable(connectionSource, Like.class);
 			TableUtils.createTable(connectionSource, LocationInfo.class);
+			TableUtils.createTable(connectionSource, FacebookFriend.class);
 		} 
 		catch (SQLException e) 
 		{
@@ -112,6 +117,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Comment.class, true);
 			TableUtils.dropTable(connectionSource, Like.class, true);
 			TableUtils.dropTable(connectionSource, LocationInfo.class, true);
+			TableUtils.dropTable(connectionSource, FacebookFriend.class, true);
 
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
@@ -134,6 +140,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return eventDao;
 	}
 
+	public Dao<FacebookFriend, Integer> getFBFriendDao() throws SQLException {
+		if (fbFriendDao == null) {
+			fbFriendDao = getDao(FacebookFriend.class);
+		}
+		return fbFriendDao;
+	}
+	
 	/**
 	 * Returns the Database Access Object (DAO) for our SimpleData class. It will create it or just give the cached
 	 * value.
@@ -231,6 +244,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			locationRuntimeDao = getRuntimeExceptionDao(LocationInfo.class);
 		}
 		return locationRuntimeDao;
+	}
+	
+	/**
+	 * Returns the RuntimeExceptionDao (Database Access Object) version of a Dao for our SimpleData class. It will
+	 * create it or just give the cached value. RuntimeExceptionDao only through RuntimeExceptions.
+	 */
+	public RuntimeExceptionDao<FacebookFriend, Integer> getFBFriendDataDao() {
+		if (fbFriendRuntimeDao == null) {
+			fbFriendRuntimeDao = getRuntimeExceptionDao(FacebookFriend.class);
+		}
+		return fbFriendRuntimeDao;
 	}
 	
 	/**
@@ -335,5 +359,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		this.likeRuntimeDao = null;
 		this.photoRuntimeDao = null;
 		this.storyRuntimeDao = null;
+		this.fbFriendRuntimeDao = null;
+		
+		eventDao = null;
+		userDao = null;
+		attendeeDao = null;
+		commentDao = null;
+		friendDao = null;
+		likeDao = null;
+		photoDao = null;
+		storyDao = null;
+		fbFriendDao = null;
+		
 	}
 }

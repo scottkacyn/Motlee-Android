@@ -1,0 +1,49 @@
+package com.motlee.android.fragment;
+
+import java.util.List;
+
+import com.motlee.android.R;
+import com.motlee.android.adapter.FollowAdapter;
+import com.motlee.android.adapter.InviteFriendsAdapter;
+import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.Relationship;
+import com.motlee.android.object.UserInfo;
+import com.motlee.android.object.event.FollowListener;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+public class FollowListFragment extends BaseMotleeFragment implements FollowListener
+{
+	private View view;
+	
+	private boolean isFollowers = true;
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	{
+		view = inflater.inflate(R.layout.follow_list_main, null);
+		
+		EventServiceBuffer.setFollowListener(this);
+		
+		return view;
+	}
+	
+	public void setIsFollowers(boolean isFollowers)
+	{
+		this.isFollowers = isFollowers;
+	}
+
+	public void followCallback(Relationship relationship) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void followListCallback(List<UserInfo> users) {
+		
+		FollowAdapter followAdapter = new FollowAdapter(getActivity(), getActivity().getLayoutInflater(), users);;
+		
+	}
+}

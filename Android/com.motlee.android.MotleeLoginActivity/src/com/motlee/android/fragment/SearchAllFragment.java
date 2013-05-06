@@ -23,6 +23,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -30,18 +32,25 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.emilsjolander.components.StickyListHeaders.StickyListHeadersListView;
 import com.facebook.Request;
 import com.facebook.Session;
+import com.flurry.android.FlurryAgent;
 import com.motlee.android.BaseMotleeActivity;
 import com.motlee.android.R;
+import com.motlee.android.adapter.InviteFriendsAdapter;
 import com.motlee.android.adapter.SearchAllAdapter;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.FacebookFriend;
+import com.motlee.android.object.FlipAnimator;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.SharePref;
 import com.motlee.android.object.SharingInteraction;
@@ -50,10 +59,13 @@ import com.motlee.android.object.event.UpdatedFriendsEvent;
 import com.motlee.android.object.event.UpdatedFriendsListener;
 import com.motlee.android.view.ProgressDialogWithTimeout;
 
-public class SearchAllFragment extends ListFragmentWithHeader implements UpdatedFriendsListener, OnScrollListener  {
+public class SearchAllFragment extends BaseMotleeFragment implements UpdatedFriendsListener, OnScrollListener  {
 
 	private String tag = "SearchFragment";
 	private View view;
+	
+	private final static String INVITE = "Invite";
+	private final static String FRIENDS = "Friends";
 	
 	private LayoutInflater inflater;
 	
@@ -63,7 +75,8 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
 	private ArrayList<JSONObject> peopleToAdd;
 	private ArrayList<Integer> initialPeople;
 	
-	private SearchAllAdapter mAdapter;
+	private SearchAllAdapter mFriendAdapter;
+	private InviteFriendsAdapter mInviteAdapter;
 	
 	private Handler mHandler = new Handler();
 	
@@ -80,6 +93,10 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
 	private int firstVisible;
 	
 	private ProgressDialog progressDialog;
+	
+	private ListView friendList;
+	private ListView inviteList;
+	private RelativeLayout listLayout;
 	
 	private DatabaseWrapper dbWrapper;
 	
@@ -135,18 +152,45 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
 		
 		setEditText();
 		
-		showRightOrangeButton("Invite", shareButton);
+		showRightOrangeButton(INVITE, flipAnimation);
+		
+		setUpFooter(view.findViewById(R.id.share_with_friends_layout));
 		
     	view.findViewById(R.id.search_progress_bar).setVisibility(View.GONE);
     	
-    	view.findViewById(R.id.search_list).setVisibility(View.VISIBLE); 
+    	friendList = (ListView) view.findViewById(R.id.friend_list);
+    	friendList.setVisibility(View.VISIBLE);
+    	
+    	inviteList = (ListView) view.findViewById(R.id.invite_list);
 		
+    	listLayout = (RelativeLayout) view.findViewById(R.id.list_layout);
+    	
     	setHeaderIcon(SEARCH);
 		
+    	mFriendAdapter = new SearchAllAdapter(getActivity(), getActivity().getLayoutInflater(), new ArrayList<Integer>());
+    	mInviteAdapter = new InviteFriendsAdapter(getActivity(), getActivity().getLayoutInflater(), new ArrayList<FacebookFriend>());
+    	
 		return view;
 	}
 	
-	private void showRightOrangeButton(String buttonText, OnClickListener listener)
+	private void setUpFooter(View footer)
+	{
+		Integer footerHeight = DrawableCache.getDrawable(R.drawable.label_button_no_arrow, 
+				SharePref.getIntPref(getActivity().getApplicationContext(), SharePref.DISPLAY_WIDTH)).getHeight();
+		
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, footerHeight);
+		params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		
+		footer.setLayoutParams(params);
+		
+		footer.setClickable(true);
+		footer.setOnClickListener(shareButton);
+		
+		TextView text = (TextView) footer.findViewById(R.id.share_with_friends_text);
+		text.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+	}
+	
+	/*private void showRightOrangeButton(String buttonText, OnClickListener listener)
 	{
 		showRightHeaderButton(buttonText);
 		View createEventButton = mHeaderView.findViewById(R.id.header_create_event_button);
@@ -159,11 +203,63 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
 		ImageButton rightButton = (ImageButton) mHeaderView.findViewById(R.id.header_right_button);
 		rightButton.setImageResource(R.drawable.button_orange);
 		rightButton.setOnClickListener(listener);
-	}
+	}*/
+	
+	OnClickListener flipAnimation = new OnClickListener(){
+
+		public void onClick(final View button) {
+			
+			button.setEnabled(false); 
+			
+            FlipAnimator animator = new FlipAnimator(friendList, inviteList,
+                    SharePref.getIntPref(getActivity(), SharePref.DISPLAY_WIDTH) / 2, SharePref.getIntPref(getActivity(), SharePref.DISPLAY_HEIGHT) / 2);
+            if (friendList.getVisibility() == View.GONE) {
+                animator.reverse();
+            }
+            
+            animator.setAnimationListener(new AnimationListener(){
+
+				public void onAnimationEnd(Animation arg0) {
+					
+	                InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+	                in.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+					
+	                if (button.getTag().equals(INVITE))
+	                {
+	                	showRightOrangeButton(FRIENDS, flipAnimation);
+	                	((ImageButton) button).setImageResource(R.drawable.header_right_button);
+	                }
+	                else if (button.getTag().equals(FRIENDS))
+	                {
+	                	showRightOrangeButton(INVITE, flipAnimation);
+	                }
+	                
+	                button.setEnabled(true);
+	                
+				}
+
+				public void onAnimationRepeat(Animation arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				public void onAnimationStart(Animation arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+            	
+            });
+            
+            listLayout.startAnimation(animator);
+		}
+		
+	};
 	
 	OnClickListener shareButton = new OnClickListener(){
 
 		public void onClick(View arg0) {
+			
+			FlurryAgent.logEvent("OpenSharingFriendsPage");
 			
 			SharingInteraction.share("Join me on Motlee", "Check out Motlee... it's an awesome way to share photos in a group. www.motleeapp.com", null, (BaseMotleeActivity) getActivity());
 			
@@ -177,9 +273,9 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
 		editText.setTypeface(GlobalVariables.getInstance().getHelveticaNeueBoldFont());
 		editText.clearFocus();
 		
-		//editText.setOnEditorActionListener(editorActionListener);
-		//editText.setOnFocusChangeListener(focusChangeListener);
-		//editText.addTextChangedListener(mOnSearchBoxTextChanged);
+		editText.setOnEditorActionListener(editorActionListener);
+		editText.setOnFocusChangeListener(focusChangeListener);
+		editText.addTextChangedListener(mOnSearchBoxTextChanged);
 		
 	}
 	
@@ -193,12 +289,6 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
             else
             {
                 InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-
-                // NOTE: In the author's example, he uses an identifier
-                // called searchBar. If setting this code on your EditText
-                // then use v.getWindowToken() as a reference to your 
-                // EditText is passed into this callback as a TextView
-
                 in.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
             }
         }
@@ -267,7 +357,8 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
             handler.post(new Runnable() {
                 
                 public void run() {
-                    	mAdapter.getFilter().filter(mSearchText);
+                    	mFriendAdapter.getFilter().filter(mSearchText);
+                    	mInviteAdapter.getFilter().filter(mSearchText);
                     	hasSearchTextChangedSinceLastQuery = false;
                 }
             });
@@ -292,6 +383,8 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
 	{
 		ArrayList<Integer> listItems = dbWrapper.getFriends();
 		
+		ArrayList<FacebookFriend> friends = dbWrapper.getAllFacebookFriends();
+		
 		/*ArrayList<UserInfo> friends = new ArrayList<UserInfo>();
 		
 		for (Integer friend : listItems)
@@ -312,9 +405,12 @@ public class SearchAllFragment extends ListFragmentWithHeader implements Updated
 			listItems.add(user.id);
 		}*/
 		
-		mAdapter = new SearchAllAdapter(getActivity(), getActivity().getLayoutInflater(), listItems);
+		mFriendAdapter = new SearchAllAdapter(getActivity(), getActivity().getLayoutInflater(), listItems);
 		
-		getListView().setAdapter(mAdapter);		
+		mInviteAdapter = new InviteFriendsAdapter(getActivity(), getActivity().getLayoutInflater(), friends);
+		
+		friendList.setAdapter(mFriendAdapter);
+		inviteList.setAdapter(mInviteAdapter);
 	}
 
 	public void onScroll(AbsListView view, int firstVisibleItem,

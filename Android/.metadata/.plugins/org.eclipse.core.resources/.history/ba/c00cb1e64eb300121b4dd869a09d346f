@@ -1,0 +1,43 @@
+package com.motlee.android.fragment;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.ListView;
+
+import com.motlee.android.R;
+
+public class TagFragment extends BaseMotleeFragment 
+{
+
+	private View view;
+	private View progressBar; 
+	private ListView tagList;
+	
+	private String pageTitle = "";
+	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		setPageHeader(EXPLORE);
+		setHeaderIcon(EXPLORE);
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	{
+	    view = inflater.inflate(R.layout.explore_tag_page, null);
+	    
+	    progressBar = view.findViewById(R.id.progress_bar);
+	    
+	    
+	    
+	    return view;
+	}
+	
+}

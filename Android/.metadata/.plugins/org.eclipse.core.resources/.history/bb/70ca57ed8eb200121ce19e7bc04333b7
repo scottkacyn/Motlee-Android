@@ -1,0 +1,44 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="@drawable/event_detail_photo_container"
+    android:id="@+id/user_profile_main" >  
+	
+    <include layout="@layout/profile_page_top"
+        android:id="@+id/profile_page_top" 
+        android:layout_alignParentTop="true"
+        android:visibility="gone"/>
+    
+    <View
+        android:id="@+id/blank_space"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@android:color/transparent" />
+    
+    <ProgressBar 
+        android:indeterminate="true"
+        android:layout_width="30dp" 
+        android:layout_height="30dp"
+        android:layout_marginTop="10dp"
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyle"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+    
+	<ListView
+        android:id="@+id/user_profile_list_view"
+        android:layout_below="@id/profile_following_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:divider="@null"
+        android:overScrollFooter="@null"
+        android:listSelector="@android:color/transparent"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:cacheColorHint="@android:color/transparent"
+        android:background="@android:color/transparent" />
+    
+</RelativeLayout>

@@ -1,0 +1,73 @@
+package com.motlee.android.fragment;
+
+import java.util.ArrayList;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.ListView;
+
+import com.motlee.android.R;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.StreamListHandler;
+import com.motlee.android.object.event.UpdatedEventDetailEvent;
+import com.motlee.android.object.event.UpdatedEventDetailListener;
+
+public class TagFragment extends BaseMotleeFragment implements UpdatedEventDetailListener
+{
+
+	private View view;
+	private View progressBar; 
+	private ListView tagList;
+	
+	private String mTag = "";
+	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		setPageHeader(EXPLORE);
+		setHeaderIcon(EXPLORE);
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	{
+	    view = inflater.inflate(R.layout.explore_tag_page, null);
+	    
+	    progressBar = view.findViewById(R.id.progress_bar);
+	    
+	    EventServiceBuffer.setEventDetailListener(this);
+	    
+	    EventServiceBuffer.getStreamsFromTagFromService(mTag);
+	    
+	    return view;
+	}
+	
+	public void setTag(String tag)
+	{
+		mTag = tag;
+	}
+
+	public void myEventOccurred(UpdatedEventDetailEvent evt) {
+		
+		if (evt.getIsTag())
+		{
+			ArrayList<EventDetail> currentStreams = new ArrayList<EventDetail>();
+			
+			ArrayList<EventDetail> streamsToShow = new ArrayList<EventDetail>(dbWrapper.getAllEvents());
+			
+			ArrayList<EventDetail> streamsToDisplay = new ArrayList<EventDetail>();
+		}
+	}
+
+	public void updatedEventOccurred(Integer eventId) {
+		// TODO Auto-generated method stub
+		
+	}
+}

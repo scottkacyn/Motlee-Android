@@ -99,8 +99,6 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	private EventDetail mCreatedEvent;
 	private ArrayList<Long> mEventAttendees;
 	
-	private DatabaseWrapper dbWrapper;
-	
 	private ArrayList<Integer> removedAttendees = new ArrayList<Integer>();
 	
 	private ArrayList<Attendee> currentAttendees = new ArrayList<Attendee>();
@@ -141,8 +139,6 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
-        dbWrapper = new DatabaseWrapper(this.getApplicationContext());
         
         mEventID = getIntent().getIntExtra("EventID", -1);
         
@@ -216,7 +212,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     
     
     @Override
-    protected void backButtonPressed()
+    public void backButtonPressed()
     {
     	FragmentManager fm = getSupportFragmentManager();
     	Fragment fragment = fm.findFragmentById(R.id.fragment_content);
@@ -228,6 +224,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     	{
     		ft.commit();
     		finish();
+    		
+    		overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
     	}
     	else
     	{
@@ -250,6 +248,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
             {
             	findViewById(R.id.header_right_layout_button).setVisibility(View.VISIBLE);
             	((TextView) findViewById(R.id.header_right_text)).setText("Start!");
+            	
             }
     		ft.show(mainFragment)
     		.commit( );
@@ -465,6 +464,9 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 	
 	public void onLeftHeaderClick(View view)
 	{
+		FlurryAgent.logEvent("SkippedInvitingFriendsOnStreamCreate");
+		FlurryAgent.logEvent("CreateEvent");
+		
         progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Creating Stream");
         
         EventServiceBuffer.setEventDetailListener(this);
@@ -517,6 +519,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
             //ft.remove(searchPeopleFragment)
             //.commit();
             
+            FlurryAgent.logEvent("CreateEvent");
+            
             progressDialog = ProgressDialog.show(CreateEventActivity.this, "", "Creating Stream");
             
             EventServiceBuffer.setEventDetailListener(this);
@@ -553,8 +557,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     		FragmentManager fm = getSupportFragmentManager();
     		
     		FragmentTransaction ft = fm.beginTransaction();
-    		
-    		ft.remove(fragment);
+
+    		ft.hide(fragment);
     		
 	        searchPeopleFragment = new SearchPeopleFragment();
 	        searchPeopleFragment.setHeaderView(findViewById(R.id.header));
@@ -572,9 +576,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     		{
     			params.put("PostToFacebook", "false");
     		}*/
-    		
-    		FlurryAgent.logEvent("CreateEvent");
-            
+
 	    	/*EventServiceBuffer.setEventDetailListener(this);
 	    	
 	    	EventServiceBuffer.setAttendeeListener(attendeeListener);
@@ -651,6 +653,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 		
 	        if (mEventID != null)
 	        {
+	        	FlurryAgent.logEvent("SendStreamToFacebookOnCreate");
 	        	SharingInteraction.postToFacebook("Check out my new stream, \"" + mCreatedEvent.getEventName() + "\" on Motlee. www.motleeapp.com/events/" + mEventID , null, this, session);
 	        }
 		}
@@ -702,6 +705,10 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
                                 "No Requests sent", 
                                 Toast.LENGTH_SHORT).show();
                     } 
+                    else
+                    {
+                    	FlurryAgent.logEvent("SentFacebookRequestOnStreamCreate");
+                    }
                     
                     if (mEventAttendees.size() > 0)
                     {
@@ -854,6 +861,8 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
     protected void onResume() {
         super.onResume();
         uiHelper.onResume();
+        
+        FlurryAgent.logEvent("CreateStreamPage");
     }
 
     @Override
@@ -875,6 +884,7 @@ public class CreateEventActivity extends BaseMotleeActivity implements UpdatedEv
 		
 		Intent streamListIntent = new Intent(this, StreamListService.class);
 		streamListIntent.putExtra(StreamListService.FORCE_RESET, true);
+		streamListIntent.putExtra(StreamListService.CREATE_STREAM, mEventID);
 		startService(streamListIntent);
 		
 		StreamListHandler.RESET_LIST = true;

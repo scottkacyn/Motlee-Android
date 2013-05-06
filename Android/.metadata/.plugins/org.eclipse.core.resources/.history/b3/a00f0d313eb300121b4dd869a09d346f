@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.motlee.android.layouts.HorizontalRatioLinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    
+    
+    <FrameLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" >
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent" 
+	        android:layout_gravity="left|center_vertical"
+	        android:weightSum="1">
+	        <ImageView
+	            android:id="@+id/invite_profile_pic"
+	            android:layout_width="0dp"
+	            android:layout_height="match_parent"
+	            android:layout_gravity="center_vertical"
+	            android:paddingTop="2dp"
+	            android:paddingBottom="2dp"
+	            android:paddingLeft="10dp"
+	            android:adjustViewBounds="true"
+	            android:layout_weight=".20" />
+	        <LinearLayout
+	            android:layout_width="0dp"
+	            android:layout_weight=".80"
+	            android:layout_height="match_parent"
+	            android:paddingLeft="15dp"
+	            android:weightSum="1">
+
+			    <TextView 
+			        android:id="@+id/invite_name"
+		    	    android:layout_width="0dp"
+		    	    android:layout_weight=".70"
+			        android:layout_height="match_parent"
+			        android:gravity="left|center_vertical"
+			        style="@style/CodeFont.Small"
+			        android:ellipsize="end"
+			        android:singleLine="true"
+			        android:background="@android:color/transparent" />
+			    
+			    <View
+			        android:layout_width="0dp"
+			        android:layout_weight=".02"
+			        android:layout_height="match_parent"
+			        android:background="@android:color/transparent" />
+			    
+			    <FrameLayout
+			        android:layout_height="match_parent"
+			        android:layout_width="0dp"
+			        android:layout_weight=".28"
+			        android:layout_alignParentRight="true"
+			        android:id="@+id/invite_button_layout" >
+			        
+				    <ImageButton 
+				        android:id="@+id/invite_button"
+				        android:layout_width="match_parent"
+				        android:layout_height="wrap_content"
+				        android:padding="5dp"
+				        android:src="@drawable/button_orange"
+				        android:layout_gravity="center"
+				        android:scaleType="fitCenter"
+				        android:adjustViewBounds="true"
+				        android:onClick="onInviteClick"
+				        android:background="@android:color/transparent" />
+				    
+				    <TextView 
+				        android:id="@+id/invite_button_text"
+			    	    android:layout_width="match_parent"
+				        android:layout_height="match_parent"
+				        android:gravity="center|center_vertical"
+				        android:padding="5dp"
+				        android:text="Invite"
+				        android:background="@android:color/transparent" />
+			    </FrameLayout>
+		    </LinearLayout>
+			    
+	    </LinearLayout>
+	    
+	    <ImageView
+	        android:id="@+id/divider"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:scaleType="fitXY"
+	        android:adjustViewBounds="true"
+	        android:layout_gravity="bottom"
+	        android:src="@drawable/search_keyline_divider" />
+	    
+    </FrameLayout>
+    <!-- Will toggle visible/gone when needed -->
+
+</com.motlee.android.layouts.HorizontalRatioLinearLayout>

@@ -1,0 +1,124 @@
+package com.motlee.android.fragment;
+
+import java.util.ArrayList;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.ListView;
+
+import com.motlee.android.R;
+import com.motlee.android.adapter.EventListAdapter;
+import com.motlee.android.database.DatabaseWrapper;
+import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.StreamListHandler;
+import com.motlee.android.object.event.UpdatedEventDetailEvent;
+import com.motlee.android.object.event.UpdatedEventDetailListener;
+import com.motlee.android.service.StreamListService;
+
+public class TagFragment extends BaseMotleeFragment
+{
+
+	private View view;
+	private View progressBar; 
+	private ListView tagList;
+	
+	private String mTag = "";
+	
+	private DatabaseWrapper dbWrapper;
+	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+        IntentFilter streamListNotifyChange = new IntentFilter();
+        streamListNotifyChange.addAction(StreamListService.NOTIFY_LIST_CHANGE);
+        getActivity().registerReceiver(notifyStreamListChange, streamListNotifyChange);
+		
+		setPageHeader(mTag);
+		setHeaderIcon(EXPLORE);
+	}
+	
+	@Override
+	public void onPause()
+	{
+		super.onPause();
+
+    	getActivity().unregisterReceiver(notifyStreamListChange);
+	}
+	
+	public BroadcastReceiver notifyStreamListChange = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+
+			if (intent.getStringExtra(StreamListService.KEY).equals(StreamListHandler.getKeyFromTag(mTag)))
+			{
+				updateEventAdapter();
+				
+				if (intent.getBooleanExtra(StreamListService.FORCE_RESET, false))
+				{
+					updateEventAdapter(EventServiceBuffer.NO_EVENT_FILTER, true);
+				}
+				else
+				{
+					updateEventAdapter(EventServiceBuffer.NO_EVENT_FILTER, false);
+				}
+			}
+		}
+		
+	};
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	{
+	    view = inflater.inflate(R.layout.explore_tag_page, null);
+	    
+	    dbWrapper = new DatabaseWrapper(getActivity().getApplicationContext());
+	    
+	    progressBar = view.findViewById(R.id.progress_bar);
+	    
+	    tagList = (ListView) view.findViewById(R.id.tag_list);
+	    
+	    showLeftHeaderButton();
+	    
+	    return view;
+	}
+	
+	public void setTag(String tag)
+	{
+		mTag = tag;
+	}
+
+	public void myEventOccurred(UpdatedEventDetailEvent evt) {
+		
+		if (evt.getEventType().contains(StreamListHandler.))
+		{
+			EventServiceBuffer.removeEventDetailListener(this);
+			
+			ArrayList<EventDetail> currentStreams = new ArrayList<EventDetail>();
+			
+			ArrayList<EventDetail> streamsToShow = new ArrayList<EventDetail>(dbWrapper.getEvents(evt.getEventIds()));
+			
+			ArrayList<EventDetail> streamsToDisplay = new ArrayList<EventDetail>();
+			
+			StreamListService.amalgamateStreamList(true, currentStreams, streamsToShow, streamsToDisplay);
+			
+
+		}
+	}
+
+	public void updatedEventOccurred(Integer eventId) {
+		// TODO Auto-generated method stub
+		
+	}
+}

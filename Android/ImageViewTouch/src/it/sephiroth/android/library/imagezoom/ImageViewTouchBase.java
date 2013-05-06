@@ -4,6 +4,7 @@ import it.sephiroth.android.library.imagezoom.easing.Cubic;
 import it.sephiroth.android.library.imagezoom.easing.Easing;
 import it.sephiroth.android.library.imagezoom.graphics.FastBitmapDrawable;
 import it.sephiroth.android.library.imagezoom.utils.IDisposable;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -47,6 +48,8 @@ public class ImageViewTouchBase extends ImageView implements IDisposable {
 	protected RectF mBitmapRect = new RectF();
 	protected RectF mCenterRect = new RectF();
 	protected RectF mScrollRect = new RectF();
+	
+	private int mVerticalOffset = 0;
 
 	private OnBitmapChangedListener mListener;
 
@@ -77,6 +80,11 @@ public class ImageViewTouchBase extends ImageView implements IDisposable {
 			mFitToScreen = value;
 			requestLayout();
 		}
+	}
+	
+	public void setVerticalOffset(int verticalOffset)
+	{
+		mVerticalOffset = verticalOffset;
 	}
 
 	public void setMinZoom( float value ) {
@@ -301,21 +309,21 @@ public class ImageViewTouchBase extends ImageView implements IDisposable {
 		float h = drawable.getIntrinsicHeight();
 		matrix.reset();
 
-		if ( w > viewWidth || h > viewHeight ) {
+		//if ( w >= viewWidth || h >= viewHeight ) {
 			float widthScale = Math.min( viewWidth / w, 2.0f );
 			float heightScale = Math.min( viewHeight / h, 2.0f );
-			float scale = Math.min( widthScale, heightScale );
+			float scale = Math.min( widthScale, heightScale);
 			Log.d( LOG_TAG, "scale: " + scale );
 			matrix.postScale( scale, scale );
 			float tw = ( viewWidth - w * scale ) / 2.0f;
 			float th = ( viewHeight - h * scale ) / 2.0f;
-			matrix.postTranslate( tw, th );
-		} else {
+			matrix.postTranslate( tw, th * .90f);
+		/*} else {
 			float tw = ( viewWidth - w ) / 2.0f;
 			float th = ( viewHeight - h ) / 2.0f;
 			matrix.postTranslate( tw, th );
 			Log.d( LOG_TAG, "scale: null" );
-		}
+		}*/
 	}
 
 	/**
@@ -334,7 +342,7 @@ public class ImageViewTouchBase extends ImageView implements IDisposable {
 		float heightScale = Math.min( viewHeight / h, MAX_ZOOM );
 		float scale = Math.min( widthScale, heightScale );
 		matrix.postScale( scale, scale );
-		matrix.postTranslate( ( viewWidth - w * scale ) / MAX_ZOOM, ( viewHeight - h * scale ) / MAX_ZOOM );
+		matrix.postTranslate( ( viewWidth - w * scale ) / MAX_ZOOM, (int) ((double) ( viewHeight - h * scale ) / MAX_ZOOM * .90));
 	}
 
 	protected float getValue( Matrix matrix, int whichValue ) {
@@ -360,6 +368,7 @@ public class ImageViewTouchBase extends ImageView implements IDisposable {
 		return getValue( matrix, Matrix.MSCALE_X );
 	}
 
+	@SuppressLint("Override")
 	public float getRotation() {
 		return 0;
 	}
@@ -374,6 +383,7 @@ public class ImageViewTouchBase extends ImageView implements IDisposable {
 		if ( drawable == null ) return;
 		RectF rect = getCenter( mSuppMatrix, horizontal, vertical );
 		if ( rect.left != 0 || rect.top != 0 ) {
+			rect.top = rect.top - mVerticalOffset;
 			Log.d( LOG_TAG, "center.rect: " + rect.left + "x" + rect.top );
 			postTranslate( rect.left, rect.top );
 		}
@@ -425,13 +435,13 @@ public class ImageViewTouchBase extends ImageView implements IDisposable {
 
 	protected void zoomTo( float scale ) {
 		float cx = getWidth() / 2F;
-		float cy = getHeight() / 2F;
+		float cy = (getHeight() / 2F) - mVerticalOffset;
 		zoomTo( scale, cx, cy );
 	}
 
 	public void zoomTo( float scale, float durationMs ) {
 		float cx = getWidth() / 2F;
-		float cy = getHeight() / 2F;
+		float cy = (getHeight() / 2F) - mVerticalOffset;
 		zoomTo( scale, cx, cy, durationMs );
 	}
 
@@ -445,7 +455,7 @@ public class ImageViewTouchBase extends ImageView implements IDisposable {
 		center( true, true );
 	}
 
-	protected void onZoom( float scale ) {}
+	public void onZoom( float scale ) {}
 
 	protected void onZoomAnimationCompleted( float scale ) {}
 

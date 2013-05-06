@@ -125,7 +125,10 @@ private DatabaseWrapper dbWrapper;
 	        });
 	    }
 		
-		initMap();
+	    if (getMap() != null)
+	    {
+	    	initMap();
+	    }
 		
 		return view;
 	}

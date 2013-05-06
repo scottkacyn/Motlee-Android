@@ -44,6 +44,18 @@ public class UserInfo implements Comparable<UserInfo> {
 	@DatabaseField(columnName = "sign_in_count", dataType = DataType.INTEGER_OBJ)
 	public Integer sign_in_count;
 	
+	@DatabaseField(columnName = "follow_status", dataType = DataType.STRING)
+	public String follow_status;
+	
+	@DatabaseField(columnName = "is_private", dataType = DataType.BOOLEAN_OBJ)
+	public Boolean is_private;
+	
+	@DatabaseField(columnName = "following_count", dataType = DataType.INTEGER_OBJ)
+	public Integer following_count;
+	
+	@DatabaseField(columnName = "follower_count", dataType = DataType.INTEGER_OBJ)
+	public Integer follower_count;
+	
 	public UserInfo(int userID, int facebookID, String name, String email, Gender gender, String profilePicture, Date birthDate, LocationInfo locationInfo)
 	{
 		this.id = userID;

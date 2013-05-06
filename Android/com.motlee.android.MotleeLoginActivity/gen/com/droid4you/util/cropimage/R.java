@@ -8,11 +8,11 @@ package com.droid4you.util.cropimage;
 
 public final class R {
 	public static final class id {
-		public static final int image = 0x7f060088;
-		public static final int save = 0x7f060089;
-		public static final int discard = 0x7f06008a;
-		public static final int rotateLeft = 0x7f06008b;
-		public static final int rotateRight = 0x7f06008c;
+		public static final int image = 0x7f06008c;
+		public static final int save = 0x7f06008d;
+		public static final int discard = 0x7f06008e;
+		public static final int rotateLeft = 0x7f06008f;
+		public static final int rotateRight = 0x7f060090;
 	}
 	public static final class string {
 		public static final int hello = 0x7f07000b;
@@ -20,12 +20,12 @@ public final class R {
 	}
 	public static final class layout {
 		public static final int cropimage = 0x7f030028;
-		public static final int main = 0x7f030076;
+		public static final int main = 0x7f03007a;
 	}
 	public static final class drawable {
 		public static final int camera_crop_width = 0x7f020016;
 		public static final int camera_crop_height = 0x7f020015;
-		public static final int icon = 0x7f0200f9;
-		public static final int indicator_autocrop = 0x7f020126;
+		public static final int icon = 0x7f0200ff;
+		public static final int indicator_autocrop = 0x7f02012f;
 	}
 }

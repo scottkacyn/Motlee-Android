@@ -27,6 +27,14 @@
        android:layout_gravity="center"
        android:visibility="gone"/>
     
+   <ViewStub
+       android:id="@+id/stub_content"
+       android:inflatedId="@+id/no_event_header"
+       android:layout="@layout/event_list_no_event_text"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_gravity="center" />
+   
        <!-- <include layout="@layout/camera_button"
           android:id="@+id/camera_button"
           android:layout_gravity="bottom"

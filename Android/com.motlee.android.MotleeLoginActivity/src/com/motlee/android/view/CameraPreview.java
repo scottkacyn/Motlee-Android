@@ -42,7 +42,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         try {
         	Camera.Parameters parameters = getOptimalPreviewSize(mCamera);
         	
-        	this.setLayoutParams(new FrameLayout.LayoutParams(parameters.getPreviewSize().height, parameters.getPreviewSize().width));
+        	this.setLayoutParams(getLayoutParams(parameters.getPreviewSize()));
             
             parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
             
@@ -60,7 +60,16 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
      }
     
-    public void surfaceDestroyed(SurfaceHolder holder) {
+    private android.view.ViewGroup.LayoutParams getLayoutParams(Size previewSize) {
+		
+    	int displayWidth = SharePref.getIntPref(getContext(), SharePref.DISPLAY_WIDTH);
+    	
+    	double scale = (double) displayWidth / (double) previewSize.height;
+    	int displayHeight = (int) ((double) previewSize.width * scale); 
+    	
+		return new FrameLayout.LayoutParams(displayWidth, displayHeight);
+	}
+	public void surfaceDestroyed(SurfaceHolder holder) {
        // empty. Take care of releasing the Camera preview in your activity.
     }
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
@@ -81,6 +90,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // start preview with new settings
         try {
             Camera.Parameters parameters = getOptimalPreviewSize(mCamera);
+            
+            this.setLayoutParams(getLayoutParams(parameters.getPreviewSize()));
             
             parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
             
@@ -144,11 +155,11 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         {        	
         	double ratio = (double) size.width / (double) size.height;
         	
-        	Log.d("CameraActivity", "Preview: width: " + size.width + ", height: " + size.height + ", ratio: " + ratio);
+        	//Log.d("CameraActivity", "Preview: width: " + size.width + ", height: " + size.height + ", ratio: " + ratio);
         	
         	for (Double pictureRatio : pictureSizes.keySet())
         	{
-        		Log.d("CameraActivity", "    Picture: width: " + pictureSizes.get(pictureRatio).width + ", height: " + pictureSizes.get(pictureRatio).height + ", ratio: " + pictureRatio);
+        		//Log.d("CameraActivity", "    Picture: width: " + pictureSizes.get(pictureRatio).width + ", height: " + pictureSizes.get(pictureRatio).height + ", ratio: " + pictureRatio);
         		
             	if (ratio < pictureRatio + 0.05 && ratio > pictureRatio - 0.05)
             	{
@@ -165,6 +176,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         if (finalPreviewSize != null && finalPictureSize != null)
         {
         	Parameters params = camera.getParameters();
+        	
+        	Log.d("CameraPreview", "finalPictureWidth: " + finalPictureSize.width + ", finalPictureHeight: " + finalPictureSize.height);
+        	Log.d("CameraPreview", "finalPreviewWidth: " + finalPreviewSize.width + ", finalPreviewHeight: " + finalPreviewSize.height);
+        	
         	params.setPictureSize(finalPictureSize.width, finalPictureSize.height);
         	params.setPreviewSize(finalPreviewSize.width, finalPreviewSize.height);
         	return params;

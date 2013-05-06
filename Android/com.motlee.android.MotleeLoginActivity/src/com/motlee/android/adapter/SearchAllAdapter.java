@@ -92,18 +92,18 @@ public class SearchAllAdapter extends BaseAdapter {
 	
 	public View getView(int position, View convertView, ViewGroup viewGroup) { 
 
-			EventViewHolder holder = new EventViewHolder();
-			
-            if (convertView == null) 
-            {
-            	Log.w(this.toString(), "inflating resource: " + R.layout.search_event_item);
-            	
-                convertView = setEventViewHolder(holder);
-            } 
-            else 
-            {
-            	holder = (EventViewHolder) convertView.getTag();
-            }
+		EventViewHolder holder = new EventViewHolder();
+		
+        if (convertView == null) 
+        {
+        	Log.w(this.toString(), "inflating resource: " + R.layout.search_event_item);
+        	
+            convertView = setEventViewHolder(holder);
+        } 
+        else 
+        {
+        	holder = (EventViewHolder) convertView.getTag();
+        }
             
             if (convertView.getBackground() == null)
             {
@@ -117,6 +117,8 @@ public class SearchAllAdapter extends BaseAdapter {
 		}
     			               
         convertView.setContentDescription(Long.toString(userInfo.uid));
+        
+        Log.d("FacebookFriends", "name: " + userInfo.name + ", uid: " + userInfo.uid);
         
         holder.search_event_name.setText(userInfo.name);
         holder.search_event_name.setTypeface(GlobalVariables.getInstance().getGothamLightFont());
@@ -172,7 +174,7 @@ public class SearchAllAdapter extends BaseAdapter {
             if (prefix == null || prefix.toString().trim().length() == 0) {
             	ArrayList<Integer> list;
                 synchronized (mLock) {
-                    list = new ArrayList<Integer>();
+                    list = new ArrayList<Integer>(mListItemsOriginal);
                 }
                 results.values = list;
                 results.count = list.size();

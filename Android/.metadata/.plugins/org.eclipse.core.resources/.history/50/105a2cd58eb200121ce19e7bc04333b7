@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:orientation="vertical">
+		    
+    <View 
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.00709" 
+        android:background="@android:color/transparent" />
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.87588" >
+    
+	    <FrameLayout
+	        android:layout_width="0dp"
+	        android:layout_weight="0.3912"
+	        android:layout_height="match_parent">
+	        
+	        <ImageView
+		        android:id="@+id/profile_picture"
+		        android:layout_width="match_parent"
+		        android:layout_height="match_parent"
+		        android:scaleType="fitCenter"
+		        android:adjustViewBounds="true"
+		        android:layout_gravity="center"
+		        android:padding="3dp" />
+	        
+	    </FrameLayout>
+	
+	    <LinearLayout
+	        android:layout_width="0dp"
+	        android:layout_weight="0.6088"
+	        android:layout_height="match_parent"
+	        android:orientation="vertical" >
+	        
+	        <FrameLayout 
+	            android:layout_width="match_parent"
+	            android:layout_height="0dp"
+	            android:layout_weight="0.4292">
+	            
+	            <ImageButton 
+	                android:id="@+id/follow_button"
+	                android:layout_width="match_parent"
+	                android:layout_height="match_parent"
+	                android:scaleType="fitXY"
+	                android:padding="10dp"
+	                android:adjustViewBounds="true"
+	                android:src="@drawable/header_right_button" />
+	            
+	            <TextView 
+	                android:id="@+id/follow_button_text"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_gravity="center"
+	                android:text="Follow" />
+	            	            	            
+	        </FrameLayout>
+	        
+	        <LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="0dp"
+	            android:layout_weight="0.5708">
+	            
+	            <LinearLayout
+			         android:id="@+id/profile_events"
+			         android:layout_width="0dp"
+			         android:layout_height="match_parent"
+			         android:layout_weight=".5" 
+			         android:orientation="vertical"
+			         android:clickable="true">
+			         
+			         <FrameLayout
+			             android:layout_width="match_parent"
+			             android:layout_height="0dp"
+			             android:layout_weight=".6667" >
+			             
+			             <ImageView
+			                 android:layout_width="match_parent"
+			                 android:layout_height="match_parent"
+			                 android:id="@+id/profile_events_glow"
+			                 android:src="@drawable/user_profile_orange_glow"
+			                 android:adjustViewBounds="true"
+			                 android:visibility="gone" />
+			         
+				         <TextView
+				             android:layout_width="match_parent"
+				             android:layout_height="match_parent"
+				             android:id="@+id/profile_number_events_text"
+				             android:gravity="center"
+				             style="@style/ProfileNumbers"/>
+			         
+			       	 </FrameLayout>
+			         <TextView
+			             android:layout_width="match_parent"
+			             android:layout_height="0dp"
+			             android:layout_weight=".3333"
+			             android:id="@+id/profile_events_text"
+			        	 android:gravity="top|center_horizontal"
+			        	 android:paddingBottom="5dp"
+			        	 android:text="streams"
+			        	 style="@style/CodeFont.Small" />
+			         
+			     </LinearLayout>   
+			     
+	            <LinearLayout
+			         android:id="@+id/profile_photos"
+			         android:layout_width="0dp"
+			         android:layout_height="match_parent"
+			         android:layout_weight=".5" 
+			         android:orientation="vertical"
+			         android:clickable="true">
+			         
+			         <FrameLayout
+			             android:layout_width="match_parent"
+			             android:layout_height="0dp"
+			             android:layout_weight=".6667" >
+			             
+			             <ImageView
+			                 android:layout_width="match_parent"
+			                 android:layout_height="match_parent"
+			                 android:id="@+id/profile_number_glow"
+			                 android:src="@drawable/user_profile_orange_glow"
+			                 android:adjustViewBounds="true" />
+			             
+				         <TextView
+				             android:layout_width="match_parent"
+				             android:layout_height="match_parent"
+				             android:id="@+id/profile_number_photos_text"
+				             android:gravity="center"
+				             style="@style/ProfileNumbers"/>
+				         
+			         </FrameLayout>
+			         <TextView
+			             android:layout_width="match_parent"
+			             android:layout_height="0dp"
+			             android:layout_weight=".3333"
+			             android:id="@+id/profile_photos_text"
+			        	 android:gravity="top|center_horizontal"
+			        	 android:paddingBottom="5dp"
+			        	 android:text="photos"
+			        	 style="@style/CodeFont.Small" />        
+			     </LinearLayout>
+	            
+	            
+	        </LinearLayout>
+	        
+	        
+     	</LinearLayout>   
+	     
+     </LinearLayout>
+     
+	 <View
+	     android:layout_height="0dp"
+	     android:layout_width="match_parent"
+	     android:layout_weight="0.117021"
+	     android:background="@android:color/transparent" />
+	 
+</com.motlee.android.layouts.HorizontalRatioLinearLayout>

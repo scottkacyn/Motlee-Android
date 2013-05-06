@@ -16,6 +16,7 @@ import com.motlee.android.object.EventDetail;
 import com.motlee.android.object.EventListParams;
 import com.motlee.android.object.EventServiceBuffer;
 import com.motlee.android.object.GlobalVariables;
+import com.motlee.android.object.SharePref;
 import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 import com.motlee.android.service.StreamListService;
@@ -35,6 +36,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnFocusChangeListener;
+import android.view.ViewStub;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -73,21 +75,17 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
 	
 	private int searchBarHeight = 0;
 	
-	private EditText editText;
-	
-	private String mSearchText;
-	private boolean hasSearchTextChangedSinceLastQuery;
-	private Timer searchTextTimer;
-	
 	private View progressBar;
 	
-	private View searchBar;
-	
 	private View noEventHeader;
+	
+	private int mVerticalOffset = 0;
 	
 	private DatabaseWrapper dbWrapper;
 	
 	private ListView eventList;
+	
+	private int mTotalItemCount = 0;
 	
 	@Override
 	public void onResume()
@@ -96,11 +94,6 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
 		if (params != null)
 		{
 			this.setPageHeader(params.headerText);
-		}
-		
-		if (editText != null)
-		{
-			mSearchText = editText.getText().toString();
 		}
 	}
 
@@ -115,12 +108,11 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
 	}
 	
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
-	        Bundle savedInstanceState)
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		
 		Log.w(tag, "onCreateView");
-		view = (View) getActivity().getLayoutInflater().inflate(R.layout.activity_event_list, null);
+		view = inflater.inflate(R.layout.activity_event_list, null);
 		
 		//view.findViewById(R.id.buffer).setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, GlobalVariables.getInstance().getMenuButtonsHeight()));
 		ListView listView = (ListView) view.findViewById(R.id.event_list);
@@ -134,12 +126,10 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
 				//listView.setSelection(getPullToRefreshListView().getHeaderViewsCount());
 			}
 		}
-		
+
 		setBlankFooter();
 		
-		setUpNoEventHeader();
-		
-		setUpSearchBar();
+		//setUpSearchBar();
 		
 		eventList = (ListView) view.findViewById(R.id.event_list);
 		
@@ -177,14 +167,14 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
 		
 		return view;
 	}
-	
+
 	public void setProgressBar(View progressBar)
 	{
 		this.progressBar = progressBar;
 		this.hideProgressBar = false;
 	}
 	
-	private void setUpSearchBar() {
+	/*private void setUpSearchBar() {
 		
 		searchBar = getActivity().getLayoutInflater().inflate(R.layout.search_bar, null);
 		DrawableWithHeight drawable = DrawableCache.getDrawable(R.drawable.search_text_box, GlobalVariables.DISPLAY_WIDTH);
@@ -213,9 +203,9 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
 		editText.setOnFocusChangeListener(focusChangeListener);
 		editText.addTextChangedListener(mOnSearchBoxTextChanged);
 		
-	}
+	}*/
 	
-	private OnFocusChangeListener focusChangeListener = new OnFocusChangeListener(){
+	/*private OnFocusChangeListener focusChangeListener = new OnFocusChangeListener(){
 		// if we have focus, change color for input text
         public void onFocusChange(View v, boolean hasFocus) {
             if (hasFocus) {
@@ -298,7 +288,7 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
             searchTextTimer.cancel();
             searchTextTimer = null;
         }
-    }
+    }*/
 
 	private boolean adapterHasNoEvents()
 	{
@@ -307,17 +297,18 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
 	
 	private void setUpNoEventHeader()
 	{
-		noEventHeader = getActivity().getLayoutInflater().inflate(R.layout.event_list_no_event_text, null);
+		if (noEventHeader == null)
+		{
+			noEventHeader = ((ViewStub) getActivity().findViewById(R.id.stub_content)).inflate();
+			
+			((TextView) noEventHeader.findViewById(R.id.event_list_no_event_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
+		}
 		
-		((TextView) noEventHeader.findViewById(R.id.event_list_no_event_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
-		
-		ListView listView = (ListView) view.findViewById(R.id.event_list);
-		listView.addHeaderView(noEventHeader);
-		
-		if (adapterHasNoEvents() || progressBar != null || hideNoEventText)
+		noEventHeader.setVisibility(View.VISIBLE);
+		/*if (adapterHasNoEvents() || progressBar != null || hideNoEventText)
 		{
 			noEventHeader.findViewById(R.id.event_list_no_event_text).setVisibility(View.GONE);
-		}
+		}*/
 	}
 
 	private void setBlankFooter() {
@@ -352,6 +343,8 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
 		public void onScroll(AbsListView view, int firstVisibleItem, 
 		        int visibleItemCount, int totalItemCount) {
 			
+			mTotalItemCount = totalItemCount;
+			
 			if (view.getLastVisiblePosition() + 1 ==  totalItemCount)
 			{
 				Log.d("EventListFragment", "gettingMoreEvents: " + gettingMoreEvents);
@@ -361,11 +354,15 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
 					
 					gettingMoreEvents = true;
 					
-					EventServiceBuffer.setEventDetailListener(EventListFragment.this);
+		    		Intent refreshStream = new Intent(getActivity(), StreamListService.class);
+		    		refreshStream.putExtra(StreamListService.PAGING, true);
+		    		getActivity().startService(refreshStream);
+					
+					/*EventServiceBuffer.setEventDetailListener(EventListFragment.this);
 					
 					Log.d("EventListFragment", "sending call for more events");
 					
-					EventServiceBuffer.getMoreEventsFromService();
+					EventServiceBuffer.getMoreEventsFromService();*/
 				}
 			}
 			
@@ -415,24 +412,24 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
 					listView.setSelection(getPullToRefreshListView().getHeaderViewsCount());
 					progressBar = null;
 				}
-				
-				if (noEventHeader != null)
+
+				if (!adapterHasNoEvents())
 				{
-					if (!adapterHasNoEvents())
+					if (noEventHeader != null)
 					{
-						noEventHeader.findViewById(R.id.event_list_no_event_text).setVisibility(View.GONE);
-						searchBar.findViewById(R.id.search_text_box_background).setVisibility(View.VISIBLE);
-						if (!editText.hasFocus())
-						{
-							//listView.setSelection(listView.getHeaderViewsCount());
-						}
+						noEventHeader.setVisibility(View.GONE);
 					}
-					else
+					/*searchBar.findViewById(R.id.search_text_box_background).setVisibility(View.VISIBLE);
+					if (!editText.hasFocus())
 					{
-						Log.d("EventListFragment", "showingNoEventText");
-						noEventHeader.findViewById(R.id.event_list_no_event_text).setVisibility(View.VISIBLE);
-						searchBar.findViewById(R.id.search_text_box_background).setVisibility(View.GONE);
-					}
+						//listView.setSelection(listView.getHeaderViewsCount());
+					}*/
+				}
+				else
+				{
+					Log.d("EventListFragment", "showingNoEventText");
+					setUpNoEventHeader();
+					//searchBar.findViewById(R.id.search_text_box_background).setVisibility(View.GONE);
 				}
 
 			}
@@ -488,7 +485,6 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
             	
             	Intent updateStreamList = new Intent(getActivity(), StreamListService.class);
             	updateStreamList.putExtra(StreamListService.PULL_FROM_SERVER, true);
-            	updateStreamList.putExtra(StreamListService.STREAM_FILTER, params.dataContent);
             	updateStreamList.putExtra(StreamListService.FORCE_RESET, true);
             	getActivity().startService(updateStreamList);
             }
@@ -497,7 +493,7 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
 
 	public void myEventOccurred(UpdatedEventDetailEvent evt) {
 		
-		Log.d("EventListFragment", "myEventOccurred, onRefresh");
+		/*Log.d("EventListFragment", "myEventOccurred, onRefresh");
 		
 		EventServiceBuffer.removeEventDetailListener(this);
 		
@@ -505,7 +501,6 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
 		{
 			
     		Intent refreshStream = new Intent(getActivity(), StreamListService.class);
-    		refreshStream.putExtra(StreamListService.STREAM_FILTER, params.dataContent);
     		getActivity().startService(refreshStream);
 
 			//((EventListActivity) getActivity()).updateEventAdapter(params.dataContent, false);
@@ -514,7 +509,7 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
 			/*for (Integer eventID : evt.getEventIds())
 			{
 				mEventListAdapter.add(eventID);
-			}*/
+			}
 			
 			if (gettingMoreEvents)
 			{
@@ -537,14 +532,22 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
 					getPullToRefreshListView().setOnScrollListener(null);
 				}
 			}
-		}
+		}*/
 	}
 	
 	public void setDoneGettingMoreEvents()
 	{
 		if (bottomProgressBar != null)
 		{
-			bottomProgressBar.setVisibility(View.GONE);
+			if (bottomProgressBar.getVisibility() == View.VISIBLE)
+			{
+				bottomProgressBar.setVisibility(View.GONE);
+
+				if (eventList.getLastVisiblePosition() + 1 ==  eventList.getCount())
+				{
+					eventList.setOnScrollListener(null);
+				}
+			}
 		}
 		gettingMoreEvents = false;
 	}
@@ -587,12 +590,12 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
 		
 		mEventListAdapter = eAdapter;
 		
-		if (editText != null)
+		/*if (editText != null)
 		{
 			mSearchText = "";
 			editText.setText("");
 			editText.clearFocus();
-		}
+		}*/
 		
 		if (eventList != null)
 		{
@@ -607,7 +610,7 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
 		mEventListAdapter.clear();
 		mEventListAdapter.addAll(eventsToDisplay);
 		
-		mEventListAdapter.getFilter().filter(mSearchText);
+		//mEventListAdapter.getFilter().filter(mSearchText);
 		
 		Log.d("EventListActivity", "About to notifyDataSetChanged");
 		mEventListAdapter.notifyDataSetChanged();
@@ -622,15 +625,5 @@ public class EventListFragment extends BaseMotleeFragment implements UpdatedEven
 	public void updatedEventOccurred(Integer eventId) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public void onPause()
-	{
-		if (editText.getText().toString().trim().equals(""))
-		{
-			editText.clearFocus();
-		}
-		super.onPause();
 	}
 }

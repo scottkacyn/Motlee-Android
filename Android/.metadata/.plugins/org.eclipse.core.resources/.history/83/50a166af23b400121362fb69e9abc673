@@ -1,0 +1,112 @@
+package com.motlee.android.object;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
+import android.content.Context;
+
+public class StreamListHandler {
+	
+	public final static String HOME = "home";
+	public final static String TAG = "tag:";
+	public final static String USER = "user:";
+	
+	private static HashMap<String, ArrayList<EventDetail>> eventDetailMap = new HashMap<String, ArrayList<EventDetail>>();
+	
+	private static HashMap<String, Boolean> streamUpdatedMap = new HashMap<String, Boolean>();
+	
+	public static boolean RESET_LIST = false;
+	
+	
+	public static String getKeyFromTag(String tag)
+	{
+		return TAG + tag;
+	}
+	
+	public static String getKeyFromUser(Integer userId)
+	{
+		return USER + userId;
+	}
+	
+	public static Set<String> getCurrentEventKeys()
+	{
+		return eventDetailMap.keySet();
+	}
+	
+	public static ArrayList<EventDetail> getCurrentStreamList(String key)
+	{
+		if (eventDetailMap.containsKey(key))
+		{
+			return eventDetailMap.get(key);
+		}
+		else
+		{
+			return new ArrayList<EventDetail>();
+		}
+	}
+	
+	public static boolean getStreamList(String key, ArrayList<EventDetail> streamList)
+	{
+		streamList.clear();
+		if (eventDetailMap.containsKey(key))
+		{
+			streamList.addAll(eventDetailMap.get(key));
+		}
+		else
+		{
+			eventDetailMap.put(key, new ArrayList<EventDetail>());
+		}
+		
+		if (!streamUpdatedMap.containsKey(key))
+		{
+			streamUpdatedMap.put(key, false);
+		}
+		
+		if (streamUpdatedMap.get(key))
+		{
+			streamUpdatedMap.put(key, false);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	public static void updateStreamList(String key, ArrayList<EventDetail> streamList)
+	{
+		streamUpdatedMap.put(key, true);
+		eventDetailMap.put(key, streamList);
+	}
+	
+	public static Set<Integer> getEventIdsForKey(Context context, String key)
+	{
+		return SharePref.getIntArrayPref(context, key);
+	}
+	
+	public static ArrayList<Integer> setAndGetEventIdsForKey(Context context, String key, ArrayList<Integer> eventIds)
+	{
+		if (eventIds.size() >= GlobalVariables.MAX_STREAMS_FROM_SERVER)
+		{
+			SharePref.setIntArrayPref(context, key, new HashSet<Integer>(eventIds));
+			return new HashSet<Integer>(eventIds);
+		}
+		else
+		{
+			ArrayList<Integer> currentEventIds = new ArrayList<Integer>(SharePref.getIntArrayPref(context, key));
+			for (int i = eventIds.size() - 1; i == 0; i--)
+			{
+				if (!currentEventIds.contains(eventIds.get(i)))
+				{
+					currentEventIds.add(eventIds.get(i), 0);
+				}
+			}
+			
+			SharePref.setIntArrayPref(context, key, new HashSet<Integer>(currentEventIds));
+			
+			return currentEventIds;
+		}
+	}
+}

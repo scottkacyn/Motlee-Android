@@ -42,8 +42,12 @@ import com.google.gson.JsonParser;
 import com.motlee.android.database.DatabaseHelper;
 import com.motlee.android.database.DatabaseWrapper;
 import com.motlee.android.enums.EventItemType;
+import com.motlee.android.fragment.UserProfilePageFragment;
 import com.motlee.android.object.event.DeletePhotoListener;
+import com.motlee.android.object.event.FollowListener;
+import com.motlee.android.object.event.MakePrivateListener;
 import com.motlee.android.object.event.SettingsListener;
+import com.motlee.android.object.event.TagListener;
 import com.motlee.android.object.event.UpdatedAttendeeListener;
 import com.motlee.android.object.event.UpdatedCommentEvent;
 import com.motlee.android.object.event.UpdatedCommentListener;
@@ -61,7 +65,7 @@ import com.motlee.android.object.event.UpdatedPhotoListener;
 import com.motlee.android.object.event.UpdatedStoryEvent;
 import com.motlee.android.object.event.UpdatedStoryListener;
 import com.motlee.android.object.event.UserInfoListener;
-import com.motlee.android.object.event.UserWithEventsPhotosEvent;
+import com.motlee.android.object.event.UserEvent;
 import com.motlee.android.service.RubyService;
 import com.motlee.android.service.StreamListService;
 
@@ -94,7 +98,6 @@ public class EventServiceBuffer extends Object {
     public static final int createEventSuccessCode = HttpStatus.SC_CREATED + RubyService.CREATE_EVEVT;
     public static final int postStorySuccessCode = HttpStatus.SC_CREATED + RubyService.STORY;
     public static final int addAttendeeSuccessCode = HttpStatus.SC_OK + RubyService.ADD_ATTENDEE;
-    public static final int fomoSuccessCode = HttpStatus.SC_CREATED + RubyService.FOMOS;
     public static final int photoSuccessCode = HttpStatus.SC_OK + RubyService.PHOTO;
     public static final int postPhotoSuccessCode = HttpStatus.SC_CREATED + RubyService.PHOTO;
     public static final int singleEventSuccessCode = HttpStatus.SC_OK + RubyService.EVENT_SINGLE;
@@ -110,6 +113,12 @@ public class EventServiceBuffer extends Object {
     public static final int deleteCommentSuccessCode = HttpStatus.SC_OK + RubyService.DELETE_COMMENT;
     public static final int facebookShareSuccessCode = HttpStatus.SC_OK + RubyService.FACEBOOK;
     public static final int registerDeviceSuccessCode = HttpStatus.SC_OK - 1;
+    public static final int followSuccessCode = HttpStatus.SC_OK + RubyService.FOLLOW;
+    public static final int privateSuccessCode = HttpStatus.SC_OK + RubyService.PRIVATE;
+    public static final int followerSuccessCode = HttpStatus.SC_OK + RubyService.FOLLOWERS;
+    public static final int followingSuccessCode = HttpStatus.SC_OK + RubyService.FOLLOWING;
+    public static final int tagSuccessCode = HttpStatus.SC_OK + RubyService.TAGS;
+    public static final int trendingTagSuccessCode = HttpStatus.SC_OK + RubyService.TRENDING_TAGS;
     
     private static Vector<UpdatedEventDetailListener> mEventDetailListener;
     private static Vector<UpdatedLikeListener> mLikeListener;
@@ -123,6 +132,9 @@ public class EventServiceBuffer extends Object {
 	private static Vector<UpdatedNotificationListener> mNotificationListener;
 	private static DeletePhotoListener mDeletePhotoListener; 
 	private static Vector<SettingsListener> mSettingsListener;
+	private static Vector<FollowListener> mFollowListener;
+	private static Vector<MakePrivateListener> mPrivateListener;
+	private static Vector<TagListener> mTagListener;
 	
 	private static ArrayList<Bundle> photosToSend = new ArrayList<Bundle>();
 	
@@ -158,6 +170,10 @@ public class EventServiceBuffer extends Object {
                 	{
                 		onRESTResult(resultCode, resultData.getString(RubyService.REST_RESULT), resultData.getParcelable(RubyService.EXTRA_MESSAGE_ITEM));
                 	}
+                	else if (resultData.containsKey(RubyService.EVENT_TYPE))
+                	{
+                		onRESTResult(resultCode, resultData.getString(RubyService.REST_RESULT), resultData.getString(RubyService.EVENT_TYPE));
+                	}
                 	else
                 	{
                 		onRESTResult(resultCode, resultData.getString(RubyService.REST_RESULT));
@@ -167,7 +183,6 @@ public class EventServiceBuffer extends Object {
                     onRESTResult(resultCode, null);
                 }
             }
-            
         };
 	}
 
@@ -179,6 +194,48 @@ public class EventServiceBuffer extends Object {
 	public static void setStoryListener(UpdatedStoryListener listener)
 	{
 		mStoryListener = listener;
+	}
+	
+	public static void setTagListener(TagListener listener)
+	{
+		if (mTagListener == null)
+			mTagListener = new Vector<TagListener>();
+		mTagListener.addElement(listener);
+	}
+	
+	public static void removeTagListener(TagListener listener)
+	{
+		if (mTagListener == null)
+			mTagListener = new Vector<TagListener>();
+		mTagListener.removeElement(listener);
+	}
+	
+	public static void setPrivateListener(MakePrivateListener listener)
+	{
+		if (mPrivateListener == null)
+			mPrivateListener = new Vector<MakePrivateListener>();
+		mPrivateListener.addElement(listener);
+	}
+	
+	public static void removePrivateListener(MakePrivateListener listener)
+	{
+		if (mPrivateListener == null)
+			mPrivateListener = new Vector<MakePrivateListener>();
+		mPrivateListener.removeElement(listener);
+	}
+	
+	public static void setFollowListener(FollowListener listener)
+	{
+		if (mFollowListener == null)
+			mFollowListener = new Vector<FollowListener>();
+		mFollowListener.addElement(listener);
+	}
+	
+	public static void removeFollowListener(FollowListener listener)
+	{
+		if (mFollowListener == null)
+			mFollowListener = new Vector<FollowListener>();
+		mFollowListener.removeElement(listener);
 	}
 	
 	public static void setPhotoListener(UpdatedPhotoListener listener)
@@ -363,14 +420,108 @@ public class EventServiceBuffer extends Object {
         mContext.startService(intent);
 	}
 	
+	public static void toggleFollow(Integer userId)
+	{
+		Bundle params = new Bundle();
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+		params.putString("followed_id", userId.toString());
+		
+        Intent intent = new Intent(mContext, RubyService.class);
+        intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + SharePref.getIntPref(mContext, SharePref.USER_ID) + "/follow"));
+		
+        // Here we are going to place our REST call parameters. Note that
+        // we could have just used Uri.Builder and appendQueryParameter()
+        // here, but I wanted to illustrate how to use the Bundle params.
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.POST);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.FOLLOW);
+        intent.putExtra(RubyService.EXTRA_PARAMS, params);
+        
+        mContext.startService(intent);
+	}
+	
+	public static void togglePrivateAccount()
+	{
+		Bundle params = new Bundle();
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+		
+		UserInfo user = dbWrapper.getUser(SharePref.getIntPref(mContext, SharePref.USER_ID));
+		
+		if (user.is_private)
+		{
+			params.putString("is_private", "false");
+		}
+		else
+		{
+			params.putString("is_private", "true");
+		}
+		
+        Intent intent = new Intent(mContext, RubyService.class);
+        intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + SharePref.getIntPref(mContext, SharePref.USER_ID) + "/update_privacy"));
+		
+        // Here we are going to place our REST call parameters. Note that
+        // we could have just used Uri.Builder and appendQueryParameter()
+        // here, but I wanted to illustrate how to use the Bundle params.
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.PUT);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.PRIVATE);
+        intent.putExtra(RubyService.EXTRA_PARAMS, params);
+        
+        mContext.startService(intent);
+	}
+	
+	public static void getFollowersForUser(Integer userId)
+	{
+		Bundle params = new Bundle();
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+		
+        Intent intent = new Intent(mContext, RubyService.class);
+        intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + userId + "/followers"));
+		
+        // Here we are going to place our REST call parameters. Note that
+        // we could have just used Uri.Builder and appendQueryParameter()
+        // here, but I wanted to illustrate how to use the Bundle params.
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.FOLLOWERS);
+        intent.putExtra(RubyService.EXTRA_PARAMS, params);
+        
+        mContext.startService(intent);
+	}
+	
+	public static void getFollowingForUser(Integer userId)
+	{
+		Bundle params = new Bundle();
+		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+		
+        Intent intent = new Intent(mContext, RubyService.class);
+        intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + userId + "/following"));
+		
+        // Here we are going to place our REST call parameters. Note that
+        // we could have just used Uri.Builder and appendQueryParameter()
+        // here, but I wanted to illustrate how to use the Bundle params.
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.FOLLOWING);
+        intent.putExtra(RubyService.EXTRA_PARAMS, params);
+        
+        mContext.startService(intent);
+	}
+	
 	public static void updatePhotoCaption(PhotoItem photo, String caption)
 	{
+		Log.d("Caption", "Caption: " + caption);
 		if (photo.id < 0)
 		{
+			Log.d("Caption", "adding caption: " + photo.id + ", caption: " + caption);
 			captionHash.put(photo.id, caption);
 		}
 		else
 		{
+			photo.caption = caption;
+			
+			dbWrapper.updatePhoto(photo);
+			
 			Bundle params = new Bundle();
 			params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
 			params.putString("caption", caption);
@@ -586,7 +737,7 @@ public class EventServiceBuffer extends Object {
         mContext.startService(intent);
 	}
 	
-	public static void sendFomoToDatabase(int eventId)
+	/*public static void sendFomoToDatabase(int eventId)
 	{
 		Bundle params = new Bundle();
 		params.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
@@ -600,7 +751,7 @@ public class EventServiceBuffer extends Object {
         intent.putExtra(RubyService.EXTRA_PARAMS, params);
         
         mContext.startService(intent);
-	}
+	}*/
 	
 	public static void likeEventItem(EventItem item)
 	{
@@ -909,6 +1060,8 @@ public class EventServiceBuffer extends Object {
 	
 	public static void getUserInfoFromFacebookAccessToken(String accessToken)
 	{
+		Log.d("EventServiceBuffer", "accessToken: " + accessToken);
+		
 		SharePref.setStringPref(mContext, SharePref.ACCESS_TOKEN, accessToken);
 		
         Intent intent = new Intent(mContext, RubyService.class);
@@ -960,11 +1113,11 @@ public class EventServiceBuffer extends Object {
 	public static void getUserInfoFromService()
 	{
         Intent intent = new Intent(mContext, RubyService.class);
-        intent.setData(Uri.parse(WEB_SERVICE_URL + "users"));
+        intent.setData(Uri.parse(WEB_SERVICE_URL + "users/" + SharePref.getIntPref(mContext, SharePref.USER_ID)));
         
         Bundle formData = new Bundle();
         formData.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
-        formData.putString("type", "verbose");
+        //formData.putString("type", "verbose");
         
         intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
         intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
@@ -978,7 +1131,7 @@ public class EventServiceBuffer extends Object {
     {      
     	// No filter for my events/ nearby returns all events
     	
-    	getEventsFromService(NO_EVENT_FILTER);
+    	getEventsFromService(StreamListHandler.HOME);
     }
 	
 	public static void getEventsFromService(String eventParam)
@@ -999,11 +1152,6 @@ public class EventServiceBuffer extends Object {
         // Here we are going to place our REST call parameters. Note that
         // we could have just used Uri.Builder and appendQueryParameter()
         // here, but I wanted to illustrate how to use the Bundle params.
-
-		if (eventParam != NO_EVENT_FILTER)
-		{
-			formData.putString("page", eventParam);
-		}
 		
 		if (SharePref.getStringPref(mContext.getApplicationContext(), SharePref.LAST_UPDATED) != "")
 		{
@@ -1028,13 +1176,19 @@ public class EventServiceBuffer extends Object {
         intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
         intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.EVENT);
         intent.putExtra(RubyService.EXTRA_PARAMS, formData);
+        intent.putExtra(RubyService.EVENT_TYPE, eventParam);
         // Here we send our Intent to our RESTService.
         sw.start();
         
         mContext.startService(intent);
 	}
-    
+	
 	public static void getMoreEventsFromService()
+	{
+		getMoreEventsFromService(StreamListHandler.HOME);
+	}
+    
+	public static void getMoreEventsFromService(String eventType)
 	{
 		Log.d("EventServiceBuffer", "Getting events from the database");
 		
@@ -1050,7 +1204,7 @@ public class EventServiceBuffer extends Object {
         formData.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
         formData.putString("access_token", SharePref.getStringPref(mContext, SharePref.ACCESS_TOKEN));
         formData.putString("paging", "true"); 
-        Date updatedAt = dbWrapper.getOldestUpdatedTime();
+        Date updatedAt = dbWrapper.getOldestUpdatedTime(eventType);
         if (updatedAt != null)
         {
         	String updatedString = railsDateFormatter.format(updatedAt);
@@ -1089,6 +1243,7 @@ public class EventServiceBuffer extends Object {
         intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
         intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.EVENT);
         intent.putExtra(RubyService.EXTRA_PARAMS, formData);
+        intent.putExtra(RubyService.EVENT_TYPE, eventType);
         // Here we send our Intent to our RESTService.
         sw.start();
         
@@ -1141,6 +1296,7 @@ public class EventServiceBuffer extends Object {
         intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
         intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.NEARBY_EVENT);
         intent.putExtra(RubyService.EXTRA_PARAMS, formData);
+        intent.putExtra(RubyService.EVENT_TYPE, StreamListHandler.NEARBY);
         // Here we send our Intent to our RESTService.
         mContext.startService(intent);
 	}
@@ -1185,6 +1341,24 @@ public class EventServiceBuffer extends Object {
         intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.EVENT_SINGLE);
         intent.putExtra(RubyService.EXTRA_PARAMS, formData);
         // Here we send our Intent to our RESTService.
+        mContext.startService(intent);
+	}
+	
+	public static void getRefreshedStreamList()
+	{	
+        Intent intent = new Intent(mContext, RubyService.class);
+        intent.setData(Uri.parse(WEB_SERVICE_URL + "events"));
+        
+        Bundle formData = new Bundle();
+        formData.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+        formData.putString("access_token", SharePref.getStringPref(mContext, SharePref.ACCESS_TOKEN));
+		
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.EVENT);
+        intent.putExtra(RubyService.EXTRA_PARAMS, formData);
+        intent.putExtra(RubyService.EVENT_TYPE, StreamListHandler.HOME + StreamListHandler.REFRESH);
+        
         mContext.startService(intent);
 	}
 
@@ -1234,6 +1408,54 @@ public class EventServiceBuffer extends Object {
         mContext.startService(intent);
 	}
 	
+	public static void getStreamsFromTagFromService(String tag)
+	{
+        Intent intent = new Intent(mContext, RubyService.class);
+        
+        String uri = WEB_SERVICE_URL + "tags";
+        
+        intent.setData(Uri.parse(uri));
+        
+        Bundle formData = new Bundle();
+        formData.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+        formData.putString("q", tag);
+        
+        // Here we are going to place our REST call parameters. Note that
+        // we could have just used Uri.Builder and appendQueryParameter()
+        // here, but I wanted to illustrate how to use the Bundle params.
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.TAGS);
+        intent.putExtra(RubyService.EXTRA_PARAMS, formData);
+        intent.putExtra(RubyService.EVENT_TYPE, StreamListHandler.getKeyFromTag(tag));
+        
+        // Here we send our Intent to our RESTService.
+        mContext.startService(intent);
+	}
+	
+	public static void getTrendingTags()
+	{
+        Intent intent = new Intent(mContext, RubyService.class);
+        
+        String uri = WEB_SERVICE_URL + "tags/trending";
+        
+        intent.setData(Uri.parse(uri));
+        
+        Bundle formData = new Bundle();
+        formData.putString(AUTH_TOK, SharePref.getStringPref(mContext, SharePref.AUTH_TOKEN));
+        
+        // Here we are going to place our REST call parameters. Note that
+        // we could have just used Uri.Builder and appendQueryParameter()
+        // here, but I wanted to illustrate how to use the Bundle params.
+        intent.putExtra(RubyService.EXTRA_RESULT_RECEIVER, mReceiver);
+        intent.putExtra(RubyService.EXTRA_HTTP_VERB, RubyService.GET);
+        intent.putExtra(RubyService.EXTRA_DATA_CONTENT, RubyService.TRENDING_TAGS);
+        intent.putExtra(RubyService.EXTRA_PARAMS, formData);
+        
+        // Here we send our Intent to our RESTService.
+        mContext.startService(intent);
+	}
+	
     public static void getPhotosForEventFromService(int eventID)
     {
         Intent intent = new Intent(mContext, RubyService.class);
@@ -1273,6 +1495,29 @@ public class EventServiceBuffer extends Object {
 		}
 	}
 	
+	protected void onRESTResult(int code, String result, String eventType) {
+		
+		if (code == eventSuccessCode && result != null) 
+        {
+            getEventsFromJson(result, eventType);
+        }
+        else if (code == nearbyEventSuccessCode && result != null)
+        {
+        	getEventsFromJson(result, eventType);
+        }
+        else if (code == tagSuccessCode && result != null)
+        {
+        	getEventsFromJson(result, eventType);
+        }
+        else
+        {
+            Log.d("EventServiceBuffer", "Failed: code: " + code + ", result: " + result);
+            
+            sendBroadcast();
+        }
+		
+	}
+	
     private void sendPhotoBroadcast(PhotoItem photo)
     {
     	dbWrapper.deletePhoto(photo);
@@ -1290,15 +1535,7 @@ public class EventServiceBuffer extends Object {
         
         // Check to see if we got an HTTP 200 code and have some data.
     	// We add
-        if (code == eventSuccessCode && result != null) 
-        {
-            getEventsFromJson(result, false);
-        }
-        else if (code == nearbyEventSuccessCode && result != null)
-        {
-        	getEventsFromJson(result, true);
-        }
-        else if (code == updateEventSuccessCode && result != null)
+        if (code == updateEventSuccessCode && result != null)
         {
         	getEventDetailFromJson(result);
         }
@@ -1306,10 +1543,14 @@ public class EventServiceBuffer extends Object {
         {
         	getUserInfoFromJson(result);
         }
-        else if (code == fomoSuccessCode && result != null)
+        else if (code == followSuccessCode && result != null)
+        {
+        	getFollowFromJson(result);
+        }
+        /*else if (code == fomoSuccessCode && result != null)
         {
         	getFomoFromJson(result);
-        }
+        }*/
         else if (code == facebookShareSuccessCode && result != null)
         {
         	getFacebookShareFromJson(result);
@@ -1358,6 +1599,10 @@ public class EventServiceBuffer extends Object {
         {
         	getFriendsFromJson(result);
         }
+        else if (code == trendingTagSuccessCode && result != null)
+        {
+        	getTrendingTagsFromJson(result);
+        }
         else if (code == newNotificationSuccessCode && result != null)
         {
         	getNewNotificationFromJson(result);
@@ -1382,9 +1627,21 @@ public class EventServiceBuffer extends Object {
         {
         	getDeletedPhotoFromJson(result);
         }
+        else if (code == followerSuccessCode && result != null)
+        {
+        	getFollowListFromJson(result);
+        }
+        else if (code == followingSuccessCode && result != null)
+        {
+        	getFollowListFromJson(result);
+        }
         else if (code == registerDeviceSuccessCode)
         {
         	
+        }
+        else if (code == privateSuccessCode && result != null)
+        {
+        	getPrivateFromJson(result);
         }
         else {
         	
@@ -1400,7 +1657,145 @@ public class EventServiceBuffer extends Object {
         }
     }
 
-    private void getFacebookShareFromJson(String result) {
+	private class Tag
+	{
+		public String name;
+	}
+	
+    private void getTrendingTagsFromJson(String result) 
+    {
+    	ArrayList<String> tags = new ArrayList<String>();
+    	
+    	try
+    	{
+	    	Gson gson = new Gson();
+	    	
+	    	JsonParser parser = new JsonParser();
+	    	
+	    	JsonArray userArray = parser.parse(result).getAsJsonArray();
+	    	
+	    	for (JsonElement element : userArray)
+	    	{
+		    	JsonObject event = element.getAsJsonObject().getAsJsonObject("tag");
+		    	
+		    	Tag tag = gson.fromJson(event, Tag.class);
+		    	
+		    	tags.add(tag.name);
+	    	}
+	
+    	}
+    	catch (Exception e)
+    	{
+            Log.d("EventServiceBuffer", "Failed to parse tags");
+            
+            sendBroadcast();
+    	}
+		if (mTagListener != null)
+		{
+			Vector<TagListener> targets;
+		    synchronized (this) {
+		        targets = (Vector<TagListener>) mTagListener.clone();
+		    }
+			
+			Enumeration<TagListener> e = targets.elements();
+	        while (e.hasMoreElements()) 
+	        {
+	        	TagListener l = e.nextElement();
+	        	l.trendingTags(tags);
+	        }
+		}
+		
+	}
+
+	private void getFollowListFromJson(String result) {
+		
+    	List<UserInfo> users = new ArrayList<UserInfo>();
+    	
+    	try
+    	{
+	    	Gson gson = new Gson();
+	    	
+	    	JsonParser parser = new JsonParser();
+	    	
+	    	JsonArray userArray = parser.parse(result).getAsJsonArray();
+	    	
+	    	for (JsonElement element : userArray)
+	    	{
+		    	JsonObject event = element.getAsJsonObject().getAsJsonObject("user");
+		    	
+		    	UserInfo user = gson.fromJson(event, UserInfo.class);
+		    	
+		    	user.follow_status = element.getAsJsonObject().get("follow_status").getAsString();
+		    	
+		    	dbWrapper.createOrUpdateUser(user);
+		    	
+		    	users.add(user);
+	    	}
+	
+    	}
+    	catch (Exception e)
+    	{
+            Log.d("EventServiceBuffer", "Failed to parse private", e);
+            
+            sendBroadcast();
+    	}
+		if (mFollowListener != null)
+		{
+			Vector<FollowListener> targets;
+		    synchronized (this) {
+		        targets = (Vector<FollowListener>) mFollowListener.clone();
+		    }
+			
+			Enumeration<FollowListener> e = targets.elements();
+	        while (e.hasMoreElements()) 
+	        {
+	        	FollowListener l = e.nextElement();
+	        	l.followListCallback(users);
+	        }
+		}
+	}
+
+	private void getPrivateFromJson(String result) {
+		
+    	UserInfo user = null;
+    	
+    	try
+    	{
+	    	Gson gson = new Gson();
+	    	
+	    	JsonParser parser = new JsonParser();
+	    	
+	    	JsonObject object = parser.parse(result).getAsJsonObject();
+	    	
+	    	JsonObject event = object.getAsJsonObject("user");
+	    	
+	    	user = gson.fromJson(event, UserInfo.class);
+	
+    	}
+    	catch (Exception e)
+    	{
+            Log.d("EventServiceBuffer", "Failed to parse private");
+            
+            sendBroadcast();
+    	}
+		if (mPrivateListener != null)
+		{
+			Vector<MakePrivateListener> targets;
+		    synchronized (this) {
+		        targets = (Vector<MakePrivateListener>) mPrivateListener.clone();
+		    }
+			
+			Enumeration<MakePrivateListener> e = targets.elements();
+	        while (e.hasMoreElements()) 
+	        {
+	        	MakePrivateListener l = e.nextElement();
+	        	l.privateCallback(user);
+	        }
+		}
+		
+	}
+
+	private void getFacebookShareFromJson(String result) {
 		
 		if (mFriendsListener != null)
 		{
@@ -1467,8 +1862,6 @@ public class EventServiceBuffer extends Object {
     	
     	if (mEventDetailListener != null && mEventDetailListener.size() > 0)
     	{
-        	UpdatedEventDetailEvent eventParam = new UpdatedEventDetailEvent(this, null);
-        	
     		Vector<UpdatedEventDetailListener> targets;
     	    synchronized (this) {
     	        targets = (Vector<UpdatedEventDetailListener>) mEventDetailListener.clone();
@@ -1541,7 +1934,7 @@ public class EventServiceBuffer extends Object {
 		
 	}
 
-	private void sendBroadcast()
+	private static void sendBroadcast()
     {
     	Intent broadcast = new Intent();
         broadcast.setAction(RubyService.CONNECTION_ERROR);
@@ -1620,7 +2013,7 @@ public class EventServiceBuffer extends Object {
     		}
     		catch (Exception e)
     		{
-                Log.d("EventServiceBuffer", "Failed to parse friends");
+                Log.d("EventServiceBuffer", "Failed to parse friends", e);
                 
                 sendBroadcast();
     		}
@@ -1637,6 +2030,8 @@ public class EventServiceBuffer extends Object {
 			} catch (SQLException e) {
 				Log.e("DatabaseHelper", "Failed to createOrUpdate friend", e);
 			}
+    		
+    		dbWrapper.removeFacebookFriend(user.uid);
     	}
     	
     	UpdatedFriendsEvent evt = new UpdatedFriendsEvent(this, userInfoList);
@@ -1664,7 +2059,7 @@ public class EventServiceBuffer extends Object {
 		
     	if (mEventDetailListener != null && mEventDetailListener.size() > 0)
     	{
-        	UpdatedEventDetailEvent event = new UpdatedEventDetailEvent(this, null);
+        	UpdatedEventDetailEvent event = new UpdatedEventDetailEvent(this, null, "");
         	
     		Vector<UpdatedEventDetailListener> targets;
     	    synchronized (this) {
@@ -1811,7 +2206,7 @@ public class EventServiceBuffer extends Object {
 		}
 		catch (Exception e)
 		{
-			Log.d("EventServiceBuffer", "Failed to parse json");
+			Log.d("EventServiceBuffer", "Failed to parse json", e);
 			sendBroadcast();
 		}
 		
@@ -1937,130 +2332,140 @@ public class EventServiceBuffer extends Object {
     	.setDateFormat("MM/dd/yyyy")
     	.create();
 		
-		JsonParser parser = new JsonParser();
-		
-		JsonObject object = parser.parse(result).getAsJsonObject();
-		
-		JsonObject eventObject = object.getAsJsonObject("event").getAsJsonObject("event");
-		
-		//JsonArray stories = eventObject.getAsJsonArray("stories");
-
-		if (eventObject == null)
-		{
-			eventObject = object.getAsJsonObject("event");
-		}
-		
-		EventDetail eDetail = gson.fromJson(eventObject, EventDetail.class);
-		
-    	Collection<Attendee> newAttendees = new ArrayList<Attendee>();
-    	
-    	JsonElement attendees = eventObject.get("people_attending");
-    	
-    	if (attendees != null)
+    	try
     	{
-    		JsonArray attendingElement = attendees.getAsJsonArray();
-    		
-   		    for (JsonElement attendee : attendingElement)
-   		    {
-   		    	UserInfo user = gson.fromJson(attendee, UserInfo.class);
-   		    	
-   		    	TempAttendee.removeTempAttendee(eDetail.getEventID(), user);
-   		    	
-   		    	newAttendees.add(new Attendee(user.id, eDetail));
-   		    	
-   		    	dbWrapper.createIfNotExistsUser(user);
-   		    }
-   		    
-   		    dbWrapper.updateAttendees(eDetail.getEventID(), newAttendees);
-    		
-    		eDetail.setAttendeeCount(attendingElement.size());
-		
-    	}
-    	else
-    	{
-    		UserInfo owner = dbWrapper.getUser(eDetail.getOwnerID());
-    		
-    		Attendee attendee = new Attendee(owner.id, eDetail);
-    		
-    		dbWrapper.createAttendee(attendee);
-    	}
-		
-		if (eDetail.is_deleted)
-		{
-			dbWrapper.deleteEvent(eDetail);
-		}
-		else
-		{
-			dbWrapper.createOrUpdateEvent(eDetail);
-		}
-		/*dbWrapper.clearStories(eDetail.getEventID());
-		for (JsonElement element : stories)
-		{
-			StoryItem story = gson.fromJson(element, StoryItem.class);
-
-			story.event_detail = eDetail;
+			JsonParser parser = new JsonParser();
 			
-			dbWrapper.createStory(story);
-		}*/
-		
-		JsonElement photoElement = eventObject.get("photos");
-		
-		if (photoElement != null)
-		{
-		    		
-    		JsonArray photos = photoElement.getAsJsonArray();
-    				
-    		ArrayList<PhotoItem> uploadingPhotos = new ArrayList<PhotoItem>(dbWrapper.getUploadingPhotos(eDetail.getEventID()));
-    		
-    		//dbWrapper.clearPhotos(eDetail.getEventID());
-    		
-    		ArrayList<PhotoItem> newPhotos = new ArrayList<PhotoItem>();
-    		for (JsonElement element : photos)
-    		{
-    			PhotoItem photo = gson.fromJson(element, PhotoItem.class);
-    			
-    			photo.event_detail = eDetail;
-    			
-    			if (photo.user_id == SharePref.getIntPref(mContext, SharePref.USER_ID))
-    			{
-	    			for (PhotoItem uploadingPhoto : uploadingPhotos)
+			JsonObject object = parser.parse(result).getAsJsonObject();
+			
+			JsonObject eventObject = object.getAsJsonObject("event").getAsJsonObject("event");
+			
+			//JsonArray stories = eventObject.getAsJsonArray("stories");
+	
+			if (eventObject == null)
+			{
+				eventObject = object.getAsJsonObject("event");
+			}
+			
+			EventDetail eDetail = gson.fromJson(eventObject, EventDetail.class);
+			
+	    	Collection<Attendee> newAttendees = new ArrayList<Attendee>();
+	    	
+	    	JsonElement attendees = eventObject.get("people_attending");
+	    	
+	    	if (attendees != null)
+	    	{
+	    		JsonArray attendingElement = attendees.getAsJsonArray();
+	    		
+	   		    for (JsonElement attendee : attendingElement)
+	   		    {
+	   		    	UserInfo user = gson.fromJson(attendee, UserInfo.class);
+	   		    	
+	   		    	TempAttendee.removeTempAttendee(eDetail.getEventID(), user);
+	   		    	
+	   		    	newAttendees.add(new Attendee(user.id, eDetail));
+	   		    	
+	   		    	dbWrapper.createIfNotExistsUser(user);
+	   		    }
+	   		    
+	   		    dbWrapper.updateAttendees(eDetail.getEventID(), newAttendees);
+	    		
+	    		eDetail.setAttendeeCount(attendingElement.size());
+			
+	    	}
+	    	else
+	    	{
+	    		UserInfo owner = dbWrapper.getUser(eDetail.getOwnerID());
+	    		
+	    		Attendee attendee = new Attendee(owner.id, eDetail);
+	    		
+	    		dbWrapper.createAttendee(attendee);
+	    	}
+			
+			if (eDetail.is_deleted)
+			{
+				dbWrapper.deleteEvent(eDetail);
+			}
+			else
+			{
+				dbWrapper.createOrUpdateEvent(eDetail);
+			}
+			/*dbWrapper.clearStories(eDetail.getEventID());
+			for (JsonElement element : stories)
+			{
+				StoryItem story = gson.fromJson(element, StoryItem.class);
+	
+				story.event_detail = eDetail;
+				
+				dbWrapper.createStory(story);
+			}*/
+			
+			JsonElement photoElement = eventObject.get("photos");
+			
+			if (photoElement != null)
+			{
+			    		
+	    		JsonArray photos = photoElement.getAsJsonArray();
+	    				
+	    		ArrayList<PhotoItem> uploadingPhotos = new ArrayList<PhotoItem>(dbWrapper.getUploadingPhotos(eDetail.getEventID()));
+	    		
+	    		//dbWrapper.clearPhotos(eDetail.getEventID());
+	    		
+	    		ArrayList<PhotoItem> newPhotos = new ArrayList<PhotoItem>();
+	    		for (JsonElement element : photos)
+	    		{
+	    			PhotoItem photo = gson.fromJson(element, PhotoItem.class);
+	    			
+	    			photo.event_detail = eDetail;
+	    			
+	    			if (photo.user_id == SharePref.getIntPref(mContext, SharePref.USER_ID))
 	    			{
-	    				if (uploadingPhoto.image_file_name.contains(photo.image_file_name))
-	    				{
-	    					Log.d("getEventDetailFromJson", "Deleting Temp Photo");
-	    					
-	    					photo.local_store = uploadingPhoto.image_file_name;
-	    					
-	    					dbWrapper.deletePhoto(uploadingPhoto);
-	    				}
+		    			for (PhotoItem uploadingPhoto : uploadingPhotos)
+		    			{
+		    				if (uploadingPhoto.image_file_name.contains(photo.image_file_name))
+		    				{
+		    					Log.d("getEventDetailFromJson", "Deleting Temp Photo");
+		    					
+		    					photo.local_store = uploadingPhoto.image_file_name;
+		    					
+		    					dbWrapper.deletePhoto(uploadingPhoto);
+		    				}
+		    			}
 	    			}
-    			}
-    			
-    			newPhotos.add(photo);
-    			
-    			dbWrapper.clearComments(photo.id);
-    			for (JsonElement commentElement : element.getAsJsonObject().getAsJsonArray("comments"))
-    			{
-    				Comment comment = gson.fromJson(commentElement, Comment.class);
-    				comment.event_id = photo.event_id;
-    				comment.photo = photo;
-    				dbWrapper.createComment(comment);
-    			}
-    			
-    			dbWrapper.clearLikes(photo.id);
-    			for (JsonElement likeElement : element.getAsJsonObject().getAsJsonArray("likes"))
-    			{
-    				Like like = gson.fromJson(likeElement, Like.class);
-    				like.event_id = photo.event_id;
-    				like.photo = photo;
-    				dbWrapper.createLike(like);
-    			}
-    		}
-    		
-    		dbWrapper.updatePhotos(eDetail.getEventID(), newPhotos);
-		}
+	    			
+	    			newPhotos.add(photo);
+	    			
+	    			dbWrapper.clearComments(photo.id);
+	    			for (JsonElement commentElement : element.getAsJsonObject().getAsJsonArray("comments"))
+	    			{
+	    				Comment comment = gson.fromJson(commentElement, Comment.class);
+	    				comment.event_id = photo.event_id;
+	    				comment.photo = photo;
+	    				dbWrapper.createComment(comment);
+	    			}
+	    			
+	    			dbWrapper.clearLikes(photo.id);
+	    			for (JsonElement likeElement : element.getAsJsonObject().getAsJsonArray("likes"))
+	    			{
+	    				Like like = gson.fromJson(likeElement, Like.class);
+	    				like.event_id = photo.event_id;
+	    				like.photo = photo;
+	    				dbWrapper.createLike(like);
+	    			}
+	    		}
+	    		
+	    		dbWrapper.updatePhotos(eDetail.getEventID(), newPhotos);
+			}
+			return eDetail.getEventID();
+    	}
+    	catch (Exception e)
+    	{
+			Log.d("EventServiceBuffer", "Failed to parse json", e);
+			sendBroadcast();
+    		return -1;
+    	}
 		
-		return eDetail.getEventID();
+		
 	}
 
     private void getPhotoFromJson(String result, Parcelable tempPhoto) {
@@ -2102,6 +2507,8 @@ public class EventServiceBuffer extends Object {
 			
 			if (captionHash.containsKey(((PhotoItem) tempPhoto).id))
 			{
+				Log.d("Caption", "photo caption: " + captionHash.get(((PhotoItem) tempPhoto).id));
+				
 				updatePhotoCaption(photo, captionHash.get(((PhotoItem) tempPhoto).id));
 			}
 			
@@ -2128,6 +2535,83 @@ public class EventServiceBuffer extends Object {
 		}
 	}
 	
+    private void getFollowFromJson(String result)
+    {
+		Gson gson = new Gson();
+		
+		JsonParser parser = new JsonParser();
+		
+		try
+		{
+			JsonObject object = parser.parse(result).getAsJsonObject();
+			
+			JsonObject relationObject = object.getAsJsonObject("relationship");
+			
+			Relationship relationship = gson.fromJson(relationObject, Relationship.class);
+			
+			UserInfo user = dbWrapper.getUser(relationship.followed_id);
+			
+			if (relationship.is_active)
+			{
+				if (user.follower_count != null)
+				{
+					user.follower_count++;
+				}
+				
+				user.follow_status = UserProfilePageFragment.FOLLOWING;
+				
+				dbWrapper.createOrUpdateUser(user);
+				
+				Intent intent = new Intent(mContext, StreamListService.class);
+				intent.putExtra(StreamListService.RESET_HOME_FEED, true);
+				mContext.startService(intent);
+			}
+			else if (!relationship.is_pending)
+			{				
+				if (user.follower_count != null)
+				{
+					user.follower_count--;
+				}
+				
+				user.follow_status = UserProfilePageFragment.FOLLOW;
+				
+				dbWrapper.createOrUpdateUser(user);
+				
+				Intent intent = new Intent(mContext, StreamListService.class);
+				intent.putExtra(StreamListService.RESET_HOME_FEED, true);
+				mContext.startService(intent);
+			}
+			else
+			{
+				user.follow_status = UserProfilePageFragment.PENDING;
+			}
+			
+			dbWrapper.createOrUpdateUser(user);
+			
+			if (mFollowListener != null)
+			{
+				
+	    		Vector<FollowListener> targets;
+	    	    synchronized (this) {
+	    	        targets = (Vector<FollowListener>) mFollowListener.clone();
+	    	    }
+	    		
+	    		Enumeration<FollowListener> e = targets.elements();
+		        while (e.hasMoreElements()) 
+		        {
+		        	FollowListener l = e.nextElement();
+		        	l.followCallback(relationship);
+		        }
+			}
+		}
+		catch (Exception e)
+		{
+            Log.d("EventServiceBuffer", "Failed to get follow response", e);
+            
+            sendBroadcast();
+		}
+    }
+    
 	private void getPhotoFromJson(String result)
 	{
 		PhotoItem photo = parsePhotoItem(result);
@@ -2389,6 +2873,9 @@ public class EventServiceBuffer extends Object {
 		
 		SharePref.setIntPref(mContext, SharePref.USER_ID, currentUser.id);
     	
+		Log.d("UserInfo", "AUTH_TOK: " + authTok);
+		Log.d("UserInfo", "ACCESS_TOKEN: " + SharePref.getStringPref(mContext, SharePref.ACCESS_TOKEN));
+		
     	//AUTH_TOK = AUTH_TOK + authTok;
     	
 		getUserInfoFromService();
@@ -2416,8 +2903,8 @@ public class EventServiceBuffer extends Object {
     	
     	JsonParser parser = new JsonParser();
 
-		Set<Integer> eventIds = new HashSet<Integer>();
-		ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>();
+		//Set<Integer> eventIds = new HashSet<Integer>();
+		//ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>();
 		
 		UserInfo userInfo = new UserInfo();
 		
@@ -2425,19 +2912,15 @@ public class EventServiceBuffer extends Object {
     	{
         	userInfo = gson.fromJson(json, UserDataHolder.class).user;
         	
-        	
-        	try 
-        	{
-    			helper.getUserDao().createOrUpdate(userInfo);
-    		} 
-        	catch (SQLException e) 
-        	{
-    			Log.e("DatabaseHelper", "Failed to createOrUpdate user", e);
-    		}
-        	
 	    	JsonObject parseJson = parser.parse(json).getAsJsonObject();
 			
-	    	JsonElement eventsAttended = parseJson.getAsJsonObject("user").get("events_attended");
+	    	userInfo.follower_count = parseJson.get("follower_count").getAsInt();
+	    	userInfo.following_count = parseJson.get("following_count").getAsInt();
+	    	userInfo.follow_status = parseJson.get("follow_status").getAsString();
+
+        	dbWrapper.createOrUpdateUser(userInfo);
+	    	
+	    	/*JsonElement eventsAttended = parseJson.getAsJsonObject("user").get("events_attended");
 			
 	    	if (eventsAttended != null && eventsAttended.isJsonArray())
 	    	{
@@ -2449,12 +2932,12 @@ public class EventServiceBuffer extends Object {
 		    		/*if (!isCurrentUser)
 		    		{
 		    			dbWrapper.createIfNotExistsEvent(eDetail);
-		    		}*/
+		    		}
 		    		
 		    		eventIds.add(eDetail.getEventID());
 		    	}
 	    	}
-	    	JsonElement photoJson = parseJson.getAsJsonObject("user").get("recent_photos");
+	    	/*JsonElement photoJson = parseJson.getAsJsonObject("user").get("recent_photos");
 	    	
 	    	if (photoJson != null && photoJson.isJsonArray())
 	    	{
@@ -2466,17 +2949,17 @@ public class EventServiceBuffer extends Object {
 		    		
 		    		photos.add(photo);
 		    	}
-	    	}
+	    	}*/
     	}
     	catch (Exception e)
     	{
-            Log.d("EventServiceBuffer", "Failed to parse friends");
+            Log.d("EventServiceBuffer", "Failed to parse friends", e);
             
             sendBroadcast();
     	}
     	if (mUserInfoListener != null) 
     	{   		
-    		UserWithEventsPhotosEvent event = new UserWithEventsPhotosEvent(this, userInfo, photos, new ArrayList<Integer>(eventIds));
+    		UserEvent event = new UserEvent(this, userInfo);
     		
     		Vector<UserInfoListener> targets;
     	    synchronized (this) {
@@ -2497,7 +2980,7 @@ public class EventServiceBuffer extends Object {
     	public UserInfo user;
     }
 	
-    private void getEventsFromJson(final String json, final boolean isNearby) 
+    private void getEventsFromJson(final String json, final String eventType) 
     {        
     	Log.d("EventServiceBuffer", "events call: " + sw.getElapsedTime() + " ms");
     	
@@ -2580,7 +3063,7 @@ public class EventServiceBuffer extends Object {
 			        	}
 			        	catch (Exception e)
 			        	{
-			        		Log.d("EventServiceBuffer", "Failed to parse JSON");
+			        		Log.d("EventServiceBuffer", "Failed to parse JSON", e);
 			        		
 			        		sendBroadcast();
 			        	}
@@ -2594,9 +3077,9 @@ public class EventServiceBuffer extends Object {
 		        	if (mEventDetailListener != null && mEventDetailListener.size() > 0)
 		        	{
 		        		
-			        	final UpdatedEventDetailEvent event = new UpdatedEventDetailEvent(this, eventIDs, isNearby);
+			        	final UpdatedEventDetailEvent event = new UpdatedEventDetailEvent(this, eventIDs, eventType);
 			        	
-			        	handler.post(new Runnable(){
+			        	handler.post(new Runnable() {
 
 							public void run() {
 					    		Vector<UpdatedEventDetailListener> targets;
@@ -2617,6 +3100,8 @@ public class EventServiceBuffer extends Object {
 		        }
 		        catch (Exception e) {
 		            Log.e("EventServiceBuffer", "Failed to parse JSON.", e);
+		            
+		            sendBroadcast();
 		        }
 				
 			}
@@ -2633,7 +3118,7 @@ public class EventServiceBuffer extends Object {
 		public Thread newThread(Runnable r) {
 			Thread thread = new Thread(r);
 			
-			thread.setPriority(Thread.MIN_PRIORITY + 2);
+			thread.setPriority(Thread.MIN_PRIORITY + 1);
 			
 			return thread;
 		}
@@ -2735,67 +3220,74 @@ public class EventServiceBuffer extends Object {
    		    	Log.d("EventTask", "event is about to be processed: " + eDetail.getEventID());
    		    	JsonArray attendees = event.getAsJsonArray("people_attending");
 			    	
-		    	Collection<Attendee> newAttendees = new ArrayList<Attendee>();
-		    	
-	   		    for (JsonElement attendee : attendees)
-	   		    {
-	   		    	UserInfo user = gson.fromJson(attendee, UserInfo.class);
-	   		    	
-	   		    	TempAttendee.removeTempAttendee(eDetail.getEventID(), user);
-	   		    	
-	   		    	try
-	   		    	{
-	   		    		helper.getUserDao().createIfNotExists(user);
-	   		    	}
-	   		    	catch (Exception e)
-	   		    	{
-	   		    		Log.e("EventServiceBUffer", "Error occurred", e);
-	   		    	}
-	   		    	//dbWrapper.createOrUpdateUser(user);
-	   		    	
-	   		    	newAttendees.add(new Attendee(user.id, eDetail));
-	   		    }
+   		    	if (attendees != null)
+   		    	{
+			    	Collection<Attendee> newAttendees = new ArrayList<Attendee>();
+			    	
+		   		    for (JsonElement attendee : attendees)
+		   		    {
+		   		    	UserInfo user = gson.fromJson(attendee, UserInfo.class);
+		   		    	
+		   		    	TempAttendee.removeTempAttendee(eDetail.getEventID(), user);
+		   		    	
+		   		    	try
+		   		    	{
+		   		    		helper.getUserDao().createIfNotExists(user);
+		   		    	}
+		   		    	catch (Exception e)
+		   		    	{
+		   		    		Log.e("EventServiceBUffer", "Error occurred", e);
+		   		    	}
+		   		    	//dbWrapper.createOrUpdateUser(user);
+		   		    	
+		   		    	newAttendees.add(new Attendee(user.id, eDetail));
+		   		    }
+		   		    
+		   		    dbWrapper.updateAttendees(eDetail.getEventID(), newAttendees);
 	   		    
-	   		    dbWrapper.updateAttendees(eDetail.getEventID(), newAttendees);
-	   		    
+   		    	}
+   		    	
 	   		    JsonArray photos = event.getAsJsonArray("photos");
 	   		    
-	   		    ArrayList<PhotoItem> uploadingPhotos = new ArrayList<PhotoItem>(dbWrapper.getUploadingPhotos(eDetail.getEventID()));
-	   		    
-	   		    //dbWrapper.clearPhotos(eDetail.getEventID());
-	   		    
-	   		    /*if (uploadingPhotos.size() > 0)
+	   		    if (photos != null)
 	   		    {
-	   		    	eDetail.updated_at = new Date();
-	   		    }*/
-	   		    
-	   		    ArrayList<PhotoItem> newPhotos = new ArrayList<PhotoItem>();
-	   		    
-	   		    for (JsonElement photo : photos)
-	   		    {
-	   		    	PhotoItem photoItem = gson.fromJson(photo, PhotoItem.class);
-	   		    	
-	    			if (photoItem.user_id == SharePref.getIntPref(mContext, SharePref.USER_ID))
-	    			{
-		    			for (PhotoItem uploadingPhoto : uploadingPhotos)
+		   		    ArrayList<PhotoItem> uploadingPhotos = new ArrayList<PhotoItem>(dbWrapper.getUploadingPhotos(eDetail.getEventID()));
+		   		    
+		   		    //dbWrapper.clearPhotos(eDetail.getEventID());
+		   		    
+		   		    /*if (uploadingPhotos.size() > 0)
+		   		    {
+		   		    	eDetail.updated_at = new Date();
+		   		    }*/
+		   		    
+		   		    ArrayList<PhotoItem> newPhotos = new ArrayList<PhotoItem>();
+		   		    
+		   		    for (JsonElement photo : photos)
+		   		    {
+		   		    	PhotoItem photoItem = gson.fromJson(photo, PhotoItem.class);
+		   		    	
+		    			if (photoItem.user_id == SharePref.getIntPref(mContext, SharePref.USER_ID))
 		    			{
-		    				if (uploadingPhoto.image_file_name.contains(photoItem.image_file_name))
-		    				{
-		    					Log.d("getEventsFromJson", "Deleting Temp Photo");
-		    					
-		    					photoItem.local_store = uploadingPhoto.image_file_name;
-		    					
-		    					dbWrapper.deletePhoto(uploadingPhoto);
-		    				}
+			    			for (PhotoItem uploadingPhoto : uploadingPhotos)
+			    			{
+			    				if (uploadingPhoto.image_file_name.contains(photoItem.image_file_name))
+			    				{
+			    					Log.d("getEventsFromJson", "Deleting Temp Photo");
+			    					
+			    					photoItem.local_store = uploadingPhoto.image_file_name;
+			    					
+			    					dbWrapper.deletePhoto(uploadingPhoto);
+			    				}
+			    			}
 		    			}
-	    			}
-	   		    	
-	   		    	photoItem.event_detail = eDetail;
-	   		    	
-	   		    	newPhotos.add(photoItem);
+		   		    	
+		   		    	photoItem.event_detail = eDetail;
+		   		    	
+		   		    	newPhotos.add(photoItem);
+		   		    }
+		   		    
+		   		    dbWrapper.updatePhotos(eDetail.getEventID(), newPhotos);
 	   		    }
-	   		    
-	   		    dbWrapper.updatePhotos(eDetail.getEventID(), newPhotos);
 	   		    
 	   		    JsonElement locationElement = event.get("location");
 	   		    

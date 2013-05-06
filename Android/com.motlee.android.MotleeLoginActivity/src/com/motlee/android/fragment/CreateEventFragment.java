@@ -11,6 +11,7 @@ import com.motlee.android.object.Attendee;
 import com.motlee.android.object.DrawableCache;
 import com.motlee.android.object.DrawableWithHeight;
 import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.GlobalVariables;
 import com.motlee.android.object.LocationInfo;
 import com.motlee.android.object.Settings;
@@ -83,6 +84,8 @@ public class CreateEventFragment extends BaseMotleeFragment {
     @Override
     public void onResume()
     {
+    	showLeftHeaderButton("Cancel", goBack);
+    	
     	super.onResume();
     }
     
@@ -113,7 +116,7 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		if (mEventDetail == null)
 		{
 			setPageHeader(pageTitle);
-			showRightHeaderButton("Start!");
+			showRightOrangeButton("Start!");
 			//view.findViewById(R.id.event_create_delete_event).setVisibility(View.GONE);
 		}
 		else
@@ -121,11 +124,11 @@ public class CreateEventFragment extends BaseMotleeFragment {
 			pageTitle = mEventDetail.getEventName();
 			setPageHeader(pageTitle);
 			setHeaderIcon(EDIT_EVENTS);
-			showRightHeaderButton("Save");
+			showRightOrangeButton("Save");
 			//((TextView) view.findViewById(R.id.delete_event_text)).setTypeface(GlobalVariables.getInstance().getGothamLightFont());
 			//view.findViewById(R.id.event_create_delete_event).setVisibility(View.VISIBLE);
 		}
-		showLeftHeaderButton();
+		showLeftHeaderButton("Cancel", goBack);
 		
 		/*if (mEventDetail == null)
 		{
@@ -180,6 +183,16 @@ public class CreateEventFragment extends BaseMotleeFragment {
 		
 		return view;
 	}
+	
+	private OnClickListener goBack = new OnClickListener(){
+
+		public void onClick(View arg0) {
+			
+			((CreateEventActivity) getActivity()).backButtonPressed();
+			
+		}
+		
+	};
 	
 	private void setPublicEventToggle() {
 		

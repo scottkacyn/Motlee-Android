@@ -23,6 +23,7 @@ import com.facebook.Request;
 import com.facebook.RequestAsyncTask;
 import com.facebook.Response;
 import com.facebook.Session;
+import com.flurry.android.FlurryAgent;
 import com.motlee.android.BaseFacebookActivity;
 import com.motlee.android.BaseMotleeActivity;
 import com.motlee.android.R;
@@ -127,11 +128,16 @@ public class SharingInteraction {
 				ResolveInfo info = (ResolveInfo) adapter.getItem(which);
 				if(info.activityInfo.packageName.contains("facebook")) {
 					
+					FlurryAgent.logEvent("SharingToFacebook");
+					
 					activity.shareEventOnFacebook(body, uri);
 					adapter.clearContext();
 					adapter = null;
 					dialog.cancel();
 				} else {
+					
+					FlurryAgent.logEvent("SharingTo" + info.activityInfo.applicationInfo.loadLabel(activity.getPackageManager()).toString());
+					
 					Intent intent = new Intent(android.content.Intent.ACTION_SEND);
 					intent.setClassName(info.activityInfo.packageName, info.activityInfo.name);
 					if (uri != null)

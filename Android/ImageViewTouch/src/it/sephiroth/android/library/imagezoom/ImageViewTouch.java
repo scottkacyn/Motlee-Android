@@ -29,7 +29,8 @@ public class ImageViewTouch extends ImageViewTouchBase {
 	protected boolean mDoubleTapEnabled = true;
 	protected boolean mScaleEnabled = true;
 	protected boolean mScrollEnabled = true;
-   private OnImageViewTouchDoubleTapListener mDoubleTapListener;
+    private OnImageViewTouchDoubleTapListener mDoubleTapListener;
+    private OnZoomListener mZoomListener;
 
 	public ImageViewTouch( Context context, AttributeSet attrs ) {
 		super( context, attrs );
@@ -46,11 +47,16 @@ public class ImageViewTouch extends ImageViewTouchBase {
 		mGestureDetector = new GestureDetector( getContext(), mGestureListener, null, true );
 
 		mCurrentScaleFactor = 1f;
-		mDoubleTapDirection = 1;
+		mDoubleTapDirection = -1;
 	}
 	
 	public void setDoubleTapListener( OnImageViewTouchDoubleTapListener listener ){
 		mDoubleTapListener = listener;
+	}
+	
+	public void setZoomListener(OnZoomListener listener)
+	{
+		mZoomListener = listener;
 	}
 
 	public void setDoubleTapEnabled( boolean value ) {
@@ -108,9 +114,17 @@ public class ImageViewTouch extends ImageViewTouchBase {
 	}
 
 	@Override
-	protected void onZoom( float scale ) {
+	public void onZoom( float scale ) {
 		super.onZoom( scale );
-		if ( !mScaleDetector.isInProgress() ) mCurrentScaleFactor = scale;
+		if ( !mScaleDetector.isInProgress() )
+		{
+			mCurrentScaleFactor = scale;
+		}
+		
+		if (mZoomListener != null)
+		{
+			mZoomListener.onZoom(scale);
+		}
 	}
 	
 	@Override
@@ -124,7 +138,8 @@ public class ImageViewTouch extends ImageViewTouchBase {
 	}
 
 	protected float onDoubleTapPost( float scale, float maxZoom ) {
-		if ( mDoubleTapDirection == 1 ) {
+		Log.d("ImageViewTouch", "scaleFactor: " + mScaleFactor);
+		if ( getScale() <= 1 ) {
 			if ( ( scale + ( mScaleFactor * 2 ) ) <= maxZoom ) {
 				return scale + mScaleFactor;
 			} else {
@@ -132,7 +147,7 @@ public class ImageViewTouch extends ImageViewTouchBase {
 				return maxZoom;
 			}
 		} else {
-			mDoubleTapDirection = 1;
+			mDoubleTapDirection = -1;
 			return 1f;
 		}
 	}
@@ -247,7 +262,7 @@ public class ImageViewTouch extends ImageViewTouchBase {
 				targetScale = Math.min( getMaxZoom(), Math.max( targetScale, getMinZoom()-0.1f ) );
 				zoomTo( targetScale, detector.getFocusX(), detector.getFocusY() );
 				mCurrentScaleFactor = Math.min( getMaxZoom(), Math.max( targetScale, getMinZoom()-1.0f ) );
-				mDoubleTapDirection = 1;
+				mDoubleTapDirection = -1;
 				invalidate();
 				return true;
 			}
@@ -257,5 +272,9 @@ public class ImageViewTouch extends ImageViewTouchBase {
 	
 	public interface OnImageViewTouchDoubleTapListener {
 		void onDoubleTap();
+	}
+	
+	public interface OnZoomListener {
+		void onZoom(float zoom);
 	}
 }

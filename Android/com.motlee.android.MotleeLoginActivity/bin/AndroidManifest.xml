@@ -22,6 +22,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
    	<uses-permission android:name="android.permission.CAMERA" />
+   	<uses-permission android:name="android.permission.VIBRATE" />
     
     <!-- App receives GCM messages. -->
 	<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
@@ -102,6 +103,14 @@
         </activity>
         
         <activity
+            android:name=".ExploreActivity"
+            android:label="ExploreActivity" 
+            android:theme="@style/app_theme"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
             android:name=".LikeListActivity"
             android:label="@string/title_like_list_activity" 
             android:theme="@style/app_theme"
@@ -156,7 +165,7 @@
         <activity
             android:name=".EventDetailActivity"
             android:label="@string/title_event_detail_activity"
-            android:theme="@style/app_theme"
+            android:theme="@style/app_theme_detail"
             android:launchMode="singleTask"
             android:configChanges="keyboardHidden"
             android:screenOrientation="portrait"
@@ -186,13 +195,20 @@
             android:name=".UserProfilePageActivity"
             android:label="@string/title_user_profile_activity"
             android:theme="@style/app_theme"
-            android:launchMode="singleTop"
             android:screenOrientation="portrait" >
         </activity>
         
         <activity
             android:name=".TakePhotoActivity"
             android:label="@string/title_take_photo_activity"
+            android:theme="@style/app_theme"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name=".TagActivity"
+            android:label="TagActivity"
             android:theme="@style/app_theme"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" >

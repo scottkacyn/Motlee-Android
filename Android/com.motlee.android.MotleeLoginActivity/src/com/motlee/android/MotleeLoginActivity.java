@@ -13,7 +13,7 @@ import com.motlee.android.object.event.UpdatedEventDetailEvent;
 import com.motlee.android.object.event.UpdatedEventDetailListener;
 import com.motlee.android.object.event.UserInfoEvent;
 import com.motlee.android.object.event.UserInfoListener;
-import com.motlee.android.object.event.UserWithEventsPhotosEvent;
+import com.motlee.android.object.event.UserEvent;
 import com.motlee.android.service.RubyService;
 import com.motlee.android.service.StreamListService;
 
@@ -277,7 +277,7 @@ public class MotleeLoginActivity extends FragmentActivity implements UserInfoLis
 		
 	}
 
-	public void userWithEventsPhotos(UserWithEventsPhotosEvent e) {
+	public void userWithEventsPhotos(UserEvent e) {
 
 		SharePref.setIntPref(getApplicationContext(), SharePref.USER_ID, e.getUserInfo().id);
 		

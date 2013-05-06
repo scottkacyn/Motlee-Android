@@ -5,10 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@android:color/transparent" xmlns:app="http://schemas.android.com/apk/res/com.motlee.android">
-    <FrameLayout
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content" >
-	    
+
 		<RelativeLayout
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content" 
@@ -22,12 +19,15 @@
 			        android:onClick="onClickGetEventDetail"
 			        android:gravity="top" >
 			        
-	    		    <View
-	    		        android:id="@+id/event_header_space"
-			            android:layout_width="0dp"
-			            android:layout_weight=".17"
-			            android:layout_height="match_parent"
-			            android:visibility="gone" />
+					<ImageView 
+					    android:id="@+id/private_banner"
+					    android:layout_width="0dp"
+					    android:layout_weight=".10"
+					    android:layout_height="match_parent"
+					    android:src="@drawable/private_flag"
+					    android:scaleType="fitStart"
+					    android:adjustViewBounds="true"
+					    android:visibility="gone" />
 			        
 			        <TextView android:id="@+id/event_header_name"
 						android:layout_width="0dp"
@@ -228,17 +228,6 @@
 			                    
 			    </LinearLayout>
 		</RelativeLayout>
-		
-		<ImageView 
-		    android:id="@+id/private_banner"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:src="@drawable/private_banner"
-		    android:scaleType="fitCenter"
-		    android:adjustViewBounds="true"
-		    android:visibility="gone" />
-		
-	</FrameLayout>
 	<View
         android:layout_width="fill_parent"
         android:layout_height="20dp"

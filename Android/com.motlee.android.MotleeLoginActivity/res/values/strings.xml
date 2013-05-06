@@ -38,7 +38,7 @@
     <string name="no_event_text">Welcome and thank you for being one of our first users!\n\nGet started by creating a thread + inviting your friends.\n\nHave Fun!</string>
     <string name="no_message_text">Have something you want to share with everyone? Post a story here!</string>
     <string name="no_notification_text">You have no notifications</string>
-    <string name="not_friend_text">Need to be Facebook friends to view this user\'s profile</string>
+    <string name="not_friend_text">User\'s profile is Private</string>
     <string name="not_motlee_text">This user has not joined Motlee yet. Remind them to sign up!</string>
     <string name="user_profile_no_photo_text">No photos yet...</string>
     <string name="fb_on_create_settings_message">Automatically post a thread you created on timeline.</string>

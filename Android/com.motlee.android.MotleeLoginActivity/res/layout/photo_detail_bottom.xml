@@ -1,0 +1,233 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <View
+        android:id="@+id/photo_detail_blank_space"
+        android:layout_weight=".75"
+        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:background="@android:color/transparent" />
+    
+    <LinearLayout
+        android:id="@+id/photo_detail_info"
+        android:layout_weight=".25"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".6">
+            
+		    <RelativeLayout
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:paddingTop="3dp"
+		        android:layout_below="@id/photo"
+		        android:background="@android:color/transparent"
+		        android:id="@+id/photo_detail_user_row">
+		        
+		        <FrameLayout
+		            android:layout_width="wrap_content"
+		            android:layout_height="match_parent" 
+		            android:id="@+id/thumbnail">            
+		            <!-- <ImageView
+		                android:id="@+id/photo_detail_thumbnail_bg"
+		   	            android:layout_width="match_parent"
+			            android:layout_height="wrap_content"
+			            android:scaleType="fitCenter"
+			    		android:adjustViewBounds="true"
+			    		android:src="@drawable/image_thumbnail_background" 
+			    		android:background="@drawable/app_background"/> -->
+		            
+					<ImageView
+			            android:id="@+id/photo_detail_thumbnail"
+			            android:layout_width="match_parent"
+			            android:layout_height="wrap_content"
+			    		android:paddingTop="2dp"
+			    		android:paddingLeft="5dp"
+			    		android:paddingRight="2dp"
+			    		android:paddingBottom="2dp"
+			    		android:clickable="true"
+			    		android:scaleType="fitCenter"
+			    		android:adjustViewBounds="true"
+			    		android:onClick="onClickShowProfile"/>
+					
+		        </FrameLayout>
+				<LinearLayout
+				    android:layout_width="match_parent"
+				    android:layout_toRightOf="@id/thumbnail"
+				    android:layout_height="wrap_content" 
+				    android:orientation="vertical">
+				    
+				    <RelativeLayout
+				        android:layout_height="wrap_content"
+				        android:layout_width="match_parent">
+				        
+				        <TextView
+				            android:layout_width="wrap_content"
+				            android:layout_height="wrap_content"
+				            android:layout_alignParentLeft="true"
+				            android:layout_alignParentTop="true"
+				            android:gravity="top"
+				            android:paddingLeft="5dp"
+				            android:text="Zack Martinsek"
+				            style="@style/CodeFont.PhotoDetail"
+				            android:textStyle="bold"
+				            android:id="@+id/photo_detail_name_text" />
+				        
+				        <TextView
+				            android:layout_width="wrap_content"
+				            android:layout_height="wrap_content"
+				            android:layout_alignParentRight="true"
+				            android:layout_alignParentTop="true"
+				            android:gravity="top"
+				            android:paddingRight="5dp"
+				            android:textStyle="bold"
+				            style="@style/CodeFont.PhotoDetail"
+				            android:textColor="@color/gray"
+				            android:text="6hr"
+				            android:id="@+id/photo_detail_time_text" />
+				        
+				    </RelativeLayout>
+				    
+					<TextView
+			            android:id="@+id/photo_detail_description"
+			            android:layout_width="wrap_content"
+			            android:layout_height="match_parent"
+			        	android:layout_gravity="left"
+			        	android:textColor="@color/gray"
+			        	android:textStyle="bold"
+			        	android:paddingLeft="5dp"
+			        	android:paddingTop="3dp"
+			        	style="@style/CodeFont.PhotoDetail"
+			        	android:text="Check out my photo of all the coolest shit. Motha Fucka!"
+			            android:gravity="left"/>
+				    
+				</LinearLayout>
+				
+		    </RelativeLayout>
+            
+        </LinearLayout>
+        
+        <View
+            android:id="@+id/white_line"
+            android:layout_width="match_parent"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:layout_height="1dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@android:color/white"/>
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".4"
+            android:weightSum="1">
+            
+            <ImageButton
+	            android:id="@+id/photo_detail_like_button"
+	            android:layout_width="0dp"
+	            android:layout_weight=".12"
+	            android:scaleType="fitCenter"
+	            android:adjustViewBounds="true"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:onClick="onLikeClick"
+	            android:background="@android:color/transparent"
+	            android:src="@drawable/icon_button_thumb" />
+            
+            <ImageButton
+	            android:id="@+id/photo_detail_comment_button"
+	            android:layout_width="0dp"
+	            android:layout_weight=".12"
+	            android:scaleType="fitCenter"
+	            android:adjustViewBounds="true"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:paddingTop="3dp"
+	            android:onClick="onCommentClick"
+	            android:background="@android:color/transparent"
+	            android:src="@drawable/icon_button_comment" />
+
+	        <ImageButton
+	            android:id="@+id/photo_detail_menu_button"
+	            android:layout_width="0dp"
+	            android:layout_weight=".12"
+	            android:scaleType="fitCenter"
+	            android:adjustViewBounds="true"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:background="@android:color/transparent"
+	            android:src="@drawable/icon_gear"
+	            android:onClick="openSettings" />
+	        
+	        <View 
+	            android:layout_width="0dp"
+	            android:layout_weight=".05"
+	            android:layout_height="match_parent"
+	            android:background="@android:color/transparent"/>
+	        
+	        <RelativeLayout
+	            android:id="@+id/photo_detail_like_comment_layout"
+	            android:layout_width="0dp"
+	            android:layout_weight=".59"
+	            android:layout_height="match_parent"
+	            android:onClick="onShowComments" >
+	            
+   		        <TextView
+		            android:id="@+id/photo_detail_comment"
+		            android:layout_width="wrap_content"
+		            android:layout_height="match_parent"
+		            android:layout_alignParentRight="true"
+		            android:gravity="center_vertical"
+		            android:paddingRight="5dp"
+		            style="@style/CodeFont.PhotoDetail"
+		            android:background="@android:color/transparent"
+		            android:text="Comments" />
+	            
+   		        <TextView
+		            android:id="@+id/photo_detail_comment_count"
+		            android:layout_width="wrap_content"
+		            android:layout_height="match_parent"
+		            android:gravity="center_vertical"
+		            android:paddingRight="5dp"
+		            style="@style/CodeFont.PhotoDetail"
+		            android:layout_toLeftOf="@id/photo_detail_comment"
+		            android:background="@android:color/transparent" 
+		            android:text="25" />
+   		        
+ 		        <TextView
+		            android:id="@+id/photo_detail_like"
+		            android:layout_width="wrap_content"
+		            android:layout_height="match_parent"
+		            android:gravity="center_vertical"
+		            android:paddingRight="10dp"
+		            style="@style/CodeFont.PhotoDetail"
+		            android:layout_toLeftOf="@id/photo_detail_comment_count"
+		            android:background="@android:color/transparent"
+		            android:text="Likes" />
+   		        
+       	        <TextView
+		            android:id="@+id/photo_detail_like_count"
+		            android:layout_width="wrap_content"
+		            android:layout_height="match_parent"
+		            android:gravity="center_vertical"
+		            android:paddingRight="5dp"
+		            style="@style/CodeFont.PhotoDetail"
+		            android:layout_toLeftOf="@id/photo_detail_like"
+		            android:background="@android:color/transparent" 
+		            android:text="25" />
+       	        
+	        </RelativeLayout>
+	        
+        </LinearLayout>       
+
+        
+    </LinearLayout>    
+    
+</LinearLayout>

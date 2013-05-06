@@ -1,0 +1,636 @@
+package com.motlee.android;
+
+import java.io.File;
+
+import com.flurry.android.FlurryAgent;
+import com.motlee.android.database.DatabaseWrapper;
+import com.motlee.android.object.DrawableCache;
+import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.GlobalActivityFunctions;
+import com.motlee.android.object.MenuFunctions;
+import com.motlee.android.object.NotificationList;
+import com.motlee.android.object.PhotoItem;
+import com.motlee.android.object.SharePref;
+import com.motlee.android.object.event.UpdatedEventDetailEvent;
+import com.motlee.android.object.event.UpdatedEventDetailListener;
+import com.motlee.android.object.event.UpdatedNotificationListener;
+import com.motlee.android.object.event.UserInfoEvent;
+import com.motlee.android.object.event.UserInfoListener;
+import com.motlee.android.object.event.UserEvent;
+import com.motlee.android.service.RubyService;
+import com.motlee.android.service.StreamListService;
+import com.readystatesoftware.viewbadger.BadgeView;
+import com.slidingmenu.lib.SlidingMenu;
+import com.slidingmenu.lib.SlidingMenu.OnClosedListener;
+
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.PixelFormat;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class BaseMotleeActivity extends BaseFacebookActivity implements UserInfoListener, UpdatedEventDetailListener, UpdatedNotificationListener {
+
+	public static String tag = "BaseMotleeActivity";
+	
+	public static final int CREATE_EVENT = 0;
+	public static final int TAKE_PICTURE = 1;
+	public static final int JOIN_EVENT = 2;
+	public static final int NOT_APART_OF = 3;
+	
+	protected ProgressDialog progressDialog;
+	
+	protected SlidingMenu menu;
+	
+	protected BadgeView menuBadge;
+	protected BadgeView notificationIconBadge;
+	
+	private BroadcastReceiver photoFailedReceiver = new BroadcastReceiver(){
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			
+			Log.d("BaseMotleeActivity", "ReceivedPhotoFailed");
+			
+			//requestRetryDialog((PhotoItem) intent.getExtras().getParcelable("Photo"));
+			PhotoItem photo = (PhotoItem) intent.getExtras().getParcelable("Photo");
+
+			PhotoItem updatedPhoto = dbWrapper.getPhoto(photo.id);
+			
+			updatedPhoto.failed_upload = true;
+			
+			dbWrapper.updatePhoto(updatedPhoto);
+			
+			Intent streamListService = new Intent(BaseMotleeActivity.this, StreamListService.class);
+			streamListService.putExtra(StreamListService.PHOTO_STATUS_CHANGE, updatedPhoto);
+			startService(streamListService);
+			
+			photoUploadFailed((PhotoItem) intent.getExtras().getParcelable("Photo"));
+			
+		}
+		
+	};
+	
+	protected void photoUploadFailed(PhotoItem photo)
+	{
+		return;
+	}
+	
+	private BroadcastReceiver photoProgressReceiver = new BroadcastReceiver(){
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			
+			Log.d("BaseMotleeActivity", "ReceivedPhotoProgress");
+			
+			Integer photoId = intent.getIntExtra("photoId", -1);
+			Integer eventId = intent.getIntExtra("eventId", -1);
+			int progressPercent = intent.getIntExtra("progress", -1);
+
+			PhotoItem photo = dbWrapper.getPhoto(photoId);
+			photo.upload_progress = progressPercent;
+			dbWrapper.updatePhoto(photo);
+			
+			photoUploadProgress(progressPercent, photoId, eventId);
+			
+		}
+		
+	};
+	
+	protected void photoUploadProgress(int progressPercent, Integer photoId, Integer eventId)
+	{
+		return;
+	}
+
+	
+	private BroadcastReceiver receiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            
+        	receivedNetworkFailure();
+
+        }
+    };
+	
+    private void showToast(){
+    	Toast toast = Toast.makeText(this, "Whoops. There seems to be a connection issue.  Try again in one sec.", Toast.LENGTH_SHORT);
+    	TextView v = (TextView)toast.getView().findViewById(android.R.id.message);
+    	if( v != null) v.setGravity(Gravity.CENTER);
+    	toast.show();
+    }
+    
+    protected void receivedNetworkFailure()
+    {
+    	if (progressDialog != null && progressDialog.isShowing())
+    	{
+    		progressDialog.dismiss();
+    	}
+    	
+        showToast();
+    }
+    
+    @Override
+    protected void onResume() {
+    	Log.d(tag, "onResume");
+    	
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(RubyService.CONNECTION_ERROR);
+        registerReceiver(receiver, filter);
+        
+        IntentFilter photoFilter = new IntentFilter();
+        photoFilter.addAction(RubyService.PHOTO_UPLOAD_ERROR);
+        registerReceiver(photoFailedReceiver, photoFilter);
+        
+        IntentFilter photoUplaodFilter = new IntentFilter();
+        photoUplaodFilter.addAction(RubyService.PHOTO_UPLOAD_PROGRESS);
+        registerReceiver(photoProgressReceiver, photoUplaodFilter);
+        
+        showMenuButtonBadge();
+        
+	    View bigImage = findViewById(R.id.expanded_image);
+	    View blackBg = findViewById(R.id.black_background);
+    	
+	    if (bigImage != null)
+	    {
+	    	bigImage.setVisibility(View.GONE);
+	    }
+	    
+	    if (blackBg != null)
+	    {
+	    	blackBg.setVisibility(View.GONE);
+	    }
+	    
+        EventServiceBuffer.setNotificationListener(this);
+        
+        View target = findViewById(R.id.notification_icon);
+
+        if (target != null)
+        {
+            ImageView image = (ImageView) findViewById(R.id.notification_icon_image);
+            
+            target.setLayoutParams(new FrameLayout.LayoutParams(image.getDrawable().getIntrinsicWidth() + DrawableCache.convertDpToPixel(12), image.getDrawable().getIntrinsicHeight(), Gravity.CENTER));
+            target.setPadding(DrawableCache.convertDpToPixel(47), 0, DrawableCache.convertDpToPixel(47), 0);
+        	if (notificationIconBadge == null)
+        	{
+        		notificationIconBadge = new BadgeView(this, target);
+        	}
+        	
+        	setUpNotificationIconBadge();
+        	
+        	if (SharePref.getStringPref(getApplicationContext(), SharePref.AUTH_TOKEN) != "")
+        	{
+        		EventServiceBuffer.getNewNotificationsFromServer();
+        	}
+        }
+        
+        super.onResume();
+    }
+
+    @Override
+    public void onStart()
+    {
+    	Log.d(tag, "onStart");
+    	
+    	DrawableCache.getInstance(this.getApplicationContext().getResources());
+    	
+    	super.onStart();
+    }
+    
+    @Override
+    public void setContentView(int layout)
+    {
+    	Log.d(tag, "startSetContentView");
+    	
+    	super.setContentView(layout);
+    	
+    	View target = findViewById(R.id.invisible_for_badge_view);
+    	
+    	target.setLayoutParams(new FrameLayout.LayoutParams((int) (SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH) * 0.15), (int) (SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH) * 0.15), Gravity.BOTTOM|Gravity.LEFT));
+    	
+    	menuBadge = new BadgeView(this, target);
+    	
+    	menuBadge.setVisibility(View.GONE);
+    	
+		View createEventButton = findViewById(R.id.header_create_event_button);
+		
+		if (createEventButton != null)
+		{
+			createEventButton.setVisibility(View.GONE);
+		}
+		
+		View mainMenuButton = findViewById(R.id.top_menu_layout_button);
+		
+		if (mainMenuButton != null)
+		{
+			mainMenuButton.setVisibility(View.GONE);
+		}
+    	
+    	Log.d(tag, "finishSetContentView");
+    }
+    
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+    	Log.d(tag, "onCreate");
+    	
+    	DrawableCache.getInstance(getResources());
+    	
+    	getWindow().setFormat(PixelFormat.RGBA_8888);
+    	getWindow().addFlags(WindowManager.LayoutParams.FLAG_DITHER);
+    	
+    	EventServiceBuffer.getInstance(getApplicationContext());
+    	
+    	super.onCreate(savedInstanceState);
+    }
+    
+    @Override
+    protected void onPause() {
+    	Log.d(tag, "onPause");
+        unregisterReceiver(receiver);
+        unregisterReceiver(photoFailedReceiver);
+        unregisterReceiver(photoProgressReceiver);
+        EventServiceBuffer.removeNotificationListener(this);
+        super.onPause();
+    }
+    
+	final public void onClickShowProfile(View view)
+	{
+		GlobalActivityFunctions.showProfileDetail(view, this);
+	}
+
+	final public void showStoryDetail(View view)
+	{
+		GlobalActivityFunctions.showStoryDetail(view, this);
+	}
+	
+	final public void takePhoto(View view)
+	{
+    	Integer eventId = (Integer) view.getTag();
+    	
+    	MenuFunctions.takePictureOnPhone(eventId, this);
+	}
+	
+    final public void onClickGetEventDetail(View view)
+    {
+    	GlobalActivityFunctions.onClickGetEventDetail(view, this);
+    }
+	
+	public void showPictureDetail(View view)
+	{
+		GlobalActivityFunctions.showPictureDetail(view, this);
+	}
+	
+	final public void onClickGetPhotoFromLibrary(View view)
+	{
+		MenuFunctions.uploadPictureFromPhone(view, this);
+	}
+	
+	final public void onClickTakePhoto(View view)
+    {
+    	MenuFunctions.takePictureOnPhone(view, this);
+    }
+    
+	final public void onClickCreateEvent(View view)
+    {
+    	MenuFunctions.showCreateEventPage(view, this);
+    }
+    
+	final public void retryPhotoUpload(View view)
+	{
+		MenuFunctions.retryPhotoUpload(view, this);
+	}
+	
+	// plus menu deprecated
+	/*final public void onClickOpenPlusMenu(View view)
+    {
+    	MenuFunctions.openPlusMenu(view, this);
+    }*/
+    
+    //onClickMainMenu: When user clicks on main menu button
+    
+	final public void onClickOpenMainMenu(View view)
+    {
+		menu.showMenu(true);
+    }
+    
+	final public void onClickShowAllEvents(final View view)
+	{
+		menu.setOnClosedListener(new OnClosedListener(){
+
+			public void onClosed() 
+			{
+				MenuFunctions.showAllEvents(view, BaseMotleeActivity.this);
+			}
+			
+		});
+		menu.toggle();
+	}
+	
+	final public void onClickShowMyProfile(final View view)
+	{
+		menu.setOnClosedListener(new OnClosedListener(){
+
+			public void onClosed() {
+				MenuFunctions.showMyProfile(view, BaseMotleeActivity.this);
+				
+			}
+		});
+		menu.toggle();
+	}
+	
+	final public void onClickShowMyEvents(final View view)
+	{
+		menu.toggle();
+		MenuFunctions.showMyEvents(view, BaseMotleeActivity.this);
+	}
+	
+	final public void onClickShowNearbyEvents(final View view)
+	{
+		menu.toggle();
+		MenuFunctions.showNearbyEvents(view, BaseMotleeActivity.this);
+	}
+	
+	final public void onClickShowSettings(View view)
+	{
+		menu.toggle();
+		MenuFunctions.showSettings(BaseMotleeActivity.this);
+	}
+	
+	final public void onClickShowSearch(View view)
+	{
+		menu.toggle();
+		MenuFunctions.showSearchPage(BaseMotleeActivity.this);
+	}
+	
+	final public void onClickShowNotifications(final View view)
+	{
+		menu.toggle();
+		MenuFunctions.showNotificationsPage(view, BaseMotleeActivity.this);
+	}
+	
+	final public void showMenuButtons()
+	{
+		if (menuBadge != null)
+		{
+			menuBadge.setVisibility(View.VISIBLE);
+		}
+		
+		View createEventButton = findViewById(R.id.header_create_event_button);
+		
+		if (createEventButton != null)
+		{
+			createEventButton.setVisibility(View.VISIBLE);
+		}
+		
+		View mainMenuButton = findViewById(R.id.top_menu_layout_button);
+		
+		if (mainMenuButton != null)
+		{
+			mainMenuButton.setVisibility(View.VISIBLE);
+		}
+		/*if (menuButtons != null)
+		{
+			
+			
+			if (iconToShow == CREATE_EVENT)
+			{
+				menuButtons.setVisibility(View.VISIBLE);
+				((ImageView) findViewById(R.id.plus_menu_button)).setClickable(true);
+				ImageView rightIcon = (ImageView) findViewById(R.id.right_menu_icon);
+				//rightIcon.setMaxWidth((int) (SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH) * .20)); 
+				//rightIcon.setMaxHeight((int) (SharePref.getIntPref(getApplicationContext(), SharePref.DISPLAY_WIDTH) * .20 * .50));
+				rightIcon.setImageResource(R.drawable.right_menu_plus_icon);
+				((ImageView) findViewById(R.id.menu_button)).setImageResource(R.drawable.main_menu_button);
+				menuBadge.setVisibility(View.VISIBLE);
+			}
+			else if (iconToShow == TAKE_PICTURE)
+			{
+				menuButtons.setVisibility(View.VISIBLE);
+				((ImageView) findViewById(R.id.plus_menu_button)).setImageResource(R.drawable.right_menu_button);
+				((ImageView) findViewById(R.id.plus_menu_button)).setClickable(true);
+				//((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_photo_icon);
+				((ImageView) findViewById(R.id.menu_button)).setImageResource(R.drawable.main_menu_button);
+				menuBadge.setVisibility(View.VISIBLE);
+			}
+			else if (iconToShow == JOIN_EVENT)
+			{
+				menuButtons.setVisibility(View.VISIBLE);
+				//((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(R.drawable.right_menu_join_icon);
+				menuBadge.setVisibility(View.VISIBLE);
+			}
+			else if (iconToShow == NOT_APART_OF)
+			{
+				//menuButtons.setVisibility(View.GONE);	
+				((ImageView) findViewById(R.id.plus_menu_button)).setImageResource(android.R.color.transparent);
+				((ImageView) findViewById(R.id.plus_menu_button)).setClickable(false);
+				//((ImageView) findViewById(R.id.right_menu_icon)).setImageResource(android.R.color.transparent);
+				((ImageView) findViewById(R.id.menu_button)).setImageResource(android.R.color.transparent);
+				menuBadge.setVisibility(View.GONE);
+			}
+		}*/
+	}
+	
+	final public void setActionForRightMenu(OnClickListener listener)
+	{
+		View plusMenuButton = findViewById(R.id.plus_menu_button);
+		if (plusMenuButton != null)
+		{
+			((ImageButton) plusMenuButton).setOnClickListener(listener);
+		}
+	}
+	
+	public UpdatedEventDetailListener eventListener = new UpdatedEventDetailListener(){
+
+		public void myEventOccurred(UpdatedEventDetailEvent evt) {
+			
+			return;
+			
+		}
+
+		public void updatedEventOccurred(Integer eventId) {
+			
+			EventServiceBuffer.removeEventDetailListener(this);
+			
+			Intent streamListIntent = new Intent(BaseMotleeActivity.this, StreamListService.class);
+			startService(streamListIntent);
+			
+			finish();
+			
+			progressDialog.dismiss();
+			
+		}
+		
+	};
+	
+	@Override
+	final public boolean dispatchTouchEvent(MotionEvent ev) {
+		
+		if (MenuFunctions.onDispatchTouchOverride(ev, this))
+		{
+			return super.dispatchTouchEvent(ev);
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onDestroy()
+	 * Override onDestroy to ensure we do not have any attachments to other
+	 * objects or activities to prevent memory leaks
+	 */
+	@Override
+	public void onDestroy()
+	{
+		Log.d(tag, "onDestroy");
+		EventServiceBuffer.setAttendeeListener(null);
+		EventServiceBuffer.removeUserInfoListener(this);
+		EventServiceBuffer.removeEventDetailListener(this);
+		EventServiceBuffer.removeNotificationListener(this);
+		unbindDrawables(this.findViewById(android.R.id.content));
+		System.gc();
+		
+		if (progressDialog != null && progressDialog.isShowing())
+		{
+			progressDialog.dismiss();
+		}
+		super.onDestroy();
+	}
+	
+	private void unbindDrawables(View view) {
+	    if (view.getBackground() != null) {
+	        view.getBackground().setCallback(null);
+	        if (view instanceof ImageView)
+	        {
+	        	if (((ImageView) view).getDrawable() != null)
+	        	{
+	        		((ImageView) view).getDrawable().setCallback(null);
+	        	}
+	        }
+	    }
+	    if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
+	        for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+	            if (view.getId() != R.id.header)
+	            {
+	            	unbindDrawables(((ViewGroup) view).getChildAt(i));
+	            }
+	        }
+	        if (view.getId() != R.id.header)
+	        {
+	        	((ViewGroup) view).removeAllViews();
+	        }
+	    }
+	}
+	
+	//********************************
+	// Go Back Functions to sync phone's
+	// back button and our's
+	//********************************
+	
+	@Override
+	public void onBackPressed() {
+		backButtonPressed();
+	}
+	
+	/*
+	 * called when on page back button pressed
+	 */
+	public void goBack(View view)
+	{
+		backButtonPressed();
+	}
+	
+	/*
+	 * defaults to the system back button functionality
+	 */
+	protected void backButtonPressed()
+	{
+		super.onBackPressed();
+	}
+
+	public void myEventOccurred(UpdatedEventDetailEvent evt) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void showMenuButtonBadge() {
+		
+		if (NotificationList.getInstance().getNumUnreadNotifications() > 0)
+        {
+        	menuBadge.setText(Integer.toString(NotificationList.getInstance().getNumUnreadNotifications()));
+        	menuBadge.show();
+        }
+        else
+        {
+        	if (menuBadge.isShown())
+        	{
+        		menuBadge.toggle();
+        	}
+        }
+	}
+
+	private void setUpNotificationIconBadge()
+	{
+		if (notificationIconBadge != null && NotificationList.getInstance().getNumUnreadNotifications() > 0)
+		{
+			notificationIconBadge.setText(Integer.toString(NotificationList.getInstance().getNumUnreadNotifications()));
+			notificationIconBadge.show();
+		}	
+		else
+		{
+			if (notificationIconBadge != null && notificationIconBadge.isShown())
+			{
+				notificationIconBadge.toggle();
+			}
+		}
+	}
+	
+	public void receivedNewNotifications() {
+		
+		showMenuButtonBadge();
+		
+		setUpNotificationIconBadge();
+		
+	}
+
+	public void receivedAllNotifications() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void raised(UserInfoEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void userWithEventsPhotos(UserEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void updatedEventOccurred(Integer eventId) {
+		// TODO Auto-generated method stub
+		
+	}
+}

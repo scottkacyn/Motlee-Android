@@ -161,8 +161,6 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	
 	private AlertDialog alertDialog;
 	
-	private DatabaseWrapper dbWrapper;
-	
 	private String firstScreen;
 	
 	private LinearLayout eventHeader;
@@ -208,9 +206,7 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		super.onResume();
 		
 		uiHelper.onResume();
-		
-        FlurryAgent.logEvent("ViewEventDetail");
-		
+
 		eDetail = dbWrapper.getEvent(mEventID);
 		
 		
@@ -386,6 +382,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 				
 				if (eDetail != null)
 				{
+					FlurryAgent.logEvent("DeletingStream");
+					
 					progressDialog = ProgressDialog.show(EventDetailActivity.this, "", "Deleting Event");
 					
 					Intent streamListService = new Intent(EventDetailActivity.this, StreamListService.class);
@@ -552,8 +550,6 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
         
         uiHelper = new UiLifecycleHelper(this, callback);
         uiHelper.onCreate(savedInstanceState);
-        
-        dbWrapper = new DatabaseWrapper(this.getApplicationContext());
         
         View mainLayout = findViewById(R.id.main_frame_layout);
         mainLayout.setClickable(true);
@@ -734,6 +730,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 	
 	public void shareStream(View view)
 	{		
+		FlurryAgent.logEvent("OpenSharingStreamDetailPage");
+		
 		Uri uri = setUpShareGrid();
 		
 		String bodyToSend = "";
@@ -862,6 +860,8 @@ public class EventDetailActivity extends BaseDetailActivity implements OnFragmen
 		userProfile.putExtra("Name", user.name);
 		
 		startActivity(userProfile);
+		
+		overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 
 	}
 	

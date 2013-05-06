@@ -5,7 +5,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.flurry.android.FlurryAgent;
 import com.motlee.android.database.DatabaseWrapper;
+import com.motlee.android.fragment.EditProfileFragment;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
 import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
 import com.motlee.android.fragment.UserProfilePageFragment;
@@ -21,9 +23,10 @@ import com.motlee.android.object.event.UpdatedFriendsEvent;
 import com.motlee.android.object.event.UpdatedFriendsListener;
 import com.motlee.android.object.event.UpdatedPhotoEvent;
 import com.motlee.android.object.event.UserInfoEvent;
-import com.motlee.android.object.event.UserWithEventsPhotosEvent;
+import com.motlee.android.object.event.UserEvent;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -38,7 +41,15 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
 	
 	private ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>();
 	
-	private DatabaseWrapper dbWrapper;
+	private Boolean mainMenu = false;
+
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		FlurryAgent.logEvent("UserProfilePage");
+	}
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,6 +63,8 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
         
         mUserName = intent.getStringExtra("Name");
         
+        mainMenu = intent.getBooleanExtra("MainMenu", false);
+        
         if (mUserName == null)
         {
         	mUserName = "";
@@ -59,9 +72,11 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
         
         setContentView(R.layout.main);
         
-        //menu = GlobalActivityFunctions.setUpSlidingMenu(this);
-        
-        dbWrapper = new DatabaseWrapper(this.getApplicationContext());
+        if (mainMenu)
+        {       
+        	menu = GlobalActivityFunctions.setUpSlidingMenu(this);
+        	showMenuButtons();
+        }
         
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
@@ -81,17 +96,22 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
         //progressDialog = ProgressDialog.show(UserProfilePageActivity.this, "", "Loading " + user.name + "'s Profile");
     }
 	
-	private void setUpProfilePageFragment(UserProfilePageFragment userProfileFragment, ArrayList<PhotoItem> photos, ArrayList<EventDetail> events, ArrayList<UserInfo> friends) 
+	private void setUpProfilePageFragment(UserProfilePageFragment userProfileFragment) 
 	{
-		userProfileFragment.setPhotos(photos);
+		//userProfileFragment.setPhotos(photos);
 		
-		userProfileFragment.setEvents(events);
+		//userProfileFragment.setEvents(events);
 		
-		userProfileFragment.setFriends(friends);
+		//userProfileFragment.setFriends(friends);
 		
 		userProfileFragment.setHeaderView(findViewById(R.id.header));
 		
 		userProfileFragment.setUserId(mUserID, facebookID, mUserName);
+		
+		if (mainMenu)
+		{
+			userProfileFragment.setMainMenu();
+		}
 	}
 	
 	public void myEventOccurred(UpdatedEventDetailEvent evt) {
@@ -99,6 +119,15 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
 
 	}
 
+	
+	@Override
+	protected void backButtonPressed()
+	{
+		super.backButtonPressed();
+		
+		overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+	}
+	
 	public void showProfilePage(View view)
 	{
 		UserInfo user = (UserInfo) view.getTag();
@@ -113,56 +142,40 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
 	
 	public void OnFragmentAttached() {
 		
-		photos = new ArrayList<PhotoItem>(dbWrapper.getPhotosForUser(mUserID));
-		
-		Collections.sort(photos);
-		
-		ArrayList<EventDetail> friendEvents = new ArrayList<EventDetail>(dbWrapper.getEventsForUser(mUserID));
-		
-		for (EventDetail eDetail : friendEvents)
-		{
-			eDetail.setPhotos(dbWrapper.getPhotos(eDetail.getEventID()));
-			eDetail.setOwnerInfo(dbWrapper.getUser(eDetail.getOwnerID()));
-			eDetail.setAttendeeCount(eDetail.getAttendeeCount() + TempAttendee.getTempAttendees(eDetail.getEventID()).size());
-			
-			if (eDetail.getLocationID() != null)
-			{
-				eDetail.setLocationInfo(dbWrapper.getLocation(eDetail.getLocationID()));
-			}
-		}
-		
-		Collections.sort(friendEvents);
-		
         FragmentManager     fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         
-        UserProfilePageFragment userProfileFragment = (UserProfilePageFragment) fm.findFragmentById(R.id.fragment_content);
+        Fragment fragment = fm.findFragmentById(R.id.fragment_content);
         
-        if (userProfileFragment == null)
+        if (fragment ==  null || fragment instanceof UserProfilePageFragment)
         {
-        	userProfileFragment = new UserProfilePageFragment();
-    
-	        setUpProfilePageFragment(userProfileFragment, photos, friendEvents, friends);
-        	
-	        ft.add(R.id.fragment_content, userProfileFragment);
+	        UserProfilePageFragment userProfileFragment = (UserProfilePageFragment) fragment;
 	        
-	        ft.commit();
+	        if (userProfileFragment == null)
+	        {
+	        	userProfileFragment = new UserProfilePageFragment();
+	    
+		        setUpProfilePageFragment(userProfileFragment);
+	        	
+		        ft.add(R.id.fragment_content, userProfileFragment);
+		        
+		        ft.commit();
+	        }
+	        else
+	        {
+		        setUpProfilePageFragment(userProfileFragment);
+	        }
         }
-        else
-        {
-	        setUpProfilePageFragment(userProfileFragment, photos, friendEvents, friends);
-        }
-		
-        //EventServiceBuffer.setUserInfoListener(this);
-        
-        //EventServiceBuffer.getUserInfoFromService(mUserID, true);
-		
-        //EventServiceBuffer.setFriendsListener(this);
-        
-        //EventServiceBuffer.requestMotleeFriends(mUserID);
-        
 	}
 
+	public void onFollowClick(View view)
+	{
+		view.setEnabled(false);
+		UserInfo user = (UserInfo) view.getTag();
+		
+		EventServiceBuffer.toggleFollow(user.id);
+	}
+	
 	public void showMoreDetail(View view)
 	{
 		//Do nothing
@@ -180,43 +193,46 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
 		
 	}
 
-	public void userWithEventsPhotos(UserWithEventsPhotosEvent e) {
+	public void userWithEventsPhotos(UserEvent e) {
 		
-		DatabaseWrapper dbWrapper = new DatabaseWrapper(this);
-		
-		photos = e.getPhotos();
-		
-		Collections.sort(photos);
-		
-		final Set<Integer> events = new HashSet<Integer>(e.getEvents());
+		/*final Set<Integer> events = new HashSet<Integer>(e.getEvents());
 		
 		ArrayList<EventDetail> friendEvents = new ArrayList<EventDetail>(dbWrapper.getEvents(events));
 		
 		Collections.sort(friendEvents);
+		
+		dbWrapper.createOrUpdateUser(e.getUserInfo());
+		
+		UserInfo user = dbWrapper.getUser(e.getUserInfo().id);
 		
 		EventServiceBuffer.removeUserInfoListener(this);
 		
         FragmentManager     fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         
-        UserProfilePageFragment userProfileFragment = (UserProfilePageFragment) fm.findFragmentById(R.id.fragment_content);
+        Fragment fragment = fm.findFragmentById(R.id.fragment_content);
         
-        if (userProfileFragment == null)
+        if (fragment ==  null || fragment instanceof UserProfilePageFragment)
         {
-        	userProfileFragment = new UserProfilePageFragment();
-    
-	        setUpProfilePageFragment(userProfileFragment, photos, friendEvents, friends);
-        	
-	        ft.add(R.id.fragment_content, userProfileFragment);
+	        UserProfilePageFragment userProfileFragment = (UserProfilePageFragment) fragment;
 	        
-	        ft.commit();
-        }
-        else
-        {
-	        setUpProfilePageFragment(userProfileFragment, photos, friendEvents, friends);
+	        if (userProfileFragment == null)
+	        {
+	        	userProfileFragment = new UserProfilePageFragment();
+	    
+		        setUpProfilePageFragment(userProfileFragment, friends);
+	        	
+		        ft.add(R.id.fragment_content, userProfileFragment);
+		        
+		        ft.commit();
+	        }
+	        else
+	        {
+		        setUpProfilePageFragment(userProfileFragment, friends);
+	        }
         }
         
-        progressDialog.dismiss();
+        //progressDialog.dismiss();*/
 		
 	}
 	
@@ -231,21 +247,6 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
 		showPictureIntent.putExtra("IsUserPhotoRoll", true);
 		startActivity(showPictureIntent);
 	}
-	
-	public void onClickGetEventDetail(View view)
-	{
-    	Integer eventID = Integer.parseInt(view.getContentDescription().toString());
-    	
-    	Intent eventDetail = new Intent(UserProfilePageActivity.this, EventDetailActivity.class);
-    	
-    	eventDetail.putExtra("EventID", eventID);
-    	
-    	Log.d("Transition", "Started transition to EventDetail");
-    	
-    	startActivity(eventDetail);
-    	
-    	overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-	}
 
 	public void friendsEvent(UpdatedFriendsEvent evt) {
 		
@@ -255,7 +256,7 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
 		
         EventServiceBuffer.setUserInfoListener(this);
         
-        EventServiceBuffer.getUserInfoFromService(mUserID, true);
+        EventServiceBuffer.getUserInfoFromService(mUserID, false);
 		
 	}
 	
@@ -276,11 +277,4 @@ public class UserProfilePageActivity extends BaseMotleeActivity implements OnFra
 		finish();
 		
 	}
-	
-    public void takePhoto(View view)
-    {
-    	Integer eventId = (Integer) view.getTag();
-    	
-    	MenuFunctions.takePictureOnPhone(eventId, this);
-    }
 }

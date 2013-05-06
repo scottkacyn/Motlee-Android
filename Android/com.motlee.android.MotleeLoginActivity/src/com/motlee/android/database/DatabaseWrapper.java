@@ -6,8 +6,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import com.j256.ormlite.android.AndroidDatabaseResults;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -16,6 +18,7 @@ import com.j256.ormlite.stmt.Where;
 import com.motlee.android.object.Attendee;
 import com.motlee.android.object.Comment;
 import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.FacebookFriend;
 import com.motlee.android.object.Friend;
 import com.motlee.android.object.Like;
 import com.motlee.android.object.LocationInfo;
@@ -36,16 +39,83 @@ public class DatabaseWrapper {
 	
 	public DatabaseWrapper(Context context) {
 		
-		helper = DatabaseHelper.getInstance(context.getApplicationContext());
-		
 		mContext = context;
+		
+		helper = DatabaseHelper.getInstance(context.getApplicationContext());
+	}
+	
+	public void releaseHelper()
+	{
+
 	}
 	
 	public void createOrUpdateUser(UserInfo user)
 	{
 		try
 		{
-			helper.getUserDao().createOrUpdate(user);
+			UserInfo currentUser = getUser(user.id);
+			
+			if (currentUser != null)
+			{
+				if (user.follow_status != null)			
+				{
+					currentUser.follow_status = user.follow_status;
+				}
+				if (user.is_private != null)
+				{
+					currentUser.is_private = user.is_private;
+				}
+				if (user.birthday != null)
+				{
+					currentUser.birthday = user.birthday;
+				}
+				if (user.email != null)
+				{
+					currentUser.email = user.email;
+				}
+				if (user.eventDetail != null)
+				{
+					currentUser.eventDetail = user.eventDetail;
+				}
+				if (user.first_name != null)
+				{
+					currentUser.first_name = user.first_name;
+				}
+				if (user.follower_count != null)
+				{
+					currentUser.follower_count = user.follower_count;
+				}
+				if (user.following_count != null)
+				{
+					currentUser.following_count = user.following_count;
+				}
+				if (user.gender != null)
+				{
+					currentUser.gender = user.gender;
+				}
+				if (user.last_name != null)
+				{
+					currentUser.last_name = user.last_name;
+				}
+				if (user.name != null)
+				{
+					currentUser.name = user.name;
+				}
+				if (user.picture != null)
+				{
+					currentUser.picture = user.picture;
+				}
+				if (user.sign_in_count != null)
+				{
+					currentUser.sign_in_count = user.sign_in_count;
+				}			
+			}
+			else 
+			{
+				currentUser = user;
+			}
+			
+			helper.getUserDao().createOrUpdate(currentUser);
 		}
 		catch (SQLException e) 
 		{
@@ -182,6 +252,48 @@ public class DatabaseWrapper {
 		{
 			Log.e("DatabaseWrapper", "Failed to getStreamCount", ex);
 			return -1;
+		}
+	}
+	
+	public Date getOldestUpdatedTime(String eventType)
+	{
+		try
+		{
+			Set<Integer> eventIds = SharePref.getIntArrayPref(mContext, eventType);
+			
+			if (eventIds.size() > 0)
+			{
+				QueryBuilder<EventDetail, Integer> qb = helper.getEventDao().queryBuilder();
+				Where<EventDetail, Integer> where = qb.where();
+				Iterator<Integer> iterator = eventIds.iterator();
+				
+				while (iterator.hasNext())
+				{
+					where.eq("id", iterator.next());
+				}
+				where.or(eventIds.size());
+				qb.orderBy("updated", true);
+				
+				ArrayList<EventDetail> events = new ArrayList<EventDetail>(helper.getEventDao().query(qb.prepare()));
+				
+				if (events.size() > 0)
+				{
+					return events.get(0).updated_at;
+				}
+				else
+				{
+					return new Date();
+				}
+			}
+			else
+			{
+				return new Date();
+			}
+		}
+		catch (Exception e)
+		{
+			Log.e("DatabaseWrapper", "Failed to getOldestUpdatedTime", e);
+			return new Date();
 		}
 	}
 	
@@ -824,6 +936,58 @@ public class DatabaseWrapper {
 		
 	}
 	
+	public void clearFacebookFriends()
+	{
+		try 
+		{
+			DeleteBuilder<FacebookFriend, Integer> deleteBuilder = helper.getFBFriendDao().deleteBuilder();
+			deleteBuilder.delete();
+		} 
+		catch (SQLException e) 
+		{
+			Log.e("DatabaseWrapper", "Failed to clearFacebookFriends", e);
+		}
+	}
+	
+	public void createFacebookFriend(FacebookFriend friend)
+	{
+		try
+		{
+			helper.getFBFriendDao().createIfNotExists(friend);
+		}
+		catch (SQLException e)
+		{
+			Log.e("DatabaseWrapper", "Failed to createFacebookFriend", e);
+		}
+	}
+	
+	public void removeFacebookFriend(Long uid)
+	{
+		try
+		{
+			DeleteBuilder<FacebookFriend, Integer> deleteBuilder = helper.getFBFriendDao().deleteBuilder();
+			deleteBuilder.where().eq("uid", uid);
+			helper.getFBFriendDao().delete(deleteBuilder.prepare());
+		}
+		catch (SQLException e)
+		{
+			Log.e("DatabaseWrapper", "Failed to removeFacebookFriend", e);
+		}
+	}
+	
+	public ArrayList<FacebookFriend> getAllFacebookFriends()
+	{
+		try
+		{
+			return new ArrayList<FacebookFriend>(helper.getFBFriendDao().queryForAll());
+		}
+		catch (Exception e)
+		{
+			Log.e("DatabaseWrapper", "Failed to getAllFacebookFriends", e);
+			return new ArrayList<FacebookFriend>();
+		}
+	}
+	
 	public Collection<PhotoItem> getUploadingPhotos(Integer eventId)
 	{
 		try 
@@ -1009,5 +1173,30 @@ public class DatabaseWrapper {
 		} catch (SQLException e) {
 			Log.e("DatabaseWrapper", "Failed to createLike for photo", e);
 		}
+	}
+
+	public void addAllFacebookFriends(final ArrayList<FacebookFriend> friends) {
+		
+		try
+		{
+			helper.getFBFriendDao().callBatchTasks(new Callable<Void>(){
+
+				public Void call() throws Exception {
+					
+					for (FacebookFriend friend : friends)
+					{
+						helper.getFBFriendDao().createIfNotExists(friend);
+					}
+					
+					return null;
+				}
+				
+			});
+		}
+		catch (Exception e)
+		{
+			Log.e("DatabaseWrapper", "Failed to addAllFacebookFriends", e);
+		}
+		
 	}
 }

@@ -36,6 +36,8 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -80,6 +82,8 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 	
 	private Handler handler = new Handler();
 	
+	private int listViewSelection = 0;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -118,7 +122,22 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 				
 		//view.findViewById(R.id.event_detail_take_photo).setTag(mEventDetail.getEventID());
 		
-		
+		listViewLayout.setOnScrollListener(new OnScrollListener(){
+
+			public void onScrollStateChanged(AbsListView paramAbsListView,
+					int paramInt) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void onScroll(AbsListView paramAbsListView, int paramInt1,
+					int paramInt2, int paramInt3) {
+				
+				listViewSelection = listViewLayout.getFirstVisiblePosition();
+				
+			}
+			
+		});
 		
 		EventServiceBuffer.setStoryListener(this);
 		
@@ -283,6 +302,15 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 	
 	public void setEventDetail(EventDetail eDetail) {
 		Log.w(tag, "addEventDetail");
+		
+		if (mEventDetail != null)
+		{
+			if (eDetail.getEventID() != mEventDetail.getEventID())
+			{
+				listViewSelection = 0;
+			}
+		}
+		
 		mEventDetail = eDetail;
 		this.pageTitle = mEventDetail.getEventName();
 		setPageHeader(pageTitle);
@@ -583,6 +611,8 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
 								{
 									gridAdapter.replaceData(finalGridList);
 								}
+								
+								//listViewLayout.setSelection(listViewSelection);
 							}
 						}
 						
@@ -659,8 +689,7 @@ public class EventDetailFragment extends BaseDetailFragment implements UpdatedSt
             this.context = context;
             this.gDetector = gDetector;
         }
-
-
+        
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 

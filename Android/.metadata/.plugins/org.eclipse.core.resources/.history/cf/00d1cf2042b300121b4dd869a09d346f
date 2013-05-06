@@ -1,0 +1,90 @@
+package com.motlee.android.fragment;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.motlee.android.R;
+import com.motlee.android.adapter.FollowAdapter;
+import com.motlee.android.adapter.InviteFriendsAdapter;
+import com.motlee.android.object.EventServiceBuffer;
+import com.motlee.android.object.Relationship;
+import com.motlee.android.object.UserInfo;
+import com.motlee.android.object.event.FollowListener;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListView;
+
+public class FollowListFragment extends BaseMotleeFragment implements FollowListener
+{
+	private View view;
+	private ListView followList;
+	private View progressBar;
+	
+	private boolean isFollowers = true;
+	
+	private Integer mUserId;
+	
+    @Override
+    public void onPause()
+    {
+    	super.onPause();
+    	
+    	EventServiceBuffer.removeFollowListener(this);
+    }
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	{
+		view = inflater.inflate(R.layout.follow_list_main, null);
+		
+		followList = (ListView) view.findViewById(R.id.follow_list);
+		progressBar = view.findViewById(R.id.progress_bar);		
+		progressBar.setVisibility(View.VISIBLE);
+		
+		EventServiceBuffer.setFollowListener(this);
+		
+		if (isFollowers)
+		{
+			EventServiceBuffer.getFollowersForUser(mUserId);
+			
+			setPageHeader("Followers");
+		}
+		else
+		{
+			EventServiceBuffer.getFollowingForUser(mUserId);
+			
+			setPageHeader("Following");
+		}
+		
+		return view;
+	}
+	
+	public void setIsFollowers(boolean isFollowers)
+	{
+		this.isFollowers = isFollowers;
+	}
+	
+	public void setUserId(Integer userId)
+	{
+		mUserId = userId;
+	}
+
+	public void followCallback(Relationship relationship) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void followListCallback(List<UserInfo> users) {
+		
+		EventServiceBuffer.removeFollowListener(this);
+		
+		FollowAdapter followAdapter = new FollowAdapter(getActivity(), getActivity().getLayoutInflater(), new ArrayList<UserInfo>(users));;
+		
+		followList.setAdapter(followAdapter);
+		
+		progressBar.setVisibility(View.GONE);
+	}
+}

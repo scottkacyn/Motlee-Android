@@ -12,7 +12,6 @@ import com.motlee.android.fragment.TakePhotoFragment;
 
 public class PreviewImageActivity extends BaseMotleeActivity {
 
-	DatabaseWrapper dbWrapper;
 	String photoPath;
 	Integer eventId;
 	
@@ -20,9 +19,7 @@ public class PreviewImageActivity extends BaseMotleeActivity {
 	public void onCreate(Bundle savedInstanceState)
 	{
         super.onCreate(savedInstanceState);
-        
-        dbWrapper = new DatabaseWrapper(getApplicationContext());
-        
+
         photoPath = getIntent().getStringExtra("PhotoPath");
         eventId = getIntent().getIntExtra("EventId", -1);
         

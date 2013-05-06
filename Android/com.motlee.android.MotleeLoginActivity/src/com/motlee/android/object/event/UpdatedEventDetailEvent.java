@@ -7,19 +7,13 @@ import java.util.Set;
 public class UpdatedEventDetailEvent extends EventObject {
 
 	Set<Integer> mEventIds;
-	boolean isNearby = false;
-	
-	public UpdatedEventDetailEvent(Object source, Set<Integer> set) {
-		super(source);
-		
-		mEventIds = set;
-	}
+	String mEventType;
 
-	public UpdatedEventDetailEvent(Object source, Set<Integer> set, boolean isNearby) {
+	public UpdatedEventDetailEvent(Object source, Set<Integer> set, String eventType) {
 		super(source);
 		
 		mEventIds = set;
-		this.isNearby = isNearby;
+		mEventType = eventType;
 	}
 	
 	public Set<Integer> getEventIds()
@@ -27,13 +21,8 @@ public class UpdatedEventDetailEvent extends EventObject {
 		return mEventIds;
 	}
 	
-	public void setIsNearby()
+	public String getEventType()
 	{
-		isNearby = true;
-	}
-	
-	public boolean getIsNearby()
-	{
-		return isNearby;
+		return mEventType;
 	}
 }

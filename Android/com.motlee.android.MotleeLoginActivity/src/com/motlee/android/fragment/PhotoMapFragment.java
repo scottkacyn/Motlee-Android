@@ -44,6 +44,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
+import com.flurry.android.FlurryAgent;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -88,6 +89,8 @@ public class PhotoMapFragment extends SupportMapFragment {
 	public void onResume()
 	{
 		Log.d("PhotoMap", "onResume");
+		
+		FlurryAgent.logEvent("PhotoMapPage");
 		
 		super.onResume();
 		

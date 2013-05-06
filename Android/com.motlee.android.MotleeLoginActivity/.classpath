@@ -9,15 +9,15 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="lib" path="libs/joda-time-2.1-sources.jar"/>
 	<classpathentry kind="lib" path="libs/joda-time-2.1.jar"/>
-	<classpathentry kind="lib" path="libs/httpmime-4.2.2.jar"/>
 	<classpathentry kind="lib" path="libs/acra-4.4.0.jar"/>
 	<classpathentry kind="lib" path="libs/android-viewbadger.jar"/>
 	<classpathentry kind="lib" path="libs/ormlite-android-4.42.jar"/>
 	<classpathentry kind="lib" path="libs/ormlite-core-4.42.jar"/>
-	<classpathentry kind="lib" path="libs/universalimageloader.jar"/>
 	<classpathentry kind="lib" path="libs/robotium-solo-3.6.jar"/>
 	<classpathentry kind="lib" path="libs/gcm.jar"/>
 	<classpathentry kind="lib" path="libs/android-support-v4.jar"/>
 	<classpathentry kind="lib" path="libs/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="libs/modifiedUIL.jar"/>
+	<classpathentry kind="lib" path="libs/FlurryAgent.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

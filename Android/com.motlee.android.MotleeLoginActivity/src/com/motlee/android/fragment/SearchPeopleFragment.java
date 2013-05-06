@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.InputMethodManager;
@@ -34,6 +35,7 @@ import com.facebook.Request;
 import com.facebook.Request.Callback;
 import com.facebook.Response;
 import com.facebook.Session;
+import com.motlee.android.CreateEventActivity;
 import com.motlee.android.R;
 import com.motlee.android.adapter.SearchPeopleAdapter;
 import com.motlee.android.object.DrawableCache;
@@ -108,6 +110,8 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
 			View headerLeftButton = mHeaderView.findViewById(R.id.header_left_button);
 			headerLeftButton.setVisibility(View.GONE);
 			
+			mHeaderView.findViewById(R.id.header_left_square_button).setOnClickListener(skipButton);
+			
 			 View headerLeftLayoutButton = mHeaderView.findViewById(R.id.header_left_layout_button);
 			 headerLeftLayoutButton.setVisibility(View.VISIBLE);
 			 TextView leftText = (TextView) headerLeftLayoutButton.findViewById(R.id.header_left_text);
@@ -132,6 +136,16 @@ public class SearchPeopleFragment extends ListFragmentWithHeader {
 		
 		return view;
 	}
+	
+	private OnClickListener skipButton = new OnClickListener(){
+
+		public void onClick(View v) {
+
+			((CreateEventActivity) getActivity()).onLeftHeaderClick(v);
+			
+		}
+		
+	};
 	
 	public void disableDeletingFriends()
 	{

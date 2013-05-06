@@ -1,0 +1,49 @@
+package com.motlee.android.fragment;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+
+import com.motlee.android.R;
+
+public class TagFragment extends BaseMotleeFragment 
+{
+
+	private View view;
+	
+	private View progressBar; 
+	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		setPageHeader(EXPLORE);
+		setHeaderIcon(EXPLORE);
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	{
+	    view = inflater.inflate(R.layout.explore_tag_page, null);
+	    
+	    searchButton = (Button) view.findViewById(R.id.explore_search_button);
+	    
+	    searchButton.setOnClickListener(new OnClickListener(){
+
+			public void onClick(View view) {
+				
+				
+				
+			}
+	    	
+	    });
+	    
+	    
+	    return view;
+	}
+	
+}

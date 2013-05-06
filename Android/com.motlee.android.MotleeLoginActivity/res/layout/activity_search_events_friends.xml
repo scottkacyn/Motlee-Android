@@ -44,24 +44,51 @@
 	            android:layout_height="match_parent"/>
 	        
         </FrameLayout>
-        <LinearLayout
-            android:id="@+id/search_list"
-            android:layout_width="match_parent"
+
+	 	<FrameLayout 
+	        android:id="@+id/share_with_friends_layout"
+	        android:layout_height="wrap_content"
+	        android:layout_width="match_parent"
+	        android:layout_above="@id/share_with_friends_layout"
+	        android:layout_alignParentBottom="true"
+	        android:background="@color/see_through_black" >
+	        
+	        <TextView
+	            android:id="@+id/share_with_friends_text"
+	            android:layout_height="wrap_content"
+	            android:layout_width="wrap_content"
+	            android:layout_gravity="center"
+	            android:gravity="center"
+	            android:text="Share with your Friends!" />
+	        
+	    </FrameLayout>
+        
+        <RelativeLayout
+            android:id="@+id/list_layout"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="gone">
+            android:layout_width="match_parent" 
+            android:layout_above="@id/share_with_friends_layout">
+ 
 		    <ListView
-		        android:id="@android:id/list"
+		        android:id="@+id/friend_list"
 		        android:layout_height="fill_parent"
 		        android:layout_width="fill_parent"
 		        android:clipToPadding="false"
 		        android:scrollbars="none"
-		        android:overScrollFooter="@null" />
-		    <TextView android:id="@android:id/empty"
-		        android:layout_width="fill_parent"
+		        android:overScrollFooter="@null"
+		        android:visibility="gone" />
+	        
+		    <ListView
+		        android:id="@+id/invite_list"
 		        android:layout_height="fill_parent"
-		        android:text=""/>
-        </LinearLayout>
+		        android:layout_width="fill_parent"
+		        android:clipToPadding="false"
+		        android:scrollbars="none"
+		        android:overScrollFooter="@null"
+		        android:visibility="gone" />
+		   
+	    </RelativeLayout>
+            
         
         <LinearLayout
             android:id="@+id/search_progress_bar"

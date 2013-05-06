@@ -1,0 +1,16 @@
+package com.motlee.android.object.event;
+
+import java.util.EventObject;
+
+import com.motlee.android.object.Relationship;
+
+public class FollowEvent extends EventObject {
+
+	public Relationship relationship;
+	
+	public FollowEvent(Object source, Relationship relationship)
+	{
+		super(source);
+		this.relationship = relationship;
+	}
+}

@@ -1,7 +1,7 @@
-<RelativeLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="@android:color/transparent"
     android:orientation="vertical" >
     
@@ -15,7 +15,12 @@
         android:layout_height="match_parent"
         android:focusableInTouchMode="true"
         android:focusable="true"
-        android:layout_above="@id/comment_text_bar"
         android:background="@android:color/transparent" />
     
-</RelativeLayout>
+    <include layout="@layout/photo_detail_bottom"
+	    android:id="@+id/photo_detail_bottom"
+	    android:layout_gravity="bottom"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent" />
+    
+</FrameLayout>

@@ -4,12 +4,17 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import com.facebook.FacebookException;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
+import com.facebook.widget.WebDialog;
+import com.facebook.widget.WebDialog.FeedDialogBuilder;
+import com.facebook.widget.WebDialog.OnCompleteListener;
 import com.flurry.android.FlurryAgent;
 import com.motlee.android.fragment.SearchAllFragment;
 import com.motlee.android.object.EventDetail;
+import com.motlee.android.object.FacebookFriend;
 import com.motlee.android.object.GlobalActivityFunctions;
 import com.motlee.android.object.SharingInteraction;
 import com.motlee.android.object.UserInfo;
@@ -21,6 +26,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
+import android.widget.Toast;
 
 public class SearchActivity extends BaseMotleeActivity {
 	
@@ -38,6 +44,8 @@ public class SearchActivity extends BaseMotleeActivity {
 		super.onResume();
 		
 		uiHelper.onResume();
+		
+		FlurryAgent.logEvent("FriendsPage");
 		
 		if (menu == null)
 		{
@@ -70,8 +78,6 @@ public class SearchActivity extends BaseMotleeActivity {
         
         showMenuButtons();
         
-        FlurryAgent.logEvent("Search");
-        
         FragmentManager     fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         
@@ -102,6 +108,50 @@ public class SearchActivity extends BaseMotleeActivity {
         } else if (state.isClosed()) {
 
         }
+    }
+    
+    public void onInviteClick(final View view)
+    {
+    	runOnUiThread(new Runnable(){
+
+			public void run() {
+				
+				FacebookFriend friend = (FacebookFriend) view.getTag();
+		    	
+		    	WebDialog dialog = new FeedDialogBuilder(SearchActivity.this, Session.getActiveSession())
+		    	.setOnCompleteListener(new OnCompleteListener(){
+
+					public void onComplete(Bundle values, FacebookException error) 
+					{
+						if (error == null) {
+		                    // When the story is posted, echo the success
+		                    // and the post Id.
+		                    final String postId = values.getString("post_id");
+		                    if (postId != null) 
+		                    {
+		                        FlurryAgent.logEvent("InvitedFriendThroughFacebook");
+		                    } 
+		                    else 
+		                    {
+		                        FlurryAgent.logEvent("CanceledInvitingFriendThroughFacebook");
+		                    }
+		                }
+						
+					}
+		    		
+		    	})
+		    	.setTo(friend.uid.toString())
+		    	.setName("Download Motlee")
+		    	.setDescription("Motlee is the best way to share photos in a group. Period.")
+		    	.setLink("http://www.motleeapp.com")
+		    	.setPicture("https://www.motleeapp.com/images/MotleeWeb1.png")
+		    	.build();
+		    	
+		    	dialog.show();
+				
+			}
+    		
+    	});
     }
     
     public void showEventPeopleDetail(View view)

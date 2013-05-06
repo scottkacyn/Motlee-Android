@@ -69,9 +69,12 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
     
     public void replaceData(List<GridPictures> newData)
     {
-    	this.data.clear();
-    	this.data.addAll(newData);
-    	this.notifyDataSetChanged();
+    	if (!newData.equals(data))
+    	{
+	    	this.data.clear();
+	    	this.data.addAll(newData);
+	    	this.notifyDataSetChanged();
+    	}
     }
     
     public Collection<GridPictures> getData()
@@ -106,7 +109,6 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
     	if (!this.data.contains(eventID))
     	{
         	this.data.add(eventID);
-        	this.notifyDataSetChanged();
     	}
     }
     
@@ -114,8 +116,6 @@ public class EventDetailGridAdapter extends ArrayAdapter<GridPictures> {
     {
     	Log.w(tag, "clear");
     	this.data.clear();
-    	
-    	this.notifyDataSetChanged();
     }
     
     

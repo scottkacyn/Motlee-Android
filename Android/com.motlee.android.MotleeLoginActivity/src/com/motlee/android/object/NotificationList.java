@@ -55,9 +55,7 @@ public class NotificationList
 	public void setNewNotificationNumber(String notificationJson, Context context)
 	{
 		Settings settings = SharePref.getSettings(context);
-		
-		DatabaseWrapper dbWrapper = new DatabaseWrapper(context);
-		
+
 		JsonParser parser = new JsonParser();
 		
 		JsonArray array = new JsonArray();
@@ -94,9 +92,7 @@ public class NotificationList
 		mNotifications.clear();
 		
 		Settings settings = SharePref.getSettings(context);
-		
-		DatabaseWrapper dbWrapper = new DatabaseWrapper(context);
-		
+
 		JsonParser parser = new JsonParser();
 		
 		JsonArray array = new JsonArray();

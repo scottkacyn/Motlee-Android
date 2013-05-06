@@ -1,0 +1,52 @@
+package com.motlee.android;
+
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+
+import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume;
+import com.motlee.android.fragment.ExploreFragment;
+import com.motlee.android.fragment.EmptyFragmentWithCallbackOnResume.OnFragmentAttachedListener;
+import com.motlee.android.object.GlobalActivityFunctions;
+
+public class TagActivity extends BaseMotleeActivity implements OnFragmentAttachedListener
+{
+	private ExploreFragment mExploreFragment;
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+        
+        menu = GlobalActivityFunctions.setUpSlidingMenu(this);
+		
+        showMenuButtons();
+        
+        FragmentManager     fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+
+        mExploreFragment = new ExploreFragment();
+        
+        mExploreFragment.setHeaderView(findViewById(R.id.header));
+        
+    	if (fm.findFragmentByTag("EmptyFragment") == null)
+    	{
+    		ft.add(new EmptyFragmentWithCallbackOnResume(), "EmptyFragment");
+        	ft.commit();
+    	}
+	}
+	
+	
+	public void OnFragmentAttached() {
+
+		FragmentManager fm = getSupportFragmentManager();
+		if (fm.findFragmentById(R.id.fragment_content) == null)
+		{
+			FragmentTransaction ft = fm.beginTransaction();
+			ft.add(R.id.fragment_content, mExploreFragment);
+			
+			ft.commit();
+		}
+	}
+}
